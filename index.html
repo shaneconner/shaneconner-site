@@ -635,7 +635,7 @@
     .lightbox-thumb:hover { opacity: 0.7; }
     .lightbox-thumb.active { opacity: 1; }
 
-    .gallery-item[data-gallery]::after {
+    .gallery-item.has-multi::after {
       content: '';
       position: absolute;
       top: 1rem;
@@ -748,8 +748,8 @@
     </div>
     <div class="gallery-grid">
 
-      <div class="gallery-item" data-gallery="img/1000002657.jpg,img/hiraeth/1.jpg,img/hiraeth/2.jpg,img/hiraeth/3.jpg,img/hiraeth/4.jpg,img/hiraeth/5.jpg,img/hiraeth/6.jpg,img/hiraeth/7.jpg,img/hiraeth/8.jpg,img/hiraeth/9.jpg" onclick="openLightbox(this)">
-        <img src="img/1000002657.jpg" alt="Hiraeth" loading="lazy" />
+      <div class="gallery-item" data-gallery="img/hiraeth/1.jpg,img/hiraeth/2.jpg,img/hiraeth/3.jpg,img/hiraeth/4.jpg,img/hiraeth/5.jpg,img/hiraeth/6.jpg,img/hiraeth/7.jpg,img/hiraeth/8.jpg,img/hiraeth/9.jpg" onclick="openLightbox(this)">
+        <img src="img/hiraeth/1.jpg" alt="Hiraeth" loading="lazy" />
         <div class="gallery-overlay">
           <h3>Hiraeth</h3>
           <div class="details">Oil on canvas · 48 × 60 in</div>
@@ -760,8 +760,8 @@
         </div>
       </div>
 
-      <div class="gallery-item" onclick="openLightbox(this)">
-        <img src="img/1000002624.webp" alt="Glacial Drift" loading="lazy" />
+      <div class="gallery-item" data-gallery="img/glacial-drift/1.jpg" onclick="openLightbox(this)">
+        <img src="img/glacial-drift/1.jpg" alt="Glacial Drift" loading="lazy" />
         <div class="gallery-overlay">
           <h3>Glacial Drift</h3>
           <div class="details">Oil on canvas · 48 × 60 in</div>
@@ -772,8 +772,8 @@
         </div>
       </div>
 
-      <div class="gallery-item" data-gallery="img/1000002588.jpg,img/turbo-flare/1.jpg,img/turbo-flare/2.jpg,img/turbo-flare/3.jpg,img/turbo-flare/4.jpg,img/turbo-flare/5.jpg,img/turbo-flare/6.jpg,img/turbo-flare/7.jpg,img/turbo-flare/8.jpg" onclick="openLightbox(this)">
-        <img src="img/1000002588.jpg" alt="Turbo Flare" loading="lazy" />
+      <div class="gallery-item" data-gallery="img/turbo-flare/1.jpg,img/turbo-flare/2.jpg,img/turbo-flare/3.jpg,img/turbo-flare/4.jpg,img/turbo-flare/5.jpg,img/turbo-flare/6.jpg,img/turbo-flare/7.jpg,img/turbo-flare/8.jpg,img/turbo-flare/9.jpg" onclick="openLightbox(this)">
+        <img src="img/turbo-flare/1.jpg" alt="Turbo Flare" loading="lazy" />
         <div class="gallery-overlay">
           <h3>Turbo Flare</h3>
           <div class="details">Oil on canvas · 36 × 48 in</div>
@@ -784,8 +784,8 @@
         </div>
       </div>
 
-      <div class="gallery-item" onclick="openLightbox(this)">
-        <img src="img/oxidized.jpg" alt="Glasgow" loading="lazy" />
+      <div class="gallery-item" data-gallery="img/glasgow/1.jpg" onclick="openLightbox(this)">
+        <img src="img/glasgow/1.jpg" alt="Glasgow" loading="lazy" />
         <div class="gallery-overlay">
           <h3>Glasgow</h3>
           <div class="details">Oil on canvas · 36 × 48 in</div>
@@ -796,8 +796,8 @@
         </div>
       </div>
 
-      <div class="gallery-item" onclick="openLightbox(this)">
-        <img src="img/deepcurrent.jpg" alt="Fathom" loading="lazy" />
+      <div class="gallery-item" data-gallery="img/fathom/1.jpg" onclick="openLightbox(this)">
+        <img src="img/fathom/1.jpg" alt="Fathom" loading="lazy" />
         <div class="gallery-overlay">
           <h3>Fathom</h3>
           <div class="details">Oil on canvas · 30 × 40 in</div>
@@ -967,6 +967,12 @@
     }, { threshold: 0.1 });
     document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
+    // Mark gallery items with multiple photos
+    document.querySelectorAll('.gallery-item[data-gallery]').forEach(item => {
+      const imgs = item.dataset.gallery.split(',');
+      if (imgs.length > 1) item.classList.add('has-multi');
+    });
+
     // Lightbox with gallery support
     let galleryImages = [];
     let galleryIndex = 0;
@@ -985,9 +991,14 @@
       if (gallerySrc) {
         galleryImages = gallerySrc.split(',');
         galleryIndex = 0;
-        lightbox.classList.add('has-gallery');
-        buildThumbs();
-        updateCounter();
+        const isMulti = galleryImages.length > 1;
+        lightbox.classList.toggle('has-gallery', isMulti);
+        if (isMulti) {
+          buildThumbs();
+          updateCounter();
+        } else {
+          document.getElementById('lightbox-thumbs').innerHTML = '';
+        }
       } else {
         galleryImages = [];
         galleryIndex = 0;
