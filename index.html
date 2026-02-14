@@ -653,6 +653,144 @@
       z-index: 2;
     }
 
+    /* ─── SOLD BANNER ─── */
+    .gallery-item.sold::before {
+      content: 'SOLD';
+      position: absolute;
+      top: 1.25rem;
+      left: -2rem;
+      width: 8rem;
+      text-align: center;
+      padding: 0.35rem 0;
+      background: linear-gradient(135deg, #8b2942 0%, #6b1d32 100%);
+      color: var(--cream);
+      font-size: 0.6rem;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      transform: rotate(-45deg);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+      z-index: 5;
+    }
+    .gallery-item.sold { overflow: hidden; }
+    .gallery-item.sold .inquire-btn { display: none; }
+    .gallery-item.sold .price {
+      text-decoration: line-through;
+      opacity: 0.5;
+    }
+    .gallery-item.sold .price::after {
+      content: ' · Sold';
+      text-decoration: none;
+      opacity: 1;
+      color: var(--green-bright);
+    }
+
+    /* ─── WIP SECTION ─── */
+    #wip {
+      padding: 5rem 0;
+      background: var(--bg-elevated);
+      border-top: 1px solid var(--border);
+    }
+
+    .wip-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+      padding: 0 3rem;
+    }
+
+    .wip-item {
+      position: relative;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      transition: border-color 0.3s ease;
+    }
+    .wip-item:hover { border-color: var(--border-light); }
+
+    .wip-item img {
+      width: 100%;
+      aspect-ratio: 4/3;
+      object-fit: cover;
+      cursor: pointer;
+    }
+
+    .wip-info {
+      padding: 1.25rem;
+    }
+    .wip-info h3 {
+      font-family: var(--serif);
+      font-size: 1.1rem;
+      color: var(--text-bright);
+      margin-bottom: 0.3rem;
+    }
+    .wip-info .wip-meta {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      margin-bottom: 0.5rem;
+    }
+    .wip-info .wip-status {
+      display: inline-block;
+      padding: 0.25rem 0.6rem;
+      background: var(--green-dim);
+      color: var(--green-bright);
+      font-size: 0.6rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border: 1px solid var(--green);
+    }
+    .wip-info .wip-caption {
+      margin-top: 0.75rem;
+      font-size: 0.8rem;
+      color: var(--text);
+      line-height: 1.6;
+      font-style: italic;
+    }
+
+    /* ─── LIGHTBOX ZOOM/DOWNLOAD ─── */
+    .lightbox-actions {
+      position: absolute;
+      top: 1.5rem;
+      left: 2rem;
+      display: flex;
+      gap: 0.75rem;
+      z-index: 210;
+    }
+    .lightbox-action {
+      background: rgba(0,0,0,0.5);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: var(--text-dim);
+      padding: 0.5rem 0.9rem;
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-family: var(--sans);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .lightbox-action:hover {
+      background: rgba(0,0,0,0.7);
+      color: var(--cream);
+      border-color: rgba(255,255,255,0.3);
+    }
+
+    .lightbox-main img.zoomed {
+      max-width: none;
+      max-height: none;
+      cursor: zoom-out;
+    }
+    .lightbox-main.zoom-active {
+      overflow: auto;
+      cursor: grab;
+    }
+    .lightbox-main.zoom-active:active {
+      cursor: grabbing;
+    }
+
     @media (max-width: 768px) {
       .lightbox-nav { width: 36px; height: 36px; font-size: 1rem; }
       .lightbox-prev { left: 0.5rem; }
@@ -717,6 +855,7 @@
     <a href="#" class="nav-logo">Shane Conner</a>
     <ul class="nav-links">
       <li><a href="#works">Works</a></li>
+      <li><a href="#wip">Studio</a></li>
       <li><a href="#about">About</a></li>
       <li><a href="#process">Process</a></li>
       <li><a href="#contact">Contact</a></li>
@@ -744,11 +883,11 @@
         <p class="section-label">Selected Works</p>
         <h2 class="section-title">Available Paintings</h2>
       </div>
-      <span class="gallery-count">5 works available</span>
+      <span class="gallery-count">11 available</span>
     </div>
     <div class="gallery-grid">
 
-      <div class="gallery-item" data-gallery="img/hiraeth/1.jpg,img/hiraeth/2.jpg,img/hiraeth/3.jpg,img/hiraeth/4.jpg,img/hiraeth/5.jpg,img/hiraeth/6.jpg,img/hiraeth/7.jpg,img/hiraeth/8.jpg,img/hiraeth/9.jpg" onclick="openLightbox(this)">
+      <div class="gallery-item has-multi" data-gallery="img/hiraeth/1.jpg,img/hiraeth/2.jpg,img/hiraeth/3.jpg,img/hiraeth/4.jpg,img/hiraeth/5.jpg,img/hiraeth/6.jpg,img/hiraeth/7.jpg,img/hiraeth/8.jpg,img/hiraeth/9.jpg,img/hiraeth/10.jpg,img/hiraeth/11.jpg,img/hiraeth/12.jpg,img/hiraeth/13.jpg,img/hiraeth/14.jpg,img/hiraeth/15.jpg,img/hiraeth/16.jpg" onclick="openLightbox(this)">
         <img src="img/hiraeth/1.jpg" alt="Hiraeth" loading="lazy" />
         <div class="gallery-overlay">
           <h3>Hiraeth</h3>
@@ -784,7 +923,7 @@
         </div>
       </div>
 
-      <div class="gallery-item" data-gallery="img/glasgow/1.jpg" onclick="openLightbox(this)">
+      <div class="gallery-item has-multi" data-gallery="img/glasgow/1.jpg,img/glasgow/2.jpg,img/glasgow/3.jpg,img/glasgow/4.jpg,img/glasgow/5.jpg,img/glasgow/6.jpg,img/glasgow/7.jpg,img/glasgow/8.jpg,img/glasgow/9.jpg,img/glasgow/10.jpg,img/glasgow/11.jpg,img/glasgow/12.jpg,img/glasgow/13.jpg" onclick="openLightbox(this)">
         <img src="img/glasgow/1.jpg" alt="Glasgow" loading="lazy" />
         <div class="gallery-overlay">
           <h3>Glasgow</h3>
@@ -796,7 +935,7 @@
         </div>
       </div>
 
-      <div class="gallery-item" data-gallery="img/fathom/1.jpg" onclick="openLightbox(this)">
+      <div class="gallery-item has-multi" data-gallery="img/fathom/1.jpg,img/fathom/2.jpg,img/fathom/3.jpg,img/fathom/4.jpg,img/fathom/5.jpg,img/fathom/6.jpg,img/fathom/7.jpg,img/fathom/8.jpg" onclick="openLightbox(this)">
         <img src="img/fathom/1.jpg" alt="Fathom" loading="lazy" />
         <div class="gallery-overlay">
           <h3>Fathom</h3>
@@ -805,6 +944,123 @@
             <span class="price">$800</span>
             <a href="mailto:shane@shaneconner.com?subject=Inquiry%3A%20Fathom&body=Hi%20Shane%2C%0A%0AI'm%20interested%20in%20%22Fathom%22%20(30x40%2C%20oil%20on%20canvas).%20Could%20you%20share%20more%20details%3F" class="inquire-btn" onclick="event.stopPropagation()">Inquire</a>
           </div>
+        </div>
+      </div>
+
+      <div class="gallery-item" data-gallery="img/viridis/1.jpg,img/viridis/2.jpg,img/viridis/3.jpg,img/viridis/4.jpg,img/viridis/5.jpg,img/viridis/6.jpg,img/viridis/7.jpg,img/viridis/8.jpg,img/viridis/9.jpg,img/viridis/10.jpg" onclick="openLightbox(this)">
+        <img src="img/viridis/1.jpg" alt="Viridis" loading="lazy" />
+        <div class="gallery-overlay">
+          <h3>Viridis</h3>
+          <div class="details">Oil on wood panel · 48 × 60 × ¾ in</div>
+          <div class="price-row">
+            <span class="price">$1,400</span>
+            <a href="mailto:shane@shaneconner.com?subject=Inquiry%3A%20Viridis&body=Hi%20Shane%2C%0A%0AI'm%20interested%20in%20%22Viridis%22%20(48x60%2C%20oil%20on%20wood%20panel).%20Could%20you%20share%20more%20details%3F" class="inquire-btn" onclick="event.stopPropagation()">Inquire</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="gallery-item" data-gallery="img/forest-mint/1.jpg,img/forest-mint/2.jpg,img/forest-mint/3.jpg,img/forest-mint/4.jpg,img/forest-mint/5.jpg,img/forest-mint/6.jpg,img/forest-mint/7.jpg,img/forest-mint/8.jpg" onclick="openLightbox(this)">
+        <img src="img/forest-mint/1.jpg" alt="Forest Mint" loading="lazy" />
+        <div class="gallery-overlay">
+          <h3>Forest Mint</h3>
+          <div class="details">Oil on wood panel · 48 × 60 in</div>
+          <div class="price-row">
+            <span class="price">$1,400</span>
+            <a href="mailto:shane@shaneconner.com?subject=Inquiry%3A%20Forest%20Mint&body=Hi%20Shane%2C%0A%0AI'm%20interested%20in%20%22Forest%20Mint%22%20(48x60%2C%20oil%20on%20wood%20panel).%20Could%20you%20share%20more%20details%3F" class="inquire-btn" onclick="event.stopPropagation()">Inquire</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="gallery-item" data-gallery="img/batlow/1.jpg,img/batlow/2.jpg,img/batlow/3.jpg" onclick="openLightbox(this)">
+        <img src="img/batlow/1.jpg" alt="Batlow" loading="lazy" />
+        <div class="gallery-overlay">
+          <h3>Batlow</h3>
+          <div class="details">Oil on canvas · 36 × 48 in</div>
+          <div class="price-row">
+            <span class="price">$900</span>
+            <a href="mailto:shane@shaneconner.com?subject=Inquiry%3A%20Batlow&body=Hi%20Shane%2C%0A%0AI'm%20interested%20in%20%22Batlow%22%20(36x48%2C%20oil%20on%20canvas).%20Could%20you%20share%20more%20details%3F" class="inquire-btn" onclick="event.stopPropagation()">Inquire</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="gallery-item has-multi" data-gallery="img/hawaii/1.jpg,img/hawaii/2.jpg,img/hawaii/3.jpg" onclick="openLightbox(this)">
+        <img src="img/hawaii/1.jpg" alt="Hawaii" loading="lazy" />
+        <div class="gallery-overlay">
+          <h3>Hawaii</h3>
+          <div class="details">Oil on canvas · 36 × 36 in</div>
+          <div class="price-row">
+            <span class="price">$700</span>
+            <a href="mailto:shane@shaneconner.com?subject=Inquiry%3A%20Hawaii&body=Hi%20Shane%2C%0A%0AI'm%20interested%20in%20%22Hawaii%22%20(36x36%2C%20oil%20on%20canvas).%20Could%20you%20share%20more%20details%3F" class="inquire-btn" onclick="event.stopPropagation()">Inquire</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="gallery-item has-multi" data-gallery="img/tokyo/1.jpg,img/tokyo/2.jpg,img/tokyo/3.jpg,img/tokyo/4.jpg,img/tokyo/5.jpg,img/tokyo/6.jpg,img/tokyo/7.jpg,img/tokyo/8.jpg,img/tokyo/9.jpg,img/tokyo/10.jpg" onclick="openLightbox(this)">
+        <img src="img/tokyo/1.jpg" alt="Tokyo" loading="lazy" />
+        <div class="gallery-overlay">
+          <h3>Tokyo</h3>
+          <div class="details">Oil on canvas · 30 × 48 in</div>
+          <div class="price-row">
+            <span class="price">$800</span>
+            <a href="mailto:shane@shaneconner.com?subject=Inquiry%3A%20Tokyo&body=Hi%20Shane%2C%0A%0AI'm%20interested%20in%20%22Tokyo%22%20(30x48%2C%20oil%20on%20canvas).%20Could%20you%20share%20more%20details%3F" class="inquire-btn" onclick="event.stopPropagation()">Inquire</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="gallery-item has-multi" data-gallery="img/buda/1.jpg,img/buda/2.jpg,img/buda/3.jpg" onclick="openLightbox(this)">
+        <img src="img/buda/1.jpg" alt="Buda" loading="lazy" />
+        <div class="gallery-overlay">
+          <h3>Buda</h3>
+          <div class="details">Oil on canvas · 36 × 48 in</div>
+          <div class="price-row">
+            <span class="price">$900</span>
+            <a href="mailto:shane@shaneconner.com?subject=Inquiry%3A%20Buda&body=Hi%20Shane%2C%0A%0AI'm%20interested%20in%20%22Buda%22%20(36x48%2C%20oil%20on%20canvas).%20Could%20you%20share%20more%20details%3F" class="inquire-btn" onclick="event.stopPropagation()">Inquire</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="gallery-item sold has-multi" data-gallery="img/turbo/1.jpg,img/turbo/2.jpg,img/turbo/3.jpg,img/turbo/4.jpg,img/turbo/5.jpg,img/turbo/6.jpg,img/turbo/7.jpg,img/turbo/8.jpg,img/turbo/9.jpg" onclick="openLightbox(this)">
+        <img src="img/turbo/1.jpg" alt="Turbo" loading="lazy" />
+        <div class="gallery-overlay">
+          <h3>Turbo</h3>
+          <div class="details">Oil on wood · 36 × 48 in</div>
+          <div class="price-row">
+            <span class="price">$900</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- WORKS IN PROGRESS -->
+  <section id="wip">
+    <div class="gallery-header reveal">
+      <div>
+        <p class="section-label">Studio</p>
+        <h2 class="section-title">Works in Progress</h2>
+      </div>
+      <span class="gallery-count">2 in progress</span>
+    </div>
+    <div class="wip-grid">
+
+      <div class="wip-item reveal">
+        <img src="img/wip/viridis-ii/wip_1.jpg" alt="Viridis II WIP" onclick="openWipLightbox(this)" />
+        <div class="wip-info">
+          <h3>Viridis II</h3>
+          <div class="wip-meta">Viridis palette · 2026</div>
+          <span class="wip-status">In progress</span>
+          <p class="wip-caption">A new exploration of the Viridis colormap, building on lessons from the first piece.</p>
+        </div>
+      </div>
+
+      <div class="wip-item reveal">
+        <img src="img/wip/viridis-gone-wild/PXL_20260124_181940461.jpg" alt="Viridis Gone Wild WIP" onclick="openWipLightbox(this)" />
+        <div class="wip-info">
+          <h3>Viridis Gone Wild</h3>
+          <div class="wip-meta">Extended Viridis palette</div>
+          <span class="wip-status">In progress</span>
+          <p class="wip-caption">Pushing the Viridis palette beyond its usual boundaries — more saturated, more expressive.</p>
         </div>
       </div>
 
@@ -828,7 +1084,7 @@
         </div>
         <div class="detail-row">
           <span class="label">Medium</span>
-          <span class="value">Oil on Canvas</span>
+          <span class="value">Oil on Canvas / Wood Panel</span>
         </div>
         <div class="detail-row">
           <span class="label">Technique</span>
@@ -840,7 +1096,7 @@
         </div>
         <div class="detail-row">
           <span class="label">Available Sizes</span>
-          <span class="value">36×48 in · 48×60 in</span>
+          <span class="value">30×40 in · 36×36 in · 36×48 in · 48×60 in</span>
         </div>
         <div class="detail-row">
           <span class="label">Commissions</span>
@@ -925,7 +1181,7 @@
       <p class="contact-note">Free local delivery within 30 miles of Grafton, WI</p>
       <div class="social-links">
         <a href="https://www.instagram.com/shanepconner/" target="_blank" rel="noopener">Instagram</a>
-        <a href="#">Etsy</a>
+        <a href="https://www.etsy.com/shop/connerplants" target="_blank" rel="noopener">Etsy</a>
       </div>
     </div>
   </section>
@@ -939,10 +1195,18 @@
   <!-- LIGHTBOX -->
   <div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
     <button class="lightbox-close" onclick="closeLightbox(event)">Close &#10005;</button>
+    <div class="lightbox-actions">
+      <button class="lightbox-action" id="zoom-btn" onclick="event.stopPropagation(); toggleZoom()">
+        <span id="zoom-icon">&#x1F50D;</span> <span id="zoom-text">Zoom</span>
+      </button>
+      <a class="lightbox-action" id="download-btn" href="" download onclick="event.stopPropagation()">
+        &#x2913; Download
+      </a>
+    </div>
     <button class="lightbox-nav lightbox-prev" onclick="event.stopPropagation(); navigateLightbox(-1)">&#8592;</button>
     <button class="lightbox-nav lightbox-next" onclick="event.stopPropagation(); navigateLightbox(1)">&#8594;</button>
-    <div class="lightbox-main" onclick="closeLightbox(event)">
-      <img id="lightbox-img" src="" alt="" onclick="event.stopPropagation()" />
+    <div class="lightbox-main" id="lightbox-main" onclick="closeLightbox(event)">
+      <img id="lightbox-img" src="" alt="" onclick="handleImageClick(event)" />
     </div>
     <div class="lightbox-info">
       <h3 id="lightbox-title"></h3>
@@ -976,6 +1240,7 @@
     // Lightbox with gallery support
     let galleryImages = [];
     let galleryIndex = 0;
+    let isZoomed = false;
 
     function openLightbox(item) {
       const img = item.querySelector('img');
@@ -987,6 +1252,8 @@
       document.getElementById('lightbox-img').src = img.src;
       document.getElementById('lightbox-title').textContent = title;
       document.getElementById('lightbox-details').textContent = details;
+      updateDownloadLink(img.src);
+      resetZoom();
 
       if (gallerySrc) {
         galleryImages = gallerySrc.split(',');
@@ -1010,6 +1277,66 @@
       document.body.style.overflow = 'hidden';
     }
 
+    function openWipLightbox(imgEl) {
+      const lightbox = document.getElementById('lightbox');
+      const wipItem = imgEl.closest('.wip-item');
+      const title = wipItem.querySelector('h3').textContent;
+      const meta = wipItem.querySelector('.wip-meta').textContent;
+
+      document.getElementById('lightbox-img').src = imgEl.src;
+      document.getElementById('lightbox-title').textContent = title + ' (WIP)';
+      document.getElementById('lightbox-details').textContent = meta;
+      updateDownloadLink(imgEl.src);
+      resetZoom();
+
+      galleryImages = [];
+      galleryIndex = 0;
+      lightbox.classList.remove('has-gallery');
+      document.getElementById('lightbox-thumbs').innerHTML = '';
+
+      lightbox.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function updateDownloadLink(src) {
+      const downloadBtn = document.getElementById('download-btn');
+      downloadBtn.href = src;
+      const filename = src.split('/').pop();
+      downloadBtn.download = filename;
+    }
+
+    function toggleZoom() {
+      const img = document.getElementById('lightbox-img');
+      const main = document.getElementById('lightbox-main');
+      isZoomed = !isZoomed;
+
+      if (isZoomed) {
+        img.classList.add('zoomed');
+        main.classList.add('zoom-active');
+        document.getElementById('zoom-text').textContent = 'Fit';
+      } else {
+        resetZoom();
+      }
+    }
+
+    function resetZoom() {
+      const img = document.getElementById('lightbox-img');
+      const main = document.getElementById('lightbox-main');
+      img.classList.remove('zoomed');
+      main.classList.remove('zoom-active');
+      document.getElementById('zoom-text').textContent = 'Zoom';
+      isZoomed = false;
+    }
+
+    function handleImageClick(e) {
+      e.stopPropagation();
+      if (isZoomed) {
+        resetZoom();
+      } else {
+        toggleZoom();
+      }
+    }
+
     function buildThumbs() {
       const container = document.getElementById('lightbox-thumbs');
       container.innerHTML = '';
@@ -1029,7 +1356,10 @@
 
     function goToSlide(i) {
       galleryIndex = i;
-      document.getElementById('lightbox-img').src = galleryImages[i];
+      const newSrc = galleryImages[i];
+      document.getElementById('lightbox-img').src = newSrc;
+      updateDownloadLink(newSrc);
+      resetZoom();
       document.querySelectorAll('.lightbox-thumb').forEach((t, idx) => {
         t.classList.toggle('active', idx === i);
       });
@@ -1044,9 +1374,10 @@
 
     function closeLightbox(e) {
       const t = e.target;
-      if (t.id === 'lightbox' || t.classList.contains('lightbox-close') || t.classList.contains('lightbox-main')) {
+      if (t.id === 'lightbox' || t.classList.contains('lightbox-close') || (t.id === 'lightbox-main' && !isZoomed)) {
         document.getElementById('lightbox').classList.remove('active', 'has-gallery');
         document.body.style.overflow = '';
+        resetZoom();
       }
     }
 
@@ -1054,12 +1385,18 @@
       const lightbox = document.getElementById('lightbox');
       if (!lightbox.classList.contains('active')) return;
       if (e.key === 'Escape') {
-        lightbox.classList.remove('active', 'has-gallery');
-        document.body.style.overflow = '';
+        if (isZoomed) {
+          resetZoom();
+        } else {
+          lightbox.classList.remove('active', 'has-gallery');
+          document.body.style.overflow = '';
+        }
       } else if (e.key === 'ArrowLeft') {
         navigateLightbox(-1);
       } else if (e.key === 'ArrowRight') {
         navigateLightbox(1);
+      } else if (e.key === 'z' || e.key === 'Z') {
+        toggleZoom();
       }
     });
   </script>
