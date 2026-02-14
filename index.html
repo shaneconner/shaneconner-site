@@ -688,64 +688,31 @@
     /* ─── WIP SECTION ─── */
     #wip {
       padding: 5rem 0;
-      background: var(--bg-elevated);
       border-top: 1px solid var(--border);
     }
 
-    .wip-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 1.5rem;
-      padding: 0 3rem;
-    }
-
-    .wip-item {
-      position: relative;
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      overflow: hidden;
-      transition: border-color 0.3s ease;
-    }
-    .wip-item:hover { border-color: var(--border-light); }
-
-    .wip-item img {
-      width: 100%;
-      aspect-ratio: 4/3;
-      object-fit: cover;
-      cursor: pointer;
-    }
-
-    .wip-info {
-      padding: 1.25rem;
-    }
-    .wip-info h3 {
-      font-family: var(--serif);
-      font-size: 1.1rem;
-      color: var(--text-bright);
-      margin-bottom: 0.3rem;
-    }
-    .wip-info .wip-meta {
-      font-size: 0.72rem;
-      color: var(--text-dim);
-      margin-bottom: 0.5rem;
-    }
-    .wip-info .wip-status {
-      display: inline-block;
-      padding: 0.25rem 0.6rem;
-      background: var(--green-dim);
-      color: var(--green-bright);
-      font-size: 0.6rem;
-      letter-spacing: 0.1em;
+    /* WIP banner - like sold banner but green */
+    .gallery-item.wip::before {
+      content: 'IN PROGRESS';
+      position: absolute;
+      top: 1.25rem;
+      left: -2rem;
+      width: 9rem;
+      text-align: center;
+      padding: 0.35rem 0;
+      background: linear-gradient(135deg, var(--green) 0%, var(--green-dim) 100%);
+      color: var(--cream);
+      font-size: 0.55rem;
+      font-weight: 500;
+      letter-spacing: 0.2em;
       text-transform: uppercase;
-      border: 1px solid var(--green);
+      transform: rotate(-45deg);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+      z-index: 5;
     }
-    .wip-info .wip-caption {
-      margin-top: 0.75rem;
-      font-size: 0.8rem;
-      color: var(--text);
-      line-height: 1.6;
-      font-style: italic;
-    }
+    .gallery-item.wip .inquire-btn { display: none; }
+
+
 
     /* ─── LIGHTBOX ZOOM/DOWNLOAD ─── */
     .lightbox-actions {
@@ -781,14 +748,15 @@
     .lightbox-main img.zoomed {
       max-width: none;
       max-height: none;
-      cursor: zoom-out;
+      cursor: grab;
+      position: absolute;
+    }
+    .lightbox-main img.zoomed:active {
+      cursor: grabbing;
     }
     .lightbox-main.zoom-active {
-      overflow: auto;
-      cursor: grab;
-    }
-    .lightbox-main.zoom-active:active {
-      cursor: grabbing;
+      overflow: hidden;
+      position: relative;
     }
 
     @media (max-width: 768px) {
@@ -947,7 +915,7 @@
         </div>
       </div>
 
-      <div class="gallery-item" data-gallery="img/viridis/1.jpg,img/viridis/2.jpg,img/viridis/3.jpg,img/viridis/4.jpg,img/viridis/5.jpg,img/viridis/6.jpg,img/viridis/7.jpg,img/viridis/8.jpg,img/viridis/9.jpg,img/viridis/10.jpg" onclick="openLightbox(this)">
+      <div class="gallery-item has-multi" data-gallery="img/viridis/1.jpg,img/viridis/2.jpg,img/viridis/3.jpg,img/viridis/4.jpg,img/viridis/wip_1.jpg,img/viridis/wip_2.jpg,img/viridis/wip_3.jpg,img/viridis/wip_4.jpg,img/viridis/wip_5.jpg" onclick="openLightbox(this)">
         <img src="img/viridis/1.jpg" alt="Viridis" loading="lazy" />
         <div class="gallery-overlay">
           <h3>Viridis</h3>
@@ -958,6 +926,7 @@
           </div>
         </div>
       </div>
+
 
       <div class="gallery-item has-multi" data-gallery="img/forest-mint/1.jpg,img/forest-mint/2.jpg,img/forest-mint/3.jpg,img/forest-mint/4.jpg,img/forest-mint/wip_1.jpg,img/forest-mint/wip_2.jpg,img/forest-mint/wip_3.jpg,img/forest-mint/wip_4.jpg" onclick="openLightbox(this)">
         <img src="img/forest-mint/1.jpg" alt="Forest Mint" loading="lazy" />
@@ -971,7 +940,7 @@
         </div>
       </div>
 
-      <div class="gallery-item" data-gallery="img/batlow/1.jpg,img/batlow/2.jpg,img/batlow/3.jpg" onclick="openLightbox(this)">
+      <div class="gallery-item has-multi" data-gallery="img/batlow/1.jpg,img/batlow/wip_1.jpg" onclick="openLightbox(this)">
         <img src="img/batlow/1.jpg" alt="Batlow" loading="lazy" />
         <div class="gallery-overlay">
           <h3>Batlow</h3>
@@ -1031,7 +1000,7 @@
         </div>
       </div>
 
-      <div class="gallery-item has-multi" data-gallery="img/for-wren/1.jpg,img/for-wren/2.jpg,img/for-wren/3.jpg" onclick="openLightbox(this)">
+      <div class="gallery-item has-multi" data-gallery="img/for-wren/1.jpg,img/for-wren/2.jpg,img/for-wren/3.jpg,img/for-wren/wip_1.jpg" onclick="openLightbox(this)">
         <img src="img/for-wren/1.jpg" alt="For Wren" loading="lazy" />
         <div class="gallery-overlay">
           <h3>For Wren</h3>
@@ -1043,7 +1012,7 @@
         </div>
       </div>
 
-      <div class="gallery-item sold has-multi" data-gallery="img/turbo/1.jpg,img/turbo/2.jpg,img/turbo/3.jpg,img/turbo/4.jpg,img/turbo/5.jpg,img/turbo/6.jpg,img/turbo/7.jpg,img/turbo/8.jpg,img/turbo/9.jpg" onclick="openLightbox(this)">
+      <div class="gallery-item sold has-multi" data-gallery="img/turbo/1.jpg,img/turbo/2.jpg,img/turbo/3.jpg,img/turbo/4.jpg,img/turbo/5.jpg,img/turbo/6.jpg,img/turbo/7.jpg,img/turbo/8.jpg,img/turbo/9.jpg,img/turbo/wip_1.jpg" onclick="openLightbox(this)">
         <img src="img/turbo/1.jpg" alt="Turbo" loading="lazy" />
         <div class="gallery-overlay">
           <h3>Turbo</h3>
@@ -1064,37 +1033,55 @@
         <p class="section-label">Studio</p>
         <h2 class="section-title">Works in Progress</h2>
       </div>
-      <span class="gallery-count">3 in progress</span>
+      <span class="gallery-count">7 in studio</span>
     </div>
-    <div class="wip-grid">
+    <div class="gallery-grid">
 
-      <div class="wip-item reveal" data-gallery="img/wip/viridis-ii/wip_1.jpg,img/wip/viridis-ii/wip_2.jpg">
-        <img src="img/wip/viridis-ii/wip_1.jpg" alt="Viridis II WIP" onclick="openWipLightbox(this)" />
-        <div class="wip-info">
-          <h3>Viridis II</h3>
-          <div class="wip-meta">Viridis palette · 2026</div>
-          <span class="wip-status">In progress</span>
-          <p class="wip-caption">A new exploration of the Viridis colormap, building on lessons from the first piece.</p>
+      <div class="gallery-item wip has-multi" data-gallery="img/wip/viridis-gone-wild/wip_1.jpg,img/wip/viridis-gone-wild/wip_2.jpg,img/wip/viridis-gone-wild/wip_3.jpg,img/wip/viridis-gone-wild/wip_4.jpg,img/wip/viridis-gone-wild/wip_5.jpg,img/wip/viridis-gone-wild/wip_6.jpg,img/wip/viridis-gone-wild/wip_7.jpg,img/wip/viridis-gone-wild/wip_8.jpg,img/wip/viridis-gone-wild/wip_9.jpg,img/wip/viridis-gone-wild/wip_10.jpg,img/wip/viridis-gone-wild/wip_11.jpg,img/wip/viridis-gone-wild/wip_12.jpg,img/wip/viridis-gone-wild/wip_13.jpg,img/wip/viridis-gone-wild/wip_14.jpg,img/wip/viridis-gone-wild/wip_15.jpg,img/wip/viridis-gone-wild/wip_16.jpg,img/wip/viridis-gone-wild/wip_17.jpg,img/wip/viridis-gone-wild/wip_18.jpg,img/wip/viridis-gone-wild/wip_19.jpg,img/wip/viridis-gone-wild/wip_20.jpg,img/wip/viridis-gone-wild/wip_21.jpg,img/wip/viridis-gone-wild/wip_22.jpg,img/wip/viridis-gone-wild/wip_23.jpg,img/wip/viridis-gone-wild/wip_24.jpg,img/wip/viridis-gone-wild/wip_25.jpg,img/wip/viridis-gone-wild/wip_26.jpg,img/wip/viridis-gone-wild/wip_27.jpg,img/wip/viridis-gone-wild/wip_28.jpg,img/wip/viridis-gone-wild/wip_29.jpg,img/wip/viridis-gone-wild/wip_30.jpg,img/wip/viridis-gone-wild/wip_31.jpg,img/wip/viridis-gone-wild/wip_32.jpg,img/wip/viridis-gone-wild/wip_33.jpg,img/wip/viridis-gone-wild/wip_34.jpg,img/wip/viridis-gone-wild/wip_35.jpg,img/wip/viridis-gone-wild/wip_36.jpg,img/wip/viridis-gone-wild/wip_37.jpg,img/wip/viridis-gone-wild/wip_38.jpg,img/wip/viridis-gone-wild/wip_39.jpg" onclick="openLightbox(this)">
+        <img src="img/wip/viridis-gone-wild/wip_39.jpg" alt="Viridis Reworked in Three Parts — History" loading="lazy" />
+        <div class="gallery-overlay">
+          <h3>Viridis Reworked — History</h3>
+          <div class="details">39 process shots · originally 48 × 96 in</div>
         </div>
       </div>
 
-      <div class="wip-item reveal" data-gallery="img/wip/viridis-gone-wild/wip_1.jpg,img/wip/viridis-gone-wild/wip_2.jpg,img/wip/viridis-gone-wild/wip_3.jpg,img/wip/viridis-gone-wild/wip_4.jpg,img/wip/viridis-gone-wild/wip_5.jpg,img/wip/viridis-gone-wild/wip_6.jpg,img/wip/viridis-gone-wild/wip_7.jpg,img/wip/viridis-gone-wild/wip_8.jpg,img/wip/viridis-gone-wild/wip_9.jpg,img/wip/viridis-gone-wild/wip_10.jpg,img/wip/viridis-gone-wild/wip_11.jpg,img/wip/viridis-gone-wild/wip_12.jpg,img/wip/viridis-gone-wild/wip_13.jpg,img/wip/viridis-gone-wild/wip_14.jpg,img/wip/viridis-gone-wild/wip_15.jpg,img/wip/viridis-gone-wild/wip_16.jpg,img/wip/viridis-gone-wild/wip_17.jpg,img/wip/viridis-gone-wild/wip_18.jpg,img/wip/viridis-gone-wild/wip_19.jpg,img/wip/viridis-gone-wild/wip_20.jpg,img/wip/viridis-gone-wild/wip_21.jpg,img/wip/viridis-gone-wild/wip_22.jpg,img/wip/viridis-gone-wild/wip_23.jpg,img/wip/viridis-gone-wild/wip_24.jpg,img/wip/viridis-gone-wild/wip_25.jpg,img/wip/viridis-gone-wild/wip_26.jpg,img/wip/viridis-gone-wild/wip_27.jpg,img/wip/viridis-gone-wild/wip_28.jpg,img/wip/viridis-gone-wild/wip_29.jpg,img/wip/viridis-gone-wild/wip_30.jpg,img/wip/viridis-gone-wild/wip_31.jpg,img/wip/viridis-gone-wild/wip_32.jpg,img/wip/viridis-gone-wild/wip_33.jpg,img/wip/viridis-gone-wild/wip_34.jpg,img/wip/viridis-gone-wild/wip_35.jpg,img/wip/viridis-gone-wild/wip_36.jpg,img/wip/viridis-gone-wild/wip_37.jpg,img/wip/viridis-gone-wild/wip_38.jpg,img/wip/viridis-gone-wild/wip_39.jpg">
-        <img src="img/wip/viridis-gone-wild/wip_39.jpg" alt="Viridis Gone Wild WIP" onclick="openWipLightbox(this)" />
-        <div class="wip-info">
-          <h3>Viridis Gone Wild</h3>
-          <div class="wip-meta">Extended Viridis palette · 2026</div>
-          <span class="wip-status">In progress</span>
-          <p class="wip-caption">Pushing the Viridis palette beyond its usual boundaries — more saturated, more expressive.</p>
+      <div class="gallery-item wip" data-gallery="img/viridis-reworked-left/1.jpg" onclick="openLightbox(this)">
+        <img src="img/viridis-reworked-left/1.jpg" alt="Viridis Reworked — Left" loading="lazy" />
+        <div class="gallery-overlay">
+          <h3>Viridis Reworked — Left</h3>
+          <div class="details">Oil on wood · 32 × 48 in</div>
         </div>
       </div>
 
-      <div class="wip-item reveal" data-gallery="img/wip/big-mac/wip_1.jpg,img/wip/big-mac/wip_2.jpg">
-        <img src="img/wip/big-mac/wip_2.jpg" alt="Big Mac WIP" onclick="openWipLightbox(this)" />
-        <div class="wip-info">
+      <div class="gallery-item wip" data-gallery="img/viridis-reworked-center/1.jpg" onclick="openLightbox(this)">
+        <img src="img/viridis-reworked-center/1.jpg" alt="Viridis Reworked — Center" loading="lazy" />
+        <div class="gallery-overlay">
+          <h3>Viridis Reworked — Center</h3>
+          <div class="details">Oil on wood · 32 × 48 in</div>
+        </div>
+      </div>
+
+      <div class="gallery-item wip" data-gallery="img/viridis-reworked-right/1.jpg" onclick="openLightbox(this)">
+        <img src="img/viridis-reworked-right/1.jpg" alt="Viridis Reworked — Right" loading="lazy" />
+        <div class="gallery-overlay">
+          <h3>Viridis Reworked — Right</h3>
+          <div class="details">Oil on wood · 32 × 48 in</div>
+        </div>
+      </div>
+
+      <div class="gallery-item wip has-multi" data-gallery="img/wip/big-mac/wip_1.jpg,img/wip/big-mac/wip_2.jpg" onclick="openLightbox(this)">
+        <img src="img/wip/big-mac/wip_1.jpg" alt="Big Mac" loading="lazy" />
+        <div class="gallery-overlay">
           <h3>Big Mac</h3>
-          <div class="wip-meta">2026</div>
-          <span class="wip-status">In progress</span>
-          <p class="wip-caption">Early stages of a new large-scale piece.</p>
+          <div class="details">2026</div>
+        </div>
+      </div>
+
+      <div class="gallery-item wip has-multi" data-gallery="img/wip/viridis-ii/wip_1.jpg,img/wip/viridis-ii/wip_2.jpg" onclick="openLightbox(this)">
+        <img src="img/wip/viridis-ii/wip_1.jpg" alt="Viridis II" loading="lazy" />
+        <div class="gallery-overlay">
+          <h3>Viridis II</h3>
+          <div class="details">Viridis palette · 2026</div>
         </div>
       </div>
 
@@ -1311,42 +1298,6 @@
       document.body.style.overflow = 'hidden';
     }
 
-    function openWipLightbox(imgEl) {
-      const lightbox = document.getElementById('lightbox');
-      const wipItem = imgEl.closest('.wip-item');
-      const title = wipItem.querySelector('h3').textContent;
-      const meta = wipItem.querySelector('.wip-meta').textContent;
-      const gallerySrc = wipItem.dataset.gallery;
-
-      document.getElementById('lightbox-img').src = imgEl.src;
-      document.getElementById('lightbox-title').textContent = title + ' (WIP)';
-      document.getElementById('lightbox-details').textContent = meta;
-      updateDownloadLink(imgEl.src);
-      resetZoom();
-
-      if (gallerySrc) {
-        galleryImages = gallerySrc.split(',');
-        galleryIndex = galleryImages.indexOf(imgEl.src);
-        if (galleryIndex === -1) galleryIndex = 0;
-        const isMulti = galleryImages.length > 1;
-        lightbox.classList.toggle('has-gallery', isMulti);
-        if (isMulti) {
-          buildThumbs();
-          updateCounter();
-        } else {
-          document.getElementById('lightbox-thumbs').innerHTML = '';
-        }
-      } else {
-        galleryImages = [];
-        galleryIndex = 0;
-        lightbox.classList.remove('has-gallery');
-        document.getElementById('lightbox-thumbs').innerHTML = '';
-      }
-
-      lightbox.classList.add('active');
-      document.body.style.overflow = 'hidden';
-    }
-
     function updateDownloadLink(src) {
       const downloadBtn = document.getElementById('download-btn');
       // Link to full-res version for downloads
@@ -1366,21 +1317,42 @@
       return src;
     }
 
+    // Drag-to-pan state
+    let panState = { dragging: false, startX: 0, startY: 0, imgX: 0, imgY: 0 };
+
+    function centerZoomedImage() {
+      const img = document.getElementById('lightbox-img');
+      const main = document.getElementById('lightbox-main');
+      const mw = main.clientWidth, mh = main.clientHeight;
+      const iw = img.naturalWidth, ih = img.naturalHeight;
+      panState.imgX = Math.min(0, (mw - iw) / 2);
+      panState.imgY = Math.min(0, (mh - ih) / 2);
+      img.style.left = panState.imgX + 'px';
+      img.style.top = panState.imgY + 'px';
+    }
+
     function toggleZoom() {
       const img = document.getElementById('lightbox-img');
       const main = document.getElementById('lightbox-main');
       isZoomed = !isZoomed;
 
       if (isZoomed) {
-        // Load full-res version for zoom
         const fullSrc = getFullResSrc(img.src.replace(location.origin + '/', '').replace(/^\//, ''));
-        const fullImg = new Image();
-        fullImg.onload = () => { img.src = fullSrc; };
-        fullImg.onerror = () => {}; // Keep current src if full-res doesn't exist
-        fullImg.src = fullSrc;
         img.classList.add('zoomed');
         main.classList.add('zoom-active');
         document.getElementById('zoom-text').textContent = 'Fit';
+        // Load full-res, then center
+        const fullImg = new Image();
+        fullImg.onload = () => {
+          img.src = fullSrc;
+          requestAnimationFrame(centerZoomedImage);
+        };
+        fullImg.onerror = () => {
+          requestAnimationFrame(centerZoomedImage);
+        };
+        fullImg.src = fullSrc;
+        // Center with current src first
+        requestAnimationFrame(centerZoomedImage);
       } else {
         resetZoom();
       }
@@ -1389,24 +1361,66 @@
     function resetZoom() {
       const img = document.getElementById('lightbox-img');
       const main = document.getElementById('lightbox-main');
-      // Restore gallery-size image if we swapped to full-res
       if (galleryImages.length && galleryImages[galleryIndex]) {
         img.src = galleryImages[galleryIndex];
       }
       img.classList.remove('zoomed');
       main.classList.remove('zoom-active');
+      img.style.left = '';
+      img.style.top = '';
       document.getElementById('zoom-text').textContent = 'Zoom';
       isZoomed = false;
+      panState.dragging = false;
     }
 
     function handleImageClick(e) {
       e.stopPropagation();
+      // If we were dragging, don't toggle zoom
+      if (panState.wasDragging) {
+        panState.wasDragging = false;
+        return;
+      }
       if (isZoomed) {
         resetZoom();
       } else {
         toggleZoom();
       }
     }
+
+    // Drag-to-pan handlers
+    document.getElementById('lightbox-main').addEventListener('mousedown', (e) => {
+      if (!isZoomed) return;
+      e.preventDefault();
+      panState.dragging = true;
+      panState.wasDragging = false;
+      panState.startX = e.clientX - panState.imgX;
+      panState.startY = e.clientY - panState.imgY;
+    });
+
+    document.addEventListener('mousemove', (e) => {
+      if (!panState.dragging) return;
+      panState.wasDragging = true;
+      const img = document.getElementById('lightbox-img');
+      const main = document.getElementById('lightbox-main');
+      const mw = main.clientWidth, mh = main.clientHeight;
+      const iw = img.naturalWidth, ih = img.naturalHeight;
+      let newX = e.clientX - panState.startX;
+      let newY = e.clientY - panState.startY;
+      // Clamp so image edges don't leave the viewport
+      newX = Math.max(Math.min(newX, 0), mw - iw);
+      newY = Math.max(Math.min(newY, 0), mh - ih);
+      // If image is smaller than container, center it
+      if (iw < mw) newX = (mw - iw) / 2;
+      if (ih < mh) newY = (mh - ih) / 2;
+      panState.imgX = newX;
+      panState.imgY = newY;
+      img.style.left = newX + 'px';
+      img.style.top = newY + 'px';
+    });
+
+    document.addEventListener('mouseup', () => {
+      panState.dragging = false;
+    });
 
     function buildThumbs() {
       const container = document.getElementById('lightbox-thumbs');
