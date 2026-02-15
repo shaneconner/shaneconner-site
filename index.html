@@ -353,7 +353,7 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 5rem;
-      align-items: start;
+      align-items: center;
     }
 
     .about-text p {
@@ -766,7 +766,14 @@
     }
 
     @media (max-width: 768px) {
-      .lightbox-nav { width: 36px; height: 36px; font-size: 1rem; }
+      .lightbox-nav {
+        width: 36px;
+        height: 36px;
+        font-size: 1rem;
+        top: auto;
+        bottom: 20%;
+        transform: none;
+      }
       .lightbox-prev { left: 0.5rem; }
       .lightbox-next { right: 0.5rem; }
       .lightbox-main img { max-height: 60vh; }
@@ -855,9 +862,9 @@
     <div class="gallery-header reveal">
       <div>
         <p class="section-label">Selected Works</p>
-        <h2 class="section-title">Available Paintings</h2>
+        <h2 class="section-title">Oil Paintings</h2>
       </div>
-      <span class="gallery-count">16 available</span>
+      <span class="gallery-count" id="gallery-count"></span>
     </div>
     <div class="gallery-grid">
 
@@ -1057,31 +1064,6 @@
         </div>
       </div>
 
-      <div class="gallery-item sold has-multi" data-gallery="img/turbo/1.jpg,img/turbo/2.jpg,img/turbo/3.jpg,img/turbo/4.jpg,img/turbo/5.jpg,img/turbo/6.jpg,img/turbo/7.jpg,img/turbo/8.jpg,img/turbo/9.jpg,img/turbo/wip_1.jpg" onclick="openLightbox(this)">
-        <img src="img/turbo/1.jpg" alt="Turbo" loading="lazy" />
-        <div class="gallery-overlay">
-          <h3>Turbo</h3>
-          <div class="details">Oil on wood · 36 × 48 in</div>
-          <div class="price-row">
-            <span class="price">$900</span>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- WORKS IN PROGRESS -->
-  <section id="wip">
-    <div class="gallery-header reveal">
-      <div>
-        <p class="section-label">Studio</p>
-        <h2 class="section-title">Works in Progress</h2>
-      </div>
-      <span class="gallery-count">3 in studio</span>
-    </div>
-    <div class="gallery-grid">
-
       <div class="gallery-item wip has-multi" data-gallery="img/wip/big-mac/wip_1.jpg,img/wip/big-mac/wip_2.jpg" onclick="openLightbox(this)">
         <img src="img/wip/big-mac/wip_1.jpg" alt="Big Mac" loading="lazy" />
         <div class="gallery-overlay">
@@ -1098,10 +1080,21 @@
         </div>
       </div>
 
+      <div class="gallery-item sold has-multi" data-gallery="img/turbo/1.jpg,img/turbo/2.jpg,img/turbo/3.jpg,img/turbo/4.jpg,img/turbo/5.jpg,img/turbo/6.jpg,img/turbo/7.jpg,img/turbo/8.jpg,img/turbo/9.jpg,img/turbo/wip_1.jpg" onclick="openLightbox(this)">
+        <img src="img/turbo/1.jpg" alt="Turbo" loading="lazy" />
+        <div class="gallery-overlay">
+          <h3>Turbo</h3>
+          <div class="details">Oil on wood · 36 × 48 in</div>
+          <div class="price-row">
+            <span class="price">$900</span>
+          </div>
+        </div>
+      </div>
+
     </div>
   </section>
 
-  <!-- ABOUT -->
+<!-- ABOUT -->
   <section id="about">
     <div class="about-grid">
       <div class="about-text reveal">
@@ -1210,7 +1203,7 @@
     <div class="reveal">
       <p class="section-label">Get in Touch</p>
       <h2 class="section-title">Interested in a piece?</h2>
-      <p>Available for sales, commissions, and local pickup in the Milwaukee / Ozaukee County area. Shipping available for all works.</p>
+      <p>Available for sale, commissions, and local pickup in the Milwaukee / Ozaukee County area. Shipping available for all works.</p>
       <a href="mailto:shane@shaneconner.com" class="contact-email">shane@shaneconner.com</a>
       <p class="contact-note">Free local delivery within 30 miles of Grafton, WI</p>
       <div class="social-links">
@@ -1229,18 +1222,10 @@
   <!-- LIGHTBOX -->
   <div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
     <button class="lightbox-close" onclick="closeLightbox(event)">Close &#10005;</button>
-    <div class="lightbox-actions">
-      <button class="lightbox-action" id="zoom-btn" onclick="event.stopPropagation(); toggleZoom()">
-        <span id="zoom-icon">&#x1F50D;</span> <span id="zoom-text">Zoom</span>
-      </button>
-      <a class="lightbox-action" id="download-btn" href="" download onclick="event.stopPropagation()">
-        &#x2913; Download
-      </a>
-    </div>
     <button class="lightbox-nav lightbox-prev" onclick="event.stopPropagation(); navigateLightbox(-1)">&#8592;</button>
     <button class="lightbox-nav lightbox-next" onclick="event.stopPropagation(); navigateLightbox(1)">&#8594;</button>
     <div class="lightbox-main" id="lightbox-main" onclick="closeLightbox(event)">
-      <img id="lightbox-img" src="" alt="" onclick="handleImageClick(event)" />
+      <img id="lightbox-img" src="" alt="" />
     </div>
     <div class="lightbox-info">
       <h3 id="lightbox-title"></h3>
@@ -1271,6 +1256,10 @@
       if (imgs.length > 1) item.classList.add('has-multi');
     });
 
+    // Auto-calculate gallery count (excluding sold and wip)
+    const availableCount = document.querySelectorAll('#works .gallery-item:not(.sold):not(.wip)').length;
+    document.getElementById('gallery-count').textContent = availableCount + ' paintings available';
+
     // Lightbox with gallery support
     let galleryImages = [];
     let galleryIndex = 0;
@@ -1286,8 +1275,6 @@
       document.getElementById('lightbox-img').src = img.src;
       document.getElementById('lightbox-title').textContent = title;
       document.getElementById('lightbox-details').textContent = details;
-      updateDownloadLink(img.src);
-      resetZoom();
 
       if (gallerySrc) {
         galleryImages = gallerySrc.split(',');
@@ -1311,131 +1298,7 @@
       document.body.style.overflow = 'hidden';
     }
 
-    function updateDownloadLink(src) {
-      const downloadBtn = document.getElementById('download-btn');
-      // Link to full-res version for downloads
-      const fullSrc = getFullResSrc(src);
-      downloadBtn.href = fullSrc;
-      const filename = src.split('/').pop();
-      downloadBtn.download = filename;
-    }
-
-    function getFullResSrc(src) {
-      // Convert img/painting/file.jpg → img/full/painting/file.jpg
-      // and img/wip/name/file.jpg → img/full/wip_name/file.jpg
-      const match = src.match(/^img\/wip\/([^/]+)\/(.+)$/);
-      if (match) return 'img/full/wip_' + match[1] + '/' + match[2];
-      const match2 = src.match(/^img\/([^/]+)\/(.+)$/);
-      if (match2 && match2[1] !== 'full') return 'img/full/' + match2[1] + '/' + match2[2];
-      return src;
-    }
-
-    // Drag-to-pan state
-    let panState = { dragging: false, startX: 0, startY: 0, imgX: 0, imgY: 0 };
-
-    function centerZoomedImage() {
-      const img = document.getElementById('lightbox-img');
-      const main = document.getElementById('lightbox-main');
-      const mw = main.clientWidth, mh = main.clientHeight;
-      const iw = img.naturalWidth, ih = img.naturalHeight;
-      panState.imgX = Math.min(0, (mw - iw) / 2);
-      panState.imgY = Math.min(0, (mh - ih) / 2);
-      img.style.left = panState.imgX + 'px';
-      img.style.top = panState.imgY + 'px';
-    }
-
-    function toggleZoom() {
-      const img = document.getElementById('lightbox-img');
-      const main = document.getElementById('lightbox-main');
-      isZoomed = !isZoomed;
-
-      if (isZoomed) {
-        const fullSrc = getFullResSrc(img.src.replace(location.origin + '/', '').replace(/^\//, ''));
-        img.classList.add('zoomed');
-        main.classList.add('zoom-active');
-        document.getElementById('zoom-text').textContent = 'Fit';
-        // Load full-res, then center
-        const fullImg = new Image();
-        fullImg.onload = () => {
-          img.src = fullSrc;
-          requestAnimationFrame(centerZoomedImage);
-        };
-        fullImg.onerror = () => {
-          requestAnimationFrame(centerZoomedImage);
-        };
-        fullImg.src = fullSrc;
-        // Center with current src first
-        requestAnimationFrame(centerZoomedImage);
-      } else {
-        resetZoom();
-      }
-    }
-
-    function resetZoom() {
-      const img = document.getElementById('lightbox-img');
-      const main = document.getElementById('lightbox-main');
-      if (galleryImages.length && galleryImages[galleryIndex]) {
-        img.src = galleryImages[galleryIndex];
-      }
-      img.classList.remove('zoomed');
-      main.classList.remove('zoom-active');
-      img.style.left = '';
-      img.style.top = '';
-      document.getElementById('zoom-text').textContent = 'Zoom';
-      isZoomed = false;
-      panState.dragging = false;
-    }
-
-    function handleImageClick(e) {
-      e.stopPropagation();
-      // If we were dragging, don't toggle zoom
-      if (panState.wasDragging) {
-        panState.wasDragging = false;
-        return;
-      }
-      if (isZoomed) {
-        resetZoom();
-      } else {
-        toggleZoom();
-      }
-    }
-
-    // Drag-to-pan handlers
-    document.getElementById('lightbox-main').addEventListener('mousedown', (e) => {
-      if (!isZoomed) return;
-      e.preventDefault();
-      panState.dragging = true;
-      panState.wasDragging = false;
-      panState.startX = e.clientX - panState.imgX;
-      panState.startY = e.clientY - panState.imgY;
-    });
-
-    document.addEventListener('mousemove', (e) => {
-      if (!panState.dragging) return;
-      panState.wasDragging = true;
-      const img = document.getElementById('lightbox-img');
-      const main = document.getElementById('lightbox-main');
-      const mw = main.clientWidth, mh = main.clientHeight;
-      const iw = img.naturalWidth, ih = img.naturalHeight;
-      let newX = e.clientX - panState.startX;
-      let newY = e.clientY - panState.startY;
-      // Clamp so image edges don't leave the viewport
-      newX = Math.max(Math.min(newX, 0), mw - iw);
-      newY = Math.max(Math.min(newY, 0), mh - ih);
-      // If image is smaller than container, center it
-      if (iw < mw) newX = (mw - iw) / 2;
-      if (ih < mh) newY = (mh - ih) / 2;
-      panState.imgX = newX;
-      panState.imgY = newY;
-      img.style.left = newX + 'px';
-      img.style.top = newY + 'px';
-    });
-
-    document.addEventListener('mouseup', () => {
-      panState.dragging = false;
-    });
-
-    function buildThumbs() {
+function buildThumbs() {
       const container = document.getElementById('lightbox-thumbs');
       container.innerHTML = '';
       galleryImages.forEach((src, i) => {
@@ -1456,13 +1319,6 @@
       galleryIndex = i;
       const newSrc = galleryImages[i];
       document.getElementById('lightbox-img').src = newSrc;
-      updateDownloadLink(newSrc);
-      isZoomed = false;
-      const img = document.getElementById('lightbox-img');
-      const main = document.getElementById('lightbox-main');
-      img.classList.remove('zoomed');
-      main.classList.remove('zoom-active');
-      document.getElementById('zoom-text').textContent = 'Zoom';
       document.querySelectorAll('.lightbox-thumb').forEach((t, idx) => {
         t.classList.toggle('active', idx === i);
       });
@@ -1487,10 +1343,9 @@
 
     function closeLightbox(e) {
       const t = e.target;
-      if (t.id === 'lightbox' || t.classList.contains('lightbox-close') || (t.id === 'lightbox-main' && !isZoomed)) {
+      if (t.id === 'lightbox' || t.classList.contains('lightbox-close') || t.id === 'lightbox-main') {
         document.getElementById('lightbox').classList.remove('active', 'has-gallery');
         document.body.style.overflow = '';
-        resetZoom();
       }
     }
 
@@ -1498,20 +1353,46 @@
       const lightbox = document.getElementById('lightbox');
       if (!lightbox.classList.contains('active')) return;
       if (e.key === 'Escape') {
-        if (isZoomed) {
-          resetZoom();
-        } else {
-          lightbox.classList.remove('active', 'has-gallery');
-          document.body.style.overflow = '';
-        }
+        lightbox.classList.remove('active', 'has-gallery');
+        document.body.style.overflow = '';
       } else if (e.key === 'ArrowLeft') {
         navigateLightbox(-1);
       } else if (e.key === 'ArrowRight') {
         navigateLightbox(1);
-      } else if (e.key === 'z' || e.key === 'Z') {
-        toggleZoom();
       }
     });
+
+    // Touch/swipe navigation
+    let touchState = { startX: 0, startY: 0, endX: 0, endY: 0 };
+    const lightboxMain = document.getElementById('lightbox-main');
+
+    lightboxMain.addEventListener('touchstart', (e) => {
+      touchState.startX = e.changedTouches[0].screenX;
+      touchState.startY = e.changedTouches[0].screenY;
+    }, { passive: true });
+
+    lightboxMain.addEventListener('touchend', (e) => {
+      touchState.endX = e.changedTouches[0].screenX;
+      touchState.endY = e.changedTouches[0].screenY;
+      handleSwipe();
+    }, { passive: true });
+
+    function handleSwipe() {
+      const deltaX = touchState.endX - touchState.startX;
+      const deltaY = touchState.endY - touchState.startY;
+      const minSwipeDistance = 50;
+
+      // Only trigger if horizontal swipe is dominant
+      if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > minSwipeDistance) {
+        if (deltaX > 0) {
+          // Swipe right = previous
+          navigateLightbox(-1);
+        } else {
+          // Swipe left = next
+          navigateLightbox(1);
+        }
+      }
+    }
   </script>
 
 </body>
