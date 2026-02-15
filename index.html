@@ -307,6 +307,8 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      flex-wrap: wrap;
+      gap: 0.4rem;
       margin-top: 0.75rem;
     }
     .gallery-overlay .price {
@@ -321,17 +323,33 @@
       opacity: 0.8;
       letter-spacing: 0.02em;
     }
+    .gallery-overlay .btn-group {
+      display: flex;
+      gap: 0.4rem;
+    }
+    .gallery-overlay .buy-btn,
     .gallery-overlay .inquire-btn {
       display: inline-block;
-      padding: 0.4rem 1rem;
-      background: var(--green-dim);
-      color: var(--green-bright);
+      padding: 0.4rem 0.8rem;
       text-decoration: none;
       font-size: 0.65rem;
       letter-spacing: 0.14em;
       text-transform: uppercase;
       font-family: var(--sans);
       transition: all 0.3s ease;
+    }
+    .gallery-overlay .buy-btn {
+      background: var(--green);
+      color: var(--cream);
+      border: 1px solid var(--green);
+    }
+    .gallery-overlay .buy-btn:hover {
+      background: var(--green-bright);
+      border-color: var(--green-bright);
+    }
+    .gallery-overlay .inquire-btn {
+      background: var(--green-dim);
+      color: var(--green-bright);
       border: 1px solid var(--green);
     }
     .gallery-overlay .inquire-btn:hover {
@@ -680,7 +698,8 @@
       z-index: 5;
     }
     .gallery-item.sold { overflow: hidden; }
-    .gallery-item.sold .inquire-btn { display: none; }
+    .gallery-item.sold .inquire-btn,
+    .gallery-item.sold .buy-btn { display: none; }
     .gallery-item.sold .price {
       text-decoration: line-through;
       opacity: 0.5;
@@ -717,7 +736,8 @@
       box-shadow: 0 2px 8px rgba(0,0,0,0.4);
       z-index: 5;
     }
-    .gallery-item.wip .inquire-btn { display: none; }
+    .gallery-item.wip .inquire-btn,
+    .gallery-item.wip .buy-btn { display: none; }
 
 
 
@@ -875,7 +895,10 @@
           <div class="details">Oil on canvas · 48 × 60 in</div>
           <div class="price-row">
             <span class="price">$2,000</span>
-            <a href="mailto:shane@shaneconner.com?subject=Inquiry%3A%20Hiraeth&body=Hi%20Shane%2C%0A%0AI'm%20interested%20in%20%22Hiraeth%22%20(48x60%2C%20oil%20on%20canvas).%20Could%20you%20share%20more%20details%3F" class="inquire-btn" onclick="event.stopPropagation()">Inquire</a>
+            <div class="btn-group">
+              <a href="https://buy.stripe.com/14AeV6eMMg756Qf9cJ4Rq00" class="buy-btn" onclick="event.stopPropagation()">Buy Now</a>
+              <a href="#" class="inquire-btn" onclick="return inquire(this)">Inquire</a>
+            </div>
           </div>
         </div>
       </div>
@@ -887,7 +910,10 @@
           <div class="details">Oil on canvas · 48 × 60 in</div>
           <div class="price-row">
             <span class="price">$1,500</span>
-            <a href="mailto:shane@shaneconner.com?subject=Inquiry%3A%20Glacial%20Drift&body=Hi%20Shane%2C%0A%0AI'm%20interested%20in%20%22Glacial%20Drift%22%20(48x60%2C%20oil%20on%20canvas).%20Could%20you%20share%20more%20details%3F" class="inquire-btn" onclick="event.stopPropagation()">Inquire</a>
+            <div class="btn-group">
+              <a href="https://buy.stripe.com/6oU6oAdII4on1vV9cJ4Rq01" class="buy-btn" onclick="event.stopPropagation()">Buy Now</a>
+              <a href="#" class="inquire-btn" onclick="return inquire(this)">Inquire</a>
+            </div>
           </div>
         </div>
       </div>
@@ -899,7 +925,10 @@
           <div class="details">Oil on canvas · 36 × 48 in</div>
           <div class="price-row">
             <span class="price">$900</span>
-            <a href="mailto:shane@shaneconner.com?subject=Inquiry%3A%20Turbo%20Flare&body=Hi%20Shane%2C%0A%0AI'm%20interested%20in%20%22Turbo%20Flare%22%20(36x48%2C%20oil%20on%20canvas).%20Could%20you%20share%20more%20details%3F" class="inquire-btn" onclick="event.stopPropagation()">Inquire</a>
+            <div class="btn-group">
+              <a href="https://buy.stripe.com/fZucMYdII6wv3E39cJ4Rq02" class="buy-btn" onclick="event.stopPropagation()">Buy Now</a>
+              <a href="#" class="inquire-btn" onclick="return inquire(this)">Inquire</a>
+            </div>
           </div>
         </div>
       </div>
@@ -911,7 +940,10 @@
           <div class="details">Oil on canvas · 36 × 48 in</div>
           <div class="price-row">
             <span class="price">$900</span>
-            <a href="mailto:shane@shaneconner.com?subject=Inquiry%3A%20Glasgow&body=Hi%20Shane%2C%0A%0AI'm%20interested%20in%20%22Glasgow%22%20(36x48%2C%20oil%20on%20canvas).%20Could%20you%20share%20more%20details%3F" class="inquire-btn" onclick="event.stopPropagation()">Inquire</a>
+            <div class="btn-group">
+              <a href="https://buy.stripe.com/14AfZa6gg6wvgqPbkR4Rq03" class="buy-btn" onclick="event.stopPropagation()">Buy Now</a>
+              <a href="#" class="inquire-btn" onclick="return inquire(this)">Inquire</a>
+            </div>
           </div>
         </div>
       </div>
@@ -920,10 +952,13 @@
         <img src="img/fathom/1.jpg" alt="Fathom" loading="lazy" />
         <div class="gallery-overlay">
           <h3>Fathom</h3>
-          <div class="details">Oil on canvas · 30 × 40 in</div>
+          <div class="details">Oil on canvas · 24 × 36 in</div>
           <div class="price-row">
             <span class="price">$1,600</span>
-            <a href="mailto:shane@shaneconner.com?subject=Inquiry%3A%20Fathom&body=Hi%20Shane%2C%0A%0AI'm%20interested%20in%20%22Fathom%22%20(30x40%2C%20oil%20on%20canvas).%20Could%20you%20share%20more%20details%3F" class="inquire-btn" onclick="event.stopPropagation()">Inquire</a>
+            <div class="btn-group">
+              <a href="https://buy.stripe.com/8x2aEQeMM9IH3E388F4Rq04" class="buy-btn" onclick="event.stopPropagation()">Buy Now</a>
+              <a href="#" class="inquire-btn" onclick="return inquire(this)">Inquire</a>
+            </div>
           </div>
         </div>
       </div>
@@ -935,7 +970,10 @@
           <div class="details">Oil on wood panel · 48 × 60 × ¾ in</div>
           <div class="price-row">
             <span class="price">$1,400</span>
-            <a href="mailto:shane@shaneconner.com?subject=Inquiry%3A%20Viridis&body=Hi%20Shane%2C%0A%0AI'm%20interested%20in%20%22Viridis%22%20(48x60%2C%20oil%20on%20wood%20panel).%20Could%20you%20share%20more%20details%3F" class="inquire-btn" onclick="event.stopPropagation()">Inquire</a>
+            <div class="btn-group">
+              <a href="https://buy.stripe.com/3cIbIUgUU7Az1vV74B4Rq05" class="buy-btn" onclick="event.stopPropagation()">Buy Now</a>
+              <a href="#" class="inquire-btn" onclick="return inquire(this)">Inquire</a>
+            </div>
           </div>
         </div>
       </div>
@@ -948,7 +986,10 @@
           <div class="details">Oil on wood panel · 48 × 60 in</div>
           <div class="price-row">
             <span class="price">$1,400</span>
-            <a href="mailto:shane@shaneconner.com?subject=Inquiry%3A%20Forest%20Mint&body=Hi%20Shane%2C%0A%0AI'm%20interested%20in%20%22Forest%20Mint%22%20(48x60%2C%20oil%20on%20wood%20panel).%20Could%20you%20share%20more%20details%3F" class="inquire-btn" onclick="event.stopPropagation()">Inquire</a>
+            <div class="btn-group">
+              <a href="https://buy.stripe.com/aFa00c4889IHa2r2Ol4Rq06" class="buy-btn" onclick="event.stopPropagation()">Buy Now</a>
+              <a href="#" class="inquire-btn" onclick="return inquire(this)">Inquire</a>
+            </div>
           </div>
         </div>
       </div>
@@ -960,7 +1001,10 @@
           <div class="details">Oil on canvas · 36 × 48 in</div>
           <div class="price-row">
             <span class="price">$700</span>
-            <a href="mailto:shane@shaneconner.com?subject=Inquiry%3A%20Batlow&body=Hi%20Shane%2C%0A%0AI'm%20interested%20in%20%22Batlow%22%20(36x48%2C%20oil%20on%20canvas).%20Could%20you%20share%20more%20details%3F" class="inquire-btn" onclick="event.stopPropagation()">Inquire</a>
+            <div class="btn-group">
+              <a href="https://buy.stripe.com/bJe3co7kkf31a2r1Kh4Rq07" class="buy-btn" onclick="event.stopPropagation()">Buy Now</a>
+              <a href="#" class="inquire-btn" onclick="return inquire(this)">Inquire</a>
+            </div>
           </div>
         </div>
       </div>
@@ -972,7 +1016,10 @@
           <div class="details">Oil on canvas · 36 × 36 in</div>
           <div class="price-row">
             <span class="price">$700</span>
-            <a href="mailto:shane@shaneconner.com?subject=Inquiry%3A%20Hawaii&body=Hi%20Shane%2C%0A%0AI'm%20interested%20in%20%22Hawaii%22%20(36x36%2C%20oil%20on%20canvas).%20Could%20you%20share%20more%20details%3F" class="inquire-btn" onclick="event.stopPropagation()">Inquire</a>
+            <div class="btn-group">
+              <a href="https://buy.stripe.com/8x2fZa2007Az1vV60x4Rq08" class="buy-btn" onclick="event.stopPropagation()">Buy Now</a>
+              <a href="#" class="inquire-btn" onclick="return inquire(this)">Inquire</a>
+            </div>
           </div>
         </div>
       </div>
@@ -981,10 +1028,13 @@
         <img src="img/tokyo/1.jpg" alt="Virdi Gras" loading="lazy" />
         <div class="gallery-overlay">
           <h3>Virdi Gras</h3>
-          <div class="details">Oil on canvas · 30 × 48 in</div>
+          <div class="details">Oil on canvas · 24 × 48 in</div>
           <div class="price-row">
             <span class="price">$700</span>
-            <a href="mailto:shane@shaneconner.com?subject=Inquiry%3A%20Virdi%20Gras&body=Hi%20Shane%2C%0A%0AI'm%20interested%20in%20%22Virdi%20Gras%22%20(30x48%2C%20oil%20on%20canvas).%20Could%20you%20share%20more%20details%3F" class="inquire-btn" onclick="event.stopPropagation()">Inquire</a>
+            <div class="btn-group">
+              <a href="https://buy.stripe.com/bJe8wI0VW5srdeD60x4Rq09" class="buy-btn" onclick="event.stopPropagation()">Buy Now</a>
+              <a href="#" class="inquire-btn" onclick="return inquire(this)">Inquire</a>
+            </div>
           </div>
         </div>
       </div>
@@ -996,7 +1046,10 @@
           <div class="details">Oil on canvas · 36 × 48 in</div>
           <div class="price-row">
             <span class="price">$800</span>
-            <a href="mailto:shane@shaneconner.com?subject=Inquiry%3A%20Buda&body=Hi%20Shane%2C%0A%0AI'm%20interested%20in%20%22Buda%22%20(36x48%2C%20oil%20on%20canvas).%20Could%20you%20share%20more%20details%3F" class="inquire-btn" onclick="event.stopPropagation()">Inquire</a>
+            <div class="btn-group">
+              <a href="https://buy.stripe.com/bJeeV6fQQ1cbdeD0Gd4Rq0a" class="buy-btn" onclick="event.stopPropagation()">Buy Now</a>
+              <a href="#" class="inquire-btn" onclick="return inquire(this)">Inquire</a>
+            </div>
           </div>
         </div>
       </div>
@@ -1008,7 +1061,10 @@
           <div class="details">Oil on canvas · 36 × 48 in</div>
           <div class="price-row">
             <span class="price">$700</span>
-            <a href="mailto:shane@shaneconner.com?subject=Inquiry%3A%20Plasma&body=Hi%20Shane%2C%0A%0AI'm%20interested%20in%20%22Plasma%22%20(36x48%2C%20oil%20on%20canvas).%20Could%20you%20share%20more%20details%3F" class="inquire-btn" onclick="event.stopPropagation()">Inquire</a>
+            <div class="btn-group">
+              <a href="https://buy.stripe.com/3cI5kw488bQP6QfdsZ4Rq0b" class="buy-btn" onclick="event.stopPropagation()">Buy Now</a>
+              <a href="#" class="inquire-btn" onclick="return inquire(this)">Inquire</a>
+            </div>
           </div>
         </div>
       </div>
@@ -1020,7 +1076,10 @@
           <div class="details">Oil on canvas · 36 × 48 in</div>
           <div class="price-row">
             <span class="price">$1,400</span>
-            <a href="mailto:shane@shaneconner.com?subject=Inquiry%3A%20For%20Wren&body=Hi%20Shane%2C%0A%0AI'm%20interested%20in%20%22For%20Wren%22%20(36x48%2C%20oil%20on%20canvas).%20Could%20you%20share%20more%20details%3F" class="inquire-btn" onclick="event.stopPropagation()">Inquire</a>
+            <div class="btn-group">
+              <a href="https://buy.stripe.com/14A14g6gg1cb3E3gFb4Rq0c" class="buy-btn" onclick="event.stopPropagation()">Buy Now</a>
+              <a href="#" class="inquire-btn" onclick="return inquire(this)">Inquire</a>
+            </div>
           </div>
         </div>
       </div>
@@ -1033,7 +1092,10 @@
           <div class="price-row">
             <span class="price">$800</span>
             <span class="triptych-note">$500 each as triptych</span>
-            <a href="mailto:shane@shaneconner.com?subject=Inquiry%3A%20Viridis%20Reworked%20in%20Three%20Parts%3A%20Left&body=Hi%20Shane%2C%0A%0AI'm%20interested%20in%20%22Viridis%20Reworked%20in%20Three%20Parts%3A%20Left%22%20(32x48%2C%20oil%20on%20wood).%20Could%20you%20share%20more%20details%3F" class="inquire-btn" onclick="event.stopPropagation()">Inquire</a>
+            <div class="btn-group">
+              <a href="https://buy.stripe.com/3cI8wIbAAcUT5MbagN4Rq0d" class="buy-btn" onclick="event.stopPropagation()">Buy Now</a>
+              <a href="#" class="inquire-btn" onclick="return inquire(this)">Inquire</a>
+            </div>
           </div>
         </div>
       </div>
@@ -1046,7 +1108,10 @@
           <div class="price-row">
             <span class="price">$800</span>
             <span class="triptych-note">$500 each as triptych</span>
-            <a href="mailto:shane@shaneconner.com?subject=Inquiry%3A%20Viridis%20Reworked%20in%20Three%20Parts%3A%20Middle&body=Hi%20Shane%2C%0A%0AI'm%20interested%20in%20%22Viridis%20Reworked%20in%20Three%20Parts%3A%20Middle%22%20(32x48%2C%20oil%20on%20wood).%20Could%20you%20share%20more%20details%3F" class="inquire-btn" onclick="event.stopPropagation()">Inquire</a>
+            <div class="btn-group">
+              <a href="https://buy.stripe.com/aFa7sE5cc7AzgqP1Kh4Rq0e" class="buy-btn" onclick="event.stopPropagation()">Buy Now</a>
+              <a href="#" class="inquire-btn" onclick="return inquire(this)">Inquire</a>
+            </div>
           </div>
         </div>
       </div>
@@ -1059,7 +1124,10 @@
           <div class="price-row">
             <span class="price">$800</span>
             <span class="triptych-note">$500 each as triptych</span>
-            <a href="mailto:shane@shaneconner.com?subject=Inquiry%3A%20Viridis%20Reworked%20in%20Three%20Parts%3A%20Right&body=Hi%20Shane%2C%0A%0AI'm%20interested%20in%20%22Viridis%20Reworked%20in%20Three%20Parts%3A%20Right%22%20(32x48%2C%20oil%20on%20wood).%20Could%20you%20share%20more%20details%3F" class="inquire-btn" onclick="event.stopPropagation()">Inquire</a>
+            <div class="btn-group">
+              <a href="https://buy.stripe.com/6oUfZa7kkcUTgqPgFb4Rq0f" class="buy-btn" onclick="event.stopPropagation()">Buy Now</a>
+              <a href="#" class="inquire-btn" onclick="return inquire(this)">Inquire</a>
+            </div>
           </div>
         </div>
       </div>
@@ -1203,9 +1271,9 @@
     <div class="reveal">
       <p class="section-label">Get in Touch</p>
       <h2 class="section-title">Interested in a piece?</h2>
-      <p>Available for sale, commissions, and local pickup in the Milwaukee / Ozaukee County area. Shipping available for all works.</p>
+      <p>Available for sale, commissions, and local pickup in the Milwaukee / Ozaukee County area.</p>
       <a href="mailto:shane@shaneconner.com" class="contact-email">shane@shaneconner.com</a>
-      <p class="contact-note">Free local delivery within 30 miles of Grafton, WI</p>
+      <p class="contact-note">Free delivery within 30 miles of Grafton, WI · Shipping available anywhere in the US<br />International shipping available — please inquire for pricing<br />Discounts available for purchases of multiple pieces</p>
       <div class="social-links">
         <a href="https://www.instagram.com/shanepconner/" target="_blank" rel="noopener">Instagram</a>
         <a href="https://www.etsy.com/shop/connerplants" target="_blank" rel="noopener">Etsy</a>
@@ -1361,6 +1429,26 @@ function buildThumbs() {
         navigateLightbox(1);
       }
     });
+
+    // Inquire mailto generator
+    function inquire(el) {
+      event.stopPropagation();
+      const item = el.closest('.gallery-item');
+      const name = item.querySelector('h3').textContent;
+      const details = item.querySelector('.details').textContent;
+      const price = item.querySelector('.price').textContent;
+      const subject = encodeURIComponent('Inquiry: ' + name);
+      const body = encodeURIComponent(
+        'Hi Shane,\n\n' +
+        'I\'m interested in "' + name + '".\n\n' +
+        name + '\n' +
+        details + '\n' +
+        price + '\n\n' +
+        'Could you share more details?'
+      );
+      window.location.href = 'mailto:shane@shaneconner.com?subject=' + subject + '&body=' + body;
+      return false;
+    }
 
     // Touch/swipe navigation
     let touchState = { startX: 0, startY: 0, endX: 0, endY: 0 };
