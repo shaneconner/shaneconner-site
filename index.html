@@ -700,15 +700,8 @@
     .gallery-item.sold { overflow: hidden; }
     .gallery-item.sold .inquire-btn,
     .gallery-item.sold .buy-btn { display: none; }
-    .gallery-item.sold .price {
-      text-decoration: line-through;
-      opacity: 0.5;
-    }
-    .gallery-item.sold .price::after {
-      content: ' · Sold';
-      text-decoration: none;
-      opacity: 1;
-      color: var(--green-bright);
+    .gallery-item.sold .price-row {
+      display: none;
     }
 
     /* ─── WIP SECTION ─── */
