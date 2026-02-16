@@ -741,50 +741,6 @@
 
 
 
-    /* ─── LIGHTBOX ZOOM/DOWNLOAD ─── */
-    .lightbox-actions {
-      position: absolute;
-      top: 1.5rem;
-      left: 2rem;
-      display: flex;
-      gap: 0.75rem;
-      z-index: 210;
-    }
-    .lightbox-action {
-      background: rgba(0,0,0,0.5);
-      border: 1px solid rgba(255,255,255,0.15);
-      color: var(--text-dim);
-      padding: 0.5rem 0.9rem;
-      font-size: 0.65rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      font-family: var(--sans);
-      cursor: pointer;
-      transition: all 0.3s ease;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-    }
-    .lightbox-action:hover {
-      background: rgba(0,0,0,0.7);
-      color: var(--cream);
-      border-color: rgba(255,255,255,0.3);
-    }
-
-    .lightbox-main img.zoomed {
-      max-width: none;
-      max-height: none;
-      cursor: grab;
-      position: absolute;
-    }
-    .lightbox-main img.zoomed:active {
-      cursor: grabbing;
-    }
-    .lightbox-main.zoom-active {
-      overflow: hidden;
-      position: relative;
-    }
 
     @media (max-width: 768px) {
       .lightbox-nav {
@@ -1331,7 +1287,6 @@
     // Lightbox with gallery support
     let galleryImages = [];
     let galleryIndex = 0;
-    let isZoomed = false;
 
     function openLightbox(item) {
       const img = item.querySelector('img');
@@ -1391,13 +1346,16 @@ function buildThumbs() {
         t.classList.toggle('active', idx === i);
       });
       updateCounter();
-      // Show WIP indicator for wip_ images
+      // Show WIP caption with sequence
       const filename = newSrc.split('/').pop();
       const detailsEl = document.getElementById('lightbox-details');
       const baseDetails = detailsEl.dataset.base || detailsEl.textContent;
       detailsEl.dataset.base = baseDetails;
       if (filename.startsWith('wip_')) {
-        detailsEl.textContent = baseDetails + ' · Work in Progress';
+        const wipImages = galleryImages.filter(s => s.split('/').pop().startsWith('wip_'));
+        const wipIndex = wipImages.indexOf(newSrc) + 1;
+        const wipTotal = wipImages.length;
+        detailsEl.textContent = 'Work in Progress' + (wipTotal > 1 ? ' · ' + wipIndex + ' of ' + wipTotal : '');
       } else {
         detailsEl.textContent = baseDetails;
       }
