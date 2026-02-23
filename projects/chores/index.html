@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Adaptive Task Intelligence — Shane Conner</title>
+
+  <meta name="description" content="An adaptive task system where one log event propagates through a knowledge graph and frequencies evolve based on behavior." />
+  <meta name="author" content="Shane Conner" />
+
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Adaptive Task Intelligence — Shane Conner" />
+  <meta property="og:description" content="One action propagates through a knowledge graph. Frequencies evolve by survival of the fittest." />
+  <meta property="og:url" content="https://shaneconner.com/projects/chores" />
+  <meta property="og:site_name" content="Shane Conner" />
+
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Outfit:wght@200;300;400;500&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="/css/shared.css" />
+  <link rel="stylesheet" href="/css/projects.css" />
+
+  <script src="https://d3js.org/d3.v7.min.js" defer></script>
+  <script src="/js/chores-viz.js" defer></script>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav id="nav">
+    <a href="/" class="nav-logo">Shane Conner</a>
+    <ul class="nav-links">
+      <li><a href="/art">Art</a></li>
+      <li><a href="/projects" class="active">Projects</a></li>
+      <li><a href="/contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- HOOK -->
+  <section class="project-hero">
+    <div class="hero-content">
+      <h1>Adaptive Task<br />Intelligence</h1>
+      <p class="subtitle">One action. Infinite propagation.</p>
+    </div>
+    <p class="scroll-hint">Scroll to explore</p>
+  </section>
+
+  <!-- THE PROBLEM -->
+  <div class="essay reveal">
+    <h3>The Problem</h3>
+    <h2>Most task trackers are dumb lists</h2>
+    <p>You check a box. Nothing learns. The system doesn't know that a barbell squat also worked your glutes, quads, lower back, and core. It doesn't know that completing a task early means you're ready for more challenge, or that consistently skipping something means it should back off.</p>
+    <p>What if a single logged action could update an <em>entire knowledge graph</em>? And what if the system could evolve its own scheduling based on your actual behavior?</p>
+  </div>
+
+  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+
+  <!-- INSIGHT 1: ONE ACTION, RICH DATA -->
+  <div class="essay reveal">
+    <h3>The Insight</h3>
+    <h2>One action, rich data</h2>
+    <p>Every exercise exists within a multi-dimensional taxonomy: muscle groups, movement patterns, equipment, energy systems, exercise types, and training objectives. When you log a single exercise, it recursively propagates through <em>every parent category</em> it belongs to.</p>
+    <p>One log event. Dozens of data updates.</p>
+  </div>
+
+  <!-- SUNBURST -->
+  <div class="essay-wide">
+    <div class="viz-container reveal">
+      <p class="viz-title">Interactive Category Hierarchy</p>
+      <div id="sunburst-viz" style="width:100%;"></div>
+      <p class="viz-caption">Click any segment to zoom in. Click center to zoom back out. 353 category nodes across 6 dimensions.</p>
+    </div>
+  </div>
+
+  <!-- CASCADE -->
+  <div class="essay reveal">
+    <h2>Recursive propagation</h2>
+    <p>Watch a single exercise log ripple outward. The system traces every parent relationship and updates them all — from specific muscle heads to broad training categories.</p>
+  </div>
+
+  <div class="essay-wide">
+    <div class="viz-container reveal">
+      <p class="viz-title">Cascade Animation</p>
+      <div id="cascade-viz" style="width:100%;"></div>
+      <p class="viz-caption">A single "Compound Lunge Press" log propagates to all parent categories simultaneously.</p>
+    </div>
+  </div>
+
+  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+
+  <!-- INSIGHT 2: SURVIVAL OF THE FITTEST -->
+  <div class="essay reveal">
+    <h3>The Mechanism</h3>
+    <h2>Survival of the fittest</h2>
+    <p>Every task starts with the same frequency. Then the system watches what you actually do.</p>
+    <p>Complete a task early? The system multiplies the interval by the golden ratio (<em>1.382&times;</em>) — it loosens, making room for what matters more. Complete it late? The interval is divided by the same ratio — it tightens, because you clearly need more time between sessions.</p>
+    <p>Over months, frequencies evolve. Tasks you engage with regularly earn shorter cycles. Tasks you avoid drift toward longer intervals. Tasks you abandon entirely get naturally culled. No manual configuration required — the system shapes itself to your behavior.</p>
+  </div>
+
+  <!-- FREQUENCY EVOLUTION -->
+  <div class="essay-wide">
+    <div class="viz-container reveal">
+      <p class="viz-title">Frequency Evolution Over Time</p>
+      <div id="frequency-viz" style="width:100%;"></div>
+      <p class="viz-caption">Synthetic data. Four exercises diverge from identical starting frequencies based on completion patterns. Adjustment points marked with circles.</p>
+    </div>
+  </div>
+
+  <div class="annotation" style="max-width:780px;margin:2rem auto;">
+    The golden ratio (&#x3C6; &asymp; 1.618) appears throughout nature in growth patterns. Here, its reciprocal property (1.382 &times; 1/1.382 = 1) ensures symmetric, stable convergence — adjustments that are equally responsive in both directions.
+  </div>
+
+  <!-- DISTRIBUTION -->
+  <div class="essay-wide">
+    <div class="viz-container reveal">
+      <p class="viz-title">Before &amp; After</p>
+      <div id="distribution-viz" style="width:100%;"></div>
+      <p class="viz-caption">Left: uniform initial frequencies. Right: evolved distribution after months of adaptive scheduling. The system learned what matters.</p>
+    </div>
+  </div>
+
+  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+
+  <!-- RESULTS -->
+  <div class="essay reveal">
+    <h3>Results</h3>
+    <h2>Prediction</h2>
+    <p>With enough behavioral history, a trained model predicts your next likely action. The interesting story isn't the ML — it's that the data model makes prediction almost trivial. Rich, multi-dimensional logging creates a feature space where patterns emerge naturally.</p>
+  </div>
+
+  <div class="stats-row reveal">
+    <div class="stat">
+      <div class="stat-value">~75%</div>
+      <div class="stat-label">Hit@1 Accuracy</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">1,600+</div>
+      <div class="stat-label">Active Tasks</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">160K+</div>
+      <div class="stat-label">Log Events</div>
+    </div>
+  </div>
+
+  <!-- TECH STACK -->
+  <div class="project-meta">
+    <h3>Tech Stack</h3>
+    <div class="project-tags">
+      <span class="project-tag">Python</span>
+      <span class="project-tag">SQLite</span>
+      <span class="project-tag">scikit-learn</span>
+      <span class="project-tag">D3.js</span>
+      <span class="project-tag">Knowledge Graph</span>
+      <span class="project-tag">Adaptive Scheduling</span>
+    </div>
+    <a href="/projects" class="back-link">&larr; All Projects</a>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <span>&copy; 2026 Shane Conner</span>
+    <span></span>
+  </footer>
+
+  <script src="/js/shared.js"></script>
+</body>
+</html>
