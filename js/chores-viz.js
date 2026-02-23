@@ -508,19 +508,21 @@
         .text('logged once');
     }
 
-    // Animation function: propagate layer by layer
+    // Animation: propagate layer by layer, then loop
+    var cascadeTimer = null;
+
     function animateCascade() {
-      // Reset
+      // Reset all to dim
       nodeGroups.selectAll('circle').attr('fill', colorOff).attr('stroke-opacity', 0.4);
       nodeGroups.selectAll('text').attr('fill', C.dim);
       linkPaths.attr('stroke', colorOff).attr('stroke-width', 1.5);
       g.selectAll('.cascade-annotation').attr('opacity', 0);
 
-      var delayPerLayer = 250;
+      var delayPerLayer = 600;
 
       for (var li = 0; li <= maxLayer; li++) {
         (function (layerIdx) {
-          var delay = 200 + layerIdx * delayPerLayer;
+          var delay = 400 + layerIdx * delayPerLayer;
           var layerNames = layers[layerIdx];
 
           // Light up nodes in this layer
@@ -528,11 +530,11 @@
             .filter(function (d) { return layerNames.indexOf(d.name) >= 0; })
             .each(function (d) {
               d3.select(this).select('circle')
-                .transition().delay(delay).duration(200)
+                .transition().delay(delay).duration(300)
                 .attr('fill', nodeColor(d.name))
                 .attr('stroke-opacity', 1);
               d3.select(this).select('text')
-                .transition().delay(delay).duration(200)
+                .transition().delay(delay).duration(300)
                 .attr('fill', C.bright);
             });
 
@@ -543,7 +545,7 @@
               .filter(function (d) {
                 return prevNames.indexOf(d.source) >= 0 && layerNames.indexOf(d.target) >= 0;
               })
-              .transition().delay(delay).duration(200)
+              .transition().delay(delay).duration(300)
               .attr('stroke', function (d) { return nodeColor(d.target); })
               .attr('stroke-width', 2);
           }
@@ -551,31 +553,15 @@
       }
 
       // Show annotation after all layers
-      var finalDelay = 200 + (maxLayer + 1) * delayPerLayer;
+      var annotationDelay = 400 + (maxLayer + 1) * delayPerLayer;
       g.selectAll('.cascade-annotation')
-        .transition().delay(finalDelay).duration(400)
+        .transition().delay(annotationDelay).duration(400)
         .attr('opacity', 1);
-    }
 
-    // Replay button
-    var btn = document.createElement('button');
-    btn.className = 'replay-btn';
-    btn.textContent = 'Replay';
-    btn.style.cssText =
-      'display:block;margin:12px auto 0;padding:6px 20px;' +
-      'background:transparent;border:1px solid ' + C.green + ';' +
-      'color:' + C.text + ';font-family:' + FONT_LABEL + ';font-size:13px;' +
-      'border-radius:3px;cursor:pointer;transition:background .2s,color .2s;';
-    btn.addEventListener('mouseenter', function () {
-      btn.style.background = C.green;
-      btn.style.color = C.bright;
-    });
-    btn.addEventListener('mouseleave', function () {
-      btn.style.background = 'transparent';
-      btn.style.color = C.text;
-    });
-    btn.addEventListener('click', animateCascade);
-    container.appendChild(btn);
+      // Hold on final frame, then restart
+      var totalCycle = annotationDelay + 400 + 4000;
+      cascadeTimer = setTimeout(animateCascade, totalCycle);
+    }
 
     animateCascade();
   }
