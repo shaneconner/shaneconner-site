@@ -99,10 +99,11 @@
           </div>
         </div>
         <ul class="cv-bullets">
-          <li>Led development of an LLM-powered fact extraction platform for financial advisor&ndash;client call transcripts using LangChain/LangGraph + AWS Bedrock (Claude) with an evaluation and tracing framework; achieved 93.4% field-level recall while enforcing schema consistency via Pydantic and LLM self-correction using ReAct agents.</li>
-          <li>Engineered end-to-end ML experimentation pipeline leveraging AWS Bedrock to optimize call summarization; built parameter tuning system analyzing 14+ quality metrics through synthetic SME evaluations, resulting in 23%+ improvement in summary relevance and accuracy.</li>
-          <li>Sole developer of a financial planning assistant using transformer architecture and masked modeling to predict optimal plan composition from client data and partial plans; enables dynamic page recommendations and improves planning quality through &ldquo;wisdom-of-the-crowd&rdquo; patterns.</li>
-          <li>Led development of data-driven financial planning framework analyzing 35+ client segments across multiple dimensions; engineered automated template generation that reduced plan creation time from 30&ndash;60 minutes to instant delivery.</li>
+          <li>Designed and led development of ALAI (Active Listening AI), a multi-component LLM platform processing financial advisor&ndash;client call transcripts using LangChain/LangGraph + AWS Bedrock (Claude). Built four production modules: General Summary (Zoom-style), FactFinder (comprehensive case notes with extended thinking), Discovery Letter (client follow-up emails), and Fact Extraction (93.4% field-level recall with Pydantic schema enforcement and ReAct self-correction).</li>
+          <li>Designed ALAI Insights, a multi-agent research framework implementing scientific methodology (questions &rarr; hypotheses &rarr; investigations &rarr; insights &rarr; validations &rarr; conclusions) with LangGraph orchestration. Features universal voting for community consensus, entity citations for knowledge graphs, cross-run continuity, and progressive context management (200K &rarr; 1M token windows).</li>
+          <li>Sole developer of a two-stage financial planning assistant: FT-Transformer for product propensity prediction and FiLM-conditioned transformer for page prediction. Implements plan &ldquo;inpainting&rdquo;&mdash;predicting optimal plan composition from client features and partial selections&mdash;trained on 1.2M+ historical plans with a weighted ensemble approach where product propensities inform page recommendations.</li>
+          <li>Built multi-agent evaluation framework for fact extraction using synthetic SME evaluations; orchestrates specialized agents for field-level accuracy, schema validation, and quality metrics analysis across 14+ dimensions to optimize prompt engineering iterations.</li>
+          <li>Led transcription service evaluation comparing AWS Transcribe alternatives, recommending migration that achieved ~60% cost reduction (~$300K annual savings).</li>
         </ul>
       </div>
 
