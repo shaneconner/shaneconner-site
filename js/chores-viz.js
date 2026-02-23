@@ -287,7 +287,7 @@
   }
 
   // ════════════════════════════════════════════════════════════════════════════
-  //  2.  CASCADE
+  //  2.  CASCADE (DAG with convergence)
   // ════════════════════════════════════════════════════════════════════════════
   function renderCascade(containerId) {
     var container = document.getElementById(containerId);
@@ -296,38 +296,117 @@
 
     var cascade = hierarchyData.cascade;
     var exerciseName = cascade.exercise;
-    var chains = cascade.chains;
+    var edges = cascade.edges; // [child, parent] pairs
 
     var width = container.clientWidth;
-    var height = 400;
-    var margin = { top: 30, right: 160, bottom: 40, left: 180 };
+    var margin = { top: 20, right: 30, bottom: 20, left: 30 };
+    var plotW = width - margin.left - margin.right;
 
-    // Build tree data: exercise -> chain[last] -> ... -> chain[0] (category root)
-    // Layout: exercise on left, category roots fan to the right
-    var treeData = {
-      name: exerciseName,
-      children: chains.map(function (chain) {
-        // chain is [category root, ..., leaf nearest exercise]
-        // We want: exercise -> leaf -> ... -> category root
-        // Reverse the chain so exercise connects to the deepest node first
-        var reversed = chain.slice().reverse();
-        var node = { name: reversed[0], children: [] };
-        var current = node;
-        for (var i = 1; i < reversed.length; i++) {
-          var child = { name: reversed[i], children: [] };
-          current.children.push(child);
-          current = child;
+    // Build adjacency and compute layers (longest path from exercise)
+    var children = {};  // node -> [parent nodes it points to]
+    var parents = {};   // node -> [child nodes that point to it]
+    var allNodeNames = {};
+
+    edges.forEach(function (e) {
+      var child = e[0], parent = e[1];
+      allNodeNames[child] = true;
+      allNodeNames[parent] = true;
+      if (!children[child]) children[child] = [];
+      children[child].push(parent);
+      if (!parents[parent]) parents[parent] = [];
+      parents[parent].push(child);
+    });
+
+    // Compute layer = longest path from exercise node (BFS/topological)
+    var layer = {};
+    layer[exerciseName] = 0;
+    var queue = [exerciseName];
+    var maxLayer = 0;
+
+    while (queue.length > 0) {
+      var node = queue.shift();
+      var nextNodes = children[node] || [];
+      nextNodes.forEach(function (next) {
+        var newLayer = layer[node] + 1;
+        if (layer[next] === undefined || newLayer > layer[next]) {
+          layer[next] = newLayer;
+          queue.push(next);
+          if (newLayer > maxLayer) maxLayer = newLayer;
         }
-        // Remove empty children arrays from leaves
-        current.children = undefined;
-        return node;
-      })
+      });
+    }
+
+    // Group nodes by layer
+    var layers = [];
+    for (var i = 0; i <= maxLayer; i++) layers.push([]);
+    Object.keys(allNodeNames).forEach(function (name) {
+      if (layer[name] !== undefined) {
+        layers[layer[name]].push(name);
+      }
+    });
+
+    // Sort nodes within each layer for consistent ordering
+    // Muscle-related nodes first, then alphabetical
+    layers.forEach(function (layerNodes) {
+      layerNodes.sort(function (a, b) { return a.localeCompare(b); });
+    });
+
+    // Compute positions
+    var maxNodesInLayer = d3.max(layers, function (l) { return l.length; });
+    var rowHeight = 28;
+    var height = Math.max(400, maxNodesInLayer * rowHeight + margin.top + margin.bottom + 40);
+    var plotH = height - margin.top - margin.bottom;
+
+    var colWidth = plotW / maxLayer;
+    var nodePos = {}; // name -> {x, y}
+
+    layers.forEach(function (layerNodes, li) {
+      var x = li * colWidth;
+      var totalHeight = layerNodes.length * rowHeight;
+      var startY = (plotH - totalHeight) / 2;
+      layerNodes.forEach(function (name, ni) {
+        nodePos[name] = { x: x, y: startY + ni * rowHeight + rowHeight / 2 };
+      });
+    });
+
+    // Category colors for nodes
+    var catRoots = ['Muscle Group', 'Exercise Type', 'Exercise Equipment',
+                    'Exercise Movement', 'Exercise Objective', 'Energy Systems'];
+    var catColors = {
+      'Muscle Group':       '#aa8a4a',
+      'Exercise Type':      '#6b8f3a',
+      'Exercise Equipment': '#9a4a8a',
+      'Exercise Movement':  '#4a9aaa',
+      'Exercise Objective': '#4a7aaa',
+      'Energy Systems':     '#aa4a4a',
     };
 
-    var root = d3.hierarchy(treeData);
-    var treeLayout = d3.tree().size([height - margin.top - margin.bottom, width - margin.left - margin.right]);
-    treeLayout(root);
+    // For each node, find which category root it eventually reaches
+    function findCatRoot(name) {
+      if (catRoots.indexOf(name) >= 0) return name;
+      if (name === 'Exercise' || name === exerciseName) return null;
+      var nexts = children[name] || [];
+      for (var i = 0; i < nexts.length; i++) {
+        var found = findCatRoot(nexts[i]);
+        if (found) return found;
+      }
+      return null;
+    }
 
+    var nodeCat = {};
+    Object.keys(allNodeNames).forEach(function (name) {
+      nodeCat[name] = findCatRoot(name);
+    });
+
+    function nodeColor(name) {
+      var cat = nodeCat[name];
+      if (cat && catColors[cat]) return catColors[cat];
+      if (name === exerciseName) return C.greenBr;
+      if (name === 'Exercise') return C.bright;
+      return C.dim;
+    }
+
+    // Create SVG
     var svg = d3.select(container)
       .append('svg')
       .attr('viewBox', '0 0 ' + width + ' ' + height)
@@ -338,97 +417,137 @@
     var g = svg.append('g')
       .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
-    // Collect all nodes and links
-    var allNodes = root.descendants();
-    var allLinks = root.links();
-
     // Color constants
-    var colorOff = '#22231a';
+    var colorOff = '#1a1c14';
     var colorOn = C.greenBr;
 
-    // Draw links
-    var linkGen = d3.linkHorizontal()
-      .x(function (d) { return d.y; })
-      .y(function (d) { return d.x; });
+    // Draw edges
+    var edgeData = edges.map(function (e) {
+      return { source: e[0], target: e[1] };
+    });
 
     var linkPaths = g.selectAll('.cascade-link')
-      .data(allLinks)
+      .data(edgeData)
       .join('path')
       .attr('class', 'cascade-link')
-      .attr('d', linkGen)
+      .attr('d', function (d) {
+        var s = nodePos[d.source];
+        var t = nodePos[d.target];
+        if (!s || !t) return '';
+        var mx = (s.x + t.x) / 2;
+        return 'M' + s.x + ',' + s.y + ' C' + mx + ',' + s.y + ' ' + mx + ',' + t.y + ' ' + t.x + ',' + t.y;
+      })
       .attr('fill', 'none')
       .attr('stroke', colorOff)
-      .attr('stroke-width', 2);
+      .attr('stroke-width', 1.5);
 
     // Draw nodes
+    var nodeData = Object.keys(allNodeNames).filter(function (name) {
+      return nodePos[name];
+    }).map(function (name) {
+      return { name: name, x: nodePos[name].x, y: nodePos[name].y };
+    });
+
     var nodeGroups = g.selectAll('.cascade-node')
-      .data(allNodes)
+      .data(nodeData)
       .join('g')
       .attr('class', 'cascade-node')
-      .attr('transform', function (d) { return 'translate(' + d.y + ',' + d.x + ')'; });
+      .attr('transform', function (d) { return 'translate(' + d.x + ',' + d.y + ')'; });
 
     nodeGroups.append('circle')
-      .attr('r', function (d) { return d.depth === 0 ? 7 : 5; })
+      .attr('r', function (d) {
+        if (d.name === exerciseName) return 6;
+        if (d.name === 'Exercise') return 7;
+        return 4;
+      })
       .attr('fill', colorOff)
-      .attr('stroke', '#3a3c2a')
-      .attr('stroke-width', 1);
+      .attr('stroke', function (d) { return nodeColor(d.name); })
+      .attr('stroke-width', 1)
+      .attr('stroke-opacity', 0.4);
 
     nodeGroups.append('text')
-      .attr('dy', '-0.8em')
+      .attr('dy', '-0.7em')
       .attr('x', 0)
       .attr('text-anchor', 'middle')
       .attr('fill', C.dim)
       .style('font-family', FONT_LABEL)
-      .style('font-size', '11px')
+      .style('font-size', function (d) {
+        if (d.name === exerciseName || d.name === 'Exercise') return '11px';
+        if (catRoots.indexOf(d.name) >= 0) return '10px';
+        return '9px';
+      })
+      .style('font-weight', function (d) {
+        return (d.name === exerciseName || d.name === 'Exercise') ? '400' : '300';
+      })
       .style('paint-order', 'stroke')
       .attr('stroke', C.bg)
       .attr('stroke-width', 4)
       .attr('stroke-linejoin', 'round')
-      .text(function (d) { return d.data.name; });
+      .text(function (d) { return d.name; });
 
-    // Animation function
+    // Annotation for "Exercise" node
+    var exerciseNode = nodePos['Exercise'];
+    if (exerciseNode) {
+      g.append('text')
+        .attr('x', exerciseNode.x)
+        .attr('y', exerciseNode.y + 18)
+        .attr('text-anchor', 'middle')
+        .attr('fill', C.dim)
+        .style('font-family', FONT_LABEL)
+        .style('font-size', '8px')
+        .style('font-style', 'italic')
+        .attr('opacity', 0)
+        .attr('class', 'cascade-annotation')
+        .text('logged once');
+    }
+
+    // Animation function: propagate layer by layer
     function animateCascade() {
-      // Reset everything
-      nodeGroups.selectAll('circle').attr('fill', colorOff);
+      // Reset
+      nodeGroups.selectAll('circle').attr('fill', colorOff).attr('stroke-opacity', 0.4);
       nodeGroups.selectAll('text').attr('fill', C.dim);
-      linkPaths.attr('stroke', colorOff);
+      linkPaths.attr('stroke', colorOff).attr('stroke-width', 1.5);
+      g.selectAll('.cascade-annotation').attr('opacity', 0);
 
-      // Light up root (exercise) first
-      var rootNode = nodeGroups.filter(function (d) { return d.depth === 0; });
-      rootNode.select('circle')
-        .transition().duration(300)
-        .attr('fill', colorOn);
-      rootNode.select('text')
-        .transition().duration(300)
-        .attr('fill', C.bright);
+      var delayPerLayer = 250;
 
-      // For each chain (depth-first from root), light up nodes sequentially
-      // All chains animate simultaneously, 150ms per depth level
-      var maxDepth = d3.max(allNodes, function (d) { return d.depth; });
+      for (var li = 0; li <= maxLayer; li++) {
+        (function (layerIdx) {
+          var delay = 200 + layerIdx * delayPerLayer;
+          var layerNames = layers[layerIdx];
 
-      for (var depth = 1; depth <= maxDepth; depth++) {
-        (function (dep) {
-          var delay = 300 + dep * 150;
-
-          // Light up nodes at this depth
+          // Light up nodes in this layer
           nodeGroups
-            .filter(function (d) { return d.depth === dep; })
-            .each(function () {
+            .filter(function (d) { return layerNames.indexOf(d.name) >= 0; })
+            .each(function (d) {
               d3.select(this).select('circle')
                 .transition().delay(delay).duration(200)
-                .attr('fill', colorOn);
+                .attr('fill', nodeColor(d.name))
+                .attr('stroke-opacity', 1);
               d3.select(this).select('text')
                 .transition().delay(delay).duration(200)
                 .attr('fill', C.bright);
             });
 
-          // Light up links leading to this depth
-          linkPaths
-            .filter(function (d) { return d.target.depth === dep; })
-            .transition().delay(delay).duration(200)
-            .attr('stroke', colorOn);
-        })(depth);
+          // Light up edges FROM the previous layer TO this layer
+          if (layerIdx > 0) {
+            var prevNames = layers[layerIdx - 1];
+            linkPaths
+              .filter(function (d) {
+                return prevNames.indexOf(d.source) >= 0 && layerNames.indexOf(d.target) >= 0;
+              })
+              .transition().delay(delay).duration(200)
+              .attr('stroke', function (d) { return nodeColor(d.target); })
+              .attr('stroke-width', 2);
+          }
+        })(li);
       }
+
+      // Show annotation after all layers
+      var finalDelay = 200 + (maxLayer + 1) * delayPerLayer;
+      g.selectAll('.cascade-annotation')
+        .transition().delay(finalDelay).duration(400)
+        .attr('opacity', 1);
     }
 
     // Replay button
@@ -451,7 +570,6 @@
     btn.addEventListener('click', animateCascade);
     container.appendChild(btn);
 
-    // Trigger initial animation
     animateCascade();
   }
 
