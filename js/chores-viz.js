@@ -119,7 +119,10 @@
     }
 
     function labelVisible(d) {
-      return d.y1 > 0 && d.y0 < radius && (d.x1 - d.x0) > 0.04;
+      // Must have enough angular width AND enough radial distance from center
+      var bandThickness = d.y1 - d.y0;
+      return d.y1 > 0 && d.y0 > bandThickness * 0.5 && d.y0 < radius
+        && (d.x1 - d.x0) > 0.04 && bandThickness > 10;
     }
 
     function labelTransform(d) {
@@ -128,10 +131,11 @@
       return 'rotate(' + (x - 90) + ') translate(' + y + ',0) rotate(' + (x < 180 ? 0 : 180) + ')';
     }
 
-    // Truncate label to fit available arc width
-    function truncateLabel(name, arcWidth) {
+    // Truncate label to fit: use the SMALLER of arc width and radial band height
+    function truncateLabel(name, arcWidth, bandHeight) {
+      var availablePx = Math.min(arcWidth, bandHeight || arcWidth);
       var charsPerPx = 0.14; // approximate at 10px font
-      var maxChars = Math.floor(arcWidth * charsPerPx);
+      var maxChars = Math.floor(availablePx * charsPerPx);
       if (maxChars < 3) return '';
       if (name.length <= maxChars) return name;
       return name.substring(0, maxChars - 1) + '\u2026';
@@ -141,6 +145,10 @@
       var angle = d.x1 - d.x0;
       var midR = (d.y0 + d.y1) / 2;
       return angle * midR; // arc length in px
+    }
+
+    function getBandHeight(d) {
+      return d.y1 - d.y0;
     }
 
     // Current root for zooming
@@ -211,7 +219,7 @@
       .style('pointer-events', 'none')
       .attr('opacity', function (d) { return labelVisible(d.current) ? 1 : 0; })
       .attr('transform', function (d) { return labelTransform(d.current); })
-      .text(function (d) { return truncateLabel(d.data.name, getArcWidth(d.current)); });
+      .text(function (d) { return truncateLabel(d.data.name, getArcWidth(d.current), getBandHeight(d.current)); });
 
     // Click center to zoom out
     g.append('circle')
@@ -272,7 +280,7 @@
         .tween('text', function (d) {
           var self = this;
           return function () {
-            self.textContent = truncateLabel(d.data.name, getArcWidth(d.current));
+            self.textContent = truncateLabel(d.data.name, getArcWidth(d.current), getBandHeight(d.current));
           };
         });
     }
@@ -366,12 +374,16 @@
       .attr('stroke-width', 1);
 
     nodeGroups.append('text')
-      .attr('dy', '0.35em')
-      .attr('x', function (d) { return d.children ? -10 : 10; })
-      .attr('text-anchor', function (d) { return d.children ? 'end' : 'start'; })
+      .attr('dy', '-0.8em')
+      .attr('x', 0)
+      .attr('text-anchor', 'middle')
       .attr('fill', C.dim)
       .style('font-family', FONT_LABEL)
-      .style('font-size', '12px')
+      .style('font-size', '11px')
+      .style('paint-order', 'stroke')
+      .attr('stroke', C.bg)
+      .attr('stroke-width', 4)
+      .attr('stroke-linejoin', 'round')
       .text(function (d) { return d.data.name; });
 
     // Animation function
