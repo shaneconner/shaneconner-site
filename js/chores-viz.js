@@ -27,12 +27,26 @@
       .then(function (d) { hierarchyData = d; return d; });
   }
 
-  // ── Utility: depth-based color ────────────────────────────────────────────
-  function depthColor(d) {
-    var depth = d;
-    if (typeof d === 'object' && d !== null) depth = d.depth;
-    var idx = Math.min(depth, C.depthScale.length - 1);
-    return C.depthScale[idx];
+  // ── Color palettes per top-level category ────────────────────────────────
+  var categoryPalettes = {
+    'Exercise Type':       ['#6b8f3a','#8aaf4a','#a4c75a','#bdd96a'],
+    'Movement':            ['#3a7a8a','#4a9aaa','#5ab4c4','#6acdd8'],
+    'Muscle Group':        ['#8a6a3a','#aa8a4a','#c4a45a','#d8be6a'],
+    'Equipment':           ['#7a3a6a','#9a4a8a','#b45aa4','#c86abe'],
+    'Exercise Objective':  ['#3a5a8a','#4a7aaa','#5a94c4','#6aaed8'],
+    'Energy System':       ['#8a3a3a','#aa4a4a','#c45a5a','#d86a6a'],
+  };
+  var fallbackPalette = C.depthScale;
+
+  function getCategoryColor(d) {
+    // Walk up to depth 1 to find the top-level category
+    var node = d;
+    while (node.depth > 1 && node.parent) node = node.parent;
+    var catName = node.data ? node.data.name : '';
+    var palette = categoryPalettes[catName] || fallbackPalette;
+    var depthInCat = d.depth - 1; // 0-indexed within the category
+    var idx = Math.min(depthInCat, palette.length - 1);
+    return palette[Math.max(0, idx)];
   }
 
   // ── Utility: count descendants (leaves) ───────────────────────────────────
@@ -50,7 +64,7 @@
     container.innerHTML = '';
 
     var width = container.clientWidth;
-    var height = width;                       // 1:1 aspect
+    var height = width;
     var radius = width / 2;
 
     // Tooltip div
@@ -85,14 +99,49 @@
 
     partition(root);
 
-    // Arc generator
+    // Store initial layout positions
+    root.each(function (d) {
+      d.current = { x0: d.x0, x1: d.x1, y0: d.y0, y1: d.y1 };
+    });
+
+    // Arc generator (uses .current)
     var arc = d3.arc()
-      .startAngle(function (d) { return d.x0; })
-      .endAngle(function (d) { return d.x1; })
-      .padAngle(function (d) { return Math.min((d.x1 - d.x0) / 2, 0.005); })
+      .startAngle(function (d) { return d.current.x0; })
+      .endAngle(function (d) { return d.current.x1; })
+      .padAngle(function (d) { return Math.min((d.current.x1 - d.current.x0) / 2, 0.005); })
       .padRadius(radius / 2)
-      .innerRadius(function (d) { return d.y0; })
-      .outerRadius(function (d) { return d.y1 - 1; });
+      .innerRadius(function (d) { return d.current.y0; })
+      .outerRadius(function (d) { return Math.max(d.current.y0, d.current.y1 - 1); });
+
+    // Visibility helpers
+    function arcVisible(d) {
+      return d.y1 > 0 && d.y0 < radius && d.x1 > d.x0 + 0.001;
+    }
+
+    function labelVisible(d) {
+      return d.y1 > 0 && d.y0 < radius && (d.x1 - d.x0) > 0.04;
+    }
+
+    function labelTransform(d) {
+      var x = (d.x0 + d.x1) / 2 * 180 / Math.PI;
+      var y = (d.y0 + d.y1) / 2;
+      return 'rotate(' + (x - 90) + ') translate(' + y + ',0) rotate(' + (x < 180 ? 0 : 180) + ')';
+    }
+
+    // Truncate label to fit available arc width
+    function truncateLabel(name, arcWidth) {
+      var charsPerPx = 0.14; // approximate at 10px font
+      var maxChars = Math.floor(arcWidth * charsPerPx);
+      if (maxChars < 3) return '';
+      if (name.length <= maxChars) return name;
+      return name.substring(0, maxChars - 1) + '\u2026';
+    }
+
+    function getArcWidth(d) {
+      var angle = d.x1 - d.x0;
+      var midR = (d.y0 + d.y1) / 2;
+      return angle * midR; // arc length in px
+    }
 
     // Current root for zooming
     var currentRoot = root;
@@ -108,23 +157,26 @@
       .text(root.data.name);
 
     // Draw arcs
-    var paths = g.selectAll('path')
-      .data(root.descendants().filter(function (d) { return d.depth; }))
+    var allDescendants = root.descendants().filter(function (d) { return d.depth; });
+
+    var paths = g.selectAll('path.sunburst-arc')
+      .data(allDescendants)
       .join('path')
-      .attr('fill', function (d) { return depthColor(d); })
+      .attr('class', 'sunburst-arc')
+      .attr('fill', function (d) { return getCategoryColor(d); })
       .attr('fill-opacity', function (d) {
-        return d.children ? 0.85 : 0.65;
+        return arcVisible(d.current) ? (d.children ? 0.85 : 0.65) : 0;
       })
-      .attr('d', arc)
+      .attr('d', function (d) { return arc(d); })
       .style('cursor', 'pointer')
       .on('mouseover', function (event, d) {
         d3.select(this).attr('fill-opacity', 1);
         var childCount = d.children ? d.children.length : 0;
         var label = d.data.name;
         if (childCount > 0) {
-          label += ' — ' + childCount + ' children';
+          label += ' \u2014 ' + childCount + ' children';
         } else {
-          label += ' — ' + d.value + ' exercises';
+          label += ' \u2014 ' + d.value + ' exercises';
         }
         tooltip.textContent = label;
         tooltip.style.opacity = '1';
@@ -135,22 +187,43 @@
         tooltip.style.top = (event.clientY - rect.top - 28) + 'px';
       })
       .on('mouseout', function (event, d) {
-        d3.select(this).attr('fill-opacity', d.children ? 0.85 : 0.65);
+        d3.select(this).attr('fill-opacity', arcVisible(d.current) ? (d.children ? 0.85 : 0.65) : 0);
         tooltip.style.opacity = '0';
       })
       .on('click', function (event, d) {
-        clicked(d);
+        if (d.children) clicked(d);
       });
+
+    // Draw labels
+    var labels = g.selectAll('text.sunburst-label')
+      .data(allDescendants)
+      .join('text')
+      .attr('class', 'sunburst-label')
+      .attr('dy', '0.35em')
+      .attr('text-anchor', 'middle')
+      .attr('fill', function (d) {
+        // Use dark text on lighter arcs (deeper), light on darker arcs
+        return d.depth <= 1 ? '#e0ddd0' : '#1a1c14';
+      })
+      .style('font-family', FONT_LABEL)
+      .style('font-size', '10px')
+      .style('font-weight', '400')
+      .style('pointer-events', 'none')
+      .attr('opacity', function (d) { return labelVisible(d.current) ? 1 : 0; })
+      .attr('transform', function (d) { return labelTransform(d.current); })
+      .text(function (d) { return truncateLabel(d.data.name, getArcWidth(d.current)); });
 
     // Click center to zoom out
     g.append('circle')
-      .attr('r', function () { return root.y1; })
+      .attr('r', root.y1)
       .attr('fill', 'none')
       .attr('pointer-events', 'all')
       .style('cursor', 'pointer')
       .on('click', function () {
         if (currentRoot.parent) {
           clicked(currentRoot.parent);
+        } else {
+          clicked(root);
         }
       });
 
@@ -158,48 +231,51 @@
       currentRoot = p;
       centerText.text(p.data.name);
 
-      var targetX0 = p.x0;
-      var targetX1 = p.x1;
-      var targetY0 = p.y0;
-
+      // Compute target positions
       root.each(function (d) {
         d.target = {
-          x0: Math.max(0, Math.min(1, (d.x0 - targetX0) / (targetX1 - targetX0))) * 2 * Math.PI,
-          x1: Math.max(0, Math.min(1, (d.x1 - targetX0) / (targetX1 - targetX0))) * 2 * Math.PI,
-          y0: Math.max(0, d.y0 - targetY0),
-          y1: Math.max(0, d.y1 - targetY0),
+          x0: Math.max(0, Math.min(1, (d.x0 - p.x0) / (p.x1 - p.x0))) * 2 * Math.PI,
+          x1: Math.max(0, Math.min(1, (d.x1 - p.x0) / (p.x1 - p.x0))) * 2 * Math.PI,
+          y0: Math.max(0, d.y0 - p.y0),
+          y1: Math.max(0, d.y1 - p.y0),
         };
       });
 
       var t = g.transition().duration(800);
 
+      // Transition arcs
       paths.transition(t)
         .tween('data', function (d) {
-          var i = d3.interpolate(
-            { x0: d.current ? d.current.x0 : d.x0, x1: d.current ? d.current.x1 : d.x1, y0: d.current ? d.current.y0 : d.y0, y1: d.current ? d.current.y1 : d.y1 },
-            d.target
-          );
-          return function (tt) {
-            var val = i(tt);
-            d.current = val;
-          };
+          var i = d3.interpolate(d.current, d.target);
+          return function (tt) { d.current = i(tt); };
+        })
+        .filter(function (d) {
+          return this.getAttribute('fill-opacity') > 0 || arcVisible(d.target);
         })
         .attrTween('d', function (d) {
-          return function () {
-            return arc(d.current);
-          };
+          return function () { return arc(d); };
         })
         .attr('fill-opacity', function (d) {
-          // hide arcs outside the zoomed range
-          if (d.current && d.current.x1 - d.current.x0 < 0.001) return 0;
-          return d.children ? 0.85 : 0.65;
+          return arcVisible(d.target) ? (d.children ? 0.85 : 0.65) : 0;
+        });
+
+      // Transition labels
+      labels.transition(t)
+        .tween('data-label', function (d) {
+          var i = d3.interpolate(d.current, d.target);
+          return function (tt) { d.current = i(tt); };
+        })
+        .attrTween('transform', function (d) {
+          return function () { return labelTransform(d.current); };
+        })
+        .attr('opacity', function (d) { return labelVisible(d.target) ? 1 : 0; })
+        .tween('text', function (d) {
+          var self = this;
+          return function () {
+            self.textContent = truncateLabel(d.data.name, getArcWidth(d.current));
+          };
         });
     }
-
-    // Initialize current positions
-    root.each(function (d) {
-      d.current = { x0: d.x0, x1: d.x1, y0: d.y0, y1: d.y1 };
-    });
   }
 
   // ════════════════════════════════════════════════════════════════════════════
