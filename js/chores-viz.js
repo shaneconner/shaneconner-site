@@ -299,7 +299,7 @@
     var edges = cascade.edges; // [child, parent] pairs
 
     var width = container.clientWidth;
-    var margin = { top: 20, right: 30, bottom: 20, left: 30 };
+    var margin = { top: 20, right: 40, bottom: 20, left: 140 };
     var plotW = width - margin.left - margin.right;
 
     // Build adjacency and compute layers (longest path from exercise)
@@ -466,9 +466,16 @@
       .attr('stroke-opacity', 0.4);
 
     nodeGroups.append('text')
-      .attr('dy', '-0.7em')
-      .attr('x', 0)
-      .attr('text-anchor', 'middle')
+      .attr('dy', function (d) {
+        // Exercise root label goes to the left, so center it vertically
+        return d.name === exerciseName ? '0.35em' : '-0.7em';
+      })
+      .attr('x', function (d) {
+        return d.name === exerciseName ? -10 : 0;
+      })
+      .attr('text-anchor', function (d) {
+        return d.name === exerciseName ? 'end' : 'middle';
+      })
       .attr('fill', C.dim)
       .style('font-family', FONT_LABEL)
       .style('font-size', function (d) {
