@@ -3,27 +3,19 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Shane Conner</title>
+  <title>Projects — Shane Conner</title>
 
   <!-- Meta / SEO -->
-  <meta name="description" content="Shane Conner — abstract painter and technologist. Original oil paintings and technical projects." />
+  <meta name="description" content="Technical projects by Shane Conner. Data science, automation, and creative technology." />
   <meta name="author" content="Shane Conner" />
 
   <!-- Open Graph -->
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="Shane Conner" />
-  <meta property="og:description" content="Abstract painter and technologist. Original oil paintings and technical projects." />
-  <meta property="og:url" content="https://shaneconner.com" />
+  <meta property="og:title" content="Projects — Shane Conner" />
+  <meta property="og:description" content="Technical projects by Shane Conner. Data science, automation, and creative technology." />
+  <meta property="og:url" content="https://shaneconner.com/projects" />
   <meta property="og:image" content="https://shaneconner.com/img/og-image.jpg" />
-  <meta property="og:image:width" content="1200" />
-  <meta property="og:image:height" content="630" />
   <meta property="og:site_name" content="Shane Conner" />
-
-  <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Shane Conner" />
-  <meta name="twitter:description" content="Abstract painter and technologist. Original oil paintings and technical projects." />
-  <meta name="twitter:image" content="https://shaneconner.com/img/og-image.jpg" />
 
   <!-- Favicon -->
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -35,7 +27,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Outfit:wght@200;300;400;500&display=swap" rel="stylesheet" />
 
   <link rel="stylesheet" href="/css/shared.css" />
-  <link rel="stylesheet" href="/css/landing.css" />
+  <link rel="stylesheet" href="/css/projects.css" />
+
+  <!-- d3.js for visualizations -->
+  <script src="https://d3js.org/d3.v7.min.js" defer></script>
 </head>
 <body>
 
@@ -44,19 +39,27 @@
     <a href="/" class="nav-logo">Shane Conner</a>
     <ul class="nav-links">
       <li><a href="/art">Art</a></li>
-      <li><a href="/projects">Projects</a></li>
+      <li><a href="/projects" class="active">Projects</a></li>
       <li><a href="/contact">Contact</a></li>
     </ul>
   </nav>
 
-  <!-- LANDING -->
-  <main class="landing">
-    <div class="landing-bg"></div>
-    <div class="landing-content">
-      <h1>Shane Conner</h1>
-      <p class="location">Grafton, Wisconsin</p>
+  <section class="projects-hero">
+    <p class="section-label">Projects</p>
+    <h1 class="section-title">Technical Work</h1>
+  </section>
+
+  <div class="projects-grid">
+    <div class="project-card reveal">
+      <h3>Coming Soon</h3>
+      <p>Technical project showcases in development. Data science, automation, and creative technology.</p>
+      <div class="project-tags">
+        <span class="project-tag">Python</span>
+        <span class="project-tag">Data Science</span>
+        <span class="project-tag">d3.js</span>
+      </div>
     </div>
-  </main>
+  </div>
 
   <!-- FOOTER -->
   <footer>
