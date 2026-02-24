@@ -12,6 +12,7 @@
     bright:  '#ede8db',
     green:   '#7a8a2a',
     greenBr: '#9aaa3a',
+    tan:     '#b49a6e',
     border:  '#22231a',
     borderL: '#33341f',
     red:     'rgba(139,41,66,0.6)',
@@ -37,7 +38,8 @@
     'RL Allocator':       'PPO agent with Transformer policy network. Multi-seed ensemble with cross-asset self-attention. Trained with Sharpe-weighted aggregation across policy seeds.',
     'LLM Analysis':       'LLM agents analyze the proposed allocation — surfacing relevant news, macro risks, sector concentration concerns, and specific recommendations for the human reviewer.',
     'Human Review':       'A human reviews the LLM analysis and proposed portfolio. Approves the trade, requests modifications, or vetoes positions. The human always has final say.',
-    'Portfolio':          'Once approved, the system autonomously executes the rebalance through the broker API. Every decision is logged to an auditable journal with hierarchical memory.',
+    'LLM Execution':      'Converts approved allocations into executable broker orders, applies final guardrails, and sends orders through the broker API.',
+    'Portfolio':          'Final holdings state plus the auditable decision journal. Captures fills, rationale, and persistent memory for future sessions.',
   };
 
   function renderArchitectureFlow(containerId) {
@@ -68,7 +70,8 @@
       { name: 'RL Allocator',       subtitle: '8-seed PPO + Transformer', col: 2, row: 2.75 },
       { name: 'LLM Analysis',       subtitle: 'News, risks, factors',     col: 3, row: 0.75 },
       { name: 'Human Review',       subtitle: 'Approve or modify',        col: 3, row: 2.75 },
-      { name: 'Portfolio',          subtitle: 'Execution & journal',       col: 4, row: 1.75 },
+      { name: 'LLM Execution',      subtitle: 'Broker API + guardrails',  col: 4, row: 2.75 },
+      { name: 'Portfolio',          subtitle: 'Positions & journal',      col: 4, row: 3.95 },
     ];
 
     var nodeW = 130, nodeH = 48;
@@ -91,7 +94,8 @@
       ['Stock Screener',     'LLM Analysis'],
       ['RL Allocator',       'LLM Analysis'],
       ['LLM Analysis',       'Human Review'],
-      ['Human Review',       'Portfolio'],
+      ['Human Review',       'LLM Execution'],
+      ['LLM Execution',      'Portfolio'],
     ];
 
     function findNode(name) {
@@ -136,13 +140,23 @@
       var tgt = findNode(e[1]);
       if (!src || !tgt) return;
 
-      var sx = src.x + nodeW / 2;
-      var sy = src.y + nodeH / 2;
-      var tx = tgt.x - nodeW / 2;
-      var ty = tgt.y + nodeH / 2;
-      var mx = (sx + tx) / 2;
-
-      var pathD = 'M' + sx + ',' + sy + ' C' + mx + ',' + sy + ' ' + mx + ',' + ty + ' ' + tx + ',' + ty;
+      var pathD;
+      if (src.col === tgt.col) {
+        // Vertical handoff within the same stage.
+        var sxV = src.x;
+        var syV = src.y + nodeH;
+        var txV = tgt.x;
+        var tyV = tgt.y;
+        var myV = (syV + tyV) / 2;
+        pathD = 'M' + sxV + ',' + syV + ' C' + sxV + ',' + myV + ' ' + txV + ',' + myV + ' ' + txV + ',' + tyV;
+      } else {
+        var sx = src.x + nodeW / 2;
+        var sy = src.y + nodeH / 2;
+        var tx = tgt.x - nodeW / 2;
+        var ty = tgt.y + nodeH / 2;
+        var mx = (sx + tx) / 2;
+        pathD = 'M' + sx + ',' + sy + ' C' + mx + ',' + sy + ' ' + mx + ',' + ty + ' ' + tx + ',' + ty;
+      }
 
       var path = svg.append('path')
         .attr('d', pathD)
@@ -864,8 +878,8 @@
     // Phase labels
     [
       { x: 0.5, y: 0.34, text: '1. PROPOSE ALLOCATION' },
-      { x: 0.5, y: 0.70, text: '2. ANALYZE & RESPOND' },
-      { x: 0.5, y: 0.80, text: '3. LOG DECISION' },
+      { x: 0.5, y: 0.53, text: '2. ANALYZE & RESPOND' },
+      { x: 0.5, y: 0.72, text: '3. LOG DECISION' },
     ].forEach(function (p) {
       svg.append('text').attr('x', p.x * width).attr('y', p.y * height)
         .attr('text-anchor', 'middle').attr('fill', C.dim)
