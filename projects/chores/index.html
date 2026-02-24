@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Adaptive Task Intelligence — Shane Conner</title>
+  <title>Adaptive Task Intelligence - Shane Conner</title>
 
-  <meta name="description" content="An adaptive task system where one log event propagates through a knowledge graph and frequencies evolve based on behavior." />
+  <meta name="description" content="An adaptive chore intelligence system where one log event propagates through a hierarchy and task frequencies evolve from real behavior." />
   <meta name="author" content="Shane Conner" />
 
   <meta property="og:type" content="article" />
-  <meta property="og:title" content="Adaptive Task Intelligence — Shane Conner" />
-  <meta property="og:description" content="One action propagates through a knowledge graph. Frequencies evolve by survival of the fittest." />
+  <meta property="og:title" content="Adaptive Task Intelligence - Shane Conner" />
+  <meta property="og:description" content="One action updates a graph. Schedules evolve from behavior. Table, desktop, and mobile interfaces share the same task intelligence engine." />
   <meta property="og:url" content="https://shaneconner.com/projects/chores" />
   <meta property="og:site_name" content="Shane Conner" />
 
@@ -44,7 +44,7 @@
   <section class="project-hero">
     <div class="hero-content">
       <h1>Adaptive Task<br />Intelligence</h1>
-      <p class="subtitle">One action. Infinite propagation.</p>
+      <p class="subtitle">Fewer actions in. More useful signal out.</p>
     </div>
     <p class="scroll-hint">Scroll to explore</p>
   </section>
@@ -52,9 +52,19 @@
   <!-- THE PROBLEM -->
   <div class="essay reveal">
     <h3>The Problem</h3>
-    <h2>Most task trackers are dumb lists</h2>
-    <p>You check a box. Nothing learns. The system doesn't know that a barbell squat also worked your glutes, quads, lower back, and core. It doesn't know that completing a task early means you're ready for more challenge, or that consistently skipping something means it should back off.</p>
-    <p>What if a single logged action could update an <em>entire knowledge graph</em>? And what if the system could evolve its own scheduling based on your actual behavior?</p>
+    <h2>Most task trackers are isolated checkboxes</h2>
+    <p>Traditional to-do systems treat every task as independent. Check a box and nothing else updates. No relationship awareness. No adaptive cadence. No memory of context beyond completion history.</p>
+    <p>This project flips that model: every log hits a shared hierarchy, and scheduling continuously adapts from actual behavior. Exercise is the easiest place to visualize the hierarchy, but the same engine powers household, hygiene, wellness, and admin routines.</p>
+  </div>
+
+  <div class="essay-wide reveal">
+    <div class="domain-chips">
+      <span class="domain-chip">Exercise</span>
+      <span class="domain-chip">Household Cleaning</span>
+      <span class="domain-chip">House Plants</span>
+      <span class="domain-chip">Hygiene</span>
+      <span class="domain-chip">Wellness</span>
+    </div>
   </div>
 
   <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
@@ -62,9 +72,9 @@
   <!-- INSIGHT 1: ONE ACTION, RICH DATA -->
   <div class="essay reveal">
     <h3>The Insight</h3>
-    <h2>One action, rich data</h2>
-    <p>Every exercise exists within a multi-dimensional taxonomy: muscle groups, movement patterns, equipment, energy systems, exercise types, and training objectives. When you log a single exercise, it recursively propagates through <em>every parent category</em> it belongs to.</p>
-    <p>One log event. Dozens of data updates.</p>
+    <h2>One log can update an entire graph</h2>
+    <p>When you log one leaf task, the system recursively updates every parent it belongs to. That means one click can update specific leaves, intermediate groups, and broad rollups in a single pass.</p>
+    <p>The visualization below uses exercise because it has dense multi-tag structure (movement, muscles, equipment, energy, objective, type), making the propagation effect obvious.</p>
   </div>
 
   <!-- SUNBURST -->
@@ -72,33 +82,119 @@
     <div class="viz-container reveal">
       <p class="viz-title">Interactive Category Hierarchy</p>
       <div id="sunburst-viz" style="width:100%;"></div>
-      <p class="viz-caption">Click any segment to zoom in. Click center to zoom back out. 353 category nodes across 6 dimensions.</p>
+      <p class="viz-caption">Click any segment to zoom in. Click center to zoom back out. This exercise subset contains 353 nodes across 6 dimensions.</p>
     </div>
   </div>
 
   <!-- CASCADE -->
   <div class="essay reveal">
-    <h2>Recursive propagation</h2>
-    <p>Watch a single exercise log ripple outward. The system traces every parent relationship and updates them all — from specific muscle heads to broad training categories.</p>
+    <h2>Propagation is recursive, not symbolic</h2>
+    <p>This animation shows one logged task triggering every linked ancestor path. The same pattern applies across non-exercise chores too: cleaning, plant care, and routines all inherit this "one action, many updates" behavior.</p>
   </div>
 
   <div class="essay-wide">
     <div class="viz-container reveal">
       <p class="viz-title">Cascade Animation</p>
       <div id="cascade-viz" style="width:100%;"></div>
-      <p class="viz-caption">A single "KB Bulgarian Split Squat" log propagates across 6 dimensions — muscle groups, movement patterns, equipment, and more — all converging to one "Exercise" log entry.</p>
+      <p class="viz-caption">Example shown: one "KB Bulgarian Split Squat" log ripples through multiple parent paths and converges at the top-level Exercise node.</p>
     </div>
+  </div>
+
+  <div class="essay-wide">
+    <div class="impact-strip reveal" id="impact-strip">
+      <div class="impact-item">
+        <div class="impact-value" data-impact="log">0</div>
+        <div class="impact-label">Logged action</div>
+      </div>
+      <div class="impact-item">
+        <div class="impact-value" data-impact="nodes">0</div>
+        <div class="impact-label">Nodes touched</div>
+      </div>
+      <div class="impact-item">
+        <div class="impact-value" data-impact="links">0</div>
+        <div class="impact-label">Parent links traversed</div>
+      </div>
+      <div class="impact-item">
+        <div class="impact-value" data-impact="graph">0</div>
+        <div class="impact-label">Nodes in this graph</div>
+      </div>
+    </div>
+    <p class="viz-caption">Single-example blast radius from the cascade view. Immediate updates are dozens deep inside a graph with hundreds of nodes.</p>
   </div>
 
   <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
 
-  <!-- INSIGHT 2: SURVIVAL OF THE FITTEST -->
+  <!-- IN PRACTICE -->
+  <div class="essay reveal">
+    <h3>In Practice</h3>
+    <h2>Same data, multiple interfaces</h2>
+    <p>You can use a table UI, a desktop coding workflow, or mobile chat. All three write to the same underlying task graph and frequency model.</p>
+    <p>The mobile workflow is especially useful when away from a computer, including building climbing workouts on the go with climbing-specific logging guidance.</p>
+  </div>
+
+  <div class="essay-wide">
+    <div class="usage-grid reveal">
+      <figure class="usage-card usage-card-wide">
+        <img src="/projects/chores/chore_tracker_table.png" alt="Task table view with sortable urgency and frequency columns" loading="lazy" />
+        <figcaption>Manual table workflow with urgency, cadence, due timing, and one-click logging.</figcaption>
+      </figure>
+
+      <figure class="usage-card">
+        <img src="/projects/chores/claude_code_example.PNG" alt="Desktop AI-assisted workflow using MCP tools" loading="lazy" />
+        <figcaption>Desktop assistant workflow in VS Code for recommendations and contextual tool calls.</figcaption>
+      </figure>
+
+      <figure class="usage-card">
+        <img src="/projects/chores/mobile_view.png" alt="Mobile AI workflow for querying tasks and getting suggestions" loading="lazy" />
+        <figcaption>Mobile access means the same data and suggestions are available away from your desk.</figcaption>
+      </figure>
+
+      <figure class="usage-card">
+        <img src="/projects/chores/climbing_mobile_view.png" alt="Mobile climbing workout planning example" loading="lazy" />
+        <figcaption>On-the-go climbing planning with granular logging conventions (per route/attempt).</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <div class="essay reveal">
+    <h3>Evolution</h3>
+    <h2>From spreadsheet tracking to agentic execution</h2>
+    <p>The system has evolved in three phases: spreadsheet logging, programmatic scheduling, and now MCP-powered agents. Each phase reduced manual data entry while increasing decision quality.</p>
+    <p>With MCP, the assistant can call real task tools directly: log chores, inspect urgency, search semantically, and build context-aware plans. The result is a practical Jarvis-style loop: less typing, better planning, and continuously improving personal context.</p>
+  </div>
+
+  <div class="essay-wide">
+    <div class="mcp-timeline reveal">
+      <div class="mcp-step">
+        <div class="mcp-year">2016+</div>
+        <div class="mcp-title">Google Sheets Era</div>
+        <div class="mcp-copy">Manual tracking and cadence tuning by hand.</div>
+      </div>
+      <div class="mcp-arrow" aria-hidden="true"></div>
+      <div class="mcp-step">
+        <div class="mcp-year">~2 Years Ago</div>
+        <div class="mcp-title">Programmatic Core</div>
+        <div class="mcp-copy">Recursive parent logging and adaptive frequency automation.</div>
+      </div>
+      <div class="mcp-arrow" aria-hidden="true"></div>
+      <div class="mcp-step">
+        <div class="mcp-year">Now</div>
+        <div class="mcp-title">MCP + Agent Tools</div>
+        <div class="mcp-copy">Assistant executes tool calls and helps plan around goals, profile, and context.</div>
+      </div>
+    </div>
+    <p class="viz-caption">Key shift: MCP turns task management from \"I log everything\" into \"the agent helps execute and orchestrate.\"</p>
+  </div>
+
+  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+
+  <!-- INSIGHT 2: ADAPTIVE FREQUENCY -->
   <div class="essay reveal">
     <h3>The Mechanism</h3>
-    <h2>Survival of the fittest</h2>
-    <p>Every task starts with the same frequency. Then the system watches what you actually do.</p>
-    <p>Complete a task early? The system multiplies the interval by the golden ratio (<em>1.382&times;</em>) — it loosens, making room for what matters more. Complete it late? The interval is divided by the same ratio — it tightens, because you clearly need more time between sessions.</p>
-    <p>Over months, frequencies evolve. Tasks you engage with regularly earn shorter cycles. Tasks you avoid drift toward longer intervals. Tasks you abandon entirely get naturally culled. No manual configuration required — the system shapes itself to your behavior.</p>
+    <h2>Frequency evolves from behavior</h2>
+    <p>Each task starts from a baseline cadence. Then the system adapts using completion timing.</p>
+    <p>Completed early: interval shrinks (more frequent). Completed late: interval expands (less frequent). The default multiplier is 1.382, creating stable two-way adjustment.</p>
+    <p>Over time, this produces personalized scheduling without manual rule tuning.</p>
   </div>
 
   <!-- FREQUENCY EVOLUTION -->
@@ -106,12 +202,12 @@
     <div class="viz-container reveal">
       <p class="viz-title">Frequency Evolution Over Time</p>
       <div id="frequency-viz" style="width:100%;"></div>
-      <p class="viz-caption">Synthetic data. Four exercises diverge from identical starting frequencies based on completion patterns. Adjustment points marked with circles.</p>
+      <p class="viz-caption">Illustrative mixed-domain tasks with realistic divergence. Adjustment points are marked with circles.</p>
     </div>
   </div>
 
   <div class="annotation" style="max-width:780px;margin:2rem auto;">
-    The golden ratio (&#x3C6; &asymp; 1.618) appears throughout nature in growth patterns. Here, its reciprocal property (1.382 &times; 1/1.382 = 1) ensures symmetric, stable convergence — adjustments that are equally responsive in both directions.
+    The multiplier is intentionally bounded and symmetric so cadence adapts quickly without becoming unstable.
   </div>
 
   <!-- DISTRIBUTION -->
@@ -119,7 +215,7 @@
     <div class="viz-container reveal">
       <p class="viz-title">Before &amp; After</p>
       <div id="distribution-viz" style="width:100%;"></div>
-      <p class="viz-caption">Left: uniform initial frequencies. Right: evolved distribution after months of adaptive scheduling. The system learned what matters.</p>
+      <p class="viz-caption">Left: near-uniform starting cadence. Right: the same task IDs after adaptation. Each bar represents one task.</p>
     </div>
   </div>
 
@@ -128,9 +224,9 @@
   <!-- RESULTS -->
   <div class="essay reveal">
     <h3>Results</h3>
-    <h2>ML as a tool</h2>
-    <p>The rich, multi-dimensional data model makes prediction almost trivial. A trained ML model predicts the next likely action with ~75% accuracy — not by being clever, but because the knowledge graph creates a feature space where patterns emerge naturally.</p>
-    <p>This points toward a larger idea: the future of AI isn't monolithic models doing everything. It's <em>general intelligence (LLMs) orchestrating specialized tools</em> — ML models, databases, APIs — each purpose-built for a narrow task. This prediction model is exactly that kind of tool: small, focused, and ready to be called by a larger system that understands context.</p>
+    <h2>Better structure makes prediction easier</h2>
+    <p>Once logs are structured through hierarchy and adaptive cadence, downstream models get cleaner signals. Sequence and context become easier to learn, enabling useful next-task prediction and recommendation behaviors.</p>
+    <p>It is a good example of practical AI architecture: LLMs orchestrate, specialized tools execute, and structured data does the heavy lifting.</p>
   </div>
 
   <div class="stats-row reveal">
@@ -139,11 +235,11 @@
       <div class="stat-label">Hit@1 Accuracy</div>
     </div>
     <div class="stat">
-      <div class="stat-value">1,600+</div>
+      <div class="stat-value">1,399+</div>
       <div class="stat-label">Active Tasks</div>
     </div>
     <div class="stat">
-      <div class="stat-value">160K+</div>
+      <div class="stat-value">149K+</div>
       <div class="stat-label">Log Events</div>
     </div>
   </div>
@@ -155,6 +251,7 @@
       <span class="project-tag">Python</span>
       <span class="project-tag">SQLite</span>
       <span class="project-tag">scikit-learn</span>
+      <span class="project-tag">MCP</span>
       <span class="project-tag">D3.js</span>
       <span class="project-tag">Knowledge Graph</span>
       <span class="project-tag">Adaptive Scheduling</span>

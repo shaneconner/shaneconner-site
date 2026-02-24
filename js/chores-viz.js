@@ -1,5 +1,5 @@
 // Chore Tracker — D3.js visualizations
-// Renders into #sunburst-viz, #cascade-viz, #frequency-viz, #distribution-viz
+// Renders into #sunburst-viz, #cascade-viz, #impact-strip, #frequency-viz, #distribution-viz
 
 (function () {
   'use strict';
@@ -53,6 +53,29 @@
   function countChildren(node) {
     if (!node.children) return 0;
     return node.children.length;
+  }
+
+  function countNodes(node) {
+    if (!node) return 0;
+    var total = 1;
+    if (!node.children) return total;
+    node.children.forEach(function (child) {
+      total += countNodes(child);
+    });
+    return total;
+  }
+
+  function animateCounter(el, target) {
+    var start = null;
+    var duration = 900;
+    function step(ts) {
+      if (!start) start = ts;
+      var t = Math.min((ts - start) / duration, 1);
+      var eased = 1 - Math.pow(1 - t, 3);
+      el.textContent = Math.round(eased * target).toLocaleString();
+      if (t < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
   }
 
   // ════════════════════════════════════════════════════════════════════════════
@@ -566,6 +589,30 @@
     animateCascade();
   }
 
+  function renderImpactStrip(containerId) {
+    var container = document.getElementById(containerId);
+    if (!container || !hierarchyData || !hierarchyData.exercise || !hierarchyData.cascade) return;
+
+    var edges = hierarchyData.cascade.edges || [];
+    var touchedNodes = {};
+    edges.forEach(function (edge) {
+      touchedNodes[edge[0]] = true;
+      touchedNodes[edge[1]] = true;
+    });
+
+    var metrics = {
+      log: 1,
+      nodes: Object.keys(touchedNodes).length,
+      links: edges.length,
+      graph: countNodes(hierarchyData.exercise)
+    };
+
+    Object.keys(metrics).forEach(function (key) {
+      var el = container.querySelector('[data-impact="' + key + '"]');
+      if (el) animateCounter(el, metrics[key]);
+    });
+  }
+
   // ════════════════════════════════════════════════════════════════════════════
   //  3.  FREQUENCY EVOLUTION
   // ════════════════════════════════════════════════════════════════════════════
@@ -583,56 +630,50 @@
     var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
                   'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-    // Synthetic exercise data
-    // Each exercise: { name, color, points: [{month, freq}] }
+    // Synthetic but realistic mixed-domain task data.
+    // Each item: { name, color, points: [{month, freq}] }
     var phi = 1.382;
+    var cableRows = [
+      { month: 0, freq: 14 },
+      { month: 2, freq: 14 / phi },
+      { month: 5, freq: 14 / (phi * phi) },
+      { month: 8, freq: 14 / (phi * phi * phi) },
+      { month: 11, freq: 4 }
+    ];
 
-    // "Morning Stretch" — starts 7d, tightens to ~3d
-    var morningStretch = [
-      { month: 0, freq: 7 },
-      { month: 2, freq: 7 / phi },               // ~5.07
-      { month: 5, freq: 7 / (phi * phi) },        // ~3.67
-      { month: 8, freq: 7 / (phi * phi * phi) },  // ~2.65
+    var walkDogs = [
+      { month: 0, freq: 14 },
+      { month: 1, freq: 14 / phi },
+      { month: 3, freq: 14 / (phi * phi) },
+      { month: 6, freq: 14 / (phi * phi * phi) },
+      { month: 9, freq: 14 / Math.pow(phi, 4) },
       { month: 11, freq: 3 }
     ];
 
-    // "Heavy Squat" — starts 7d, loosens to ~21d
-    var heavySquat = [
-      { month: 0, freq: 7 },
-      { month: 3, freq: 7 * phi },          // ~9.67
-      { month: 6, freq: 7 * phi * phi },    // ~13.37
-      { month: 9, freq: 7 * phi * phi * phi }, // ~18.48
-      { month: 11, freq: 21 }
-    ];
-
-    // "Core Work" — starts 7d, stays stable
-    var coreWork = [
-      { month: 0, freq: 7 },
-      { month: 3, freq: 7 * phi },     // tightens slightly
-      { month: 5, freq: 7 },           // comes back
-      { month: 8, freq: 7 / phi },     // loosens slightly
-      { month: 10, freq: 7 },
-      { month: 11, freq: 7 }
-    ];
-
-    // "Flexibility" — starts 7d, gradually abandoned ~45d
-    var flexibility = [
-      { month: 0, freq: 7 },
-      { month: 2, freq: 7 * phi },               // ~9.67
-      { month: 4, freq: 7 * phi * phi },          // ~13.37
-      { month: 7, freq: 7 * phi * phi * phi },    // ~18.48
-      { month: 9, freq: 7 * Math.pow(phi, 4) },   // ~25.5
+    var deepCleanCouch = [
+      { month: 0, freq: 14 },
+      { month: 3, freq: 14 * phi },
+      { month: 6, freq: 14 * phi * phi },
+      { month: 9, freq: 14 * Math.pow(phi, 3) },
       { month: 11, freq: 45 }
     ];
 
-    var exercises = [
-      { name: 'Morning Stretch', color: '#9aaa3a', points: morningStretch },
-      { name: 'Heavy Squat',     color: '#7a8a2a', points: heavySquat },
-      { name: 'Core Work',       color: '#6b6a3a', points: coreWork },
-      { name: 'Flexibility',     color: '#4a5520', points: flexibility }
+    var budgetReview = [
+      { month: 0, freq: 14 },
+      { month: 3, freq: 14 * phi },
+      { month: 6, freq: 14 * phi * phi },
+      { month: 9, freq: 30 },
+      { month: 11, freq: 30 }
     ];
 
-    // Interpolate each exercise into 12 monthly data points for smooth lines
+    var exercises = [
+      { name: 'Cable Rows',       color: '#9aaa3a', points: cableRows },
+      { name: 'Walk Dogs',        color: '#7a8a2a', points: walkDogs },
+      { name: 'Deep Clean Couch', color: '#6b6a3a', points: deepCleanCouch },
+      { name: 'Budget Review',    color: '#4a5520', points: budgetReview }
+    ];
+
+    // Interpolate each task into 12 monthly data points for smooth lines
     exercises.forEach(function (ex) {
       var full = [];
       for (var m = 0; m < 12; m++) {
@@ -707,7 +748,7 @@
       .attr('fill', C.dim)
       .style('font-family', FONT_LABEL)
       .style('font-size', '11px')
-      .text('Frequency (days)');
+      .text('Task frequency (days)');
 
     // Light grid lines
     [1, 3, 7, 14, 30, 60].forEach(function (v) {
@@ -724,7 +765,7 @@
       .y(function (d) { return yScale(d.freq); })
       .curve(d3.curveMonotoneX);
 
-    // Draw each exercise
+    // Draw each task
     var annotationDone = false;
 
     exercises.forEach(function (ex) {
@@ -762,7 +803,7 @@
           .duration(300)
           .attr('opacity', 1);
 
-        // Annotate the very first adjustment across all exercises
+        // Annotate the very first adjustment across all tasks
         if (!annotationDone && idx === 1) {
           annotationDone = true;
           g.append('text')
@@ -807,13 +848,14 @@
     container.innerHTML = '';
 
     var width = container.clientWidth;
-    var height = 260;
-    var margin = { top: 32, right: 16, bottom: 34, left: 40 };
+    var height = 300;
+    var margin = { top: 32, right: 16, bottom: 72, left: 52 };
     var gap = 40;
     var chartW = (width - margin.left - margin.right - gap) / 2;
     var chartH = height - margin.top - margin.bottom;
 
     var n = 20;
+    var tickIdx = [0, 5, 10, 15, 19];
 
     // Seeded-ish random for consistency
     function pseudoRandom(seed) {
@@ -821,33 +863,22 @@
       return x - Math.floor(x);
     }
 
-    // Initial: all ~30 days ± noise
+    // Initial: near-uniform starting cadence.
     var initial = [];
     for (var i = 0; i < n; i++) {
       initial.push(30 + (pseudoRandom(i) - 0.5) * 8);
     }
 
-    // Evolved: skewed distribution — many short, few long (2–90 days)
-    var evolved = [];
-    for (var j = 0; j < n; j++) {
-      // Use an exponential-ish distribution
-      var t = j / (n - 1); // 0..1
-      var freq = 2 + Math.pow(t, 1.8) * 88; // 2 to 90
-      evolved.push(freq);
-    }
-    // Shuffle evolved so it looks natural
-    var shuffled = evolved.slice();
-    for (var k = shuffled.length - 1; k > 0; k--) {
-      var swap = Math.floor(pseudoRandom(k + 42) * (k + 1));
-      var tmp = shuffled[k];
-      shuffled[k] = shuffled[swap];
-      shuffled[swap] = tmp;
-    }
-    evolved = shuffled;
+    // Evolved: same 20 task IDs after adaptation.
+    var evolved = [
+      7, 3, 14, 45, 6,
+      4, 9, 30, 5, 12,
+      10, 3, 60, 8, 18,
+      14, 35, 5, 4, 16
+    ];
 
-    // Color scale for evolved bars
     var evolvedColorScale = d3.scaleLinear()
-      .domain([2, 90])
+      .domain([2, 60])
       .range([C.greenBr, C.dim]);
 
     var svg = d3.select(container)
@@ -857,10 +888,9 @@
       .attr('height', height)
       .style('display', 'block');
 
-    // Shared y scale
     var yScale = d3.scaleLinear().domain([0, 95]).range([chartH, 0]);
 
-    // ── Left chart (Initial) ──
+    // Left chart (Initial)
     var gLeft = svg.append('g')
       .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
@@ -869,7 +899,6 @@
       .range([0, chartW])
       .padding(0.15);
 
-    // Title
     gLeft.append('text')
       .attr('x', chartW / 2)
       .attr('y', -14)
@@ -879,24 +908,30 @@
       .style('font-size', '14px')
       .text('Initial');
 
-    // Y axis left
     gLeft.append('g')
-      .call(
-        d3.axisLeft(yScale).ticks(5).tickFormat(function (d) { return d + 'd'; })
-      )
+      .call(d3.axisLeft(yScale).ticks(5).tickFormat(function (d) { return d + 'd'; }))
       .call(function (gAxis) {
         gAxis.select('.domain').attr('stroke', C.dim);
         gAxis.selectAll('.tick line').attr('stroke', C.dim).attr('opacity', 0.3);
         gAxis.selectAll('.tick text').attr('fill', C.dim).style('font-family', FONT_LABEL).style('font-size', '10px');
       });
 
-    // X axis left
+    gLeft.append('text')
+      .attr('transform', 'rotate(-90)')
+      .attr('x', -chartH / 2)
+      .attr('y', -36)
+      .attr('text-anchor', 'middle')
+      .attr('fill', C.dim)
+      .style('font-family', FONT_LABEL)
+      .style('font-size', '10px')
+      .text('Task frequency (days)');
+
     gLeft.append('g')
       .attr('transform', 'translate(0,' + chartH + ')')
       .call(
         d3.axisBottom(xLeft)
-          .tickValues(d3.range(0, n, 4))
-          .tickFormat(function (d) { return d + 1; })
+          .tickValues(tickIdx)
+          .tickFormat(function (d) { return 'T' + (d + 1); })
       )
       .call(function (gAxis) {
         gAxis.select('.domain').attr('stroke', C.dim);
@@ -904,8 +939,7 @@
         gAxis.selectAll('.tick text').attr('fill', C.dim).style('font-family', FONT_LABEL).style('font-size', '10px');
       });
 
-    // Bars (left)
-    var leftBars = gLeft.selectAll('.bar-left')
+    gLeft.selectAll('.bar-left')
       .data(initial)
       .join('rect')
       .attr('class', 'bar-left')
@@ -916,7 +950,7 @@
       .attr('fill', C.green)
       .attr('rx', 1);
 
-    // ── Right chart (Evolved) ──
+    // Right chart (Evolved)
     var rightOffset = margin.left + chartW + gap;
     var gRight = svg.append('g')
       .attr('transform', 'translate(' + rightOffset + ',' + margin.top + ')');
@@ -926,7 +960,6 @@
       .range([0, chartW])
       .padding(0.15);
 
-    // Title
     gRight.append('text')
       .attr('x', chartW / 2)
       .attr('y', -14)
@@ -936,24 +969,12 @@
       .style('font-size', '14px')
       .text('Evolved');
 
-    // Y axis right
-    gRight.append('g')
-      .call(
-        d3.axisLeft(yScale).ticks(5).tickFormat(function (d) { return d + 'd'; })
-      )
-      .call(function (gAxis) {
-        gAxis.select('.domain').attr('stroke', C.dim);
-        gAxis.selectAll('.tick line').attr('stroke', C.dim).attr('opacity', 0.3);
-        gAxis.selectAll('.tick text').attr('fill', C.dim).style('font-family', FONT_LABEL).style('font-size', '10px');
-      });
-
-    // X axis right
     gRight.append('g')
       .attr('transform', 'translate(0,' + chartH + ')')
       .call(
         d3.axisBottom(xRight)
-          .tickValues(d3.range(0, n, 4))
-          .tickFormat(function (d) { return d + 1; })
+          .tickValues(tickIdx)
+          .tickFormat(function (d) { return 'T' + (d + 1); })
       )
       .call(function (gAxis) {
         gAxis.select('.domain').attr('stroke', C.dim);
@@ -961,7 +982,6 @@
         gAxis.selectAll('.tick text').attr('fill', C.dim).style('font-family', FONT_LABEL).style('font-size', '10px');
       });
 
-    // Bars (right) — start as initial, morph to evolved
     var rightBars = gRight.selectAll('.bar-right')
       .data(initial)
       .join('rect')
@@ -973,7 +993,15 @@
       .attr('fill', C.green)
       .attr('rx', 1);
 
-    // After 1.5s, morph to evolved state
+    svg.append('text')
+      .attr('x', width / 2)
+      .attr('y', height - 10)
+      .attr('text-anchor', 'middle')
+      .attr('fill', C.dim)
+      .style('font-family', FONT_LABEL)
+      .style('font-size', '9px')
+      .text('Each bar is one task. Example IDs: T1 Cable Rows, T6 Inbox Zero, T11 Vacuum Main Floor, T16 Call Family, T20 Weekly Planning.');
+
     setTimeout(function () {
       rightBars
         .data(evolved)
@@ -993,6 +1021,7 @@
   var vizMap = {
     'sunburst-viz':     renderSunburst,
     'cascade-viz':      renderCascade,
+    'impact-strip':     renderImpactStrip,
     'frequency-viz':    renderFrequencyEvolution,
     'distribution-viz': renderDistribution,
   };
