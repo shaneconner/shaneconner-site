@@ -50,12 +50,10 @@ function initNavDropdowns() {
       { label: 'Process', href: '/art/#process' }
     ],
     projects: [
-      { label: 'All Projects', href: '/projects/' },
-      { label: 'Adaptive Task Intelligence', href: '/projects/chores/' },
-      { label: 'Autonomous Portfolio Intelligence', href: '/projects/ai-investor/' }
+      { label: 'Autonomous Portfolio Intelligence', href: '/projects/ai-investor/' },
+      { label: 'Adaptive Task Intelligence', href: '/projects/chores/' }
     ],
     contact: [
-      { label: 'Overview', href: '/contact/#contact-top' },
       { label: 'Details', href: '/contact/#contact-details' },
       { label: 'Experience', href: '/contact/#experience' },
       { label: 'Skills', href: '/contact/#skills' },
