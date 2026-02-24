@@ -541,48 +541,60 @@
       linkPaths.attr('stroke', colorOff).attr('stroke-width', 1.5);
       g.selectAll('.cascade-annotation').attr('opacity', 0);
 
-      var delayPerLayer = 600;
+      // Slower, staged cadence: each column processes top-to-bottom.
+      var baseDelay = 520;
+      var nodeStep = 120;
+      var edgeLag = 70;
+      var layerGap = 260;
+      var timeline = baseDelay;
 
       for (var li = 0; li <= maxLayer; li++) {
-        (function (layerIdx) {
-          var delay = 400 + layerIdx * delayPerLayer;
-          var layerNames = layers[layerIdx];
+        (function (layerIdx, layerStart) {
+          var layerNames = layers[layerIdx].slice().sort(function (a, b) {
+            return (nodePos[a] ? nodePos[a].y : 0) - (nodePos[b] ? nodePos[b].y : 0);
+          });
 
-          // Light up nodes in this layer
-          nodeGroups
-            .filter(function (d) { return layerNames.indexOf(d.name) >= 0; })
-            .each(function (d) {
-              d3.select(this).select('circle')
-                .transition().delay(delay).duration(300)
-                .attr('fill', nodeColor(d.name))
-                .attr('stroke-opacity', 1);
-              d3.select(this).select('text')
-                .transition().delay(delay).duration(300)
-                .attr('fill', C.bright);
-            });
+          layerNames.forEach(function (name, nodeIdx) {
+            var nodeDelay = layerStart + nodeIdx * nodeStep;
 
-          // Light up edges FROM the previous layer TO this layer
-          if (layerIdx > 0) {
-            var prevNames = layers[layerIdx - 1];
-            linkPaths
-              .filter(function (d) {
-                return prevNames.indexOf(d.source) >= 0 && layerNames.indexOf(d.target) >= 0;
-              })
-              .transition().delay(delay).duration(300)
-              .attr('stroke', function (d) { return nodeColor(d.target); })
-              .attr('stroke-width', 2);
-          }
-        })(li);
+            nodeGroups
+              .filter(function (d) { return d.name === name; })
+              .each(function (d) {
+                d3.select(this).select('circle')
+                  .transition().delay(nodeDelay).duration(320)
+                  .attr('fill', nodeColor(d.name))
+                  .attr('stroke-opacity', 1);
+                d3.select(this).select('text')
+                  .transition().delay(nodeDelay).duration(320)
+                  .attr('fill', C.bright);
+              });
+
+            // Light only edges that terminate at this specific node.
+            if (layerIdx > 0) {
+              var prevNames = layers[layerIdx - 1];
+              linkPaths
+                .filter(function (d) {
+                  return d.target === name && prevNames.indexOf(d.source) >= 0;
+                })
+                .transition().delay(nodeDelay + edgeLag).duration(280)
+                .attr('stroke', nodeColor(name))
+                .attr('stroke-width', 2);
+            }
+          });
+        })(li, timeline);
+
+        var layerCount = Math.max(1, layers[li].length);
+        timeline += layerCount * nodeStep + layerGap;
       }
 
       // Show annotation after all layers
-      var annotationDelay = 400 + (maxLayer + 1) * delayPerLayer;
+      var annotationDelay = timeline + 120;
       g.selectAll('.cascade-annotation')
-        .transition().delay(annotationDelay).duration(400)
+        .transition().delay(annotationDelay).duration(500)
         .attr('opacity', 1);
 
       // Hold on final frame, then restart
-      var totalCycle = annotationDelay + 400 + 4000;
+      var totalCycle = annotationDelay + 450 + 4300;
       cascadeTimer = setTimeout(animateCascade, totalCycle);
     }
 
@@ -620,6 +632,7 @@
     var container = document.getElementById(containerId);
     if (!container) return;
     container.innerHTML = '';
+    container.style.position = 'relative';
 
     var width = container.clientWidth;
     var height = 320;
@@ -709,6 +722,12 @@
       .attr('height', height)
       .style('display', 'block');
 
+    // Hover tooltip for adjustment examples
+    var tooltip = document.createElement('div');
+    tooltip.className = 'd3-tooltip';
+    tooltip.style.opacity = '0';
+    container.appendChild(tooltip);
+
     var g = svg.append('g')
       .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
@@ -766,7 +785,8 @@
       .curve(d3.curveMonotoneX);
 
     // Draw each task
-    var annotationDone = false;
+    var annotationUpDone = false;
+    var annotationDownDone = false;
 
     exercises.forEach(function (ex) {
       // Path
@@ -790,22 +810,62 @@
       // Adjustment point markers (on the raw key-points, not interpolated)
       ex.points.forEach(function (pt, idx) {
         if (idx === 0) return; // skip start point
-        g.append('circle')
+        var prev = ex.points[idx - 1];
+        var isIncrease = pt.freq > prev.freq;
+        var factor = isIncrease ? (pt.freq / prev.freq) : (prev.freq / pt.freq);
+        var opText = isIncrease ? '\u00d7' : '\u00f7';
+
+        var marker = g.append('circle')
           .attr('cx', xScale(pt.month))
           .attr('cy', yScale(pt.freq))
           .attr('r', 3.5)
           .attr('fill', ex.color)
           .attr('stroke', C.bg)
           .attr('stroke-width', 1)
+          .style('cursor', 'help')
+          .on('mouseover', function (event) {
+            var mode = isIncrease
+              ? 'Ignored/late completion: due less often'
+              : 'Chosen before due date: due more often';
+            tooltip.innerHTML =
+              '<strong>' + ex.name + '</strong><br />' +
+              mode + '<br />' +
+              prev.freq.toFixed(1) + 'd \u2192 ' + pt.freq.toFixed(1) + 'd (' + opText + factor.toFixed(3) + ')';
+            tooltip.style.opacity = '1';
+          })
+          .on('mousemove', function (event) {
+            var rect = container.getBoundingClientRect();
+            tooltip.style.left = (event.clientX - rect.left + 12) + 'px';
+            tooltip.style.top = (event.clientY - rect.top - 28) + 'px';
+          })
+          .on('mouseout', function () {
+            tooltip.style.opacity = '0';
+          })
           .attr('opacity', 0)
           .transition()
           .delay(2000 * (pt.month / 11) + 100)
           .duration(300)
           .attr('opacity', 1);
 
-        // Annotate the very first adjustment across all tasks
-        if (!annotationDone && idx === 1) {
-          annotationDone = true;
+        // Show one example each for decrease (/1.382) and increase (x1.382).
+        if (!isIncrease && !annotationDownDone) {
+          annotationDownDone = true;
+          g.append('text')
+            .attr('x', xScale(pt.month) + 8)
+            .attr('y', yScale(pt.freq) - 10)
+            .attr('fill', C.dim)
+            .style('font-family', FONT_LABEL)
+            .style('font-size', '10px')
+            .attr('opacity', 0)
+            .text('\u00f7' + factor.toFixed(3))
+            .transition()
+            .delay(2000 * (pt.month / 11) + 200)
+            .duration(400)
+            .attr('opacity', 1);
+        }
+
+        if (isIncrease && !annotationUpDone) {
+          annotationUpDone = true;
           g.append('text')
             .attr('x', xScale(pt.month) + 6)
             .attr('y', yScale(pt.freq) - 10)
@@ -813,7 +873,7 @@
             .style('font-family', FONT_LABEL)
             .style('font-size', '10px')
             .attr('opacity', 0)
-            .text('\u00d71.382')
+            .text('\u00d7' + factor.toFixed(3))
             .transition()
             .delay(2000 * (pt.month / 11) + 200)
             .duration(400)
@@ -1017,6 +1077,71 @@
   // ════════════════════════════════════════════════════════════════════════════
   //  SCROLL-TRIGGERED RENDERING & INIT
   // ════════════════════════════════════════════════════════════════════════════
+  function initUsageLightbox() {
+    var images = document.querySelectorAll('.usage-panel img');
+    if (!images.length) return;
+
+    var overlay = document.getElementById('usage-lightbox');
+    if (!overlay) {
+      overlay = document.createElement('div');
+      overlay.id = 'usage-lightbox';
+      overlay.className = 'usage-lightbox';
+      overlay.setAttribute('aria-hidden', 'true');
+      overlay.innerHTML =
+        '<button type="button" class="usage-lightbox-close" aria-label="Close image view">&times;</button>' +
+        '<figure class="usage-lightbox-figure">' +
+          '<img class="usage-lightbox-image" alt="" />' +
+          '<figcaption class="usage-lightbox-caption"></figcaption>' +
+        '</figure>';
+      document.body.appendChild(overlay);
+    }
+
+    var lightboxImage = overlay.querySelector('.usage-lightbox-image');
+    var lightboxCaption = overlay.querySelector('.usage-lightbox-caption');
+    var closeBtn = overlay.querySelector('.usage-lightbox-close');
+
+    function closeLightbox() {
+      overlay.classList.remove('open');
+      overlay.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('lightbox-open');
+      lightboxImage.removeAttribute('src');
+      lightboxCaption.textContent = '';
+    }
+
+    function openLightbox(imgEl) {
+      lightboxImage.src = imgEl.src;
+      lightboxImage.alt = imgEl.alt || '';
+
+      var panel = imgEl.closest('figure');
+      var subtitle = panel ? panel.querySelector('.usage-subtitle') : null;
+      var context = panel ? panel.querySelector('.usage-context') : null;
+      var captionText = '';
+
+      if (subtitle && context) captionText = subtitle.textContent + ' - ' + context.textContent;
+      else if (context) captionText = context.textContent;
+      else if (subtitle) captionText = subtitle.textContent;
+
+      lightboxCaption.textContent = captionText;
+      overlay.classList.add('open');
+      overlay.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('lightbox-open');
+    }
+
+    images.forEach(function (imgEl) {
+      imgEl.addEventListener('click', function () {
+        openLightbox(imgEl);
+      });
+    });
+
+    closeBtn.addEventListener('click', closeLightbox);
+    overlay.addEventListener('click', function (event) {
+      if (event.target === overlay) closeLightbox();
+    });
+
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape' && overlay.classList.contains('open')) closeLightbox();
+    });
+  }
 
   var vizMap = {
     'sunburst-viz':     renderSunburst,
@@ -1045,6 +1170,7 @@
   }
 
   document.addEventListener('DOMContentLoaded', function () {
+    initUsageLightbox();
     loadData().then(function () {
       initVisualizations();
     }).catch(function (err) {

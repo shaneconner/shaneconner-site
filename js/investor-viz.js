@@ -878,8 +878,8 @@
     // Phase labels
     [
       { x: 0.5, y: 0.34, text: '1. PROPOSE ALLOCATION' },
-      { x: 0.5, y: 0.53, text: '2. ANALYZE & RESPOND' },
-      { x: 0.5, y: 0.72, text: '3. LOG DECISION' },
+      { x: 0.5, y: 0.52, text: '2. ANALYZE & RESPOND' },
+      { x: 0.5, y: 0.69, text: '3. LOG DECISION' },
     ].forEach(function (p) {
       svg.append('text').attr('x', p.x * width).attr('y', p.y * height)
         .attr('text-anchor', 'middle').attr('fill', C.dim)

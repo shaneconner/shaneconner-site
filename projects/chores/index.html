@@ -133,26 +133,53 @@
   </div>
 
   <div class="essay-wide">
-    <div class="usage-grid reveal">
-      <figure class="usage-card usage-card-wide">
-        <img src="/projects/chores/chore_tracker_table.png" alt="Task table view with sortable urgency and frequency columns" loading="lazy" />
-        <figcaption>Manual table workflow with urgency, cadence, due timing, and one-click logging.</figcaption>
+    <div class="usage-stack reveal">
+      <figure class="usage-panel usage-panel-full">
+        <div class="usage-media">
+          <img src="/projects/chores/img/chore-tracker-table.png" alt="Task table view with sortable urgency and frequency columns" loading="lazy" />
+        </div>
+        <figcaption>
+          <span class="usage-subtitle">Manual Table Workflow</span>
+          <span class="usage-context">Full-table control for filtering, urgency sorting, and one-click logging when you want explicit oversight.</span>
+        </figcaption>
       </figure>
 
-      <figure class="usage-card">
-        <img src="/projects/chores/claude_code_example.PNG" alt="Desktop AI-assisted workflow using MCP tools" loading="lazy" />
-        <figcaption>Desktop assistant workflow in VS Code for recommendations and contextual tool calls.</figcaption>
+      <figure class="usage-panel usage-panel-full">
+        <div class="usage-media">
+          <img src="/projects/chores/img/claude-code-desktop.png" alt="Desktop AI-assisted workflow using MCP tools" loading="lazy" />
+        </div>
+        <figcaption>
+          <span class="usage-subtitle">Desktop Agent Workflow</span>
+          <span class="usage-context">Assistant calls MCP tools directly in-session so planning and logging happen inside the same conversation loop.</span>
+        </figcaption>
       </figure>
 
-      <figure class="usage-card">
-        <img src="/projects/chores/mobile_view.png" alt="Mobile AI workflow for querying tasks and getting suggestions" loading="lazy" />
-        <figcaption>Mobile access means the same data and suggestions are available away from your desk.</figcaption>
-      </figure>
+      <div class="usage-mobile-head">
+        <h4>Mobile, Full Context</h4>
+        <p>Two real mobile snapshots showing why this matters: the same task graph and tools are available away from your desk.</p>
+      </div>
 
-      <figure class="usage-card">
-        <img src="/projects/chores/climbing_mobile_view.png" alt="Mobile climbing workout planning example" loading="lazy" />
-        <figcaption>On-the-go climbing planning with granular logging conventions (per route/attempt).</figcaption>
-      </figure>
+      <div class="usage-mobile-grid">
+        <figure class="usage-panel usage-panel-mobile">
+          <div class="usage-media">
+            <img src="/projects/chores/img/mobile-chat-view.png" alt="Mobile AI workflow for querying tasks and getting suggestions" loading="lazy" />
+          </div>
+          <figcaption>
+            <span class="usage-subtitle">On-the-Go Daily Guidance</span>
+            <span class="usage-context">Query current state, get next-task suggestions, and log updates immediately while out and about.</span>
+          </figcaption>
+        </figure>
+
+        <figure class="usage-panel usage-panel-mobile">
+          <div class="usage-media">
+            <img src="/projects/chores/img/mobile-climbing-view.png" alt="Mobile climbing workout planning example" loading="lazy" />
+          </div>
+          <figcaption>
+            <span class="usage-subtitle">Climbing Workout Build-Out</span>
+            <span class="usage-context">Uses climbing-specific logging conventions to structure sessions while preserving per-attempt granularity.</span>
+          </figcaption>
+        </figure>
+      </div>
     </div>
   </div>
 
@@ -183,7 +210,81 @@
         <div class="mcp-copy">Assistant executes tool calls and helps plan around goals, profile, and context.</div>
       </div>
     </div>
-    <p class="viz-caption">Key shift: MCP turns task management from \"I log everything\" into \"the agent helps execute and orchestrate.\"</p>
+    <p class="viz-caption">Key shift: MCP turns task management from "I log everything" into "the agent helps execute and orchestrate."</p>
+  </div>
+
+  <div class="essay reveal">
+    <h3>Trust</h3>
+    <h2>Automation with control</h2>
+    <p>The agent can execute task operations, but the system is built to stay inspectable and reversible. You can review current state, see why a recommendation was made, and correct individual entries without breaking the broader history.</p>
+  </div>
+
+  <div class="essay-wide">
+    <div class="trust-grid reveal">
+      <div class="trust-card">
+        <div class="trust-title">Human Override</div>
+        <div class="trust-copy">Suggestions are optional and final decisions stay with you.</div>
+      </div>
+      <div class="trust-card">
+        <div class="trust-title">Auditable History</div>
+        <div class="trust-copy">Logs, notes, and parent propagation produce a traceable decision path.</div>
+      </div>
+      <div class="trust-card">
+        <div class="trust-title">Reversible Actions</div>
+        <div class="trust-copy">Accidental log entries can be corrected without rebuilding the entire system.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="essay-wide">
+    <div class="mcp-flow reveal" aria-label="Agent toolchain flow">
+      <div class="mcp-flow-node">
+        <span class="mcp-flow-label">General Agent</span>
+        <span class="mcp-flow-sub">Understands goals, context, and natural-language intent.</span>
+      </div>
+      <div class="mcp-flow-arrow" aria-hidden="true"></div>
+      <div class="mcp-flow-node">
+        <span class="mcp-flow-label">MCP Tools</span>
+        <span class="mcp-flow-sub">Log, query, search, update, and retrieve current state.</span>
+      </div>
+      <div class="mcp-flow-arrow" aria-hidden="true"></div>
+      <div class="mcp-flow-node mcp-flow-node-specialist">
+        <span class="mcp-flow-label">Specialist ML Model</span>
+        <span class="mcp-flow-sub">Next-task ranker optimized for selection prediction.</span>
+      </div>
+      <div class="mcp-flow-arrow" aria-hidden="true"></div>
+      <div class="mcp-flow-node">
+        <span class="mcp-flow-label">Task Graph + DB</span>
+        <span class="mcp-flow-sub">Hierarchy, frequencies, logs</span>
+      </div>
+      <div class="mcp-flow-arrow" aria-hidden="true"></div>
+      <div class="mcp-flow-node">
+        <span class="mcp-flow-label">Output</span>
+        <span class="mcp-flow-sub">Plan, recommendation, and optional execution.</span>
+      </div>
+    </div>
+    <p class="viz-caption">Architecture pattern: a general intelligence agent orchestrates tools and calls specialized models where they outperform broad language models.</p>
+  </div>
+
+  <div class="essay reveal">
+    <h3>Model Strategy</h3>
+    <h2>General intelligence for breadth, specialized models for precision</h2>
+    <p>The assistant is the orchestrator: it can converse, reason across domains, and decide which tools to call. The prediction itself is delegated to a task-specific ML ranker trained on structured history, where specialization improves accuracy.</p>
+    <p>This split is intentional: one general layer for coordination, plus narrow high-performance models as callable tools for well-defined tasks.</p>
+  </div>
+
+  <div class="essay-wide">
+    <div class="model-role-grid reveal">
+      <div class="model-role-card">
+        <div class="model-role-title">General Agent (LLM)</div>
+        <div class="model-role-copy">Broad reasoning, goal interpretation, plan composition, and natural-language interaction.</div>
+      </div>
+      <div class="model-role-card model-role-card-specialist">
+        <div class="model-role-title">Specialist Predictor (ML)</div>
+        <div class="model-role-copy">Scores and ranks likely next tasks from behavior traces. Stronger at this narrow objective than a general model alone.</div>
+      </div>
+    </div>
+    <p class="viz-caption">The predictor is one tool in the agent's toolkit, not a replacement for general reasoning.</p>
   </div>
 
   <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
@@ -192,9 +293,9 @@
   <div class="essay reveal">
     <h3>The Mechanism</h3>
     <h2>Frequency evolves from behavior</h2>
-    <p>Each task starts from a baseline cadence. Then the system adapts using completion timing.</p>
-    <p>Completed early: interval shrinks (more frequent). Completed late: interval expands (less frequent). The default multiplier is 1.382, creating stable two-way adjustment.</p>
-    <p>Over time, this produces personalized scheduling without manual rule tuning.</p>
+    <p>Frequency is measured in <em>days between expected completions</em>. A higher frequency value means the task is due less often; a lower value means it is due more often.</p>
+    <p>Each task starts from a baseline cadence. Then the system adapts using completion timing and non-completion: chosen before due date -> divide by 1.382 (surfaces more often), ignored until late/overdue -> multiply by 1.382 (surfaces less often).</p>
+    <p><em>Survival of the chosen</em>: the tasks you actively choose keep earning attention, while neglected tasks gradually drift outward.</p>
   </div>
 
   <!-- FREQUENCY EVOLUTION -->
@@ -202,7 +303,7 @@
     <div class="viz-container reveal">
       <p class="viz-title">Frequency Evolution Over Time</p>
       <div id="frequency-viz" style="width:100%;"></div>
-      <p class="viz-caption">Illustrative mixed-domain tasks with realistic divergence. Adjustment points are marked with circles.</p>
+      <p class="viz-caption">Illustrative mixed-domain tasks with realistic divergence. Choosing tasks early pulls their interval down (/1.382); repeatedly ignoring tasks pushes it up (x1.382).</p>
     </div>
   </div>
 
@@ -226,7 +327,7 @@
     <h3>Results</h3>
     <h2>Better structure makes prediction easier</h2>
     <p>Once logs are structured through hierarchy and adaptive cadence, downstream models get cleaner signals. Sequence and context become easier to learn, enabling useful next-task prediction and recommendation behaviors.</p>
-    <p>It is a good example of practical AI architecture: LLMs orchestrate, specialized tools execute, and structured data does the heavy lifting.</p>
+    <p>The current specialist model is a next-task ranking model exposed as a callable tool. The LLM decides when to use it, then blends its output with context before final recommendations.</p>
   </div>
 
   <div class="stats-row reveal">
@@ -252,6 +353,7 @@
       <span class="project-tag">SQLite</span>
       <span class="project-tag">scikit-learn</span>
       <span class="project-tag">MCP</span>
+      <span class="project-tag">ML Ranker</span>
       <span class="project-tag">D3.js</span>
       <span class="project-tag">Knowledge Graph</span>
       <span class="project-tag">Adaptive Scheduling</span>
