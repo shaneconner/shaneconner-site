@@ -35,8 +35,9 @@
     'Regime Detection':   'Classifies current market state (expansion, contraction, high volatility, recovery) using VIX, trend indicators, and yield curve signals.',
     'Stock Screener':     'Nine independent ML architectures — gradient boosting, deep neural networks, and attention models — each rank the universe. Their combined signal selects top candidates.',
     'RL Allocator':       'PPO agent with Transformer policy network. Multi-seed ensemble with cross-asset self-attention. Trained with Sharpe-weighted aggregation across policy seeds.',
-    'LLM Review':         'Multiple large language models analyze the proposed portfolio through different lenses — macro risks, sector concentration, reasoning quality. Consultations are logged.',
-    'Portfolio':          'Final position weights after LLM review and risk management constraints. Every decision is logged to an auditable journal with hierarchical memory.',
+    'LLM Briefing':       'LLM agents analyze the proposed allocation — surfacing relevant news, macro risks, sector concentration concerns, and specific recommendations for the human reviewer.',
+    'Human Review':       'A human reviews the LLM briefing and proposed portfolio. Approves the trade, requests modifications, or vetoes positions. The human always has final say.',
+    'Execution':          'Once approved, the system autonomously executes the rebalance through the broker API. Orders are sized and timed to minimize market impact.',
   };
 
   function renderArchitectureFlow(containerId) {
@@ -49,10 +50,12 @@
 
     // Node definitions: { name, subtitle, col, row }
     var columns = [
-      { label: 'DATA SOURCES', x: 0.12 },
-      { label: 'PROCESSING',   x: 0.38 },
-      { label: 'MODELS',       x: 0.64 },
-      { label: 'OUTPUT',       x: 0.90 },
+      { label: 'DATA SOURCES', x: 0.08 },
+      { label: 'PROCESSING',   x: 0.24 },
+      { label: 'MODELS',       x: 0.40 },
+      { label: 'ANALYSIS',     x: 0.56 },
+      { label: 'APPROVAL',     x: 0.72 },
+      { label: 'EXECUTION',    x: 0.90 },
     ];
 
     var nodes = [
@@ -64,11 +67,12 @@
       { name: 'Regime Detection',   subtitle: 'Market state classification',col: 1, row: 2.75 },
       { name: 'Stock Screener',     subtitle: '9-model ensemble',           col: 2, row: 0.75 },
       { name: 'RL Allocator',       subtitle: '8-seed PPO + Transformer', col: 2, row: 2.75 },
-      { name: 'LLM Review',         subtitle: 'Multi-LLM consultation',   col: 3, row: 0.75 },
-      { name: 'Portfolio',          subtitle: 'Auditable decisions',       col: 3, row: 2.75 },
+      { name: 'LLM Briefing',       subtitle: 'News, risks, factors',     col: 3, row: 1.75 },
+      { name: 'Human Review',       subtitle: 'Approve or modify',        col: 4, row: 1.75 },
+      { name: 'Execution',          subtitle: 'Autonomous rebalance',     col: 5, row: 1.75 },
     ];
 
-    var nodeW = 140, nodeH = 48;
+    var nodeW = 120, nodeH = 48;
     var topPad = 60, rowGap = 80;
 
     nodes.forEach(function (n) {
@@ -85,8 +89,9 @@
       ['Feature Engineering','Stock Screener'],
       ['Regime Detection',   'RL Allocator'],
       ['Stock Screener',     'RL Allocator'],
-      ['RL Allocator',       'LLM Review'],
-      ['LLM Review',         'Portfolio'],
+      ['RL Allocator',       'LLM Briefing'],
+      ['LLM Briefing',       'Human Review'],
+      ['Human Review',       'Execution'],
     ];
 
     function findNode(name) {
@@ -726,7 +731,7 @@
     container.innerHTML = '';
 
     var width = container.clientWidth;
-    var height = 420;
+    var height = 500;
 
     var models = [
       { name: 'LightGBM',       cat: 'tree' },
@@ -743,10 +748,10 @@
     var catColors = { tree: C.green, neural: C.tan, attention: C.greenBr, linear: C.dim };
     var catLabels = { tree: 'TREE', neural: 'NEURAL', attention: 'ATTENTION', linear: 'LINEAR' };
 
-    var cx = width / 2, cy = height / 2 - 10;
-    var R = Math.min(width, height) * 0.33;
+    var cx = width / 2, cy = height / 2 - 20;
+    var R = Math.min(width * 0.4, 180);
     var centerR = 36;
-    var nodeR = 30;
+    var nodeR = 32;
 
     models.forEach(function (m, i) {
       var a = (i / models.length) * Math.PI * 2 - Math.PI / 2;
@@ -929,19 +934,35 @@
     container.innerHTML = '';
 
     var width = container.clientWidth;
-    var height = 380;
-    var margin = { top: 24, right: 30, bottom: 20, left: 30 };
+    var height = 420;
+    var margin = { top: 24, right: 90, bottom: 20, left: 30 };
     var W = width - margin.left - margin.right;
     var H = height - margin.top - margin.bottom;
 
     var layers = [
-      { label: 'DEPTH 0 \u2014 RAW OBSERVATIONS',   count: 8, color: C.greenBr },
-      { label: 'DEPTH 1 \u2014 DAILY SUMMARIES',     count: 3, color: C.green },
-      { label: 'DEPTH 2 \u2014 WEEKLY THEMES',        count: 1, color: C.olive || C.green },
-      { label: 'DEPTH 3 \u2014 STRATEGIC CONTEXT',    count: 1, color: C.dim },
+      {
+        label: 'DEPTH 0 \u2014 RAW OBSERVATIONS', count: 8, color: C.greenBr,
+        sideNote: 'Full detail',
+        texts: ['SPY +0.8%', 'VIX 14.2', 'Tech leads', 'Yields flat', 'AAPL beat', 'Fed minutes', 'Oil stable', 'Breadth +'],
+      },
+      {
+        label: 'DEPTH 1 \u2014 DAILY SUMMARIES', count: 3, color: C.green,
+        sideNote: 'Compressed',
+        texts: ['Risk-on rally, tech + industrials', 'Vol compression, complacency', 'Rates priced for hold through Q2'],
+      },
+      {
+        label: 'DEPTH 2 \u2014 WEEKLY THEMES', count: 1, color: C.olive || C.green,
+        sideNote: 'Key themes',
+        texts: ['Persistent low-vol uptrend; earnings positive; mid-cap rotation accelerating'],
+      },
+      {
+        label: 'DEPTH 3 \u2014 STRATEGIC CONTEXT', count: 1, color: C.dim,
+        sideNote: 'Strategic',
+        texts: ['Bull market intact. Key risk: credit spread widening if soft landing breaks.'],
+      },
     ];
 
-    var rowH = H / 7; // 4 block rows + 3 arrow gaps
+    var rowH = H / 7;
 
     var svg = d3.select(container).append('svg')
       .attr('viewBox', '0 0 ' + width + ' ' + height)
@@ -956,9 +977,8 @@
       var gap = 6;
       var blockW = Math.min(100, (W - gap * (layer.count - 1)) / layer.count);
 
-      // Scale block width inversely with count for visual hierarchy
-      if (layer.count === 1) blockW = Math.min(W * 0.65, 500);
-      else if (layer.count === 3) blockW = Math.min((W - gap * 2) / 3, 200);
+      if (layer.count === 1) blockW = Math.min(W * 0.7, 560);
+      else if (layer.count === 3) blockW = Math.min((W - gap * 2) / 3, 220);
 
       var totalW = layer.count * blockW + (layer.count - 1) * gap;
       var startX = (W - totalW) / 2;
@@ -971,22 +991,43 @@
         .style('letter-spacing', '0.12em')
         .text(layer.label);
 
-      // Blocks
+      // Side annotation
+      g.append('text')
+        .attr('x', W + 16).attr('y', y + blockH / 2 + 6)
+        .attr('text-anchor', 'start').attr('fill', C.dim)
+        .style('font-family', FONT).style('font-size', '8px')
+        .style('font-style', 'italic').style('opacity', 0.5)
+        .text(layer.sideNote);
+
+      // Blocks with text
       for (var i = 0; i < layer.count; i++) {
+        var bx = startX + i * (blockW + gap);
+
         g.append('rect')
-          .attr('x', startX + i * (blockW + gap))
-          .attr('y', y + 2)
-          .attr('width', blockW)
-          .attr('height', blockH)
+          .attr('x', bx).attr('y', y + 2)
+          .attr('width', blockW).attr('height', blockH)
           .attr('rx', 3)
           .attr('fill', C.card)
           .attr('stroke', layer.color)
           .attr('stroke-width', 1)
           .attr('opacity', 0)
-          .transition()
-          .delay(li * 350 + i * 60)
-          .duration(500)
-          .attr('opacity', 1);
+          .transition().delay(li * 350 + i * 60).duration(500).attr('opacity', 1);
+
+        // Text inside block
+        if (layer.texts && layer.texts[i]) {
+          var maxChars = Math.floor(blockW / 6.5);
+          var txt = layer.texts[i];
+          if (txt.length > maxChars) txt = txt.slice(0, maxChars - 1) + '\u2026';
+
+          g.append('text')
+            .attr('x', bx + blockW / 2).attr('y', y + blockH / 2 + 6)
+            .attr('text-anchor', 'middle').attr('fill', C.dim)
+            .style('font-family', FONT).style('font-size', '7.5px')
+            .style('pointer-events', 'none')
+            .attr('opacity', 0)
+            .text(txt)
+            .transition().delay(li * 350 + i * 60 + 200).duration(400).attr('opacity', 0.7);
+        }
 
         // Subtle shimmer on depth-0 blocks
         if (li === 0) {
@@ -994,8 +1035,7 @@
             var shimmer = g.append('rect')
               .attr('x', startX + idx * (blockW + gap))
               .attr('y', y + 2)
-              .attr('width', blockW)
-              .attr('height', blockH)
+              .attr('width', blockW).attr('height', blockH)
               .attr('rx', 3)
               .attr('fill', layer.color)
               .attr('opacity', 0)
@@ -1022,22 +1062,6 @@
           .text('\u25BC  LLM summarize')
           .transition().delay((li + 1) * 350).duration(400).attr('opacity', 0.35);
       }
-    });
-
-    // Side annotations
-    var annotations = [
-      { y: 0,   text: 'Full detail' },
-      { y: 0.29, text: 'Compressed' },
-      { y: 0.57, text: 'Key themes' },
-      { y: 0.86, text: 'Strategic' },
-    ];
-    annotations.forEach(function (a) {
-      g.append('text')
-        .attr('x', W + 14).attr('y', a.y * H + rowH / 2)
-        .attr('text-anchor', 'start').attr('fill', C.dim)
-        .style('font-family', FONT).style('font-size', '8px')
-        .style('font-style', 'italic').style('opacity', 0.5)
-        .text(a.text);
     });
   }
 
