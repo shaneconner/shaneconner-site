@@ -35,9 +35,9 @@
     'Regime Detection':   'Classifies current market state (expansion, contraction, high volatility, recovery) using VIX, trend indicators, and yield curve signals.',
     'Stock Screener':     'Nine independent ML architectures — gradient boosting, deep neural networks, and attention models — each rank the universe. Their combined signal selects top candidates.',
     'RL Allocator':       'PPO agent with Transformer policy network. Multi-seed ensemble with cross-asset self-attention. Trained with Sharpe-weighted aggregation across policy seeds.',
-    'LLM Briefing':       'LLM agents analyze the proposed allocation — surfacing relevant news, macro risks, sector concentration concerns, and specific recommendations for the human reviewer.',
-    'Human Review':       'A human reviews the LLM briefing and proposed portfolio. Approves the trade, requests modifications, or vetoes positions. The human always has final say.',
-    'Execution':          'Once approved, the system autonomously executes the rebalance through the broker API. Orders are sized and timed to minimize market impact.',
+    'LLM Analysis':       'LLM agents analyze the proposed allocation — surfacing relevant news, macro risks, sector concentration concerns, and specific recommendations for the human reviewer.',
+    'Human Review':       'A human reviews the LLM analysis and proposed portfolio. Approves the trade, requests modifications, or vetoes positions. The human always has final say.',
+    'Portfolio':          'Once approved, the system autonomously executes the rebalance through the broker API. Every decision is logged to an auditable journal with hierarchical memory.',
   };
 
   function renderArchitectureFlow(containerId) {
@@ -51,11 +51,10 @@
     // Node definitions: { name, subtitle, col, row }
     var columns = [
       { label: 'DATA SOURCES', x: 0.08 },
-      { label: 'PROCESSING',   x: 0.24 },
-      { label: 'MODELS',       x: 0.40 },
-      { label: 'ANALYSIS',     x: 0.56 },
-      { label: 'APPROVAL',     x: 0.72 },
-      { label: 'EXECUTION',    x: 0.90 },
+      { label: 'PROCESSING',   x: 0.28 },
+      { label: 'MODELS',       x: 0.48 },
+      { label: 'REVIEW',       x: 0.70 },
+      { label: 'OUTPUT',       x: 0.92 },
     ];
 
     var nodes = [
@@ -67,12 +66,12 @@
       { name: 'Regime Detection',   subtitle: 'Market state classification',col: 1, row: 2.75 },
       { name: 'Stock Screener',     subtitle: '9-model ensemble',           col: 2, row: 0.75 },
       { name: 'RL Allocator',       subtitle: '8-seed PPO + Transformer', col: 2, row: 2.75 },
-      { name: 'LLM Briefing',       subtitle: 'News, risks, factors',     col: 3, row: 1.75 },
-      { name: 'Human Review',       subtitle: 'Approve or modify',        col: 4, row: 1.75 },
-      { name: 'Execution',          subtitle: 'Autonomous rebalance',     col: 5, row: 1.75 },
+      { name: 'LLM Analysis',       subtitle: 'News, risks, factors',     col: 3, row: 0.75 },
+      { name: 'Human Review',       subtitle: 'Approve or modify',        col: 3, row: 2.75 },
+      { name: 'Portfolio',          subtitle: 'Execution & journal',       col: 4, row: 1.75 },
     ];
 
-    var nodeW = 120, nodeH = 48;
+    var nodeW = 130, nodeH = 48;
     var topPad = 60, rowGap = 80;
 
     nodes.forEach(function (n) {
@@ -89,9 +88,10 @@
       ['Feature Engineering','Stock Screener'],
       ['Regime Detection',   'RL Allocator'],
       ['Stock Screener',     'RL Allocator'],
-      ['RL Allocator',       'LLM Briefing'],
-      ['LLM Briefing',       'Human Review'],
-      ['Human Review',       'Execution'],
+      ['Stock Screener',     'LLM Analysis'],
+      ['RL Allocator',       'LLM Analysis'],
+      ['LLM Analysis',       'Human Review'],
+      ['Human Review',       'Portfolio'],
     ];
 
     function findNode(name) {
@@ -733,6 +733,10 @@
     var width = container.clientWidth;
     var height = 500;
 
+    // Ensure container doesn't clip the SVG
+    container.style.overflow = 'visible';
+    container.style.minHeight = height + 'px';
+
     var models = [
       { name: 'LightGBM',       cat: 'tree' },
       { name: 'XGBoost',        cat: 'tree' },
@@ -749,7 +753,7 @@
     var catLabels = { tree: 'TREE', neural: 'NEURAL', attention: 'ATTENTION', linear: 'LINEAR' };
 
     var cx = width / 2, cy = height / 2 - 20;
-    var R = Math.min(width * 0.4, 180);
+    var R = Math.min(width * 0.38, 175);
     var centerR = 36;
     var nodeR = 32;
 
@@ -762,29 +766,15 @@
     var svg = d3.select(container).append('svg')
       .attr('viewBox', '0 0 ' + width + ' ' + height)
       .attr('width', width).attr('height', height)
-      .style('display', 'block');
+      .style('display', 'block')
+      .style('overflow', 'visible');
 
-    // Spokes
+    // Spokes (drawn first, behind everything)
     models.forEach(function (m) {
       svg.append('line')
         .attr('x1', m.x).attr('y1', m.y)
         .attr('x2', cx).attr('y2', cy)
         .attr('stroke', C.border).attr('stroke-width', 1);
-    });
-
-    // Pulse animation — signals flowing from each model to center
-    models.forEach(function (m, i) {
-      function pulse() {
-        svg.append('circle')
-          .attr('cx', m.x).attr('cy', m.y)
-          .attr('r', 3).attr('fill', catColors[m.cat]).attr('opacity', 0)
-          .transition().delay(i * 180).attr('opacity', 0.8)
-          .transition().duration(1800).ease(d3.easeLinear)
-          .attr('cx', cx).attr('cy', cy)
-          .transition().duration(150).attr('opacity', 0).remove()
-          .on('end', function () { setTimeout(pulse, 800 + Math.random() * 2000); });
-      }
-      setTimeout(pulse, i * 350);
     });
 
     // Center ensemble node
@@ -797,17 +787,33 @@
       .attr('fill', C.dim).style('font-family', FONT).style('font-size', '8px')
       .text('Combined signal');
 
-    // Outer model nodes
+    // Outer model nodes — draw ALL circles and labels into a top-level group
+    var nodesGroup = svg.append('g').attr('class', 'model-nodes');
     models.forEach(function (m) {
-      var g = svg.append('g');
+      var g = nodesGroup.append('g');
       g.append('circle').attr('cx', m.x).attr('cy', m.y).attr('r', nodeR)
-        .attr('fill', C.card).attr('stroke', catColors[m.cat]).attr('stroke-width', 1.5);
+        .attr('fill', C.card).attr('stroke', catColors[m.cat]).attr('stroke-width', 2);
       g.append('text').attr('x', m.x).attr('y', m.y - 3).attr('text-anchor', 'middle')
         .attr('fill', C.bright).style('font-family', FONT).style('font-size', '8.5px')
         .style('font-weight', '400').text(m.name);
       g.append('text').attr('x', m.x).attr('y', m.y + 9).attr('text-anchor', 'middle')
         .attr('fill', catColors[m.cat]).style('font-family', FONT).style('font-size', '6.5px')
         .style('letter-spacing', '0.1em').text(catLabels[m.cat]);
+    });
+
+    // Pulse animation — drawn AFTER static nodes so particles appear on top
+    models.forEach(function (m, i) {
+      function pulse() {
+        svg.append('circle')
+          .attr('cx', m.x).attr('cy', m.y)
+          .attr('r', 3).attr('fill', catColors[m.cat]).attr('opacity', 0)
+          .transition().delay(i * 180).attr('opacity', 0.8)
+          .transition().duration(1800).ease(d3.easeLinear)
+          .attr('cx', cx).attr('cy', cy)
+          .transition().duration(150).attr('opacity', 0).remove()
+          .on('end', function () { setTimeout(pulse, 800 + Math.random() * 2000); });
+      }
+      setTimeout(pulse, i * 350);
     });
 
     // Legend
@@ -1021,12 +1027,12 @@
 
           g.append('text')
             .attr('x', bx + blockW / 2).attr('y', y + blockH / 2 + 6)
-            .attr('text-anchor', 'middle').attr('fill', C.dim)
-            .style('font-family', FONT).style('font-size', '7.5px')
+            .attr('text-anchor', 'middle').attr('fill', C.text)
+            .style('font-family', FONT).style('font-size', '9px')
             .style('pointer-events', 'none')
             .attr('opacity', 0)
             .text(txt)
-            .transition().delay(li * 350 + i * 60 + 200).duration(400).attr('opacity', 0.7);
+            .transition().delay(li * 350 + i * 60 + 200).duration(400).attr('opacity', 0.8);
         }
 
         // Subtle shimmer on depth-0 blocks
