@@ -21,7 +21,6 @@ function initNavDropdowns() {
   if (!nav || !navList) return;
   var mobileQuery = window.matchMedia('(max-width: 768px)');
   var dropdownParents = [];
-  var dropdownIdSeed = 0;
 
   function isMobileNav() {
     return mobileQuery.matches;
@@ -30,8 +29,6 @@ function initNavDropdowns() {
   function closeDropdown(parentLi) {
     if (!parentLi) return;
     parentLi.classList.remove('mobile-open');
-    var toggle = parentLi.querySelector('.nav-dropdown-toggle');
-    if (toggle) toggle.setAttribute('aria-expanded', 'false');
   }
 
   function closeAllDropdowns(exceptLi) {
@@ -44,8 +41,6 @@ function initNavDropdowns() {
   function openDropdown(parentLi) {
     closeAllDropdowns(parentLi);
     parentLi.classList.add('mobile-open');
-    var toggle = parentLi.querySelector('.nav-dropdown-toggle');
-    if (toggle) toggle.setAttribute('aria-expanded', 'true');
   }
 
   var menuConfig = {
@@ -85,18 +80,8 @@ function initNavDropdowns() {
 
     var dropdown = document.createElement('ul');
     dropdown.className = 'nav-dropdown';
-    dropdown.id = 'nav-dropdown-' + key + '-' + (dropdownIdSeed++);
     dropdown.setAttribute('role', 'menu');
     dropdown.setAttribute('aria-label', key + ' sections');
-
-    var toggle = document.createElement('button');
-    toggle.type = 'button';
-    toggle.className = 'nav-dropdown-toggle';
-    toggle.setAttribute('aria-label', 'Toggle ' + key + ' menu');
-    toggle.setAttribute('aria-expanded', 'false');
-    toggle.setAttribute('aria-controls', dropdown.id);
-    toggle.innerHTML = '<span aria-hidden="true">\u25BE</span>';
-    parentLi.appendChild(toggle);
 
     options.forEach(function (opt) {
       var row = document.createElement('li');
@@ -115,15 +100,6 @@ function initNavDropdowns() {
     });
 
     parentLi.appendChild(dropdown);
-
-    toggle.addEventListener('click', function (event) {
-      if (!isMobileNav()) return;
-      event.preventDefault();
-      event.stopPropagation();
-
-      if (parentLi.classList.contains('mobile-open')) closeDropdown(parentLi);
-      else openDropdown(parentLi);
-    });
 
     linkEl.addEventListener('click', function (event) {
       if (!isMobileNav()) return;
