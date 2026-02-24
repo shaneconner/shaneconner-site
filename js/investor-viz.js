@@ -33,9 +33,10 @@
     'Market':             'OHLCV price data and volume metrics. Technical indicators, momentum signals, and volatility measures.',
     'Feature Engineering':'15 specialized modules transform raw data into ML-ready features. Calendar effects, fundamentals, macro context, sentiment embeddings, and more.',
     'Regime Detection':   'Classifies current market state (expansion, contraction, high volatility, recovery) using VIX, trend indicators, and yield curve signals.',
-    'Stock Screener':     'Gradient boosting model ranks the full stock universe by predicted forward returns. Outputs top-N candidates for portfolio consideration.',
-    'RL Allocator':       'PPO agent with custom Transformer policy network. Cross-asset self-attention learns correlations. Outputs optimal portfolio weights.',
-    'Portfolio':          'Final position weights after risk management constraints. Max position limits, drawdown controls, and transaction cost budgets.',
+    'Stock Screener':     'Nine independent ML architectures — gradient boosting, deep neural networks, and attention models — each rank the universe. Their combined signal selects top candidates.',
+    'RL Allocator':       'PPO agent with Transformer policy network. Multi-seed ensemble with cross-asset self-attention. Trained with Sharpe-weighted aggregation across policy seeds.',
+    'LLM Review':         'Multiple large language models analyze the proposed portfolio through different lenses — macro risks, sector concentration, reasoning quality. Consultations are logged.',
+    'Portfolio':          'Final position weights after LLM review and risk management constraints. Every decision is logged to an auditable journal with hierarchical memory.',
   };
 
   function renderArchitectureFlow(containerId) {
@@ -51,7 +52,7 @@
       { label: 'DATA SOURCES', x: 0.12 },
       { label: 'PROCESSING',   x: 0.38 },
       { label: 'MODELS',       x: 0.64 },
-      { label: 'OUTPUT',       x: 0.88 },
+      { label: 'OUTPUT',       x: 0.90 },
     ];
 
     var nodes = [
@@ -61,9 +62,10 @@
       { name: 'Market',             subtitle: 'Price & volume',            col: 0, row: 3 },
       { name: 'Feature Engineering', subtitle: '15 specialized modules',   col: 1, row: 0.75 },
       { name: 'Regime Detection',   subtitle: 'Market state classification',col: 1, row: 2.75 },
-      { name: 'Stock Screener',     subtitle: 'Cross-sectional ranking',   col: 2, row: 0.75 },
-      { name: 'RL Allocator',       subtitle: 'PPO + Transformer policy',  col: 2, row: 2.75 },
-      { name: 'Portfolio',          subtitle: 'Optimized weights',         col: 3, row: 1.75 },
+      { name: 'Stock Screener',     subtitle: '9-model ensemble',           col: 2, row: 0.75 },
+      { name: 'RL Allocator',       subtitle: '8-seed PPO + Transformer', col: 2, row: 2.75 },
+      { name: 'LLM Review',         subtitle: 'Multi-LLM consultation',   col: 3, row: 0.75 },
+      { name: 'Portfolio',          subtitle: 'Auditable decisions',       col: 3, row: 2.75 },
     ];
 
     var nodeW = 140, nodeH = 48;
@@ -83,7 +85,8 @@
       ['Feature Engineering','Stock Screener'],
       ['Regime Detection',   'RL Allocator'],
       ['Stock Screener',     'RL Allocator'],
-      ['RL Allocator',       'Portfolio'],
+      ['RL Allocator',       'LLM Review'],
+      ['LLM Review',         'Portfolio'],
     ];
 
     function findNode(name) {
@@ -714,14 +717,342 @@
   }
 
   // ════════════════════════════════════════════════════════════════════════════
+  //  5. ENSEMBLE MODEL DIVERSITY
+  // ════════════════════════════════════════════════════════════════════════════
+
+  function renderEnsembleViz(containerId) {
+    var container = document.getElementById(containerId);
+    if (!container) return;
+    container.innerHTML = '';
+
+    var width = container.clientWidth;
+    var height = 420;
+
+    var models = [
+      { name: 'LightGBM',       cat: 'tree' },
+      { name: 'XGBoost',        cat: 'tree' },
+      { name: 'CatBoost',       cat: 'tree' },
+      { name: 'MLP',            cat: 'neural' },
+      { name: 'TabNet',         cat: 'neural' },
+      { name: 'NODE',           cat: 'neural' },
+      { name: 'FT-Transformer', cat: 'attention' },
+      { name: 'SAINT',          cat: 'attention' },
+      { name: 'ElasticNet',     cat: 'linear' },
+    ];
+
+    var catColors = { tree: C.green, neural: C.tan, attention: C.greenBr, linear: C.dim };
+    var catLabels = { tree: 'TREE', neural: 'NEURAL', attention: 'ATTENTION', linear: 'LINEAR' };
+
+    var cx = width / 2, cy = height / 2 - 10;
+    var R = Math.min(width, height) * 0.33;
+    var centerR = 36;
+    var nodeR = 30;
+
+    models.forEach(function (m, i) {
+      var a = (i / models.length) * Math.PI * 2 - Math.PI / 2;
+      m.x = cx + R * Math.cos(a);
+      m.y = cy + R * Math.sin(a);
+    });
+
+    var svg = d3.select(container).append('svg')
+      .attr('viewBox', '0 0 ' + width + ' ' + height)
+      .attr('width', width).attr('height', height)
+      .style('display', 'block');
+
+    // Spokes
+    models.forEach(function (m) {
+      svg.append('line')
+        .attr('x1', m.x).attr('y1', m.y)
+        .attr('x2', cx).attr('y2', cy)
+        .attr('stroke', C.border).attr('stroke-width', 1);
+    });
+
+    // Pulse animation — signals flowing from each model to center
+    models.forEach(function (m, i) {
+      function pulse() {
+        svg.append('circle')
+          .attr('cx', m.x).attr('cy', m.y)
+          .attr('r', 3).attr('fill', catColors[m.cat]).attr('opacity', 0)
+          .transition().delay(i * 180).attr('opacity', 0.8)
+          .transition().duration(1800).ease(d3.easeLinear)
+          .attr('cx', cx).attr('cy', cy)
+          .transition().duration(150).attr('opacity', 0).remove()
+          .on('end', function () { setTimeout(pulse, 800 + Math.random() * 2000); });
+      }
+      setTimeout(pulse, i * 350);
+    });
+
+    // Center ensemble node
+    svg.append('circle').attr('cx', cx).attr('cy', cy).attr('r', centerR)
+      .attr('fill', C.card).attr('stroke', C.green).attr('stroke-width', 2);
+    svg.append('text').attr('x', cx).attr('y', cy - 4).attr('text-anchor', 'middle')
+      .attr('fill', C.bright).style('font-family', FONT).style('font-size', '10px')
+      .style('font-weight', '400').text('Ensemble');
+    svg.append('text').attr('x', cx).attr('y', cy + 10).attr('text-anchor', 'middle')
+      .attr('fill', C.dim).style('font-family', FONT).style('font-size', '8px')
+      .text('Combined signal');
+
+    // Outer model nodes
+    models.forEach(function (m) {
+      var g = svg.append('g');
+      g.append('circle').attr('cx', m.x).attr('cy', m.y).attr('r', nodeR)
+        .attr('fill', C.card).attr('stroke', catColors[m.cat]).attr('stroke-width', 1.5);
+      g.append('text').attr('x', m.x).attr('y', m.y - 3).attr('text-anchor', 'middle')
+        .attr('fill', C.bright).style('font-family', FONT).style('font-size', '8.5px')
+        .style('font-weight', '400').text(m.name);
+      g.append('text').attr('x', m.x).attr('y', m.y + 9).attr('text-anchor', 'middle')
+        .attr('fill', catColors[m.cat]).style('font-family', FONT).style('font-size', '6.5px')
+        .style('letter-spacing', '0.1em').text(catLabels[m.cat]);
+    });
+
+    // Legend
+    var cats = [['tree', 'Tree Ensemble'], ['neural', 'Deep Neural'], ['attention', 'Attention'], ['linear', 'Linear']];
+    var lx = cx - 170, ly = height - 22;
+    cats.forEach(function (c, i) {
+      svg.append('circle').attr('cx', lx + i * 95).attr('cy', ly).attr('r', 4).attr('fill', catColors[c[0]]);
+      svg.append('text').attr('x', lx + i * 95 + 10).attr('y', ly + 3)
+        .attr('fill', C.dim).style('font-family', FONT).style('font-size', '9px').text(c[1]);
+    });
+  }
+
+  // ════════════════════════════════════════════════════════════════════════════
+  //  6. MULTI-LLM CONSULTATION FLOW
+  // ════════════════════════════════════════════════════════════════════════════
+
+  function renderConsultationViz(containerId) {
+    var container = document.getElementById(containerId);
+    if (!container) return;
+    container.innerHTML = '';
+
+    var width = container.clientWidth;
+    var height = 340;
+
+    var nodes = [
+      { id: 'agent',   label: 'Portfolio Agent', sub: 'Orchestrator',      x: 0.5,  y: 0.15, accent: C.green },
+      { id: 'llm1',    label: 'LLM Analyst',     sub: 'Risk & Macro lens',  x: 0.15, y: 0.52, accent: C.tan },
+      { id: 'llm2',    label: 'LLM Analyst',     sub: 'Fundamentals lens',  x: 0.85, y: 0.52, accent: C.tan },
+      { id: 'journal', label: 'Decision Journal', sub: 'Persistent memory', x: 0.5,  y: 0.88, accent: C.dim },
+    ];
+
+    nodes.forEach(function (n) { n.px = n.x * width; n.py = n.y * height; });
+
+    var svg = d3.select(container).append('svg')
+      .attr('viewBox', '0 0 ' + width + ' ' + height)
+      .attr('width', width).attr('height', height)
+      .style('display', 'block');
+
+    // Dashed connections
+    [['agent', 'llm1'], ['agent', 'llm2'], ['agent', 'journal']].forEach(function (pair) {
+      var a = nodes.find(function (n) { return n.id === pair[0]; });
+      var b = nodes.find(function (n) { return n.id === pair[1]; });
+      svg.append('line')
+        .attr('x1', a.px).attr('y1', a.py).attr('x2', b.px).attr('y2', b.py)
+        .attr('stroke', C.border).attr('stroke-width', 1).attr('stroke-dasharray', '4,4');
+    });
+
+    // Phase labels
+    [
+      { x: 0.5, y: 0.34, text: '1. PROPOSE ALLOCATION' },
+      { x: 0.5, y: 0.70, text: '2. ANALYZE & RESPOND' },
+      { x: 0.5, y: 0.80, text: '3. LOG DECISION' },
+    ].forEach(function (p) {
+      svg.append('text').attr('x', p.x * width).attr('y', p.y * height)
+        .attr('text-anchor', 'middle').attr('fill', C.dim)
+        .style('font-family', FONT).style('font-size', '8px')
+        .style('letter-spacing', '0.12em').style('opacity', 0.4)
+        .text(p.text);
+    });
+
+    // Message animation cycle
+    function cycle() {
+      // Phase 1: Agent sends proposals to analysts
+      [nodes[1], nodes[2]].forEach(function (target, i) {
+        svg.append('circle')
+          .attr('cx', nodes[0].px).attr('cy', nodes[0].py)
+          .attr('r', 5).attr('fill', C.greenBr).attr('opacity', 0)
+          .transition().delay(i * 200).attr('opacity', 0.9)
+          .transition().duration(1200).ease(d3.easeQuadInOut)
+          .attr('cx', target.px).attr('cy', target.py)
+          .transition().duration(200).attr('opacity', 0).remove();
+      });
+      // Phase 2: Analysts respond
+      setTimeout(function () {
+        [nodes[1], nodes[2]].forEach(function (src, i) {
+          svg.append('circle')
+            .attr('cx', src.px).attr('cy', src.py)
+            .attr('r', 5).attr('fill', C.tan).attr('opacity', 0)
+            .transition().delay(i * 250).attr('opacity', 0.9)
+            .transition().duration(1200).ease(d3.easeQuadInOut)
+            .attr('cx', nodes[0].px).attr('cy', nodes[0].py)
+            .transition().duration(200).attr('opacity', 0).remove();
+        });
+      }, 2000);
+      // Phase 3: Agent logs to journal
+      setTimeout(function () {
+        svg.append('circle')
+          .attr('cx', nodes[0].px).attr('cy', nodes[0].py)
+          .attr('r', 5).attr('fill', C.green).attr('opacity', 0)
+          .transition().attr('opacity', 0.9)
+          .transition().duration(1000).ease(d3.easeQuadInOut)
+          .attr('cx', nodes[3].px).attr('cy', nodes[3].py)
+          .transition().duration(200).attr('opacity', 0).remove();
+      }, 4200);
+      setTimeout(cycle, 6500);
+    }
+
+    // Draw node boxes (on top of lines)
+    var nW = 140, nH = 44;
+    nodes.forEach(function (n) {
+      var g = svg.append('g')
+        .attr('transform', 'translate(' + (n.px - nW / 2) + ',' + (n.py - nH / 2) + ')');
+      g.append('rect').attr('width', nW).attr('height', nH).attr('rx', 4)
+        .attr('fill', C.card).attr('stroke', n.accent)
+        .attr('stroke-width', n.id === 'agent' ? 2 : 1);
+      g.append('text').attr('x', nW / 2).attr('y', 17).attr('text-anchor', 'middle')
+        .attr('fill', C.bright).style('font-family', FONT).style('font-size', '11px')
+        .style('font-weight', '400').text(n.label);
+      g.append('text').attr('x', nW / 2).attr('y', 32).attr('text-anchor', 'middle')
+        .attr('fill', C.dim).style('font-family', FONT).style('font-size', '9px')
+        .text(n.sub);
+    });
+
+    cycle();
+  }
+
+  // ════════════════════════════════════════════════════════════════════════════
+  //  7. HIERARCHICAL MEMORY COMPRESSION
+  // ════════════════════════════════════════════════════════════════════════════
+
+  function renderMemoryViz(containerId) {
+    var container = document.getElementById(containerId);
+    if (!container) return;
+    container.innerHTML = '';
+
+    var width = container.clientWidth;
+    var height = 380;
+    var margin = { top: 24, right: 30, bottom: 20, left: 30 };
+    var W = width - margin.left - margin.right;
+    var H = height - margin.top - margin.bottom;
+
+    var layers = [
+      { label: 'DEPTH 0 \u2014 RAW OBSERVATIONS',   count: 8, color: C.greenBr },
+      { label: 'DEPTH 1 \u2014 DAILY SUMMARIES',     count: 3, color: C.green },
+      { label: 'DEPTH 2 \u2014 WEEKLY THEMES',        count: 1, color: C.olive || C.green },
+      { label: 'DEPTH 3 \u2014 STRATEGIC CONTEXT',    count: 1, color: C.dim },
+    ];
+
+    var rowH = H / 7; // 4 block rows + 3 arrow gaps
+
+    var svg = d3.select(container).append('svg')
+      .attr('viewBox', '0 0 ' + width + ' ' + height)
+      .attr('width', width).attr('height', height)
+      .style('display', 'block');
+
+    var g = svg.append('g')
+      .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+    layers.forEach(function (layer, li) {
+      var y = li * rowH * 2;
+      var gap = 6;
+      var blockW = Math.min(100, (W - gap * (layer.count - 1)) / layer.count);
+
+      // Scale block width inversely with count for visual hierarchy
+      if (layer.count === 1) blockW = Math.min(W * 0.65, 500);
+      else if (layer.count === 3) blockW = Math.min((W - gap * 2) / 3, 200);
+
+      var totalW = layer.count * blockW + (layer.count - 1) * gap;
+      var startX = (W - totalW) / 2;
+      var blockH = rowH - 4;
+
+      // Layer label
+      g.append('text').attr('x', W / 2).attr('y', y - 5)
+        .attr('text-anchor', 'middle').attr('fill', C.dim)
+        .style('font-family', FONT).style('font-size', '7.5px')
+        .style('letter-spacing', '0.12em')
+        .text(layer.label);
+
+      // Blocks
+      for (var i = 0; i < layer.count; i++) {
+        g.append('rect')
+          .attr('x', startX + i * (blockW + gap))
+          .attr('y', y + 2)
+          .attr('width', blockW)
+          .attr('height', blockH)
+          .attr('rx', 3)
+          .attr('fill', C.card)
+          .attr('stroke', layer.color)
+          .attr('stroke-width', 1)
+          .attr('opacity', 0)
+          .transition()
+          .delay(li * 350 + i * 60)
+          .duration(500)
+          .attr('opacity', 1);
+
+        // Subtle shimmer on depth-0 blocks
+        if (li === 0) {
+          (function (idx) {
+            var shimmer = g.append('rect')
+              .attr('x', startX + idx * (blockW + gap))
+              .attr('y', y + 2)
+              .attr('width', blockW)
+              .attr('height', blockH)
+              .attr('rx', 3)
+              .attr('fill', layer.color)
+              .attr('opacity', 0)
+              .style('pointer-events', 'none');
+            function blink() {
+              shimmer.transition().delay(Math.random() * 4000)
+                .duration(600).attr('opacity', 0.08)
+                .transition().duration(600).attr('opacity', 0)
+                .on('end', blink);
+            }
+            blink();
+          })(i);
+        }
+      }
+
+      // Compression arrow
+      if (li < layers.length - 1) {
+        var arrowY = y + rowH + 2;
+        g.append('text')
+          .attr('x', W / 2).attr('y', arrowY + rowH * 0.35)
+          .attr('text-anchor', 'middle').attr('fill', C.dim)
+          .style('font-family', FONT).style('font-size', '9px')
+          .attr('opacity', 0)
+          .text('\u25BC  LLM summarize')
+          .transition().delay((li + 1) * 350).duration(400).attr('opacity', 0.35);
+      }
+    });
+
+    // Side annotations
+    var annotations = [
+      { y: 0,   text: 'Full detail' },
+      { y: 0.29, text: 'Compressed' },
+      { y: 0.57, text: 'Key themes' },
+      { y: 0.86, text: 'Strategic' },
+    ];
+    annotations.forEach(function (a) {
+      g.append('text')
+        .attr('x', W + 14).attr('y', a.y * H + rowH / 2)
+        .attr('text-anchor', 'start').attr('fill', C.dim)
+        .style('font-family', FONT).style('font-size', '8px')
+        .style('font-style', 'italic').style('opacity', 0.5)
+        .text(a.text);
+    });
+  }
+
+  // ════════════════════════════════════════════════════════════════════════════
   //  SCROLL-TRIGGERED RENDERING & INIT
   // ════════════════════════════════════════════════════════════════════════════
 
   var vizMap = {
-    'architecture-viz': renderArchitectureFlow,
-    'attention-viz':    renderAttentionHeatmap,
-    'reward-viz':       renderRewardExplorer,
-    'regime-viz':       renderRegimeTimeline,
+    'architecture-viz':  renderArchitectureFlow,
+    'attention-viz':     renderAttentionHeatmap,
+    'reward-viz':        renderRewardExplorer,
+    'regime-viz':        renderRegimeTimeline,
+    'ensemble-viz':      renderEnsembleViz,
+    'consultation-viz':  renderConsultationViz,
+    'memory-viz':        renderMemoryViz,
   };
 
   function initVisualizations() {
