@@ -855,6 +855,33 @@ body.lightbox-open {
 
 /* === Resonance — Placeholder Vizs === */
 
+/* Resonance hero title lockup */
+.resonance-hero-title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  margin-bottom: 0.85rem;
+}
+
+.resonance-hero-title .resonance-name {
+  font-family: var(--serif);
+  font-size: clamp(2.6rem, 5.4vw, 4.25rem);
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+  color: var(--text-bright);
+}
+
+.resonance-hero-title .resonance-descriptor {
+  font-family: var(--sans);
+  font-size: clamp(0.72rem, 1.25vw, 0.95rem);
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--green);
+  font-weight: 400;
+  line-height: 1.2;
+}
+
 .placeholder-viz {
   min-height: 220px;
   display: flex;
@@ -909,5 +936,11 @@ body.lightbox-open {
 }
 
 @media (max-width: 768px) {
+  .resonance-hero-title { gap: 0.3rem; }
+  .resonance-hero-title .resonance-name { font-size: clamp(2rem, 9vw, 3.1rem); }
+  .resonance-hero-title .resonance-descriptor {
+    font-size: clamp(0.62rem, 2.7vw, 0.78rem);
+    letter-spacing: 0.18em;
+  }
   .discovery-grid { grid-template-columns: 1fr; }
 }
