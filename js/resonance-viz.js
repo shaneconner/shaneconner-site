@@ -700,7 +700,7 @@
       .range([0, w])
       .padding(0);
 
-    var yMax = d3.max(series[series.length - 1], function (d) { return d[1]; });
+    var yMax = d3.max(series, function (s) { return d3.max(s, function (d) { return d[1]; }); });
     var yScale = d3.scaleLinear().domain([0, yMax]).range([h, 0]);
 
     var area = d3.area()
