@@ -1,5 +1,5 @@
 // Resonance — Music Intelligence — D3.js visualizations
-// Renders into #pipeline-viz, #genre-galaxy-viz, #frequency-viz, #artist-viz, #timeline-viz
+// Renders into #pipeline-viz, #genre-galaxy-viz, #frequency-viz, #artist-viz, #stream-viz, #timeline-viz, #freq-dist-viz, #tsne-viz
 
 (function () {
   'use strict';
@@ -40,6 +40,7 @@
   var artistData = null;
   var timelineData = null;
   var frequencyData = null;
+  var tsneData = null;
 
   function loadJSON(url, setter) {
     return fetch(url)
@@ -62,6 +63,9 @@
   }
   function loadFrequencyData() {
     return loadJSON('/data/resonance-frequency.json', function (d) { frequencyData = d; });
+  }
+  function loadTSNEData() {
+    return loadJSON('/data/resonance-tsne.json', function (d) { tsneData = d; });
   }
 
   // ── Tooltip helper ────────────────────────────────────────────────────────
@@ -885,6 +889,240 @@
   }
 
   // ════════════════════════════════════════════════════════════════════════════
+  //  STREAMGRAPH — GENRE TIMELINE
+  // ════════════════════════════════════════════════════════════════════════════
+
+  function renderStreamgraph(containerId) {
+    var container = document.getElementById(containerId);
+    if (!container) return;
+    container.innerHTML = '';
+
+    var data = timelineData;
+    if (!data || !data.stream || !data.families) return;
+
+    var families = data.families;
+    var stream = data.stream;
+
+    var width = container.clientWidth;
+    var margin = { top: 20, right: 20, bottom: 30, left: 40 };
+    var height = 340;
+    var w = width - margin.left - margin.right;
+    var h = height - margin.top - margin.bottom;
+
+    var tooltip = makeTooltip(container);
+
+    var streamColors = {
+      'Soundtrack': '#7a8a2a',
+      'Electronic': '#6a7a9a',
+      'Ambient': '#5a7a8a',
+      'Vaporwave': '#7a6a8a',
+      'Rock': '#8a3a5a',
+      'Classical': '#6a5a7a',
+      'Jazz': '#5a6a3a',
+      'Experimental': '#8a6a3a',
+      'Hip Hop': '#8a7a5a',
+      'Pop': '#5a8a5a',
+      'R&B/Soul': '#6a3a3a',
+      'Folk/World': '#3a6a5a',
+      'Synthwave': '#8a5a3a',
+      'Other': '#4a4a3a',
+    };
+
+    // Order families by final size (largest on bottom)
+    var lastPoint = stream[stream.length - 1];
+    var orderedFamilies = families.slice().sort(function (a, b) {
+      return (lastPoint[b] || 0) - (lastPoint[a] || 0);
+    });
+
+    var stack = d3.stack()
+      .keys(orderedFamilies)
+      .offset(d3.stackOffsetWiggle);
+
+    var series = stack(stream);
+
+    var xScale = d3.scalePoint()
+      .domain(stream.map(function (d) { return d.month; }))
+      .range([0, w]);
+
+    var yMin = d3.min(series, function (s) { return d3.min(s, function (d) { return d[0]; }); });
+    var yMax = d3.max(series, function (s) { return d3.max(s, function (d) { return d[1]; }); });
+    var yScale = d3.scaleLinear().domain([yMin, yMax]).range([h, 0]);
+
+    var area = d3.area()
+      .x(function (d) { return xScale(d.data.month); })
+      .y0(function (d) { return yScale(d[0]); })
+      .y1(function (d) { return yScale(d[1]); })
+      .curve(d3.curveBasis);
+
+    var svg = d3.select(container)
+      .append('svg')
+      .attr('viewBox', '0 0 ' + width + ' ' + height)
+      .attr('width', width)
+      .attr('height', height)
+      .style('display', 'block');
+
+    var g = svg.append('g')
+      .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+    // Areas
+    g.selectAll('.stream-layer')
+      .data(series)
+      .enter().append('path')
+      .attr('class', 'stream-layer')
+      .attr('d', area)
+      .attr('fill', function (d) { return streamColors[d.key] || C.dim; })
+      .attr('fill-opacity', 0.8)
+      .attr('stroke', C.bg)
+      .attr('stroke-width', 0.5)
+      .on('mouseenter', function (event, d) {
+        var total = lastPoint[d.key] || 0;
+        tooltip.innerHTML = '<strong>' + d.key + '</strong><br/>' + total + ' tracks';
+        tooltip.style.opacity = '1';
+        d3.select(this).attr('fill-opacity', 1);
+      })
+      .on('mousemove', function (event) {
+        var rect = container.getBoundingClientRect();
+        tooltip.style.left = (event.clientX - rect.left + 12) + 'px';
+        tooltip.style.top = (event.clientY - rect.top - 28) + 'px';
+      })
+      .on('mouseleave', function () {
+        tooltip.style.opacity = '0';
+        d3.select(this).attr('fill-opacity', 0.8);
+      });
+
+    // X axis — show every 3rd month label
+    var tickValues = stream.map(function (d) { return d.month; }).filter(function (d, i) { return i % 3 === 0; });
+    var xAxis = d3.axisBottom(xScale).tickValues(tickValues).tickSize(0).tickPadding(8);
+    g.append('g')
+      .attr('transform', 'translate(0,' + h + ')')
+      .call(xAxis)
+      .call(function (g) { g.select('.domain').remove(); })
+      .selectAll('text')
+      .attr('fill', C.dim).attr('font-size', 10).attr('font-family', FONT);
+  }
+
+  // ════════════════════════════════════════════════════════════════════════════
+  //  t-SNE — AUDIO FEATURE SPACE
+  // ════════════════════════════════════════════════════════════════════════════
+
+  function renderTSNE(containerId) {
+    var container = document.getElementById(containerId);
+    if (!container) return;
+    container.innerHTML = '';
+
+    var data = tsneData;
+    if (!data || !data.points) return;
+
+    var points = data.points;
+    var width = container.clientWidth;
+    var height = 500;
+    var margin = { top: 20, right: 20, bottom: 20, left: 20 };
+    var w = width - margin.left - margin.right;
+    var h = height - margin.top - margin.bottom;
+
+    var tooltip = makeTooltip(container);
+
+    var familyColors = {
+      'Ambient': '#5a7a8a',
+      'Electronic': '#6a7a9a',
+      'Soundtrack': '#7a8a2a',
+      'Vaporwave': '#7a6a8a',
+      'Rock': '#8a3a5a',
+      'Jazz': '#5a6a3a',
+      'Classical': '#6a5a7a',
+      'Experimental': '#8a6a3a',
+      'Hip Hop': '#8a7a5a',
+      'Pop': '#5a8a5a',
+      'R&B/Soul': '#6a3a3a',
+      'Folk/World': '#3a6a5a',
+      'Synthwave': '#8a5a3a',
+      'Other': '#555550',
+    };
+
+    var xExtent = d3.extent(points, function (d) { return d.x; });
+    var yExtent = d3.extent(points, function (d) { return d.y; });
+    var xPad = (xExtent[1] - xExtent[0]) * 0.05;
+    var yPad = (yExtent[1] - yExtent[0]) * 0.05;
+
+    var xScale = d3.scaleLinear()
+      .domain([xExtent[0] - xPad, xExtent[1] + xPad])
+      .range([0, w]);
+    var yScale = d3.scaleLinear()
+      .domain([yExtent[0] - yPad, yExtent[1] + yPad])
+      .range([h, 0]);
+
+    var svg = d3.select(container)
+      .append('svg')
+      .attr('viewBox', '0 0 ' + width + ' ' + height)
+      .attr('width', width)
+      .attr('height', height)
+      .style('display', 'block');
+
+    var g = svg.append('g')
+      .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+    // Points
+    g.selectAll('.tsne-point')
+      .data(points)
+      .enter().append('circle')
+      .attr('class', 'tsne-point')
+      .attr('cx', function (d) { return xScale(d.x); })
+      .attr('cy', function (d) { return yScale(d.y); })
+      .attr('r', 0)
+      .attr('fill', function (d) { return familyColors[d.family] || C.dim; })
+      .attr('fill-opacity', 0.65)
+      .attr('stroke', function (d) { return familyColors[d.family] || C.dim; })
+      .attr('stroke-opacity', 0.3)
+      .attr('stroke-width', 1)
+      .on('mouseenter', function (event, d) {
+        tooltip.innerHTML = '<strong>' + d.title + '</strong><br/>' +
+          d.artist + '<br/><em>' + d.family + '</em>';
+        tooltip.style.opacity = '1';
+        d3.select(this).attr('r', 7).attr('fill-opacity', 1).attr('stroke-opacity', 1);
+      })
+      .on('mousemove', function (event) {
+        var rect = container.getBoundingClientRect();
+        tooltip.style.left = (event.clientX - rect.left + 12) + 'px';
+        tooltip.style.top = (event.clientY - rect.top - 28) + 'px';
+      })
+      .on('mouseleave', function (event, d) {
+        tooltip.style.opacity = '0';
+        d3.select(this).attr('r', 3.5).attr('fill-opacity', 0.65).attr('stroke-opacity', 0.3);
+      })
+      .transition().duration(1200).ease(d3.easeCubicOut)
+      .attr('r', 3.5);
+
+    // Legend
+    var legendFamilies = Object.keys(familyColors).filter(function (f) {
+      return points.some(function (p) { return p.family === f; });
+    });
+    // Sort by count descending
+    legendFamilies.sort(function (a, b) {
+      var ca = points.filter(function (p) { return p.family === a; }).length;
+      var cb = points.filter(function (p) { return p.family === b; }).length;
+      return cb - ca;
+    });
+
+    var legend = g.append('g')
+      .attr('transform', 'translate(' + (w - 110) + ', 10)');
+
+    legend.selectAll('.tsne-legend')
+      .data(legendFamilies.slice(0, 8))
+      .enter().append('g')
+      .attr('class', 'tsne-legend')
+      .attr('transform', function (d, i) { return 'translate(0,' + (i * 18) + ')'; })
+      .each(function (d) {
+        d3.select(this).append('circle')
+          .attr('r', 4).attr('cx', 0).attr('cy', 0)
+          .attr('fill', familyColors[d]).attr('fill-opacity', 0.8);
+        d3.select(this).append('text')
+          .attr('x', 10).attr('y', 4)
+          .attr('fill', C.dim).attr('font-size', 10).attr('font-family', FONT)
+          .text(d);
+      });
+  }
+
+  // ════════════════════════════════════════════════════════════════════════════
   //  SCROLL-TRIGGERED RENDERING
   // ════════════════════════════════════════════════════════════════════════════
 
@@ -893,13 +1131,15 @@
     'genre-galaxy-viz': function () { renderGenreGalaxy('genre-galaxy-viz'); },
     'frequency-viz':    function () { renderFrequencyEvolution('frequency-viz'); },
     'artist-viz':       function () { renderArtistConstellation('artist-viz'); },
+    'stream-viz':       function () { renderStreamgraph('stream-viz'); },
     'timeline-viz':     function () { renderListeningTimeline('timeline-viz'); },
     'freq-dist-viz':    function () { renderFrequencyDistribution('freq-dist-viz'); },
+    'tsne-viz':         function () { renderTSNE('tsne-viz'); },
   };
 
   function initViz() {
     // Load data then set up observers
-    Promise.all([loadGenreData(), loadArtistData(), loadTimelineData(), loadFrequencyData()])
+    Promise.all([loadGenreData(), loadArtistData(), loadTimelineData(), loadFrequencyData(), loadTSNEData()])
       .then(function () {
         var observer = new IntersectionObserver(function (entries) {
           entries.forEach(function (entry) {
