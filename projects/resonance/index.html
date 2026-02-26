@@ -228,12 +228,44 @@
 
   <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
 
-  <!-- PREDICTION -->
+  <!-- AUDIO FEATURE SPACE -->
+  <div class="essay reveal">
+    <h3>Audio Analysis</h3>
+    <h2>Acoustic neighborhoods that transcend genre labels</h2>
+    <p>Genre labels are human shorthand — useful but lossy. Two tracks labeled "electronic" can sound completely different. Two tracks from different genres can share deep acoustic properties: tempo, harmonic content, spectral texture, rhythmic density. Audio feature extraction captures what genre labels approximate.</p>
+    <p>The pipeline is implemented: Essentia extracts 11 traditional audio features (tempo, key, energy, danceability) from Deezer 30-second previews, and CLAP (Contrastive Language-Audio Pretraining) generates 512-dimensional embeddings that capture holistic acoustic character. Cosine similarity in CLAP space finds tracks that <em>sound alike</em> regardless of how they're tagged. The database schema, batch processor, and similarity search are built — waiting on audio dependency installation and preview URL enrichment to populate the embedding space.</p>
+  </div>
+
+  <div class="essay-wide">
+    <div class="viz-container reveal placeholder-viz">
+      <p class="viz-title">Audio Feature Space</p>
+      <div class="placeholder-content">
+        <div class="placeholder-label">Coming Soon</div>
+        <p class="placeholder-description">t-SNE projection of CLAP audio embeddings. Each point is a track, colored by genre. Clusters reveal acoustic neighborhoods that transcend genre labels — tracks that sound alike regardless of how they're categorized.</p>
+        <p class="placeholder-requirement">Pipeline implemented. Requires audio dependency installation and batch processing of Deezer preview URLs through the CLAP embedding pipeline (~500 tracks for meaningful clustering).</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+
+  <!-- ML PREDICTIONS -->
   <div class="essay reveal">
     <h3>Prediction</h3>
     <h2>Frequency-first, ML-enhanced</h2>
     <p>The system's primary ranking signal is cycle progress — how overdue something is relative to its evolved frequency. This works from day one and improves continuously as frequencies adapt. Tracks you seek out earn tighter intervals; tracks you ignore gradually relax. No training data needed, no cold start problem.</p>
-    <p>An ML layer sits on top of this: co-occurrence embeddings from listening sessions, temporal features (time of day, day of week), and a GradientBoosting classifier that learns selection patterns. But the frequency model carries the system until enough sessions accumulate. The ML layer is an enhancement, not a prerequisite — the architecture is useful before it's smart.</p>
+    <p>An ML layer sits on top: session co-occurrence embeddings (32-dimensional SVD vectors trained from listening sessions), temporal features (time of day, day of week), and a GradientBoosting classifier that learns selection patterns. The training pipeline, embedding generator, and predictor are implemented — the frequency model carries the system until enough sessions accumulate for meaningful model training.</p>
+  </div>
+
+  <div class="essay-wide">
+    <div class="viz-container reveal placeholder-viz">
+      <p class="viz-title">ML Prediction & Taste Profile</p>
+      <div class="placeholder-content">
+        <div class="placeholder-label">Coming Soon</div>
+        <p class="placeholder-description">Radar chart of genre preferences, temporal listening heatmap (hour &times; day-of-week), and a live suggestion flow showing ML-ranked predictions with confidence scores and feature attribution.</p>
+        <p class="placeholder-requirement">Training pipeline implemented. Requires ~100 listening sessions for meaningful co-occurrence embeddings and model training. Currently using frequency-based ranking as fallback.</p>
+      </div>
+    </div>
   </div>
 
   <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>

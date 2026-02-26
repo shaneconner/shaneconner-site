@@ -41,32 +41,27 @@
   var timelineData = null;
   var frequencyData = null;
 
+  function loadJSON(url, setter) {
+    return fetch(url)
+      .then(function (r) {
+        if (!r.ok) { console.warn('Resonance viz: failed to load ' + url + ' (' + r.status + ')'); return null; }
+        return r.json();
+      })
+      .then(function (d) { if (d) setter(d); return d; })
+      .catch(function (e) { console.warn('Resonance viz: error loading ' + url, e); return null; });
+  }
+
   function loadGenreData() {
-    return fetch('/data/resonance-genres.json')
-      .then(function (r) { return r.json(); })
-      .then(function (d) { genreData = d; return d; })
-      .catch(function () { return null; });
+    return loadJSON('/data/resonance-genres.json', function (d) { genreData = d; });
   }
-
   function loadArtistData() {
-    return fetch('/data/resonance-artists.json')
-      .then(function (r) { return r.json(); })
-      .then(function (d) { artistData = d; return d; })
-      .catch(function () { return null; });
+    return loadJSON('/data/resonance-artists.json', function (d) { artistData = d; });
   }
-
   function loadTimelineData() {
-    return fetch('/data/resonance-timeline.json')
-      .then(function (r) { return r.json(); })
-      .then(function (d) { timelineData = d; return d; })
-      .catch(function () { return null; });
+    return loadJSON('/data/resonance-timeline.json', function (d) { timelineData = d; });
   }
-
   function loadFrequencyData() {
-    return fetch('/data/resonance-frequency.json')
-      .then(function (r) { return r.json(); })
-      .then(function (d) { frequencyData = d; return d; })
-      .catch(function () { return null; });
+    return loadJSON('/data/resonance-frequency.json', function (d) { frequencyData = d; });
   }
 
   // ── Tooltip helper ────────────────────────────────────────────────────────
