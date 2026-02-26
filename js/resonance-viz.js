@@ -949,7 +949,7 @@
 
     var stack = d3.stack()
       .keys(orderedFamilies)
-      .offset(d3.stackOffsetExpand)
+      .offset(d3.stackOffsetNone)
       .order(d3.stackOrderNone);
 
     var series = stack(stream);
@@ -958,7 +958,8 @@
       .domain(stream.map(function (d) { return d.month; }))
       .range([0, w]);
 
-    var yScale = d3.scaleLinear().domain([0, 1]).range([h, 0]);
+    var yMax = d3.max(series, function (s) { return d3.max(s, function (d) { return d[1]; }); });
+    var yScale = d3.scaleLinear().domain([0, yMax]).range([h, 0]);
 
     var area = d3.area()
       .x(function (d) { return xScale(d.data.month); })
@@ -1004,6 +1005,14 @@
         tooltip.style.opacity = '0';
         d3.select(this).attr('fill-opacity', 0.8);
       });
+
+    // Y axis — track counts
+    var yAxis = d3.axisLeft(yScale).ticks(5).tickSize(0).tickPadding(6);
+    g.append('g')
+      .call(yAxis)
+      .call(function (g) { g.select('.domain').remove(); })
+      .selectAll('text')
+      .attr('fill', C.dim).attr('font-size', 10).attr('font-family', FONT);
 
     // X axis — show every 3rd month label
     var tickValues = stream.map(function (d) { return d.month; }).filter(function (d, i) { return i % 3 === 0; });
