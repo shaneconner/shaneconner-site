@@ -39,6 +39,7 @@
   var genreData = null;
   var artistData = null;
   var timelineData = null;
+  var frequencyData = null;
 
   function loadGenreData() {
     return fetch('/data/resonance-genres.json')
@@ -58,6 +59,13 @@
     return fetch('/data/resonance-timeline.json')
       .then(function (r) { return r.json(); })
       .then(function (d) { timelineData = d; return d; })
+      .catch(function () { return null; });
+  }
+
+  function loadFrequencyData() {
+    return fetch('/data/resonance-frequency.json')
+      .then(function (r) { return r.json(); })
+      .then(function (d) { frequencyData = d; return d; })
       .catch(function () { return null; });
   }
 
@@ -118,11 +126,12 @@
       // Center: Unified DB
       { name: 'SQLite Graph', x: centerX, y: centerY, color: C.greenBr, role: 'core' },
       // Right fan: enrichment sources
-      { name: 'Last.fm',      x: width * 0.82, y: height * 0.12, color: '#d51007', role: 'enrichment' },
-      { name: 'MusicBrainz',  x: width * 0.88, y: height * 0.30, color: '#ba478f', role: 'enrichment' },
-      { name: 'Deezer',       x: width * 0.90, y: height * 0.50, color: '#a238ff', role: 'enrichment' },
-      { name: 'Discogs',      x: width * 0.88, y: height * 0.70, color: '#333333', role: 'enrichment' },
-      { name: 'Genius',       x: width * 0.82, y: height * 0.88, color: '#ffff64', role: 'enrichment' },
+      { name: 'Last.fm',       x: width * 0.82, y: height * 0.08, color: '#d51007', role: 'enrichment' },
+      { name: 'MusicBrainz',   x: width * 0.88, y: height * 0.24, color: '#ba478f', role: 'enrichment' },
+      { name: 'ListenBrainz',  x: width * 0.90, y: height * 0.40, color: '#353070', role: 'enrichment' },
+      { name: 'Deezer',        x: width * 0.90, y: height * 0.56, color: '#a238ff', role: 'enrichment' },
+      { name: 'Discogs',       x: width * 0.88, y: height * 0.72, color: '#333333', role: 'enrichment' },
+      { name: 'Genius',        x: width * 0.82, y: height * 0.88, color: '#ffff64', role: 'enrichment' },
     ];
 
     var descriptions = {
@@ -130,6 +139,7 @@
       'SQLite Graph': '27 normalized tables. Every entity enriched from multiple sources without duplication.',
       'Last.fm': 'Scrobble history, listening patterns, artist/track similarity networks, and tag data.',
       'MusicBrainz': 'Authoritative metadata — ISRCs, recording relationships, release groups, disambiguation.',
+      'ListenBrainz': 'Open community listening data and collaborative filtering recommendations.',
       'Deezer': 'Audio previews (30-sec), independent recommendation graph, and related-artist data.',
       'Discogs': 'Physical release data, label information, artist credits, and discographic lineage.',
       'Genius': 'Lyrics, annotations, song descriptions, and artist bios.',
@@ -301,7 +311,7 @@
       .attr('stroke-width', 1.5);
 
     // Labels for larger nodes
-    node.filter(function (d) { return d.count > 60; })
+    node.filter(function (d) { return d.count > 8; })
       .append('text')
       .attr('text-anchor', 'middle')
       .attr('dy', function (d) { return rScale(d.count) + 12; })
@@ -531,21 +541,20 @@
 
     // Genre-to-color mapping
     var genreColorMap = {
-      'alternative': '#7a8a2a',
-      'prog-metal': '#6a3a3a',
+      'ambient': '#5a7a8a',
       'idm': '#6a7a9a',
-      'industrial': '#5a5a5a',
-      'synth-pop': '#8a6a3a',
-      'trip-hop': '#8a7a5a',
-      'post-rock': '#5a7a8a',
-      'shoegaze': '#5a7a8a',
-      'dream-pop': '#5a7a8a',
-      'experimental': '#7a6a8a',
-      'prog-rock': '#3a6a5a',
-      'post-punk': '#8a3a5a',
-      'gothic-rock': '#8a3a5a',
+      'vaporwave': '#7a6a8a',
+      'drone': '#5a5a5a',
+      'minimalism': '#8a6a3a',
+      'downtempo': '#8a7a5a',
       'electronic': '#6a7a9a',
-      'ambient': '#6a7a9a',
+      'experimental': '#7a6a8a',
+      'french house': '#8a3a5a',
+      'soundtrack': '#7a8a2a',
+      'plunderphonics': '#6a3a5a',
+      'chillwave': '#5a8a7a',
+      'dub techno': '#3a6a5a',
+      'unknown': '#4a4a3a',
     };
 
     var maxListens = d3.max(data.nodes, function (d) { return d.listens; });
@@ -594,7 +603,7 @@
       .attr('stroke-width', 1.5);
 
     // Labels for prominent artists
-    node.filter(function (d) { return d.listens > 140; })
+    node.filter(function (d) { return d.listens > 5; })
       .append('text')
       .attr('text-anchor', 'middle')
       .attr('dy', function (d) { return rScale(d.listens) + 13; })
@@ -645,7 +654,7 @@
   }
 
   // ════════════════════════════════════════════════════════════════════════════
-  //  5. LISTENING TIMELINE (Stacked Area Chart)
+  //  5. LIBRARY COMPOSITION (Horizontal Bar Chart)
   // ════════════════════════════════════════════════════════════════════════════
 
   function renderListeningTimeline(containerId) {
@@ -654,27 +663,29 @@
     container.innerHTML = '';
 
     var data = timelineData;
-    if (!data) return;
+    if (!data || !data.categories) return;
 
+    var cats = data.categories;
     var width = container.clientWidth;
-    var height = Math.max(300, width * 0.35);
-    var margin = { top: 20, right: 120, bottom: 40, left: 45 };
+    var barH = 28;
+    var gap = 6;
+    var margin = { top: 10, right: 60, bottom: 10, left: 110 };
+    var h = cats.length * (barH + gap);
+    var height = h + margin.top + margin.bottom;
     var w = width - margin.left - margin.right;
-    var h = height - margin.top - margin.bottom;
 
     var tooltip = makeTooltip(container);
 
-    var genres = data.genres;
-    var periods = data.periods;
-
-    var genreColors = {
-      'Rock': '#7a8a2a',
+    var compositionColors = {
+      'Soundtrack': '#7a8a2a',
       'Electronic': '#6a7a9a',
-      'Metal': '#6a3a3a',
-      'Post-Punk': '#8a3a5a',
       'Ambient': '#5a7a8a',
-      'Hip-Hop': '#8a7a5a',
-      'Shoegaze': '#5a8a7a',
+      'Vaporwave': '#7a6a8a',
+      'IDM': '#6a7a9a',
+      'Minimalism': '#8a6a3a',
+      'Drone': '#5a5a5a',
+      'Experimental': '#8a3a5a',
+      'Downtempo': '#8a7a5a',
       'Other': '#4a4a3a',
     };
 
@@ -688,42 +699,26 @@
     var g = svg.append('g')
       .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
-    // Stack
-    var stack = d3.stack()
-      .keys(genres)
-      .order(d3.stackOrderReverse);
+    var maxTracks = d3.max(cats, function (d) { return d.tracks; });
+    var xScale = d3.scaleLinear().domain([0, maxTracks]).range([0, w]);
 
-    var series = stack(periods);
-
-    var xScale = d3.scaleBand()
-      .domain(periods.map(function (d) { return d.label; }))
-      .range([0, w])
-      .padding(0);
-
-    var yMax = d3.max(series, function (s) { return d3.max(s, function (d) { return d[1]; }); });
-    var yScale = d3.scaleLinear().domain([0, yMax]).range([h, 0]);
-
-    var area = d3.area()
-      .x(function (d) { return xScale(d.data.label) + xScale.bandwidth() / 2; })
-      .y0(function (d) { return yScale(d[0]); })
-      .y1(function (d) { return yScale(d[1]); })
-      .curve(d3.curveMonotoneX);
-
-    // Areas
-    g.selectAll('.genre-area')
-      .data(series)
-      .enter().append('path')
-      .attr('class', 'genre-area')
-      .attr('d', area)
-      .attr('fill', function (d) { return genreColors[d.key] || C.dim; })
-      .attr('fill-opacity', 0.7)
-      .attr('stroke', function (d) { return genreColors[d.key] || C.dim; })
-      .attr('stroke-width', 0.5)
-      .attr('stroke-opacity', 0.8)
+    // Bars
+    g.selectAll('.comp-bar')
+      .data(cats)
+      .enter().append('rect')
+      .attr('class', 'comp-bar')
+      .attr('x', 0)
+      .attr('y', function (d, i) { return i * (barH + gap); })
+      .attr('width', 0)
+      .attr('height', barH)
+      .attr('fill', function (d) { return compositionColors[d.name] || C.dim; })
+      .attr('fill-opacity', 0.75)
+      .attr('rx', 2)
       .on('mouseenter', function (event, d) {
-        tooltip.innerHTML = '<strong>' + d.key + '</strong>';
+        tooltip.innerHTML = '<strong>' + d.name + '</strong><br/>' +
+          d.tracks + ' tracks (' + d.pct + '%)';
         tooltip.style.opacity = '1';
-        d3.select(this).attr('fill-opacity', 0.95);
+        d3.select(this).attr('fill-opacity', 1);
       })
       .on('mousemove', function (event) {
         var rect = container.getBoundingClientRect();
@@ -732,54 +727,166 @@
       })
       .on('mouseleave', function () {
         tooltip.style.opacity = '0';
-        d3.select(this).attr('fill-opacity', 0.7);
-      });
+        d3.select(this).attr('fill-opacity', 0.75);
+      })
+      .transition().duration(1200).ease(d3.easeCubicOut)
+      .attr('width', function (d) { return xScale(d.tracks); });
 
-    // X axis
+    // Labels (left side)
+    g.selectAll('.comp-label')
+      .data(cats)
+      .enter().append('text')
+      .attr('x', -8)
+      .attr('y', function (d, i) { return i * (barH + gap) + barH / 2 + 1; })
+      .attr('text-anchor', 'end')
+      .attr('fill', C.text)
+      .attr('font-family', FONT)
+      .attr('font-size', 11)
+      .attr('font-weight', 300)
+      .attr('dominant-baseline', 'middle')
+      .text(function (d) { return d.name; });
+
+    // Value labels (right side)
+    g.selectAll('.comp-value')
+      .data(cats)
+      .enter().append('text')
+      .attr('x', function (d) { return xScale(d.tracks) + 6; })
+      .attr('y', function (d, i) { return i * (barH + gap) + barH / 2 + 1; })
+      .attr('fill', C.dim)
+      .attr('font-family', FONT)
+      .attr('font-size', 10)
+      .attr('font-weight', 300)
+      .attr('dominant-baseline', 'middle')
+      .attr('opacity', 0)
+      .text(function (d) { return d.pct + '%'; })
+      .transition().delay(1200).duration(400)
+      .attr('opacity', 1);
+  }
+
+  // ════════════════════════════════════════════════════════════════════════════
+  //  6. FREQUENCY DISTRIBUTION (Scatter Plot)
+  // ════════════════════════════════════════════════════════════════════════════
+
+  function renderFrequencyDistribution(containerId) {
+    var container = document.getElementById(containerId);
+    if (!container) return;
+    container.innerHTML = '';
+
+    var data = frequencyData;
+    if (!data) return;
+
+    var artists = data.artists;
+    if (!artists || artists.length === 0) return;
+
+    var width = container.clientWidth;
+    var height = Math.max(340, width * 0.4);
+    var margin = { top: 20, right: 30, bottom: 50, left: 60 };
+    var w = width - margin.left - margin.right;
+    var h = height - margin.top - margin.bottom;
+
+    var tooltip = makeTooltip(container);
+
+    var svg = d3.select(container)
+      .append('svg')
+      .attr('viewBox', '0 0 ' + width + ' ' + height)
+      .attr('width', width)
+      .attr('height', height)
+      .style('display', 'block');
+
+    var g = svg.append('g')
+      .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+    var xMax = d3.max(artists, function (d) { return d.frequency; });
+    var yMax = d3.max(artists, function (d) { return d.cycle_progress; });
+    var xScale = d3.scaleLinear().domain([0, Math.min(xMax * 1.1, 100)]).range([0, w]);
+    var yScale = d3.scaleLinear().domain([0, Math.min(yMax * 1.1, 50)]).range([h, 0]);
+
+    // Grid
+    g.append('g').selectAll('line').data(yScale.ticks(5))
+      .enter().append('line')
+      .attr('x1', 0).attr('x2', w)
+      .attr('y1', function (d) { return yScale(d); })
+      .attr('y2', function (d) { return yScale(d); })
+      .attr('stroke', C.borderL).attr('stroke-opacity', 0.3);
+
+    // Threshold line at cycle_progress = 1.0
+    if (yMax >= 1) {
+      g.append('line')
+        .attr('x1', 0).attr('x2', w)
+        .attr('y1', yScale(1)).attr('y2', yScale(1))
+        .attr('stroke', C.green).attr('stroke-opacity', 0.5)
+        .attr('stroke-dasharray', '4,3');
+      g.append('text')
+        .attr('x', w - 4).attr('y', yScale(1) - 6)
+        .attr('text-anchor', 'end')
+        .attr('fill', C.green).attr('font-size', 9).attr('font-family', FONT)
+        .attr('font-style', 'italic')
+        .text('due threshold');
+    }
+
+    // Points
+    g.selectAll('.freq-dot')
+      .data(artists)
+      .enter().append('circle')
+      .attr('class', 'freq-dot')
+      .attr('cx', function (d) { return xScale(Math.min(d.frequency, xMax * 1.1)); })
+      .attr('cy', function (d) { return yScale(Math.min(d.cycle_progress, yMax * 1.1)); })
+      .attr('r', 0)
+      .attr('fill', function (d) { return d.cycle_progress >= 1 ? '#8a3a3a' : C.green; })
+      .attr('fill-opacity', 0.6)
+      .attr('stroke', function (d) { return d.cycle_progress >= 1 ? '#aa4a4a' : C.greenBr; })
+      .attr('stroke-width', 1)
+      .on('mouseenter', function (event, d) {
+        tooltip.innerHTML = '<strong>' + d.name + '</strong><br/>' +
+          'Frequency: ' + d.frequency + ' days<br/>' +
+          'Cycle: ' + d.cycle_progress + 'x' +
+          (d.cycle_progress >= 1 ? ' <span style="color:#aa4a4a">(overdue)</span>' : '');
+        tooltip.style.opacity = '1';
+        d3.select(this).attr('r', 7).attr('fill-opacity', 1);
+      })
+      .on('mousemove', function (event) {
+        var rect = container.getBoundingClientRect();
+        tooltip.style.left = (event.clientX - rect.left + 12) + 'px';
+        tooltip.style.top = (event.clientY - rect.top - 28) + 'px';
+      })
+      .on('mouseleave', function () {
+        tooltip.style.opacity = '0';
+        d3.select(this).attr('r', 4.5).attr('fill-opacity', 0.6);
+      })
+      .transition().duration(800).ease(d3.easeBackOut)
+      .attr('r', 4.5);
+
+    // Axes
     g.append('g')
       .attr('transform', 'translate(0,' + h + ')')
-      .call(d3.axisBottom(xScale))
+      .call(d3.axisBottom(xScale).ticks(6).tickFormat(function (d) { return d + 'd'; }))
       .call(function (axis) {
         axis.select('.domain').attr('stroke', C.borderL);
         axis.selectAll('.tick line').attr('stroke', C.borderL);
         axis.selectAll('.tick text').attr('fill', C.dim).attr('font-size', 10).attr('font-family', FONT);
       });
 
-    // Y axis
     g.append('g')
-      .call(d3.axisLeft(yScale).ticks(5))
+      .call(d3.axisLeft(yScale).ticks(5).tickFormat(function (d) { return d + 'x'; }))
       .call(function (axis) {
         axis.select('.domain').attr('stroke', C.borderL);
         axis.selectAll('.tick line').attr('stroke', C.borderL);
         axis.selectAll('.tick text').attr('fill', C.dim).attr('font-size', 10).attr('font-family', FONT);
       });
 
-    // Y label
+    // Axis labels
     g.append('text')
-      .attr('transform', 'rotate(-90)')
-      .attr('x', -h / 2).attr('y', -32)
+      .attr('x', w / 2).attr('y', h + 38)
       .attr('text-anchor', 'middle')
       .attr('fill', C.dim).attr('font-size', 10).attr('font-family', FONT)
-      .text('Listens');
+      .text('Target Frequency (days)');
 
-    // Legend
-    var legend = g.append('g')
-      .attr('transform', 'translate(' + (w + 12) + ',0)');
-
-    genres.forEach(function (genre, i) {
-      var ly = i * 18;
-      legend.append('rect')
-        .attr('x', 0).attr('y', ly - 5)
-        .attr('width', 12).attr('height', 12)
-        .attr('fill', genreColors[genre] || C.dim)
-        .attr('fill-opacity', 0.7);
-      legend.append('text')
-        .attr('x', 16).attr('y', ly + 2)
-        .attr('fill', C.dim)
-        .attr('font-size', 9).attr('font-family', FONT)
-        .attr('dominant-baseline', 'middle')
-        .text(genre);
-    });
+    g.append('text')
+      .attr('transform', 'rotate(-90)')
+      .attr('x', -h / 2).attr('y', -42)
+      .attr('text-anchor', 'middle')
+      .attr('fill', C.dim).attr('font-size', 10).attr('font-family', FONT)
+      .text('Cycle Progress (days since / frequency)');
   }
 
   // ════════════════════════════════════════════════════════════════════════════
@@ -792,11 +899,12 @@
     'frequency-viz':    function () { renderFrequencyEvolution('frequency-viz'); },
     'artist-viz':       function () { renderArtistConstellation('artist-viz'); },
     'timeline-viz':     function () { renderListeningTimeline('timeline-viz'); },
+    'freq-dist-viz':    function () { renderFrequencyDistribution('freq-dist-viz'); },
   };
 
   function initViz() {
     // Load data then set up observers
-    Promise.all([loadGenreData(), loadArtistData(), loadTimelineData()])
+    Promise.all([loadGenreData(), loadArtistData(), loadTimelineData(), loadFrequencyData()])
       .then(function () {
         var observer = new IntersectionObserver(function (entries) {
           entries.forEach(function (entry) {

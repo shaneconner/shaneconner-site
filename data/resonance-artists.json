@@ -1,86 +1,476 @@
 {
   "nodes": [
-    {"id": "radiohead", "label": "Radiohead", "listens": 342, "genre": "alternative"},
-    {"id": "tool", "label": "Tool", "listens": 285, "genre": "prog-metal"},
-    {"id": "boards-of-canada", "label": "Boards of Canada", "listens": 198, "genre": "idm"},
-    {"id": "nine-inch-nails", "label": "Nine Inch Nails", "listens": 267, "genre": "industrial"},
-    {"id": "depeche-mode", "label": "Depeche Mode", "listens": 175, "genre": "synth-pop"},
-    {"id": "massive-attack", "label": "Massive Attack", "listens": 156, "genre": "trip-hop"},
-    {"id": "portishead", "label": "Portishead", "listens": 134, "genre": "trip-hop"},
-    {"id": "aphex-twin", "label": "Aphex Twin", "listens": 189, "genre": "idm"},
-    {"id": "mogwai", "label": "Mogwai", "listens": 145, "genre": "post-rock"},
-    {"id": "godspeed", "label": "Godspeed You!", "listens": 112, "genre": "post-rock"},
-    {"id": "deftones", "label": "Deftones", "listens": 234, "genre": "alternative"},
-    {"id": "sigur-ros", "label": "Sigur R\u00f3s", "listens": 128, "genre": "post-rock"},
-    {"id": "my-bloody-valentine", "label": "My Bloody Valentine", "listens": 97, "genre": "shoegaze"},
-    {"id": "cocteau-twins", "label": "Cocteau Twins", "listens": 108, "genre": "dream-pop"},
-    {"id": "bjork", "label": "Bj\u00f6rk", "listens": 143, "genre": "experimental"},
-    {"id": "king-crimson", "label": "King Crimson", "listens": 92, "genre": "prog-rock"},
-    {"id": "opeth", "label": "Opeth", "listens": 178, "genre": "prog-metal"},
-    {"id": "porcupine-tree", "label": "Porcupine Tree", "listens": 165, "genre": "prog-rock"},
-    {"id": "the-cure", "label": "The Cure", "listens": 201, "genre": "post-punk"},
-    {"id": "joy-division", "label": "Joy Division", "listens": 118, "genre": "post-punk"},
-    {"id": "bauhaus", "label": "Bauhaus", "listens": 87, "genre": "gothic-rock"},
-    {"id": "swans", "label": "Swans", "listens": 76, "genre": "experimental"},
-    {"id": "daughters", "label": "Daughters", "listens": 68, "genre": "experimental"},
-    {"id": "hum", "label": "Hum", "listens": 95, "genre": "shoegaze"},
-    {"id": "nothing", "label": "Nothing", "listens": 82, "genre": "shoegaze"},
-    {"id": "burial", "label": "Burial", "listens": 104, "genre": "electronic"},
-    {"id": "autechre", "label": "Autechre", "listens": 71, "genre": "idm"},
-    {"id": "brian-eno", "label": "Brian Eno", "listens": 88, "genre": "ambient"},
-    {"id": "four-tet", "label": "Four Tet", "listens": 96, "genre": "electronic"},
-    {"id": "tycho", "label": "Tycho", "listens": 115, "genre": "ambient"}
+    {
+      "id": "t-e-l-e-p-a-t-h-テレパシー能力者",
+      "label": "t e l e p a t h テレパシー能力者",
+      "listens": 34,
+      "genre": "ambient"
+    },
+    {
+      "id": "desert-sand-feels-warm-at-nigh",
+      "label": "desert sand feels warm at night",
+      "listens": 22,
+      "genre": "ambient"
+    },
+    {
+      "id": "brian-eno",
+      "label": "Brian Eno",
+      "listens": 12,
+      "genre": "ambient"
+    },
+    {
+      "id": "aphex-twin",
+      "label": "Aphex Twin",
+      "listens": 7,
+      "genre": "idm"
+    },
+    {
+      "id": "18-days",
+      "label": "18 DAYS",
+      "listens": 7,
+      "genre": "vaporwave"
+    },
+    {
+      "id": "jon-hopkins",
+      "label": "Jon Hopkins",
+      "listens": 7,
+      "genre": "idm"
+    },
+    {
+      "id": "a-winged-victory-for-the-sulle",
+      "label": "A Winged Victory for the Sullen",
+      "listens": 6,
+      "genre": "ambient"
+    },
+    {
+      "id": "stars-of-the-lid",
+      "label": "Stars Of The Lid",
+      "listens": 6,
+      "genre": "ambient"
+    },
+    {
+      "id": "porter-robinson",
+      "label": "Porter Robinson",
+      "listens": 6,
+      "genre": "electronic"
+    },
+    {
+      "id": "adam-wiltzie",
+      "label": "Adam Wiltzie",
+      "listens": 6,
+      "genre": "ambient"
+    },
+    {
+      "id": "dustin-ohalloran",
+      "label": "Dustin O'Halloran",
+      "listens": 6,
+      "genre": "neoclassical"
+    },
+    {
+      "id": "kid-cudi",
+      "label": "Kid Cudi",
+      "listens": 5,
+      "genre": "unknown"
+    },
+    {
+      "id": "boards-of-canada",
+      "label": "Boards of Canada",
+      "listens": 5,
+      "genre": "idm"
+    },
+    {
+      "id": "u2",
+      "label": "U2",
+      "listens": 5,
+      "genre": "rock"
+    },
+    {
+      "id": "floating-points",
+      "label": "Floating Points",
+      "listens": 4,
+      "genre": "idm"
+    },
+    {
+      "id": "kings-of-leon",
+      "label": "Kings of Leon",
+      "listens": 4,
+      "genre": "unknown"
+    },
+    {
+      "id": "jaÿ-z",
+      "label": "JAŸ-Z",
+      "listens": 4,
+      "genre": "rap"
+    },
+    {
+      "id": "skrillex",
+      "label": "Skrillex",
+      "listens": 4,
+      "genre": "electronic"
+    },
+    {
+      "id": "fleetwood-mac",
+      "label": "Fleetwood Mac",
+      "listens": 3,
+      "genre": "yacht rock"
+    },
+    {
+      "id": "barry-cant-swim",
+      "label": "Barry Can't Swim",
+      "listens": 3,
+      "genre": "jazz house"
+    },
+    {
+      "id": "red-house-painters",
+      "label": "Red House Painters",
+      "listens": 3,
+      "genre": "slowcore"
+    },
+    {
+      "id": "biosphere",
+      "label": "Biosphere",
+      "listens": 3,
+      "genre": "idm"
+    },
+    {
+      "id": "iron-&-wine",
+      "label": "Iron & Wine",
+      "listens": 3,
+      "genre": "indie folk"
+    },
+    {
+      "id": "kanye-west",
+      "label": "Kanye West",
+      "listens": 3,
+      "genre": "rap"
+    },
+    {
+      "id": "daryl-hall-&-john-oates",
+      "label": "Daryl Hall & John Oates",
+      "listens": 3,
+      "genre": "yacht rock"
+    },
+    {
+      "id": "ellie-goulding",
+      "label": "Ellie Goulding",
+      "listens": 2,
+      "genre": "unknown"
+    },
+    {
+      "id": "prefuse-73",
+      "label": "Prefuse 73",
+      "listens": 2,
+      "genre": "idm"
+    },
+    {
+      "id": "bonobo",
+      "label": "Bonobo",
+      "listens": 2,
+      "genre": "downtempo"
+    },
+    {
+      "id": "teed",
+      "label": "TEED",
+      "listens": 2,
+      "genre": "chillwave"
+    },
+    {
+      "id": "the-wallflowers",
+      "label": "The Wallflowers",
+      "listens": 2,
+      "genre": "unknown"
+    },
+    {
+      "id": "casiopea",
+      "label": "CASIOPEA",
+      "listens": 2,
+      "genre": "jazz fusion"
+    },
+    {
+      "id": "bibio",
+      "label": "Bibio",
+      "listens": 2,
+      "genre": "ambient folk"
+    },
+    {
+      "id": "aṣa",
+      "label": "Aṣa",
+      "listens": 2,
+      "genre": "neo soul"
+    },
+    {
+      "id": "man-man",
+      "label": "Man Man",
+      "listens": 2,
+      "genre": "unknown"
+    },
+    {
+      "id": "wiz-khalifa",
+      "label": "Wiz Khalifa",
+      "listens": 2,
+      "genre": "rap"
+    }
   ],
   "links": [
-    {"source": "radiohead", "target": "tool", "weight": 0.35},
-    {"source": "radiohead", "target": "bjork", "weight": 0.52},
-    {"source": "radiohead", "target": "porcupine-tree", "weight": 0.48},
-    {"source": "radiohead", "target": "sigur-ros", "weight": 0.45},
-    {"source": "radiohead", "target": "nine-inch-nails", "weight": 0.38},
-    {"source": "tool", "target": "opeth", "weight": 0.62},
-    {"source": "tool", "target": "king-crimson", "weight": 0.48},
-    {"source": "tool", "target": "deftones", "weight": 0.55},
-    {"source": "tool", "target": "porcupine-tree", "weight": 0.45},
-    {"source": "boards-of-canada", "target": "aphex-twin", "weight": 0.68},
-    {"source": "boards-of-canada", "target": "autechre", "weight": 0.58},
-    {"source": "boards-of-canada", "target": "tycho", "weight": 0.52},
-    {"source": "boards-of-canada", "target": "brian-eno", "weight": 0.48},
-    {"source": "nine-inch-nails", "target": "depeche-mode", "weight": 0.52},
-    {"source": "nine-inch-nails", "target": "deftones", "weight": 0.58},
-    {"source": "nine-inch-nails", "target": "tool", "weight": 0.42},
-    {"source": "depeche-mode", "target": "the-cure", "weight": 0.55},
-    {"source": "depeche-mode", "target": "joy-division", "weight": 0.48},
-    {"source": "massive-attack", "target": "portishead", "weight": 0.78},
-    {"source": "massive-attack", "target": "burial", "weight": 0.45},
-    {"source": "massive-attack", "target": "four-tet", "weight": 0.35},
-    {"source": "portishead", "target": "bjork", "weight": 0.42},
-    {"source": "aphex-twin", "target": "autechre", "weight": 0.72},
-    {"source": "aphex-twin", "target": "four-tet", "weight": 0.48},
-    {"source": "aphex-twin", "target": "burial", "weight": 0.45},
-    {"source": "mogwai", "target": "godspeed", "weight": 0.72},
-    {"source": "mogwai", "target": "sigur-ros", "weight": 0.58},
-    {"source": "mogwai", "target": "my-bloody-valentine", "weight": 0.42},
-    {"source": "godspeed", "target": "sigur-ros", "weight": 0.52},
-    {"source": "godspeed", "target": "swans", "weight": 0.48},
-    {"source": "deftones", "target": "hum", "weight": 0.55},
-    {"source": "deftones", "target": "nothing", "weight": 0.48},
-    {"source": "my-bloody-valentine", "target": "cocteau-twins", "weight": 0.72},
-    {"source": "my-bloody-valentine", "target": "nothing", "weight": 0.58},
-    {"source": "my-bloody-valentine", "target": "hum", "weight": 0.52},
-    {"source": "cocteau-twins", "target": "bjork", "weight": 0.42},
-    {"source": "cocteau-twins", "target": "sigur-ros", "weight": 0.45},
-    {"source": "king-crimson", "target": "porcupine-tree", "weight": 0.55},
-    {"source": "king-crimson", "target": "opeth", "weight": 0.48},
-    {"source": "opeth", "target": "porcupine-tree", "weight": 0.58},
-    {"source": "the-cure", "target": "joy-division", "weight": 0.68},
-    {"source": "the-cure", "target": "cocteau-twins", "weight": 0.48},
-    {"source": "the-cure", "target": "bauhaus", "weight": 0.62},
-    {"source": "joy-division", "target": "bauhaus", "weight": 0.65},
-    {"source": "swans", "target": "daughters", "weight": 0.62},
-    {"source": "swans", "target": "nine-inch-nails", "weight": 0.38},
-    {"source": "burial", "target": "four-tet", "weight": 0.52},
-    {"source": "brian-eno", "target": "tycho", "weight": 0.55},
-    {"source": "brian-eno", "target": "sigur-ros", "weight": 0.42},
-    {"source": "nothing", "target": "hum", "weight": 0.62}
+    {
+      "source": "t-e-l-e-p-a-t-h-テレパシー能力者",
+      "target": "desert-sand-feels-warm-at-nigh",
+      "weight": 0.75
+    },
+    {
+      "source": "t-e-l-e-p-a-t-h-テレパシー能力者",
+      "target": "18-days",
+      "weight": 0.25
+    },
+    {
+      "source": "t-e-l-e-p-a-t-h-テレパシー能力者",
+      "target": "a-winged-victory-for-the-sulle",
+      "weight": 0.12
+    },
+    {
+      "source": "t-e-l-e-p-a-t-h-テレパシー能力者",
+      "target": "stars-of-the-lid",
+      "weight": 0.12
+    },
+    {
+      "source": "t-e-l-e-p-a-t-h-テレパシー能力者",
+      "target": "boards-of-canada",
+      "weight": 0.12
+    },
+    {
+      "source": "t-e-l-e-p-a-t-h-テレパシー能力者",
+      "target": "teed",
+      "weight": 0.25
+    },
+    {
+      "source": "desert-sand-feels-warm-at-nigh",
+      "target": "18-days",
+      "weight": 0.33
+    },
+    {
+      "source": "desert-sand-feels-warm-at-nigh",
+      "target": "a-winged-victory-for-the-sulle",
+      "weight": 0.14
+    },
+    {
+      "source": "desert-sand-feels-warm-at-nigh",
+      "target": "stars-of-the-lid",
+      "weight": 0.14
+    },
+    {
+      "source": "desert-sand-feels-warm-at-nigh",
+      "target": "adam-wiltzie",
+      "weight": 0.12
+    },
+    {
+      "source": "desert-sand-feels-warm-at-nigh",
+      "target": "boards-of-canada",
+      "weight": 0.14
+    },
+    {
+      "source": "desert-sand-feels-warm-at-nigh",
+      "target": "biosphere",
+      "weight": 0.12
+    },
+    {
+      "source": "brian-eno",
+      "target": "aphex-twin",
+      "weight": 0.19
+    },
+    {
+      "source": "brian-eno",
+      "target": "jon-hopkins",
+      "weight": 0.23
+    },
+    {
+      "source": "brian-eno",
+      "target": "a-winged-victory-for-the-sulle",
+      "weight": 0.27
+    },
+    {
+      "source": "brian-eno",
+      "target": "stars-of-the-lid",
+      "weight": 0.4
+    },
+    {
+      "source": "brian-eno",
+      "target": "adam-wiltzie",
+      "weight": 0.25
+    },
+    {
+      "source": "brian-eno",
+      "target": "boards-of-canada",
+      "weight": 0.17
+    },
+    {
+      "source": "brian-eno",
+      "target": "biosphere",
+      "weight": 0.25
+    },
+    {
+      "source": "brian-eno",
+      "target": "bibio",
+      "weight": 0.13
+    },
+    {
+      "source": "aphex-twin",
+      "target": "jon-hopkins",
+      "weight": 0.42
+    },
+    {
+      "source": "aphex-twin",
+      "target": "boards-of-canada",
+      "weight": 0.25
+    },
+    {
+      "source": "aphex-twin",
+      "target": "biosphere",
+      "weight": 0.14
+    },
+    {
+      "source": "aphex-twin",
+      "target": "bibio",
+      "weight": 0.29
+    },
+    {
+      "source": "jon-hopkins",
+      "target": "boards-of-canada",
+      "weight": 0.33
+    },
+    {
+      "source": "jon-hopkins",
+      "target": "biosphere",
+      "weight": 0.18
+    },
+    {
+      "source": "jon-hopkins",
+      "target": "prefuse-73",
+      "weight": 0.14
+    },
+    {
+      "source": "jon-hopkins",
+      "target": "bibio",
+      "weight": 0.36
+    },
+    {
+      "source": "a-winged-victory-for-the-sulle",
+      "target": "stars-of-the-lid",
+      "weight": 0.43
+    },
+    {
+      "source": "a-winged-victory-for-the-sulle",
+      "target": "adam-wiltzie",
+      "weight": 0.83
+    },
+    {
+      "source": "a-winged-victory-for-the-sulle",
+      "target": "dustin-ohalloran",
+      "weight": 0.6
+    },
+    {
+      "source": "a-winged-victory-for-the-sulle",
+      "target": "biosphere",
+      "weight": 0.22
+    },
+    {
+      "source": "stars-of-the-lid",
+      "target": "adam-wiltzie",
+      "weight": 0.57
+    },
+    {
+      "source": "stars-of-the-lid",
+      "target": "dustin-ohalloran",
+      "weight": 0.14
+    },
+    {
+      "source": "stars-of-the-lid",
+      "target": "biosphere",
+      "weight": 0.38
+    },
+    {
+      "source": "porter-robinson",
+      "target": "boards-of-canada",
+      "weight": 0.17
+    },
+    {
+      "source": "porter-robinson",
+      "target": "skrillex",
+      "weight": 0.5
+    },
+    {
+      "source": "porter-robinson",
+      "target": "bonobo",
+      "weight": 0.14
+    },
+    {
+      "source": "adam-wiltzie",
+      "target": "dustin-ohalloran",
+      "weight": 0.5
+    },
+    {
+      "source": "adam-wiltzie",
+      "target": "biosphere",
+      "weight": 0.2
+    },
+    {
+      "source": "boards-of-canada",
+      "target": "skrillex",
+      "weight": 0.12
+    },
+    {
+      "source": "boards-of-canada",
+      "target": "biosphere",
+      "weight": 0.22
+    },
+    {
+      "source": "boards-of-canada",
+      "target": "prefuse-73",
+      "weight": 0.27
+    },
+    {
+      "source": "boards-of-canada",
+      "target": "bonobo",
+      "weight": 0.38
+    },
+    {
+      "source": "boards-of-canada",
+      "target": "bibio",
+      "weight": 0.3
+    },
+    {
+      "source": "jaÿ-z",
+      "target": "kanye-west",
+      "weight": 0.33
+    },
+    {
+      "source": "jaÿ-z",
+      "target": "wiz-khalifa",
+      "weight": 0.33
+    },
+    {
+      "source": "fleetwood-mac",
+      "target": "daryl-hall-&-john-oates",
+      "weight": 0.67
+    },
+    {
+      "source": "biosphere",
+      "target": "bibio",
+      "weight": 0.17
+    },
+    {
+      "source": "kanye-west",
+      "target": "wiz-khalifa",
+      "weight": 1.0
+    },
+    {
+      "source": "prefuse-73",
+      "target": "bonobo",
+      "weight": 0.15
+    },
+    {
+      "source": "prefuse-73",
+      "target": "bibio",
+      "weight": 0.21
+    }
   ]
 }

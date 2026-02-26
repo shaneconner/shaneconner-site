@@ -5,12 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Resonance: Music Intelligence — Shane Conner</title>
 
-  <meta name="description" content="A music intelligence system that unifies six data sources into a knowledge graph with adaptive frequency tracking, multi-source discovery, and ML-powered predictions." />
+  <meta name="description" content="A music intelligence system that unifies seven data sources into a knowledge graph with adaptive frequency tracking, multi-source discovery, and 35 MCP tools for conversational music management." />
   <meta name="author" content="Shane Conner" />
 
   <meta property="og:type" content="article" />
   <meta property="og:title" content="Resonance: Music Intelligence — Shane Conner" />
-  <meta property="og:description" content="Six APIs feed a unified knowledge graph. Frequencies evolve from listening behavior. The system learns your taste — and finds what you're missing." />
+  <meta property="og:description" content="Seven APIs feed a unified knowledge graph. Frequencies evolve from listening behavior. The system learns your taste — and finds what you're missing." />
   <meta property="og:url" content="https://shaneconner.com/projects/resonance" />
   <meta property="og:site_name" content="Shane Conner" />
 
@@ -47,7 +47,7 @@
         <span class="resonance-name">Resonance</span>
         <span class="resonance-descriptor">Music Intelligence</span>
       </h1>
-      <p class="subtitle">Six sources. One knowledge graph. Music that remembers what you forget.</p>
+      <p class="subtitle">Seven sources. One knowledge graph. Music that remembers what you forget.</p>
     </div>
     <p class="scroll-hint">Scroll to explore</p>
   </section>
@@ -56,7 +56,7 @@
   <div class="essay reveal">
     <h3>The Problem</h3>
     <h2>Streaming algorithms are optimizing for the wrong thing</h2>
-    <p>Spotify's Discover Weekly is optimized for engagement — keeping you listening — not for deepening your understanding of what you actually like. The algorithm feeds you adjacencies to what you've already consumed, reinforcing a narrowing corridor of taste. Over time, the bubble tightens. Artists you loved three years ago disappear from rotation. Genres you explored once never resurface. Your listening history exists only as a stream of play counts with no structure, no context, and no memory of <em>why</em> you were drawn to something.</p>
+    <p>Spotify's algorithm is optimized for engagement — keeping you listening — not for deepening your understanding of what you actually like. It feeds you adjacencies to what you've already consumed, reinforcing a narrowing corridor of taste. Over time, the bubble tightens. Artists you loved three years ago disappear from rotation. Genres you explored once never resurface. Your listening history exists only as a stream of play counts with no structure, no context, and no memory of <em>why</em> you were drawn to something.</p>
     <p>The deeper problem is fragmentation. Your taste profile is scattered across half a dozen platforms — Spotify has play history, Last.fm has scrobbles, MusicBrainz has metadata, Discogs has pressings and lineage, Genius has lyrics and annotations. Each platform holds a shard of understanding, but none of them talk to each other, and none of them model the relationships between artists, genres, and tracks in a way that evolves with your behavior.</p>
     <p>This project is built on a different premise: <em>what if your music library was a knowledge graph that learned from how you listen?</em></p>
   </div>
@@ -78,9 +78,9 @@
   <!-- ARCHITECTURE -->
   <div class="essay reveal">
     <h3>The Architecture</h3>
-    <h2>Six APIs feed one unified schema</h2>
-    <p>The system starts with Spotify as the canonical source — tracks, albums, artists, and playlists all keyed on Spotify IDs. From there, an enrichment pipeline fans out to five additional data sources, each contributing a different dimension of understanding. Last.fm adds listening history, scrobble patterns, and similarity networks. MusicBrainz provides authoritative metadata — ISRCs, recording relationships, and disambiguation. Deezer contributes audio previews and an independent recommendation graph. Discogs adds physical release data and artist lineage. Genius brings lyrics and annotations.</p>
-    <p>All of this collapses into a single normalized SQLite database — 27 tables in a relational schema designed so that any entity (track, artist, album, genre) can be enriched from any source without duplication. A token-bucket rate limiter manages API quotas across all six services, and the enrichment pipeline handles cross-referencing through external ID mapping.</p>
+    <h2>Seven APIs feed one unified schema</h2>
+    <p>The system starts with Spotify as the canonical source — tracks, albums, artists, and playlists all keyed on Spotify IDs. From there, an enrichment pipeline fans out to six additional data sources, each contributing a different dimension of understanding. Last.fm adds listening history, scrobble patterns, and similarity networks. MusicBrainz provides authoritative metadata — ISRCs, recording relationships, and disambiguation. ListenBrainz contributes open community listening data and collaborative filtering. Deezer adds audio previews and an independent recommendation graph. Discogs provides physical release data and artist lineage. Genius brings lyrics and annotations.</p>
+    <p>All of this collapses into a single normalized SQLite database — 27 tables in a relational schema designed so that any entity (track, artist, album, genre) can be enriched from any source without duplication. A token-bucket rate limiter manages API quotas across all seven services, and the enrichment pipeline handles cross-referencing through external ID mapping.</p>
     <p>The result is a graph where <em>every track exists in context</em>: its genre lineage, its artist's collaborators, its acoustic neighbors, its listening frequency, and its discovery provenance.</p>
   </div>
 
@@ -89,7 +89,7 @@
     <div class="viz-container reveal">
       <p class="viz-title">Enrichment Pipeline</p>
       <div id="pipeline-viz" style="width:100%;"></div>
-      <p class="viz-caption">Data flows from Spotify through five enrichment sources into the unified SQLite graph. Each source contributes a different dimension of understanding. Animated pulses represent active enrichment.</p>
+      <p class="viz-caption">Data flows from Spotify through six enrichment sources into the unified SQLite graph. Each source contributes a different dimension of understanding. Animated pulses represent active enrichment.</p>
     </div>
   </div>
 
@@ -142,33 +142,33 @@
   <div class="essay reveal">
     <h3>Artist Network</h3>
     <h2>Your library is a constellation</h2>
-    <p>Every artist in the library exists in relationship to other artists. Last.fm's similarity data provides weighted edges — the stronger the similarity, the thicker the connection. When you add a new artist, the system maps them into this existing network, revealing which corners of your library they're closest to and which they're furthest from.</p>
-    <p>This isn't just visualization — it's the foundation of the discovery engine. When the system recommends new artists, it can explain <em>why</em> in terms of network proximity: "This artist sits between your post-rock cluster and your ambient cluster." The recommendation carries structural context, not just a match score.</p>
+    <p>Every artist in the library exists in relationship to other artists through shared genre DNA. The network below connects artists who share genre tags — the more genres in common, the stronger the edge. Ambient and IDM artists cluster tightly. Vaporwave forms its own neighborhood. Rap artists connect through shared tags. The topology reveals the real structure of a personal library.</p>
+    <p>This isn't just visualization — it's the foundation of the discovery engine. When the system recommends new artists, it can explain <em>why</em> in terms of network proximity: "This artist sits between your ambient cluster and your electronic cluster." The recommendation carries structural context, not just a match score.</p>
   </div>
 
   <div class="essay-wide">
     <div class="viz-container reveal">
       <p class="viz-title">Artist Similarity Constellation</p>
       <div id="artist-viz" style="width:100%;"></div>
-      <p class="viz-caption">Artists as nodes sized by listen count, colored by primary genre family. Edges from Last.fm similarity data. Drag to rearrange, hover for details.</p>
+      <p class="viz-caption">Top 35 artists by listen count, colored by primary genre. Edges weighted by shared genre overlap. Drag to rearrange, hover for details.</p>
     </div>
   </div>
 
   <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
 
-  <!-- LISTENING TIMELINE -->
+  <!-- LIBRARY COMPOSITION -->
   <div class="essay reveal">
-    <h3>Temporal Patterns</h3>
-    <h2>Taste changes over time</h2>
-    <p>A static snapshot of your library misses the most interesting dimension: how your listening evolves. The timeline below shows genre distribution over time — which genres dominate in which periods, where new genres enter, and where old ones fade. Seasonal patterns emerge. Discovery bursts are visible as new colors appearing in the stack.</p>
-    <p>This temporal view also feeds the ML prediction model. The system learns that you listen to more ambient music late at night, more energetic music on weekday mornings, and more experimental music on weekends. Time-of-day and day-of-week features become meaningful predictors when combined with genre history.</p>
+    <h3>Library Composition</h3>
+    <h2>What the collection is made of</h2>
+    <p>Genre labels are messy — Spotify assigns them to artists, Last.fm uses crowd-sourced tags, MusicBrainz has its own vocabulary. Rather than force one taxonomy, the system normalizes sub-genres into broader families and counts track associations. The result is a structural view of the library: where the mass is concentrated, what the long tail looks like, and how niche genres relate to broader categories.</p>
+    <p>Soundtrack and electronic music dominate, with ambient and vaporwave forming a substantial core. The "Other" category captures the long tail — genres with too few tracks to form their own cluster, or tracks whose artists span multiple incompatible genre labels. As the library grows, new categories will emerge from this residual.</p>
   </div>
 
   <div class="essay-wide">
     <div class="viz-container reveal">
-      <p class="viz-title">Listening Timeline by Genre</p>
+      <p class="viz-title">Library Composition by Genre Family</p>
       <div id="timeline-viz" style="width:100%;"></div>
-      <p class="viz-caption">Stacked area chart showing genre distribution over time. Hover for breakdowns. Width of each band reflects relative listening volume.</p>
+      <p class="viz-caption">Genre distribution across 932 tracks. Sub-genres normalized into display families. Hover for track counts and percentages.</p>
     </div>
   </div>
 
@@ -178,8 +178,8 @@
   <div class="essay reveal">
     <h3>Discovery</h3>
     <h2>Recommendations from owned data, not rented algorithms</h2>
-    <p>The discovery engine aggregates signals from the data sources you already feed the system. Last.fm provides similar-track and similar-artist recommendations anchored in scrobble data. Deezer contributes its own independent related-artist graph. ListenBrainz offers collaborative filtering from its open listening community. Genre exploration surfaces underexplored corners of your library's genre network.</p>
-    <p>Each discovery strategy runs independently, then results are merged and ranked by <em>multi-source agreement</em>. An artist recommended by both Last.fm similarity and Deezer related-artist graphs ranks higher than one from a single source. The system queues discoveries for review — you can add them to your library or dismiss them, and that feedback refines future recommendations.</p>
+    <p>The discovery engine aggregates signals from five independent strategies. Last.fm provides similar-track and similar-artist recommendations anchored in scrobble data. Deezer contributes its own related-artist graph. ListenBrainz offers collaborative filtering from its open listening community. Genre exploration surfaces underexplored corners of the library's genre network. And Spotify's own catalog — seeded from the frequency model's most overdue artists — surfaces top tracks from artists the system knows you should revisit.</p>
+    <p>Each strategy runs independently, then results merge and rank by <em>multi-source agreement</em>. An artist recommended by both Last.fm similarity and Deezer related-artist graphs ranks higher than one from a single source. The system queues discoveries for review — add them to the library or dismiss them, and that feedback refines future recommendations.</p>
     <p>The key difference from streaming platform recommendations: <em>you own the graph</em>. Discovery provenance is logged. You can see exactly why something was recommended, which sources agreed, and how it relates to what you already know.</p>
   </div>
 
@@ -201,49 +201,39 @@
         <div class="trust-title">Genre Exploration</div>
         <div class="trust-copy">Identifies underexplored genres in your library and surfaces artists from those neighborhoods.</div>
       </div>
-    </div>
-  </div>
-
-  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
-
-  <!-- AUDIO FEATURE SPACE — PLACEHOLDER -->
-  <div class="essay reveal">
-    <h3>Audio Analysis</h3>
-    <h2>Acoustic neighborhoods that transcend genre labels</h2>
-    <p>Genre labels are human shorthand — useful but lossy. Two tracks labeled "electronic" can sound completely different. Two tracks from different genres can share deep acoustic properties: tempo, harmonic content, spectral texture, rhythmic density. Audio feature extraction captures what genre labels approximate.</p>
-    <p>The system uses Essentia for traditional audio feature extraction (tempo, key, mode, energy, danceability) from Deezer 30-second previews, and CLAP (Contrastive Language-Audio Pretraining) for 512-dimensional audio embeddings that capture holistic acoustic character. Cosine similarity in CLAP space finds tracks that <em>sound alike</em> regardless of how they're tagged.</p>
-  </div>
-
-  <div class="essay-wide">
-    <div class="viz-container reveal placeholder-viz">
-      <p class="viz-title">Audio Feature Space</p>
-      <div class="placeholder-content">
-        <div class="placeholder-label">Coming Soon</div>
-        <p class="placeholder-description">t-SNE projection of CLAP audio embeddings. Each point is a track, colored by genre. Clusters reveal acoustic neighborhoods that transcend genre labels — tracks that sound alike regardless of how they're categorized.</p>
-        <p class="placeholder-requirement">Requires ~500 tracks processed through the CLAP embedding pipeline.</p>
+      <div class="trust-card">
+        <div class="trust-title">Spotify Discovery</div>
+        <div class="trust-copy">Seeds from the frequency model's most overdue artists, pulls their top Spotify tracks, filters against the library.</div>
       </div>
     </div>
   </div>
 
   <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
 
-  <!-- ML PREDICTIONS — PLACEHOLDER -->
+  <!-- FREQUENCY DISTRIBUTION -->
+  <div class="essay reveal">
+    <h3>Rotation State</h3>
+    <h2>The library as a living system</h2>
+    <p>Every artist in the system has a target frequency and a current cycle progress — the ratio of days since last listened to the target frequency. When cycle progress exceeds 1.0, the artist is overdue. The scatter plot below shows each artist positioned by their target frequency (x-axis) and current cycle progress (y-axis). Points above the threshold line are overdue for a listen.</p>
+    <p>This is the system's pulse. At any given moment, it shows which artists are due, which are in comfortable rotation, and which have drifted to long intervals. The frequency model evolves continuously — listen ahead of schedule and the interval tightens; let something go overdue and the interval relaxes.</p>
+  </div>
+
+  <div class="essay-wide">
+    <div class="viz-container reveal">
+      <p class="viz-title">Artist Frequency Distribution</p>
+      <div id="freq-dist-viz" style="width:100%;"></div>
+      <p class="viz-caption">Each point is an artist. X-axis: target frequency in days. Y-axis: cycle progress (days since listened / frequency). Points above the dashed line are overdue. Red = overdue, green = on track.</p>
+    </div>
+  </div>
+
+  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+
+  <!-- PREDICTION -->
   <div class="essay reveal">
     <h3>Prediction</h3>
-    <h2>Learning what comes next</h2>
-    <p>The ML layer builds on the same architecture pattern as the task intelligence system: co-occurrence embeddings capture track relationships, temporal features encode listening patterns, and a GradientBoosting classifier ranks candidates by likelihood of selection. The model learns from sessions — sequences of tracks listened to in proximity — and predicts what you're most likely to want next given the current context.</p>
-    <p>Before enough data accumulates for meaningful training, the system falls back to frequency-based ranking. Tracks with higher cycle progress (more overdue relative to their frequency) surface first. This means the system is useful from day one — the ML layer is an enhancement, not a prerequisite.</p>
-  </div>
-
-  <div class="essay-wide">
-    <div class="viz-container reveal placeholder-viz">
-      <p class="viz-title">ML Prediction & Taste Profile</p>
-      <div class="placeholder-content">
-        <div class="placeholder-label">Coming Soon</div>
-        <p class="placeholder-description">Radar chart of genre preferences, temporal listening heatmap (hour &times; day-of-week), and a live suggestion flow showing ML-ranked predictions with confidence scores and feature attribution.</p>
-        <p class="placeholder-requirement">Requires ~100 listening sessions for meaningful model training.</p>
-      </div>
-    </div>
+    <h2>Frequency-first, ML-enhanced</h2>
+    <p>The system's primary ranking signal is cycle progress — how overdue something is relative to its evolved frequency. This works from day one and improves continuously as frequencies adapt. Tracks you seek out earn tighter intervals; tracks you ignore gradually relax. No training data needed, no cold start problem.</p>
+    <p>An ML layer sits on top of this: co-occurrence embeddings from listening sessions, temporal features (time of day, day of week), and a GradientBoosting classifier that learns selection patterns. But the frequency model carries the system until enough sessions accumulate. The ML layer is an enhancement, not a prerequisite — the architecture is useful before it's smart.</p>
   </div>
 
   <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
@@ -251,8 +241,8 @@
   <!-- MCP INTEGRATION -->
   <div class="essay reveal">
     <h3>Interface</h3>
-    <h2>30 tools, one conversation</h2>
-    <p>The entire system is exposed through 30 MCP tools — the same Model Context Protocol pattern used in the task intelligence system. An AI assistant can add tracks to the library, log listens, trigger enrichment, run discovery, get recommendations, and query listening statistics, all within a single conversation. The assistant becomes a music librarian that understands your collection, remembers your patterns, and can explain its reasoning.</p>
+    <h2>35 tools, one conversation</h2>
+    <p>The entire system is exposed through 35 MCP tools — the same Model Context Protocol pattern used in the task intelligence system. An AI assistant can add tracks to the library, log listens, trigger enrichment, run five independent discovery strategies, get recommendations with structured feedback, control Spotify playback, and query listening statistics, all within a single conversation. The assistant becomes a music librarian that understands the collection, remembers patterns, and can explain its reasoning.</p>
     <p>This isn't a chatbot bolted onto a music player. It's a structured API layer that gives a general-purpose AI deep access to your personal music graph — the same architecture pattern where broad intelligence orchestrates narrow, domain-specific tools.</p>
   </div>
 
@@ -264,8 +254,8 @@
       </div>
       <div class="mcp-flow-arrow" aria-hidden="true"></div>
       <div class="mcp-flow-node">
-        <span class="mcp-flow-label">30 MCP Tools</span>
-        <span class="mcp-flow-sub">Add, log, enrich, discover, recommend, query, export.</span>
+        <span class="mcp-flow-label">35 MCP Tools</span>
+        <span class="mcp-flow-sub">Add, log, enrich, discover, recommend, playback, query.</span>
       </div>
       <div class="mcp-flow-arrow" aria-hidden="true"></div>
       <div class="mcp-flow-node mcp-flow-node-specialist">
@@ -275,7 +265,7 @@
       <div class="mcp-flow-arrow" aria-hidden="true"></div>
       <div class="mcp-flow-node">
         <span class="mcp-flow-label">Knowledge Graph</span>
-        <span class="mcp-flow-sub">27 tables, 6 sources, frequency tracking, discovery queue.</span>
+        <span class="mcp-flow-sub">27 tables, 7 sources, frequency tracking, discovery queue.</span>
       </div>
     </div>
     <p class="viz-caption">Architecture pattern: a general intelligence agent orchestrates domain-specific tools and specialized models through MCP.</p>
@@ -287,21 +277,21 @@
   <div class="essay reveal">
     <h3>System</h3>
     <h2>What it does</h2>
-    <p>The system unifies fragmented music data into a single queryable graph, tracks listening rotation with adaptive frequency, discovers new music from owned data sources with explainable provenance, and exposes everything through a conversational tool layer. It's music intelligence as infrastructure — a foundation that gets more useful as data accumulates.</p>
+    <p>932 tracks, 259 artists, 205 genres, and 322 logged listens — all unified into a single queryable graph. Frequencies evolve from listening behavior. Five independent discovery strategies surface new music with explainable provenance. A conversational tool layer gives an AI assistant deep access to the entire system. It's music intelligence as infrastructure — a foundation that gets more useful as data accumulates.</p>
   </div>
 
   <div class="stats-row reveal">
     <div class="stat">
-      <div class="stat-value">6</div>
+      <div class="stat-value">932</div>
+      <div class="stat-label">Tracks</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">259</div>
+      <div class="stat-label">Artists</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">7</div>
       <div class="stat-label">Data Sources</div>
-    </div>
-    <div class="stat">
-      <div class="stat-value">27</div>
-      <div class="stat-label">Database Tables</div>
-    </div>
-    <div class="stat">
-      <div class="stat-value">30</div>
-      <div class="stat-label">MCP Tools</div>
     </div>
     <div class="stat">
       <div class="stat-value">1.382</div>
