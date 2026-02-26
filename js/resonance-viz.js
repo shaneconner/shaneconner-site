@@ -911,10 +911,10 @@
     container.innerHTML = '';
 
     var data = timelineData;
-    if (!data || !data.stream || !data.families) return;
+    if (!data || !data.periods || !data.genres) return;
 
-    var families = data.families;
-    var stream = data.stream;
+    var genres = data.genres;
+    var periods = data.periods;
 
     var width = container.clientWidth;
     var margin = { top: 20, right: 20, bottom: 30, left: 40 };
@@ -925,47 +925,36 @@
     var tooltip = makeTooltip(container);
 
     var streamColors = {
-      'Soundtrack': '#7a8a2a',
-      'Electronic': '#6a7a9a',
-      'Ambient': '#5a7a8a',
-      'Vaporwave': '#7a6a8a',
       'Rock': '#8a3a5a',
-      'Classical': '#6a5a7a',
-      'Jazz': '#5a6a3a',
-      'Experimental': '#8a6a3a',
-      'Hip Hop': '#8a7a5a',
-      'Pop': '#5a8a5a',
-      'R&B/Soul': '#6a3a3a',
-      'Folk/World': '#3a6a5a',
-      'Synthwave': '#8a5a3a',
+      'Electronic': '#6a7a9a',
+      'Metal': '#5a5a6a',
+      'Post-Punk': '#7a5a6a',
+      'Ambient': '#5a7a8a',
+      'Hip-Hop': '#8a7a5a',
+      'Shoegaze': '#6a5a7a',
       'Other': '#4a4a3a',
     };
 
-    // Order families by final size (largest on bottom for visual stability)
-    var lastPoint = stream[stream.length - 1];
-    var orderedFamilies = families.slice().sort(function (a, b) {
-      return (lastPoint[b] || 0) - (lastPoint[a] || 0);
-    });
-
     var stack = d3.stack()
-      .keys(orderedFamilies)
-      .offset(d3.stackOffsetNone)
-      .order(d3.stackOrderNone);
+      .keys(genres)
+      .offset(d3.stackOffsetSilhouette)
+      .order(d3.stackOrderInsideOut);
 
-    var series = stack(stream);
+    var series = stack(periods);
 
     var xScale = d3.scalePoint()
-      .domain(stream.map(function (d) { return d.month; }))
+      .domain(periods.map(function (d) { return d.label; }))
       .range([0, w]);
 
+    var yMin = d3.min(series, function (s) { return d3.min(s, function (d) { return d[0]; }); });
     var yMax = d3.max(series, function (s) { return d3.max(s, function (d) { return d[1]; }); });
-    var yScale = d3.scaleLinear().domain([0, yMax]).range([h, 0]);
+    var yScale = d3.scaleLinear().domain([yMin, yMax]).range([h, 0]);
 
     var area = d3.area()
-      .x(function (d) { return xScale(d.data.month); })
+      .x(function (d) { return xScale(d.data.label); })
       .y0(function (d) { return yScale(d[0]); })
       .y1(function (d) { return yScale(d[1]); })
-      .curve(d3.curveMonotoneX);
+      .curve(d3.curveBasis);
 
     var svg = d3.select(container)
       .append('svg')
@@ -988,11 +977,9 @@
       .attr('stroke', C.bg)
       .attr('stroke-width', 0.5)
       .on('mouseenter', function (event, d) {
-        var total = lastPoint[d.key] || 0;
-        var allTotal = 0;
-        orderedFamilies.forEach(function (f) { allTotal += (lastPoint[f] || 0); });
-        var pct = allTotal > 0 ? Math.round(total / allTotal * 100) : 0;
-        tooltip.innerHTML = '<strong>' + d.key + '</strong><br/>' + total + ' tracks (' + pct + '%)';
+        var total = d3.sum(periods, function (p) { return p[d.key] || 0; });
+        var avg = Math.round(total / periods.length);
+        tooltip.innerHTML = '<strong>' + d.key + '</strong><br/>Avg: ' + avg + ' listens/month';
         tooltip.style.opacity = '1';
         d3.select(this).attr('fill-opacity', 1);
       })
@@ -1006,17 +993,8 @@
         d3.select(this).attr('fill-opacity', 0.8);
       });
 
-    // Y axis — track counts
-    var yAxis = d3.axisLeft(yScale).ticks(5).tickSize(0).tickPadding(6);
-    g.append('g')
-      .call(yAxis)
-      .call(function (g) { g.select('.domain').remove(); })
-      .selectAll('text')
-      .attr('fill', C.dim).attr('font-size', 10).attr('font-family', FONT);
-
-    // X axis — show every 3rd month label
-    var tickValues = stream.map(function (d) { return d.month; }).filter(function (d, i) { return i % 3 === 0; });
-    var xAxis = d3.axisBottom(xScale).tickValues(tickValues).tickSize(0).tickPadding(8);
+    // X axis
+    var xAxis = d3.axisBottom(xScale).tickSize(0).tickPadding(8);
     g.append('g')
       .attr('transform', 'translate(0,' + h + ')')
       .call(xAxis)
