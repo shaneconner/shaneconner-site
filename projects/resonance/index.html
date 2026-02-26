@@ -56,7 +56,7 @@
   <div class="essay reveal">
     <h3>The Problem</h3>
     <h2>Streaming algorithms are optimizing for the wrong thing</h2>
-    <p>Spotify's algorithm is optimized for engagement (keeping you listening), not for deepening your understanding of what you actually like. It feeds you adjacencies to what you've already consumed, reinforcing a narrowing corridor of taste. Over time, the bubble tightens. Artists you loved three years ago disappear from rotation. Genres you explored once never resurface. Your listening history exists only as a stream of play counts with no structure, no context, and no memory of <em>why</em> you were drawn to something.</p>
+    <p>Spotify's algorithm is optimized to keep you listening, not to deepen your understanding of what you actually like. It feeds you adjacencies to what you've already consumed, reinforcing a narrowing corridor of taste. Over time, the bubble tightens. Artists you loved three years ago disappear from rotation. Genres you explored once never resurface. Your listening history exists only as a stream of play counts with no structure, no context, and no memory of <em>why</em> you were drawn to something.</p>
     <p>The deeper problem is fragmentation. Your taste profile is scattered across half a dozen platforms: Spotify has play history, Last.fm has scrobbles, MusicBrainz has metadata, Discogs has pressings and lineage, Genius has lyrics and annotations. Each platform holds a shard of understanding, but none of them talk to each other, and none of them model the relationships between artists, genres, and tracks in a way that evolves with your behavior.</p>
     <p>This project is built on a different premise: <em>what if your music library was a knowledge graph that learned from how you listen?</em></p>
   </div>
@@ -101,7 +101,7 @@
     <h2>Genres don't exist in isolation</h2>
     <p>Music genre taxonomies are notoriously messy. Spotify assigns genres to artists, not tracks. Last.fm uses crowd-sourced tags that drift over time. MusicBrainz has its own genre vocabulary. Rather than picking one canonical system, this project builds a <em>co-occurrence network</em>: genres are connected when they appear together on shared artists.</p>
     <p>The result is a graph that captures real relationships: post-punk and darkwave cluster together. Math rock bridges prog and indie. Electronic music splinters into dozens of micro-communities connected by shared ancestry. The topology of this network reveals more about genre relationships than any hierarchical taxonomy could.</p>
-    <p>Node size reflects track count. Edge weight reflects co-occurrence frequency. Color groups genres by community detection. The network is interactive. Drag nodes to explore neighborhoods; hover for details.</p>
+    <p>Node size reflects track count. Edge weight reflects co-occurrence frequency. Color groups genres by community detection. The network is interactive — drag nodes to explore neighborhoods, hover for details.</p>
   </div>
 
   <div class="essay-wide">
@@ -142,8 +142,8 @@
   <div class="essay reveal">
     <h3>Artist Network</h3>
     <h2>Your library is a constellation</h2>
-    <p>Every artist in the library exists in relationship to other artists through shared genre DNA. The network below connects artists who share genre tags; the more genres in common, the stronger the edge. Ambient and IDM artists cluster tightly. Vaporwave forms its own neighborhood. Rap artists connect through shared tags. The topology reveals the real structure of a personal library.</p>
-    <p>This isn't just visualization; it's the foundation of the discovery engine. When the system recommends new artists, it can explain <em>why</em> in terms of network proximity: "This artist sits between your ambient cluster and your electronic cluster." The recommendation carries structural context, not just a match score.</p>
+    <p>Every artist in the library exists in relationship to other artists through shared genre DNA. The network below connects artists who share genre tags. The more genres in common, the stronger the edge. Ambient and IDM artists cluster tightly. Vaporwave forms its own neighborhood. Rap artists connect through shared tags. The topology reveals the real structure of a personal library.</p>
+    <p>This isn't just visualization — it's the foundation of the discovery engine. When the system recommends new artists, it can explain <em>why</em> in terms of network proximity: "This artist sits between your ambient cluster and your electronic cluster." The recommendation carries structural context, not just a match score.</p>
   </div>
 
   <div class="essay-wide">
@@ -160,7 +160,7 @@
   <div class="essay reveal">
     <h3>Temporal Patterns</h3>
     <h2>Taste changes over time</h2>
-    <p>A static snapshot of your library misses the most interesting dimension: how your listening evolves. The timeline below shows genre distribution over time: which genres dominate in which periods, where new genres enter, and where old ones fade. Seasonal patterns emerge. Discovery bursts are visible as new colors appearing in the stack.</p>
+    <p>A static snapshot of your library misses the most interesting dimension: how your listening evolves. The timeline below traces genre distribution over time, showing which genres dominate in which periods, where new genres enter, and where old ones fade. Seasonal patterns emerge. Discovery bursts are visible as new colors appearing in the stack.</p>
     <p>This temporal view also feeds the ML prediction model. The system learns that you listen to more ambient music late at night, more energetic music on weekday mornings, and more experimental music on weekends. Time-of-day and day-of-week features become meaningful predictors when combined with genre history.</p>
   </div>
 
@@ -269,7 +269,7 @@
     <h3>Prediction</h3>
     <h2>Frequency-first, ML-enhanced</h2>
     <p>The system's primary ranking signal is cycle progress: how overdue something is relative to its evolved frequency. This works from day one and improves continuously as frequencies adapt. Tracks you seek out earn tighter intervals; tracks you ignore gradually relax. No training data needed, no cold start problem.</p>
-    <p>An ML layer sits on top: session co-occurrence embeddings (32-dimensional SVD vectors trained from listening sessions), temporal features (time of day, day of week), and a GradientBoosting classifier that learns selection patterns. The training pipeline, embedding generator, and predictor are implemented; the frequency model carries the system until enough sessions accumulate for meaningful model training.</p>
+    <p>An ML layer sits on top: session co-occurrence embeddings (32-dimensional SVD vectors trained from listening sessions), temporal features (time of day, day of week), and a GradientBoosting classifier that learns selection patterns. The training pipeline, embedding generator, and predictor are implemented. The frequency model carries the system until enough sessions accumulate for meaningful model training.</p>
   </div>
 
   <div class="essay-wide">
@@ -290,7 +290,7 @@
     <h3>Interface</h3>
     <h2>35 tools, one conversation</h2>
     <p>The entire system is exposed through 35 MCP tools, the same Model Context Protocol pattern used in the task intelligence system. An AI assistant can add tracks to the library, log listens, trigger enrichment, run five independent discovery strategies, get recommendations with structured feedback, control Spotify playback, and query listening statistics, all within a single conversation. The assistant becomes a music librarian that understands the collection, remembers patterns, and can explain its reasoning.</p>
-    <p>This isn't a chatbot bolted onto a music player. It's a structured API layer that gives a general-purpose AI deep access to your personal music graph; the same architecture pattern where broad intelligence orchestrates narrow, domain-specific tools.</p>
+    <p>This isn't a chatbot bolted onto a music player. It's a structured API layer that gives a general-purpose AI deep access to your personal music graph — broad intelligence orchestrating narrow, domain-specific tools.</p>
   </div>
 
   <div class="essay-wide">
@@ -324,7 +324,7 @@
   <div class="essay reveal">
     <h3>System</h3>
     <h2>What it does</h2>
-    <p>932 tracks, 259 artists, 205 genres, and 322 logged listens, all unified into a single queryable graph. Frequencies evolve from listening behavior. Five independent discovery strategies surface new music with explainable provenance. A conversational tool layer gives an AI assistant deep access to the entire system. It's music intelligence as infrastructure: a foundation that gets more useful as data accumulates.</p>
+    <p>932 tracks. 259 artists. 205 genres. 322 logged listens. All unified into a single queryable graph. Frequencies evolve from listening behavior. Five independent discovery strategies surface new music with explainable provenance. A conversational tool layer gives an AI assistant deep access to the entire system. It's music intelligence as infrastructure: a foundation that gets more useful as data accumulates.</p>
   </div>
 
   <div class="stats-row reveal">
