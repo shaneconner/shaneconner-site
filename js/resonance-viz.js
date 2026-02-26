@@ -911,50 +911,29 @@
     container.innerHTML = '';
 
     var data = timelineData;
-    if (!data || !data.periods || !data.genres) return;
-
-    var genres = data.genres;
-    var periods = data.periods;
+    if (!data) return;
 
     var width = container.clientWidth;
-    var margin = { top: 20, right: 20, bottom: 30, left: 40 };
-    var height = 340;
+    var height = Math.max(300, width * 0.35);
+    var margin = { top: 20, right: 120, bottom: 40, left: 45 };
     var w = width - margin.left - margin.right;
     var h = height - margin.top - margin.bottom;
 
     var tooltip = makeTooltip(container);
 
-    var streamColors = {
-      'Rock': '#8a3a5a',
+    var genres = data.genres;
+    var periods = data.periods;
+
+    var genreColors = {
+      'Rock': '#7a8a2a',
       'Electronic': '#6a7a9a',
-      'Metal': '#5a5a6a',
-      'Post-Punk': '#7a5a6a',
+      'Metal': '#6a3a3a',
+      'Post-Punk': '#8a3a5a',
       'Ambient': '#5a7a8a',
       'Hip-Hop': '#8a7a5a',
-      'Shoegaze': '#6a5a7a',
+      'Shoegaze': '#5a8a7a',
       'Other': '#4a4a3a',
     };
-
-    var stack = d3.stack()
-      .keys(genres)
-      .offset(d3.stackOffsetSilhouette)
-      .order(d3.stackOrderInsideOut);
-
-    var series = stack(periods);
-
-    var xScale = d3.scalePoint()
-      .domain(periods.map(function (d) { return d.label; }))
-      .range([0, w]);
-
-    var yMin = d3.min(series, function (s) { return d3.min(s, function (d) { return d[0]; }); });
-    var yMax = d3.max(series, function (s) { return d3.max(s, function (d) { return d[1]; }); });
-    var yScale = d3.scaleLinear().domain([yMin, yMax]).range([h, 0]);
-
-    var area = d3.area()
-      .x(function (d) { return xScale(d.data.label); })
-      .y0(function (d) { return yScale(d[0]); })
-      .y1(function (d) { return yScale(d[1]); })
-      .curve(d3.curveBasis);
 
     var svg = d3.select(container)
       .append('svg')
@@ -966,22 +945,42 @@
     var g = svg.append('g')
       .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
+    // Stack
+    var stack = d3.stack()
+      .keys(genres)
+      .order(d3.stackOrderReverse);
+
+    var series = stack(periods);
+
+    var xScale = d3.scaleBand()
+      .domain(periods.map(function (d) { return d.label; }))
+      .range([0, w])
+      .padding(0);
+
+    var yMax = d3.max(series, function (s) { return d3.max(s, function (d) { return d[1]; }); });
+    var yScale = d3.scaleLinear().domain([0, yMax]).range([h, 0]);
+
+    var area = d3.area()
+      .x(function (d) { return xScale(d.data.label) + xScale.bandwidth() / 2; })
+      .y0(function (d) { return yScale(d[0]); })
+      .y1(function (d) { return yScale(d[1]); })
+      .curve(d3.curveMonotoneX);
+
     // Areas
-    g.selectAll('.stream-layer')
+    g.selectAll('.genre-area')
       .data(series)
       .enter().append('path')
-      .attr('class', 'stream-layer')
+      .attr('class', 'genre-area')
       .attr('d', area)
-      .attr('fill', function (d) { return streamColors[d.key] || C.dim; })
-      .attr('fill-opacity', 0.8)
-      .attr('stroke', C.bg)
+      .attr('fill', function (d) { return genreColors[d.key] || C.dim; })
+      .attr('fill-opacity', 0.7)
+      .attr('stroke', function (d) { return genreColors[d.key] || C.dim; })
       .attr('stroke-width', 0.5)
+      .attr('stroke-opacity', 0.8)
       .on('mouseenter', function (event, d) {
-        var total = d3.sum(periods, function (p) { return p[d.key] || 0; });
-        var avg = Math.round(total / periods.length);
-        tooltip.innerHTML = '<strong>' + d.key + '</strong><br/>Avg: ' + avg + ' listens/month';
+        tooltip.innerHTML = '<strong>' + d.key + '</strong>';
         tooltip.style.opacity = '1';
-        d3.select(this).attr('fill-opacity', 1);
+        d3.select(this).attr('fill-opacity', 0.95);
       })
       .on('mousemove', function (event) {
         var rect = container.getBoundingClientRect();
@@ -990,17 +989,54 @@
       })
       .on('mouseleave', function () {
         tooltip.style.opacity = '0';
-        d3.select(this).attr('fill-opacity', 0.8);
+        d3.select(this).attr('fill-opacity', 0.7);
       });
 
     // X axis
-    var xAxis = d3.axisBottom(xScale).tickSize(0).tickPadding(8);
     g.append('g')
       .attr('transform', 'translate(0,' + h + ')')
-      .call(xAxis)
-      .call(function (g) { g.select('.domain').remove(); })
-      .selectAll('text')
-      .attr('fill', C.dim).attr('font-size', 10).attr('font-family', FONT);
+      .call(d3.axisBottom(xScale))
+      .call(function (axis) {
+        axis.select('.domain').attr('stroke', C.borderL);
+        axis.selectAll('.tick line').attr('stroke', C.borderL);
+        axis.selectAll('.tick text').attr('fill', C.dim).attr('font-size', 10).attr('font-family', FONT);
+      });
+
+    // Y axis
+    g.append('g')
+      .call(d3.axisLeft(yScale).ticks(5))
+      .call(function (axis) {
+        axis.select('.domain').attr('stroke', C.borderL);
+        axis.selectAll('.tick line').attr('stroke', C.borderL);
+        axis.selectAll('.tick text').attr('fill', C.dim).attr('font-size', 10).attr('font-family', FONT);
+      });
+
+    // Y label
+    g.append('text')
+      .attr('transform', 'rotate(-90)')
+      .attr('x', -h / 2).attr('y', -32)
+      .attr('text-anchor', 'middle')
+      .attr('fill', C.dim).attr('font-size', 10).attr('font-family', FONT)
+      .text('Listens');
+
+    // Legend
+    var legend = g.append('g')
+      .attr('transform', 'translate(' + (w + 12) + ',0)');
+
+    genres.forEach(function (genre, i) {
+      var ly = i * 18;
+      legend.append('rect')
+        .attr('x', 0).attr('y', ly - 5)
+        .attr('width', 12).attr('height', 12)
+        .attr('fill', genreColors[genre] || C.dim)
+        .attr('fill-opacity', 0.7);
+      legend.append('text')
+        .attr('x', 16).attr('y', ly + 2)
+        .attr('fill', C.dim)
+        .attr('font-size', 9).attr('font-family', FONT)
+        .attr('dominant-baseline', 'middle')
+        .text(genre);
+    });
   }
 
   // ════════════════════════════════════════════════════════════════════════════
