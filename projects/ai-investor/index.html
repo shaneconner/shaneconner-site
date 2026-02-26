@@ -10,7 +10,7 @@
 
   <meta property="og:type" content="article" />
   <meta property="og:title" content="Autonomous Portfolio Intelligence — Shane Conner" />
-  <meta property="og:description" content="9-model ML ensemble, multi-seed RL, LLM consultation, and hierarchical memory — an autonomous portfolio intelligence system." />
+  <meta property="og:description" content="9-model ML ensemble, multi-seed RL, LLM consultation, and hierarchical memory: an autonomous portfolio intelligence system." />
   <meta property="og:url" content="https://shaneconner.com/projects/ai-investor" />
   <meta property="og:site_name" content="Shane Conner" />
 
@@ -54,7 +54,7 @@
     <h3>The Problem</h3>
     <h2>Markets are noisy, multi-dimensional, and non-stationary</h2>
     <p>Traditional quantitative approaches follow a two-step pipeline: predict future returns, then optimize a portfolio. Each step introduces error. The prediction model doesn't know about transaction costs. The optimizer doesn't know about model uncertainty.</p>
-    <p>What if the allocation decision itself could be <em>learned end-to-end</em>? An agent that ingests raw data and directly outputs portfolio weights — trained not on prediction accuracy, but on actual portfolio performance.</p>
+    <p>What if the allocation decision itself could be <em>learned end-to-end</em>? An agent that ingests raw data and directly outputs portfolio weights, trained not on prediction accuracy but on actual portfolio performance.</p>
   </div>
 
   <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
@@ -80,7 +80,7 @@
   <div class="essay reveal">
     <h3>How It Works</h3>
     <h2>Cross-asset attention</h2>
-    <p>The RL agent uses a Transformer policy network with self-attention across assets. This means the model <em>learns which sectors move together</em> — and can adapt its correlations as market conditions change.</p>
+    <p>The RL agent uses a Transformer policy network with self-attention across assets. This means the model <em>learns which sectors move together</em>, and can adapt its correlations as market conditions change.</p>
     <p>The heatmap below shows synthetic attention weights between sector ETFs, illustrating the kind of cross-asset relationships the model captures. High values indicate the model attends strongly to one sector when making decisions about another.</p>
   </div>
 
@@ -129,7 +129,7 @@
   <!-- MARKET REGIMES -->
   <div class="essay reveal">
     <h2>Market regime awareness</h2>
-    <p>Markets cycle through distinct regimes: expansion, contraction, high volatility, and recovery. Each regime demands a different allocation strategy. The system classifies the current state using VIX levels, trend indicators, and yield curve signals — then the RL agent conditions its policy on the detected regime.</p>
+    <p>Markets cycle through distinct regimes: expansion, contraction, high volatility, and recovery. Each regime demands a different allocation strategy. The system classifies the current state using VIX levels, trend indicators, and yield curve signals; the RL agent then conditions its policy on the detected regime.</p>
   </div>
 
   <div class="essay-wide">
@@ -147,7 +147,7 @@
     <h3>Signal Extraction</h3>
     <h2>Nine models, nine perspectives</h2>
     <p>The system doesn't rely on a single prediction. It orchestrates an ensemble of machine learning architectures, each bringing a different inductive bias to the same problem. Gradient-boosted trees capture nonlinear feature interactions. Attention-based transformers learn cross-sectional relationships across the universe. Regularized linear models provide stability anchors that prevent the ensemble from overfitting to noise.</p>
-    <p>Each architecture ranks the investable universe independently. When diverse models converge on the same names, confidence is structurally higher. When they diverge, the <em>disagreement itself becomes a risk signal</em> — a measure of epistemic uncertainty that feeds into downstream allocation decisions.</p>
+    <p>Each architecture ranks the investable universe independently. When diverse models converge on the same names, confidence is structurally higher. When they diverge, the <em>disagreement itself becomes a risk signal</em>: a measure of epistemic uncertainty that feeds into downstream allocation decisions.</p>
   </div>
 
   <div class="essay-wide">
@@ -164,8 +164,8 @@
   <div class="essay reveal">
     <h3>Decision Process</h3>
     <h2>An AI board of advisors</h2>
-    <p>Before any capital moves, the portfolio agent consults. Proposed allocations are sent to multiple large language models — each analyzing the portfolio through a different lens. One flags macroeconomic headwinds that quantitative models might miss. Another questions sector concentration or identifies crowded trades. A third stress-tests the reasoning against recent market context.</p>
-    <p>Every consultation is logged with full context: the proposed portfolio, each analyst's response, the final decision rationale. This creates an <em>auditable chain of reasoning</em> — a decision journal that the system can reference in future sessions, building institutional memory one trade at a time.</p>
+    <p>Before any capital moves, the portfolio agent consults. Proposed allocations are sent to multiple large language models, each analyzing the portfolio through a different lens. One flags macroeconomic headwinds that quantitative models might miss. Another questions sector concentration or identifies crowded trades. A third stress-tests the reasoning against recent market context.</p>
+    <p>Every consultation is logged with full context: the proposed portfolio, each analyst's response, the final decision rationale. This creates an <em>auditable chain of reasoning</em>: a decision journal that the system can reference in future sessions, building institutional memory one trade at a time.</p>
   </div>
 
   <div class="essay-wide">
@@ -182,8 +182,8 @@
   <div class="essay reveal">
     <h3>Continuity</h3>
     <h2>Memory that compresses like intuition</h2>
-    <p>Experienced portfolio managers develop intuition over years — a layered understanding where yesterday's market action exists in vivid detail while last quarter collapses into a narrative of key themes. This system replicates that process through <em>hierarchical episodic memory</em>.</p>
-    <p>Recent observations are stored at full resolution — every data point, every trade, every market condition. As entries age, an LLM compresses them into progressively higher-level summaries. The result is a memory structure divorced from traditional timeframes. The system doesn't just remember that a quarter was volatile — it remembers <em>why</em>, at exactly the level of abstraction that matters for future decisions.</p>
+    <p>Experienced portfolio managers develop intuition over years: a layered understanding where yesterday's market action exists in vivid detail while last quarter collapses into a narrative of key themes. This system replicates that process through <em>hierarchical episodic memory</em>.</p>
+    <p>Recent observations are stored at full resolution: every data point, every trade, every market condition. As entries age, an LLM compresses them into progressively higher-level summaries. The result is a memory structure divorced from traditional timeframes. The system doesn't just remember that a quarter was volatile; it remembers <em>why</em>, at exactly the level of abstraction that matters for future decisions.</p>
   </div>
 
   <div class="essay-wide">
@@ -200,7 +200,7 @@
   <div class="essay reveal">
     <h3>Capabilities</h3>
     <h2>What it does</h2>
-    <p>The system autonomously processes multi-source financial data through nine independent ML architectures, screens the full equity universe, selects top candidates for a multi-seed reinforcement learning allocator, and synthesizes a final portfolio through LLM-reviewed decision making — with every step logged, auditable, and continuously learning.</p>
+    <p>The system autonomously processes multi-source financial data through nine independent ML architectures, screens the full equity universe, selects top candidates for a multi-seed reinforcement learning allocator, and synthesizes a final portfolio through LLM-reviewed decision making, with every step logged, auditable, and continuously learning.</p>
   </div>
 
   <div class="stats-row reveal">

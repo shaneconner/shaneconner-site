@@ -137,7 +137,7 @@
       'Spotify': 'Canonical source. Tracks, albums, artists, playlists, audio features, and play history.',
       'SQLite Graph': '27 normalized tables. Every entity enriched from multiple sources without duplication.',
       'Last.fm': 'Scrobble history, listening patterns, artist/track similarity networks, and tag data.',
-      'MusicBrainz': 'Authoritative metadata — ISRCs, recording relationships, release groups, disambiguation.',
+      'MusicBrainz': 'Authoritative metadata: ISRCs, recording relationships, release groups, disambiguation.',
       'ListenBrainz': 'Open community listening data and collaborative filtering recommendations.',
       'Deezer': 'Audio previews (30-sec), independent recommendation graph, and related-artist data.',
       'Discogs': 'Physical release data, label information, artist credits, and discographic lineage.',
