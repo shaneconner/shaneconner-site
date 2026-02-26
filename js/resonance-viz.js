@@ -144,6 +144,16 @@
       'Genius': 'Lyrics, annotations, song descriptions, and artist bios.',
     };
 
+    // Helper: clip a line from (cx,cy) toward (tx,ty) to the edge of a box centered at (cx,cy)
+    function clipToBox(cx, cy, tx, ty, w, h) {
+      var dx = tx - cx, dy = ty - cy;
+      if (dx === 0 && dy === 0) return { x: cx, y: cy };
+      var scaleX = dx !== 0 ? (w / 2) / Math.abs(dx) : Infinity;
+      var scaleY = dy !== 0 ? (h / 2) / Math.abs(dy) : Infinity;
+      var s = Math.min(scaleX, scaleY);
+      return { x: cx + dx * s, y: cy + dy * s };
+    }
+
     // Edges: Spotify → DB, DB ↔ each enrichment source
     var edges = [];
     edges.push({ source: nodes[0], target: nodes[1] });
@@ -151,14 +161,17 @@
       edges.push({ source: nodes[1], target: nodes[i] });
     }
 
-    // Draw edges with animated pulses
+    // Draw edges with animated pulses — clipped to box edges
     edges.forEach(function (e, idx) {
+      var p1 = clipToBox(e.source.x, e.source.y, e.target.x, e.target.y, nodeW, nodeH);
+      var p2 = clipToBox(e.target.x, e.target.y, e.source.x, e.source.y, nodeW, nodeH);
+
       var line = svg.append('line')
-        .attr('x1', e.source.x).attr('y1', e.source.y)
-        .attr('x2', e.target.x).attr('y2', e.target.y)
+        .attr('x1', p1.x).attr('y1', p1.y)
+        .attr('x2', p2.x).attr('y2', p2.y)
         .attr('stroke', C.borderL).attr('stroke-width', 1.5);
 
-      // Animated pulse
+      // Animated pulse along clipped path
       var pulse = svg.append('circle')
         .attr('r', 3)
         .attr('fill', e.target.color || C.greenBr)
@@ -169,11 +182,11 @@
         var duration = 2000 + Math.random() * 1500;
         var delay = idx * 400 + Math.random() * 800;
         pulse
-          .attr('cx', e.source.x).attr('cy', e.source.y)
+          .attr('cx', p1.x).attr('cy', p1.y)
           .attr('opacity', 0)
           .transition().delay(delay).duration(200).attr('opacity', 0.9)
           .transition().duration(duration).ease(d3.easeQuadInOut)
-          .attr('cx', e.target.x).attr('cy', e.target.y)
+          .attr('cx', p2.x).attr('cy', p2.y)
           .transition().duration(200).attr('opacity', 0)
           .on('end', animatePulse);
       }
@@ -928,7 +941,7 @@
       'Other': '#4a4a3a',
     };
 
-    // Order families by final size (largest on bottom)
+    // Order families by final size (largest on bottom for visual stability)
     var lastPoint = stream[stream.length - 1];
     var orderedFamilies = families.slice().sort(function (a, b) {
       return (lastPoint[b] || 0) - (lastPoint[a] || 0);
@@ -936,7 +949,8 @@
 
     var stack = d3.stack()
       .keys(orderedFamilies)
-      .offset(d3.stackOffsetWiggle);
+      .offset(d3.stackOffsetExpand)
+      .order(d3.stackOrderNone);
 
     var series = stack(stream);
 
@@ -944,15 +958,13 @@
       .domain(stream.map(function (d) { return d.month; }))
       .range([0, w]);
 
-    var yMin = d3.min(series, function (s) { return d3.min(s, function (d) { return d[0]; }); });
-    var yMax = d3.max(series, function (s) { return d3.max(s, function (d) { return d[1]; }); });
-    var yScale = d3.scaleLinear().domain([yMin, yMax]).range([h, 0]);
+    var yScale = d3.scaleLinear().domain([0, 1]).range([h, 0]);
 
     var area = d3.area()
       .x(function (d) { return xScale(d.data.month); })
       .y0(function (d) { return yScale(d[0]); })
       .y1(function (d) { return yScale(d[1]); })
-      .curve(d3.curveBasis);
+      .curve(d3.curveMonotoneX);
 
     var svg = d3.select(container)
       .append('svg')
@@ -976,7 +988,10 @@
       .attr('stroke-width', 0.5)
       .on('mouseenter', function (event, d) {
         var total = lastPoint[d.key] || 0;
-        tooltip.innerHTML = '<strong>' + d.key + '</strong><br/>' + total + ' tracks';
+        var allTotal = 0;
+        orderedFamilies.forEach(function (f) { allTotal += (lastPoint[f] || 0); });
+        var pct = allTotal > 0 ? Math.round(total / allTotal * 100) : 0;
+        tooltip.innerHTML = '<strong>' + d.key + '</strong><br/>' + total + ' tracks (' + pct + '%)';
         tooltip.style.opacity = '1';
         d3.select(this).attr('fill-opacity', 1);
       })
