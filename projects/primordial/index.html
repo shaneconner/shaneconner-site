@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Primordial: Emergent Behaviors &amp; Neuroevolution — Shane Conner</title>
+
+  <meta name="description" content="An evolutionary life simulation where neural network-driven organisms with mutable spring-mass bodies compete, reproduce, and form emergent ecosystems through neuroevolution." />
+  <meta name="author" content="Shane Conner" />
+
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Primordial: Emergent Behaviors & Neuroevolution — Shane Conner" />
+  <meta property="og:description" content="Organisms evolve bodies and brains from scratch. Spring-mass physics. Neural network locomotion. Emergent ecosystems. No gradient descent — just survival." />
+  <meta property="og:url" content="https://shaneconner.com/projects/primordial" />
+  <meta property="og:site_name" content="Shane Conner" />
+
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Outfit:wght@200;300;400;500&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="/css/shared.css" />
+  <link rel="stylesheet" href="/css/projects.css" />
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav id="nav">
+    <a href="/" class="nav-logo">Shane Conner</a>
+    <ul class="nav-links">
+      <li><a href="/art">Art</a></li>
+      <li><a href="/projects" class="active">Projects</a></li>
+      <li><a href="/contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- HOOK -->
+  <section class="project-hero">
+    <div class="hero-content">
+      <h1 class="resonance-hero-title">
+        <span class="resonance-name">Primordial</span>
+        <span class="resonance-descriptor">Emergent Behaviors &amp; Neuroevolution</span>
+      </h1>
+      <p class="subtitle">No gradient descent. No reward engineering. Just physics, mutation, and survival.</p>
+    </div>
+    <p class="scroll-hint">Scroll to explore</p>
+  </section>
+
+  <!-- THE PREMISE -->
+  <div class="essay reveal">
+    <h3>The Premise</h3>
+    <h2>What happens when you let evolution design both the body and the brain?</h2>
+    <p>Most machine learning optimizes a fixed architecture toward a fixed objective. A human picks the network topology. A human crafts the loss function. Gradient descent handles the rest. This project throws all of that away and lets evolution do the work from scratch.</p>
+    <p>Primordial is an artificial life simulation. Organisms are dropped into a 2D world with food resources and nothing else. They have bodies made of springs and masses, brains made of neural networks, and both are encoded in a genome that mutates when they reproduce. The only optimization signal is survival: organisms that find food live long enough to reproduce. Those that don't, die. Their bodies become food for others.</p>
+    <p>Over thousands of generations, organisms evolve bodies with sensors pointed toward food. They evolve gaits, periodic muscle contraction patterns that produce directed locomotion. They evolve feeding strategies. Species diverge. Ecosystems form. None of this is programmed.</p>
+  </div>
+
+  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+
+  <!-- SIMULATION VIEWER -->
+  <div class="essay reveal">
+    <h3>The Simulation</h3>
+    <h2>Watch evolution happen</h2>
+    <p>The viewer below replays a recorded simulation clip. Each organism is a spring-mass body: colored nodes connected by edges. Muscles contract and expand under neural network control. Green dots are plant resources. Red dots are meat from dead organisms. The population, species count, and generation number update in real time.</p>
+  </div>
+
+  <div class="essay-wide">
+    <div class="viz-container reveal placeholder-viz">
+      <p class="viz-title">Simulation Replay</p>
+      <div class="placeholder-content">
+        <div class="placeholder-label">Coming Soon</div>
+        <p class="placeholder-description">Interactive Canvas replay of recorded simulation clips. Play/pause, scrub through time, zoom and pan, click organisms to inspect their body structure and neural network. Spring-mass bodies rendered with colored nodes and edges.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+
+  <!-- BODY SYSTEM -->
+  <div class="essay reveal">
+    <h3>The Body</h3>
+    <h2>Spring-mass morphology that evolves</h2>
+    <p>Each organism's body is a graph of point masses connected by springs. The genome encodes node types and edge connections. Nodes come in seven varieties: a <em>core</em> that serves as the center of mass, <em>bone</em> nodes for structural rigidity, <em>muscle anchors</em> that form the endpoints of controllable springs, <em>sensors</em> that detect nearby food and organisms, <em>mouths</em> that eat, <em>fat</em> nodes that store energy, and <em>armor</em> nodes that reduce damage.</p>
+    <p>Edges are springs governed by Hooke's law. Bone springs are rigid with high stiffness and low damping. Muscle springs have a controllable rest length: the neural network sets a contraction target each tick, and the spring force drives the body toward that configuration. Tendon springs are semi-rigid connectors. The physics runs as Verlet integration with multiple substeps per simulation tick.</p>
+    <p>Locomotion is discovered, not programmed. An organism with muscles on its sides has to learn to alternate contractions to produce forward movement. Asymmetric bodies produce turning. Bodies with sensors at the front and muscles at the back evolve to chase food. The relationship between morphology and behavior is entirely emergent.</p>
+  </div>
+
+  <div class="essay-wide">
+    <div class="viz-container reveal placeholder-viz">
+      <p class="viz-title">Body Gallery: Evolved Morphologies</p>
+      <div class="placeholder-content">
+        <div class="placeholder-label">Coming Soon</div>
+        <p class="placeholder-description">Grid of representative organisms from each species, rendered at large scale showing their spring-mass structure. Node types color-coded. Muscle contraction animated. Body complexity increases across generations.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+
+  <!-- NEURAL NETWORK -->
+  <div class="essay reveal">
+    <h3>The Brain</h3>
+    <h2>Neural networks optimized by survival, not gradients</h2>
+    <p>Each organism has a feedforward neural network. The input layer receives sensory data: distance and type of nearest food and organisms per sensor node, the organism's energy level and age, and proprioceptive feedback from current muscle lengths. A small memory register persists values across ticks, giving organisms a primitive form of short-term memory.</p>
+    <p>The output layer controls the body. Each muscle gets a contraction target. Two additional outputs signal eating intent and reproductive readiness. The hidden layer size, activation function, and all weights are encoded in the genome.</p>
+    <p>There is no backpropagation and no loss function. Weights are inherited from parents with Gaussian noise, and the mutation scale itself is a genome parameter that evolves. Organisms that survive long enough to reproduce pass their weights to offspring. A child is born pre-wired with its parent's learned behaviors plus small random variations. Over generations, the population converges on effective control strategies through pure selection pressure.</p>
+  </div>
+
+  <div class="essay-wide">
+    <div class="viz-container reveal placeholder-viz">
+      <p class="viz-title">Brain Architecture</p>
+      <div class="placeholder-content">
+        <div class="placeholder-label">Coming Soon</div>
+        <p class="placeholder-description">Interactive node-link diagram of a selected organism's neural network. Inputs labeled by sensor type. Weights shown as line thickness. Active neurons highlighted during replay. Hidden layer size varies by species.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+
+  <!-- EVOLUTION -->
+  <div class="essay reveal">
+    <h3>The Mechanism</h3>
+    <h2>Mutation, speciation, and meta-evolution</h2>
+    <p>Reproduction is energy-gated. An organism must accumulate enough energy (60% of capacity for asexual, 50% for sexual) and survive long enough (100 ticks minimum) before it can split. The offspring inherits a mutated copy of the parent's genome. Body mutations add or remove nodes, change node types, add or remove edges, and perturb node positions. An evolvable symmetry bias makes mirrored mutations more likely, producing bilaterally symmetric creatures.</p>
+    <p>Brain mutations perturb weights, toggle connections, and occasionally change the hidden layer size. Larger bodies cost more energy to maintain and more energy to reproduce, creating natural pressure against unbounded growth.</p>
+    <p>Speciation emerges from a genome distance metric. When a child's genome diverges past a threshold from its parent, it's assigned a new species ID. This enables tracking of evolutionary lineages and prevents incompatible genomes from sexually reproducing.</p>
+    <p>Mutation rates are themselves genome parameters. An organism with a high body mutation rate produces more varied offspring. Some will be worse, but some might discover advantageous new morphologies. An organism with a low mutation rate produces more consistent offspring, preserving what works. Evolution optimizes its own rate of exploration.</p>
+  </div>
+
+  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+
+  <!-- ECOSYSTEM -->
+  <div class="essay reveal">
+    <h3>The Ecosystem</h3>
+    <h2>Food chains that nobody designed</h2>
+    <p>The environment is a continuous 2D world with toroidal topology (edges wrap). Plant resources spawn over time with a bias toward nutrient-rich areas. When organisms die, their body mass converts to meat resources that decay slowly. Decayed meat produces nutrients that boost local plant growth. This creates a complete energy cycle: sun to plants to herbivores to carnivores to decomposition to nutrients to plants.</p>
+    <p>Organisms with mouth nodes can eat plants by contact. They can also bite other organisms: mouth-on-body contact deals damage proportional to the number of mouths, reduced by the target's armor nodes. If hunting other organisms is more energy-efficient than foraging for plants, evolution will find that strategy. Carnivory, herbivory, and scavenging are emergent strategies, not programmed categories.</p>
+    <p>Anti-extinction safeguards prevent total ecosystem collapse: plant spawn rate never drops to zero, and if the population crashes below a threshold, random viable organisms immigrate into the world. These mechanisms allow dramatic population dynamics (booms, busts, occasional mass extinction followed by rapid diversification) without the simulation going permanently dead.</p>
+  </div>
+
+  <div class="essay-wide">
+    <div class="viz-container reveal placeholder-viz">
+      <p class="viz-title">Population Dynamics</p>
+      <div class="placeholder-content">
+        <div class="placeholder-label">Coming Soon</div>
+        <p class="placeholder-description">Line chart showing species populations over time. Color-coded by species. Population booms and busts visible. Speciation events marked. Predator-prey oscillations emerge from ecosystem dynamics.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+
+  <!-- PHYLOGENETIC TREE -->
+  <div class="essay reveal">
+    <h3>Lineage</h3>
+    <h2>An evolutionary tree grown from code</h2>
+    <p>Every speciation event is logged: which parent species produced the new branch, at what tick, and what genome divergence triggered it. This data reconstructs a phylogenetic tree showing how species branched and diversified over evolutionary time. Early generations show a single trunk. As mutations accumulate and populations diverge, the tree fans out. Some branches go extinct. Others radiate into clusters of related species.</p>
+  </div>
+
+  <div class="essay-wide">
+    <div class="viz-container reveal placeholder-viz">
+      <p class="viz-title">Phylogenetic Tree</p>
+      <div class="placeholder-content">
+        <div class="placeholder-label">Coming Soon</div>
+        <p class="placeholder-description">Horizontal dendrogram showing species branching over evolutionary time. Branch length proportional to ticks. Extinct species shown as terminated branches. Color-coded by surviving lineage.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+
+  <!-- RESULTS -->
+  <div class="essay reveal">
+    <h3>System</h3>
+    <h2>What emerges</h2>
+    <p>Within 3,000 simulation ticks, a population of 40 organisms diversifies into 21 species across 11 generations. Bodies begin accumulating new nodes (sensors, muscles, armor) as morphological mutations that improve survival propagate through the gene pool. Population dynamics stabilize around the environment's carrying capacity, with boom-bust cycles driven by resource competition.</p>
+    <p>The simulation engine processes 18-40 ticks per second depending on population size, using NumPy-vectorized spring physics and spatial hash grids for O(1) neighbor queries. State snapshots are recorded for clip export and D3.js replay visualization.</p>
+  </div>
+
+  <div class="stats-row reveal">
+    <div class="stat">
+      <div class="stat-value">21</div>
+      <div class="stat-label">Species Emerged</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">11</div>
+      <div class="stat-label">Generations</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">7</div>
+      <div class="stat-label">Node Types</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">0</div>
+      <div class="stat-label">Loss Functions</div>
+    </div>
+  </div>
+
+  <!-- TECH STACK -->
+  <div class="project-meta">
+    <h3>Tech Stack</h3>
+    <div class="project-tags">
+      <span class="project-tag">Python</span>
+      <span class="project-tag">NumPy</span>
+      <span class="project-tag">Neuroevolution</span>
+      <span class="project-tag">Spring-Mass Physics</span>
+      <span class="project-tag">Spatial Hashing</span>
+      <span class="project-tag">D3.js</span>
+    </div>
+    <div style="margin-top:1.5rem;">
+      <a href="https://github.com/shaneconner/primordial" class="back-link" style="margin-right:2rem;">View Source &rarr;</a>
+      <a href="/projects" class="back-link">&larr; All Projects</a>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <span>&copy; 2026 Shane Conner</span>
+    <span></span>
+  </footer>
+
+  <script src="/js/shared.js"></script>
+</body>
+</html>
