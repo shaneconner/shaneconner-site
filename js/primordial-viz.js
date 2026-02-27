@@ -52,7 +52,7 @@
     self.frame = 0;
     self.playing = false;
     self.playInterval = null;
-    self.playSpeed = 0.25;
+    self.playSpeed = 0.5;
     self.frameAccum = 0;
     self.canvas = null;
     self.ctx = null;
