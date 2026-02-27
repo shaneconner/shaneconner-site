@@ -80,8 +80,8 @@
         '<span class="sim-label sim-frame-label">0 / 0</span>' +
         '<select class="sim-select sim-speed-select">' +
           '<option value="0.125">1/8x</option>' +
-          '<option value="0.25" selected>1/4x</option>' +
-          '<option value="0.5">1/2x</option>' +
+          '<option value="0.25">1/4x</option>' +
+          '<option value="0.5" selected>1/2x</option>' +
           '<option value="1">1x</option>' +
           '<option value="2">2x</option>' +
           '<option value="4">4x</option>' +
@@ -109,10 +109,11 @@
     self.canvas.width = self.canvasW;
     self.canvas.height = self.canvasH;
 
-    // Fit world
-    self.camera.zoom = Math.min(self.canvasW / self.worldW, self.canvasH / self.worldH) * 0.95;
-    self.camera.x = (self.canvasW / self.camera.zoom - self.worldW) / 2;
-    self.camera.y = (self.canvasH / self.camera.zoom - self.worldH) / 2;
+    // Fit world (zoom to fill, then clamp)
+    self.camera.zoom = Math.min(self.canvasW / self.worldW, self.canvasH / self.worldH);
+    self.camera.x = 0;
+    self.camera.y = 0;
+    self.clampCamera();
 
     // Controls
     self.container.querySelector('.sim-play-btn').addEventListener('click', function () { self.togglePlay(); });
@@ -141,6 +142,7 @@
       if (!dragging) return;
       self.camera.x = camStart.x + (e.clientX - dragStart.x) / self.camera.zoom;
       self.camera.y = camStart.y + (e.clientY - dragStart.y) / self.camera.zoom;
+      self.clampCamera();
       if (!self.playing) self.renderFrame();
     });
     self.canvas.addEventListener('mouseup', function () { dragging = false; });
@@ -168,9 +170,10 @@
         self.worldW = data.world ? data.world.width : 1600;
         self.worldH = data.world ? data.world.height : 900;
 
-        self.camera.zoom = Math.min(self.canvasW / self.worldW, self.canvasH / self.worldH) * 0.95;
-        self.camera.x = (self.canvasW / self.camera.zoom - self.worldW) / 2;
-        self.camera.y = (self.canvasH / self.camera.zoom - self.worldH) / 2;
+        self.camera.zoom = Math.min(self.canvasW / self.worldW, self.canvasH / self.worldH);
+        self.camera.x = 0;
+        self.camera.y = 0;
+        self.clampCamera();
 
         self.container.querySelector('.sim-scrub').max = data.snapshots.length - 1;
         self.frame = 0;
@@ -338,15 +341,39 @@
       '<div class="sim-inspect-row">Nodes: ' + org.n.length + ' | Edges: ' + org.ed.length + '</div>';
   };
 
+  Viewer.prototype.clampCamera = function () {
+    // Minimum zoom: world exactly fills canvas (no void beyond edges)
+    var minZoom = Math.min(this.canvasW / this.worldW, this.canvasH / this.worldH);
+    if (this.camera.zoom < minZoom) this.camera.zoom = minZoom;
+
+    // Visible area in world coords
+    var visW = this.canvasW / this.camera.zoom;
+    var visH = this.canvasH / this.camera.zoom;
+
+    if (visW >= this.worldW) {
+      // World fits horizontally — center it
+      this.camera.x = (visW - this.worldW) / 2;
+    } else {
+      // Clamp pan so we don't show void
+      this.camera.x = Math.max(0, Math.min(this.worldW - visW, this.camera.x));
+    }
+    if (visH >= this.worldH) {
+      this.camera.y = (visH - this.worldH) / 2;
+    } else {
+      this.camera.y = Math.max(0, Math.min(this.worldH - visH, this.camera.y));
+    }
+  };
+
   Viewer.prototype.onWheel = function (e) {
     e.preventDefault();
     var rect = this.canvas.getBoundingClientRect();
     var mx = e.clientX - rect.left, my = e.clientY - rect.top;
     var oldZoom = this.camera.zoom;
     var factor = e.deltaY < 0 ? 1.15 : 1 / 1.15;
-    this.camera.zoom = Math.max(0.2, Math.min(10, this.camera.zoom * factor));
+    this.camera.zoom = Math.min(10, this.camera.zoom * factor);
     this.camera.x += mx / this.camera.zoom - mx / oldZoom;
     this.camera.y += my / this.camera.zoom - my / oldZoom;
+    this.clampCamera();
     if (!this.playing) this.renderFrame();
   };
 
