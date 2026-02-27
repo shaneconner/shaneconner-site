@@ -41,7 +41,7 @@
   var frame = 0;
   var playing = false;
   var playInterval = null;
-  var playSpeed = 1;
+  var playSpeed = 0.25;
   var canvas, ctx;
   var camera = { x: 0, y: 0, zoom: 1 };
   var worldW = 500, worldH = 500;
@@ -81,9 +81,12 @@
         '<input id="sim-scrub" type="range" min="0" max="1" value="0" step="1" class="sim-scrub" />' +
         '<span id="sim-frame-label" class="sim-label">0 / 0</span>' +
         '<select id="sim-speed" class="sim-select">' +
+          '<option value="0.125">1/8x</option>' +
+          '<option value="0.25" selected>1/4x</option>' +
+          '<option value="0.5">1/2x</option>' +
           '<option value="1">1x</option>' +
           '<option value="2">2x</option>' +
-          '<option value="4" selected>4x</option>' +
+          '<option value="4">4x</option>' +
           '<option value="8">8x</option>' +
         '</select>' +
       '</div>' +
@@ -94,7 +97,8 @@
         '<span id="sim-stat-food">Food: --</span>' +
         '<span id="sim-stat-tick">Tick: --</span>' +
       '</div>' +
-      '<div id="sim-inspect" class="sim-inspect" style="display:none;"></div>';
+      '<div id="sim-inspect" class="sim-inspect" style="display:none;"></div>' +
+      '<div id="sim-species" class="sim-species"></div>';
 
     canvas = document.getElementById('sim-canvas');
     ctx = canvas.getContext('2d');
@@ -158,6 +162,8 @@
         frame = 0;
         renderFrame();
         updateStats();
+        // Autoplay on load
+        if (!playing) togglePlay();
       })
       .catch(function (err) {
         console.error('Failed to load clip:', err);
@@ -175,16 +181,24 @@
     }
   }
 
+  var frameAccum = 0;
+
   function startPlayback() {
     stopPlayback();
+    frameAccum = 0;
     playInterval = setInterval(function () {
-      frame += playSpeed;
-      if (frame >= clip.snapshots.length) {
-        frame = 0; // loop
+      frameAccum += playSpeed;
+      var advance = Math.floor(frameAccum);
+      if (advance >= 1) {
+        frameAccum -= advance;
+        frame += advance;
+        if (frame >= clip.snapshots.length) {
+          frame = 0; // loop
+        }
+        renderFrame();
+        updateStats();
+        document.getElementById('sim-scrub').value = frame;
       }
-      renderFrame();
-      updateStats();
-      document.getElementById('sim-scrub').value = frame;
     }, 33); // ~30fps
   }
 
@@ -202,7 +216,7 @@
   }
 
   function onSpeed(e) {
-    playSpeed = parseInt(e.target.value);
+    playSpeed = parseFloat(e.target.value);
     if (playing) {
       startPlayback(); // restart with new speed
     }
@@ -313,6 +327,75 @@
     document.getElementById('sim-stat-gen').textContent = 'Gen: ' + s.gen;
     document.getElementById('sim-stat-food').textContent = 'Food: ' + s.food;
     document.getElementById('sim-stat-tick').textContent = 'Tick: ' + clip.snapshots[frame].t;
+    updateSpeciesRoster();
+  }
+
+  var NODE_SHORT = { 0: 'C', 1: 'B', 2: 'M', 3: 'S', 4: 'Mo', 5: 'F', 6: 'Ar' };
+
+  function updateSpeciesRoster() {
+    var panel = document.getElementById('sim-species');
+    if (!clip || !clip.snapshots[frame]) { panel.innerHTML = ''; return; }
+    var orgs = clip.snapshots[frame].o || [];
+
+    // Aggregate per-species stats
+    var species = {};
+    for (var i = 0; i < orgs.length; i++) {
+      var org = orgs[i];
+      var sp = org.sp;
+      if (!species[sp]) {
+        species[sp] = { id: sp, pop: 0, totalEnergy: 0, maxGen: 0, nodeCounts: {}, totalNodes: 0 };
+      }
+      var s = species[sp];
+      s.pop++;
+      s.totalEnergy += org.e;
+      if (org.g > s.maxGen) s.maxGen = org.g;
+      for (var ni = 0; ni < org.n.length; ni++) {
+        var t = org.n[ni][2];
+        s.nodeCounts[t] = (s.nodeCounts[t] || 0) + 1;
+      }
+      s.totalNodes += org.n.length;
+    }
+
+    // Sort by population descending
+    var sorted = Object.keys(species).map(function (k) { return species[k]; });
+    sorted.sort(function (a, b) { return b.pop - a.pop; });
+
+    // Build HTML
+    var html = '<div class="sim-species-title">Active Species</div><div class="sim-species-list">';
+    for (var si = 0; si < sorted.length; si++) {
+      var sp = sorted[si];
+      var color = getSpeciesColor(sp.id);
+      var avgEnergy = Math.round(sp.totalEnergy / sp.pop);
+      var avgNodes = (sp.totalNodes / sp.pop).toFixed(1);
+
+      // Body composition: average node types across organisms
+      var bodyParts = [];
+      var typeKeys = Object.keys(sp.nodeCounts).sort();
+      for (var ti = 0; ti < typeKeys.length; ti++) {
+        var type = typeKeys[ti];
+        var avg = sp.nodeCounts[type] / sp.pop;
+        if (avg >= 0.5) {
+          bodyParts.push('<span class="sim-sp-node" style="color:' + (NODE_COLOR[type] || '#888') + '">' +
+            Math.round(avg) + NODE_SHORT[type] + '</span>');
+        }
+      }
+
+      html += '<div class="sim-sp-card">' +
+        '<div class="sim-sp-header">' +
+          '<span class="sim-sp-dot" style="background:' + color + '"></span>' +
+          '<span class="sim-sp-name" style="color:' + color + '">' + sp.id + '</span>' +
+          '<span class="sim-sp-pop">' + sp.pop + '</span>' +
+        '</div>' +
+        '<div class="sim-sp-details">' +
+          '<span class="sim-sp-meta">Gen ' + sp.maxGen + '</span>' +
+          '<span class="sim-sp-meta">Avg E: ' + avgEnergy + '</span>' +
+          '<span class="sim-sp-meta">' + avgNodes + ' nodes</span>' +
+        '</div>' +
+        '<div class="sim-sp-body">' + bodyParts.join(' ') + '</div>' +
+      '</div>';
+    }
+    html += '</div>';
+    panel.innerHTML = html;
   }
 
   /* ── interaction ── */

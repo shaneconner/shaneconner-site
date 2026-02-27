@@ -1093,6 +1093,84 @@ body.lightbox-open {
   margin-top: 0.2rem;
 }
 
+/* Species roster */
+.sim-species {
+  padding: 0.75rem 0 0;
+}
+
+.sim-species-title {
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--green);
+  margin-bottom: 0.6rem;
+  font-weight: 400;
+}
+
+.sim-species-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 0.5rem;
+}
+
+.sim-sp-card {
+  border: 1px solid var(--border);
+  background: rgba(17, 20, 14, 0.6);
+  padding: 0.5rem 0.6rem;
+}
+
+.sim-sp-header {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-bottom: 0.25rem;
+}
+
+.sim-sp-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.sim-sp-name {
+  font-size: 0.62rem;
+  letter-spacing: 0.06em;
+  font-weight: 400;
+}
+
+.sim-sp-pop {
+  margin-left: auto;
+  font-size: 0.72rem;
+  color: var(--text-bright);
+  font-variant-numeric: tabular-nums;
+  font-weight: 400;
+}
+
+.sim-sp-details {
+  display: flex;
+  gap: 0.6rem;
+  margin-bottom: 0.2rem;
+}
+
+.sim-sp-meta {
+  font-size: 0.56rem;
+  color: var(--text-dim);
+  font-weight: 300;
+}
+
+.sim-sp-body {
+  display: flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.sim-sp-node {
+  font-size: 0.56rem;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+}
+
 @media (max-width: 768px) {
   .sim-controls {
     flex-wrap: wrap;
@@ -1101,5 +1179,8 @@ body.lightbox-open {
   .sim-stats-bar {
     flex-wrap: wrap;
     gap: 0.75rem;
+  }
+  .sim-species-list {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
   }
 }
