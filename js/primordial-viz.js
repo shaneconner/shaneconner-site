@@ -258,11 +258,15 @@
 
     var spColor = getSpeciesColor(org.sp);
 
-    // Draw edges
+    // Draw edges (skip wrap-around artifacts)
+    var wrapThreshX = worldW * 0.4;
+    var wrapThreshY = worldH * 0.4;
     for (var ei = 0; ei < edges.length; ei++) {
       var e = edges[ei];
       var n1 = nodes[e[0]];
       var n2 = nodes[e[1]];
+      // Skip edges that span across the world wrap boundary
+      if (Math.abs(n1[0] - n2[0]) > wrapThreshX || Math.abs(n1[1] - n2[1]) > wrapThreshY) continue;
       ctx.strokeStyle = EDGE_COLOR[e[2]] || '#444';
       ctx.lineWidth = e[2] === 1 ? 1.2 : 0.6; // muscles thicker
       ctx.beginPath();
