@@ -947,7 +947,7 @@ body.lightbox-open {
 
 /* === Primordial — Simulation Viewer === */
 
-#sim-viewer {
+[data-sim-clip] {
   margin-top: 0.5rem;
 }
 
@@ -1171,6 +1171,55 @@ body.lightbox-open {
   letter-spacing: 0.04em;
 }
 
+/* Legend */
+.sim-legend {
+  padding: 0.6rem 0;
+  border-top: 1px solid var(--border);
+}
+
+.sim-legend-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 0.3rem;
+}
+
+.sim-legend-row:last-child {
+  margin-bottom: 0;
+}
+
+.sim-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.58rem;
+  letter-spacing: 0.06em;
+  color: var(--text-dim);
+  font-weight: 300;
+}
+
+.sim-legend-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* Compact species overflow wrapper */
+.sim-sp-overflow {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 0.35rem;
+  margin-top: 0.35rem;
+}
+
+.sim-sp-compact {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.25rem 0.4rem;
+}
+
 @media (max-width: 768px) {
   .sim-controls {
     flex-wrap: wrap;
@@ -1182,5 +1231,11 @@ body.lightbox-open {
   }
   .sim-species-list {
     grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  }
+  .sim-legend-row {
+    gap: 0.5rem;
+  }
+  .sim-sp-overflow {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
   }
 }

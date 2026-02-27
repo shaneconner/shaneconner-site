@@ -60,22 +60,139 @@
 
   <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
 
-  <!-- SIMULATION VIEWER -->
+  <!-- ═══════════════════════════════════════════ -->
+  <!--              THE STORY OF LIFE              -->
+  <!-- ═══════════════════════════════════════════ -->
+
+  <!-- CHAPTER 1: GENESIS -->
   <div class="essay reveal">
-    <h3>The Simulation</h3>
-    <h2>Watch evolution happen</h2>
-    <p>The viewer below replays a recorded simulation clip. Each organism is a spring-mass body: colored nodes connected by edges. Muscles contract and expand under neural network control. Green dots are plant resources. Red dots are meat from dead organisms. The population, species count, and generation number update in real time.</p>
+    <h3>Chapter I</h3>
+    <h2>Genesis</h2>
+    <p>The simulation begins with 120 organisms scattered across a landscape. Each has a random neural network and a simple five-node body: a core, a sensor, two muscle anchors, and a mouth. Their brains fire random signals. Muscles twitch without purpose. Most organisms wander aimlessly, burning energy faster than they can find food.</p>
+    <p>But a few, by pure chance, have neural weights that produce net movement toward nearby plant resources. These organisms eat. They survive. Everything that follows descends from them.</p>
   </div>
 
   <div class="essay-wide">
     <div class="viz-container reveal">
-      <p class="viz-title">Simulation Replay</p>
-      <div id="sim-viewer"></div>
-      <p class="viz-caption">Click an organism to inspect. Scroll to zoom. Drag to pan. Play/pause and scrub through time.</p>
+      <p class="viz-title">Genesis — First Moments of Life</p>
+      <div data-sim-clip="/data/narrative/primordial-genesis.json"></div>
+      <p class="viz-caption">The founding population. Random neural networks produce uncoordinated movement. Green dots are plant resources. Click an organism to inspect its body plan.</p>
     </div>
   </div>
 
   <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+
+  <!-- CHAPTER 2: FIRST DIVERGENCE -->
+  <div class="essay reveal">
+    <h3>Chapter II</h3>
+    <h2>First Divergence</h2>
+    <p>Within hundreds of ticks, mutations accumulate. A child's genome diverges far enough from its parent that the speciation threshold is crossed and a new species is born. This first split is modest: the two lineages are nearly identical. But it marks the beginning of an evolutionary tree that will branch dozens of times.</p>
+    <p>Each new species represents a slightly different strategy encoded in slightly different neural weights and body configurations. Some add extra sensor nodes. Others shift muscle positions for better locomotion. The genome is the blueprint, and natural selection is the architect.</p>
+  </div>
+
+  <div class="essay-wide">
+    <div class="viz-container reveal">
+      <p class="viz-title">First Divergence — Species Begin to Branch</p>
+      <div data-sim-clip="/data/narrative/primordial-first-split.json"></div>
+      <p class="viz-caption">The first speciation event. Colored rings around organisms indicate species identity. Watch for the emergence of distinct body plans.</p>
+    </div>
+  </div>
+
+  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+
+  <!-- CHAPTER 3: POPULATION BOOM -->
+  <div class="essay reveal">
+    <h3>Chapter III</h3>
+    <h2>The Bloom</h2>
+    <p>Once organisms evolve effective foraging behaviors, the population explodes. Successful neural network configurations are inherited by offspring, who are born pre-wired to seek food. The population climbs rapidly as reproduction outpaces death. Resources become scarce. Competition intensifies.</p>
+    <p>This is the first Malthusian crisis: a population that has learned to exploit its environment now risks exhausting it. The carrying capacity of the world becomes the dominant selective pressure.</p>
+  </div>
+
+  <div class="essay-wide">
+    <div class="viz-container reveal">
+      <p class="viz-title">The Bloom — Population Explosion</p>
+      <div data-sim-clip="/data/narrative/primordial-boom.json"></div>
+      <p class="viz-caption">Successful strategies propagate rapidly. Watch the population counter climb as organisms reproduce faster than they die.</p>
+    </div>
+  </div>
+
+  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+
+  <!-- CHAPTER 4: PEAK DIVERSITY -->
+  <div class="essay reveal">
+    <h3>Chapter IV</h3>
+    <h2>Radiation</h2>
+    <p>As different regions of the world offer different resource densities and competitive pressures, species diversify into distinct niches. Some lineages evolve larger bodies with more sensors. Others stay small and energy-efficient. Body plans vary from compact three-node sprinters to sprawling multi-sensor foragers.</p>
+    <p>This is adaptive radiation: a single ancestral population branching into multiple species, each specialized for slightly different conditions. The ecosystem reaches its peak diversity, with dozens of species coexisting simultaneously.</p>
+  </div>
+
+  <div class="essay-wide">
+    <div class="viz-container reveal">
+      <p class="viz-title">Radiation — Peak Species Diversity</p>
+      <div data-sim-clip="/data/narrative/primordial-diversity.json"></div>
+      <p class="viz-caption">Maximum biodiversity. Multiple species coexist with distinct body plans and behaviors. The species roster below shows the full ecosystem.</p>
+    </div>
+  </div>
+
+  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+
+  <!-- CHAPTER 5: CRASH -->
+  <div class="essay reveal">
+    <h3>Chapter V</h3>
+    <h2>Collapse</h2>
+    <p>Overpopulation depletes resources. Food becomes scarce. Organisms that were thriving now starve. The population crashes, sometimes losing half its numbers in a few hundred ticks. Entire species go extinct. The survivors are those with the most efficient metabolisms, the best foraging strategies, or simply the luckiest positions when resources respawn.</p>
+    <p>Population crashes are a recurring pattern in the simulation: boom, overshoot, bust, recovery. Each crash is a bottleneck that reshapes the gene pool, eliminating weaker lineages and concentrating the genome around survival-tested configurations.</p>
+  </div>
+
+  <div class="essay-wide">
+    <div class="viz-container reveal">
+      <p class="viz-title">Collapse — Population Crash</p>
+      <div data-sim-clip="/data/narrative/primordial-crash.json"></div>
+      <p class="viz-caption">Resources deplete and the population collapses. Watch species disappear from the roster as lineages go extinct.</p>
+    </div>
+  </div>
+
+  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+
+  <!-- CHAPTER 6: EQUILIBRIUM -->
+  <div class="essay reveal">
+    <h3>Chapter VI</h3>
+    <h2>Balance</h2>
+    <p>After the initial cycles of boom and bust, the ecosystem settles toward a dynamic equilibrium. Population oscillates around the environment's carrying capacity. Species that have survived multiple crashes are well-adapted: efficient foragers with lean body plans and neural networks refined across many generations of selection.</p>
+    <p>The equilibrium is not static. New species still emerge from mutation. Old species still go extinct when outcompeted. But the wild swings of early evolution give way to subtler dynamics: gradual niche shifts, slow optimization of existing strategies, and the occasional disruptive innovation that reshuffles the competitive landscape.</p>
+  </div>
+
+  <div class="essay-wide">
+    <div class="viz-container reveal">
+      <p class="viz-title">Equilibrium — Dynamic Stability</p>
+      <div data-sim-clip="/data/narrative/primordial-equilibrium.json"></div>
+      <p class="viz-caption">The ecosystem at carrying capacity. Populations oscillate but the overall system is stable. Species have specialized.</p>
+    </div>
+  </div>
+
+  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+
+  <!-- CHAPTER 7: DEEP TIME -->
+  <div class="essay reveal">
+    <h3>Chapter VII</h3>
+    <h2>Deep Time</h2>
+    <p>Tens of thousands of ticks in, organisms have inherited and refined their neural networks across dozens of generations. The genomes circulating in the population are the product of thousands of selection events. Bodies have accumulated mutations that survived: extra sensors, repositioned muscles, armor nodes on lineages that face competition.</p>
+    <p>These late-generation organisms are qualitatively different from the founding population. Their locomotion is smoother. Their foraging is more directed. Their bodies are more complex. None of this was programmed. It emerged from the same simple rules that started the simulation: physics, mutation, and survival.</p>
+  </div>
+
+  <div class="essay-wide">
+    <div class="viz-container reveal">
+      <p class="viz-title">Deep Time — Evolved Organisms</p>
+      <div data-sim-clip="/data/narrative/primordial-deep-time.json"></div>
+      <p class="viz-caption">Late-generation organisms with refined neural networks and evolved body plans. Compare their coordinated movement to the random twitching of genesis.</p>
+    </div>
+  </div>
+
+  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!--              TECHNICAL DETAILS              -->
+  <!-- ═══════════════════════════════════════════ -->
 
   <!-- BODY SYSTEM -->
   <div class="essay reveal">
@@ -84,16 +201,6 @@
     <p>Each organism's body is a graph of point masses connected by springs. The genome encodes node types and edge connections. Nodes come in seven varieties: a <em>core</em> that serves as the center of mass, <em>bone</em> nodes for structural rigidity, <em>muscle anchors</em> that form the endpoints of controllable springs, <em>sensors</em> that detect nearby food and organisms, <em>mouths</em> that eat, <em>fat</em> nodes that store energy, and <em>armor</em> nodes that reduce damage.</p>
     <p>Edges are springs governed by Hooke's law. Bone springs are rigid with high stiffness and low damping. Muscle springs have a controllable rest length: the neural network sets a contraction target each tick, and the spring force drives the body toward that configuration. Tendon springs are semi-rigid connectors. The physics runs as Verlet integration with multiple substeps per simulation tick.</p>
     <p>Locomotion is discovered, not programmed. An organism with muscles on its sides has to learn to alternate contractions to produce forward movement. Asymmetric bodies produce turning. Bodies with sensors at the front and muscles at the back evolve to chase food. The relationship between morphology and behavior is entirely emergent.</p>
-  </div>
-
-  <div class="essay-wide">
-    <div class="viz-container reveal placeholder-viz">
-      <p class="viz-title">Body Gallery: Evolved Morphologies</p>
-      <div class="placeholder-content">
-        <div class="placeholder-label">Coming Soon</div>
-        <p class="placeholder-description">Grid of representative organisms from each species, rendered at large scale showing their spring-mass structure. Node types color-coded. Muscle contraction animated. Body complexity increases across generations.</p>
-      </div>
-    </div>
   </div>
 
   <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
@@ -105,16 +212,6 @@
     <p>Each organism has a feedforward neural network. The input layer receives sensory data: distance and type of nearest food and organisms per sensor node, the organism's energy level and age, and proprioceptive feedback from current muscle lengths. A small memory register persists values across ticks, giving organisms a primitive form of short-term memory.</p>
     <p>The output layer controls the body. Each muscle gets a contraction target. Two additional outputs signal eating intent and reproductive readiness. The hidden layer size, activation function, and all weights are encoded in the genome.</p>
     <p>There is no backpropagation and no loss function. Weights are inherited from parents with Gaussian noise, and the mutation scale itself is a genome parameter that evolves. Organisms that survive long enough to reproduce pass their weights to offspring. A child is born pre-wired with its parent's learned behaviors plus small random variations. Over generations, the population converges on effective control strategies through pure selection pressure.</p>
-  </div>
-
-  <div class="essay-wide">
-    <div class="viz-container reveal placeholder-viz">
-      <p class="viz-title">Brain Architecture</p>
-      <div class="placeholder-content">
-        <div class="placeholder-label">Coming Soon</div>
-        <p class="placeholder-description">Interactive node-link diagram of a selected organism's neural network. Inputs labeled by sensor type. Weights shown as line thickness. Active neurons highlighted during replay. Hidden layer size varies by species.</p>
-      </div>
-    </div>
   </div>
 
   <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
@@ -140,57 +237,28 @@
     <p>Anti-extinction safeguards prevent total ecosystem collapse: plant spawn rate never drops to zero, and if the population crashes below a threshold, random viable organisms immigrate into the world. These mechanisms allow dramatic population dynamics (booms, busts, occasional mass extinction followed by rapid diversification) without the simulation going permanently dead.</p>
   </div>
 
-  <div class="essay-wide">
-    <div class="viz-container reveal placeholder-viz">
-      <p class="viz-title">Population Dynamics</p>
-      <div class="placeholder-content">
-        <div class="placeholder-label">Coming Soon</div>
-        <p class="placeholder-description">Line chart showing species populations over time. Color-coded by species. Population booms and busts visible. Speciation events marked. Predator-prey oscillations emerge from ecosystem dynamics.</p>
-      </div>
-    </div>
-  </div>
-
-  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
-
-  <!-- PHYLOGENETIC TREE -->
-  <div class="essay reveal">
-    <h3>Lineage</h3>
-    <h2>An evolutionary tree grown from code</h2>
-    <p>Every speciation event is logged: which parent species produced the new branch, at what tick, and what genome divergence triggered it. This data reconstructs a phylogenetic tree showing how species branched and diversified over evolutionary time. Early generations show a single trunk. As mutations accumulate and populations diverge, the tree fans out. Some branches go extinct. Others radiate into clusters of related species.</p>
-  </div>
-
-  <div class="essay-wide">
-    <div class="viz-container reveal placeholder-viz">
-      <p class="viz-title">Phylogenetic Tree</p>
-      <div class="placeholder-content">
-        <div class="placeholder-label">Coming Soon</div>
-        <p class="placeholder-description">Horizontal dendrogram showing species branching over evolutionary time. Branch length proportional to ticks. Extinct species shown as terminated branches. Color-coded by surviving lineage.</p>
-      </div>
-    </div>
-  </div>
-
   <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
 
   <!-- RESULTS -->
   <div class="essay reveal">
     <h3>System</h3>
     <h2>What emerges</h2>
-    <p>Within 3,000 simulation ticks, a population of 40 organisms diversifies into 21 species across 11 generations. Bodies begin accumulating new nodes (sensors, muscles, armor) as morphological mutations that improve survival propagate through the gene pool. Population dynamics stabilize around the environment's carrying capacity, with boom-bust cycles driven by resource competition.</p>
-    <p>The simulation engine processes 18-40 ticks per second depending on population size, using NumPy-vectorized spring physics and spatial hash grids for O(1) neighbor queries. State snapshots are recorded for clip export and D3.js replay visualization.</p>
+    <p>Over 30,000 simulation ticks, a founding population of 120 organisms diversifies into dozens of species across many generations. Bodies accumulate new nodes as morphological mutations that improve survival propagate through the gene pool. Population dynamics oscillate around the environment's carrying capacity, with boom-bust cycles driven by resource competition and speciation events reshaping the ecosystem.</p>
+    <p>The simulation engine processes 18-40 ticks per second depending on population size, using NumPy-vectorized spring physics and spatial hash grids for O(1) neighbor queries. State snapshots are recorded at key narrative moments for D3.js replay visualization.</p>
   </div>
 
   <div class="stats-row reveal">
     <div class="stat">
-      <div class="stat-value">21</div>
-      <div class="stat-label">Species Emerged</div>
-    </div>
-    <div class="stat">
-      <div class="stat-value">11</div>
-      <div class="stat-label">Generations</div>
+      <div class="stat-value">30k</div>
+      <div class="stat-label">Simulation Ticks</div>
     </div>
     <div class="stat">
       <div class="stat-value">7</div>
       <div class="stat-label">Node Types</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">3</div>
+      <div class="stat-label">Edge Types</div>
     </div>
     <div class="stat">
       <div class="stat-value">0</div>
@@ -208,6 +276,7 @@
       <span class="project-tag">Spring-Mass Physics</span>
       <span class="project-tag">Spatial Hashing</span>
       <span class="project-tag">D3.js</span>
+      <span class="project-tag">Canvas API</span>
     </div>
     <div style="margin-top:1.5rem;">
       <a href="https://github.com/shaneconner/primordial" class="back-link" style="margin-right:2rem;">View Source &rarr;</a>
