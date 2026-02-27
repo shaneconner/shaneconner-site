@@ -100,27 +100,9 @@
 
   <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
 
-  <!-- CHAPTER 3: POPULATION BOOM -->
+  <!-- CHAPTER 3: PEAK DIVERSITY -->
   <div class="essay reveal">
     <h3>Chapter III</h3>
-    <h2>The Bloom</h2>
-    <p>Once organisms evolve effective foraging behaviors, the population explodes. Successful neural network configurations are inherited by offspring, who are born pre-wired to seek food. The population climbs rapidly as reproduction outpaces death. Resources become scarce. Competition intensifies.</p>
-    <p>This is the first Malthusian crisis: a population that has learned to exploit its environment now risks exhausting it. The carrying capacity of the world becomes the dominant selective pressure.</p>
-  </div>
-
-  <div class="essay-wide">
-    <div class="viz-container reveal">
-      <p class="viz-title">The Bloom — Population Explosion</p>
-      <div data-sim-clip="/data/narrative/primordial-boom.json"></div>
-      <p class="viz-caption">Successful strategies propagate rapidly. Watch the population counter climb as organisms reproduce faster than they die.</p>
-    </div>
-  </div>
-
-  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
-
-  <!-- CHAPTER 4: PEAK DIVERSITY -->
-  <div class="essay reveal">
-    <h3>Chapter IV</h3>
     <h2>Radiation</h2>
     <p>As different regions of the world offer different resource densities and competitive pressures, species diversify into distinct niches. Some lineages evolve larger bodies with more sensors. Others stay small and energy-efficient. Body plans vary from compact three-node sprinters to sprawling multi-sensor foragers.</p>
     <p>This is adaptive radiation: a single ancestral population branching into multiple species, each specialized for slightly different conditions. The ecosystem reaches its peak diversity, with dozens of species coexisting simultaneously.</p>
@@ -136,27 +118,9 @@
 
   <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
 
-  <!-- CHAPTER 5: CRASH -->
+  <!-- CHAPTER 4: EQUILIBRIUM -->
   <div class="essay reveal">
-    <h3>Chapter V</h3>
-    <h2>Collapse</h2>
-    <p>Overpopulation depletes resources. Food becomes scarce. Organisms that were thriving now starve. The population crashes, sometimes losing half its numbers in a few hundred ticks. Entire species go extinct. The survivors are those with the most efficient metabolisms, the best foraging strategies, or simply the luckiest positions when resources respawn.</p>
-    <p>Population crashes are a recurring pattern in the simulation: boom, overshoot, bust, recovery. Each crash is a bottleneck that reshapes the gene pool, eliminating weaker lineages and concentrating the genome around survival-tested configurations.</p>
-  </div>
-
-  <div class="essay-wide">
-    <div class="viz-container reveal">
-      <p class="viz-title">Collapse — Population Crash</p>
-      <div data-sim-clip="/data/narrative/primordial-crash.json"></div>
-      <p class="viz-caption">Resources deplete and the population collapses. Watch species disappear from the roster as lineages go extinct.</p>
-    </div>
-  </div>
-
-  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
-
-  <!-- CHAPTER 6: EQUILIBRIUM -->
-  <div class="essay reveal">
-    <h3>Chapter VI</h3>
+    <h3>Chapter IV</h3>
     <h2>Balance</h2>
     <p>After the initial cycles of boom and bust, the ecosystem settles toward a dynamic equilibrium. Population oscillates around the environment's carrying capacity. Species that have survived multiple crashes are well-adapted: efficient foragers with lean body plans and neural networks refined across many generations of selection.</p>
     <p>The equilibrium is not static. New species still emerge from mutation. Old species still go extinct when outcompeted. But the wild swings of early evolution give way to subtler dynamics: gradual niche shifts, slow optimization of existing strategies, and the occasional disruptive innovation that reshuffles the competitive landscape.</p>
@@ -167,24 +131,6 @@
       <p class="viz-title">Equilibrium — Dynamic Stability</p>
       <div data-sim-clip="/data/narrative/primordial-equilibrium.json"></div>
       <p class="viz-caption">The ecosystem at carrying capacity. Populations oscillate but the overall system is stable. Species have specialized.</p>
-    </div>
-  </div>
-
-  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
-
-  <!-- CHAPTER 7: DEEP TIME -->
-  <div class="essay reveal">
-    <h3>Chapter VII</h3>
-    <h2>Deep Time</h2>
-    <p>Tens of thousands of ticks in, organisms have inherited and refined their neural networks across dozens of generations. The genomes circulating in the population are the product of thousands of selection events. Bodies have accumulated mutations that survived: extra sensors, repositioned muscles, armor nodes on lineages that face competition.</p>
-    <p>These late-generation organisms are qualitatively different from the founding population. Their locomotion is smoother. Their foraging is more directed. Their bodies are more complex. None of this was programmed. It emerged from the same simple rules that started the simulation: physics, mutation, and survival.</p>
-  </div>
-
-  <div class="essay-wide">
-    <div class="viz-container reveal">
-      <p class="viz-title">Deep Time — Evolved Organisms</p>
-      <div data-sim-clip="/data/narrative/primordial-deep-time.json"></div>
-      <p class="viz-caption">Late-generation organisms with refined neural networks and evolved body plans. Compare their coordinated movement to the random twitching of genesis.</p>
     </div>
   </div>
 
@@ -243,22 +189,22 @@
   <div class="essay reveal">
     <h3>System</h3>
     <h2>What emerges</h2>
-    <p>Over 30,000 simulation ticks, a founding population of 120 organisms diversifies into dozens of species across many generations. Bodies accumulate new nodes as morphological mutations that improve survival propagate through the gene pool. Population dynamics oscillate around the environment's carrying capacity, with boom-bust cycles driven by resource competition and speciation events reshaping the ecosystem.</p>
-    <p>The simulation engine processes 18-40 ticks per second depending on population size, using NumPy-vectorized spring physics and spatial hash grids for O(1) neighbor queries. State snapshots are recorded at key narrative moments for D3.js replay visualization.</p>
+    <p>Over 5,000 simulation ticks, a founding population of 50 organisms diversifies into 10 species across 8 generations. Bodies accumulate new nodes as morphological mutations that improve survival propagate through the gene pool. The population grows to the environment's carrying capacity and stabilizes, with speciation events producing a diverse ecosystem of coexisting strategies.</p>
+    <p>The simulation engine uses NumPy-vectorized spring physics and spatial hash grids for O(1) neighbor queries. State snapshots are recorded at key narrative moments for D3.js replay visualization on Canvas.</p>
   </div>
 
   <div class="stats-row reveal">
     <div class="stat">
-      <div class="stat-value">30k</div>
+      <div class="stat-value">5k</div>
       <div class="stat-label">Simulation Ticks</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">10</div>
+      <div class="stat-label">Species Emerged</div>
     </div>
     <div class="stat">
       <div class="stat-value">7</div>
       <div class="stat-label">Node Types</div>
-    </div>
-    <div class="stat">
-      <div class="stat-value">3</div>
-      <div class="stat-label">Edge Types</div>
     </div>
     <div class="stat">
       <div class="stat-value">0</div>
