@@ -37,9 +37,17 @@ Generation reaches 54 by tick 33k. Body plans and neural architectures have been
 **Clip: Deep Time** — Highly evolved organisms with refined neural networks.
 **Clip: Generation Milestone** — A new generation milestone marks ongoing evolution.
 
+## Phase 6: Second Radiation (Ticks 33000-40000+)
+After the consolidation bottleneck (species dropped to 13), diversity recovers. By tick 39k species jumps back to 27, and at tick 40k it hits 32 with population at 301. This is a second adaptive radiation — new mutations are opening ecological niches that were closed during the consolidation. Generation has reached 63.
+
+This mirrors real evolutionary patterns: periods of low diversity followed by explosive speciation when environmental conditions shift or key innovations emerge.
+
+**Clip: Second Radiation** — A second wave of speciation after the consolidation.
+**Clip: Body Evolution** — Organisms have evolved more complex body plans after 60+ generations.
+
 ## Still Running...
-Simulation at tick 33k of 100k. Expecting to see:
-- Further consolidation or a second radiation event
-- Possible mass extinction if a dominant species collapses
-- Late-game body evolution (more complex morphologies after 60+ generations)
-- Whether the ecosystem finds a stable attractor or continues oscillating
+Simulation at tick 40k of 100k at 7 t/s. Watching for:
+- Whether this second radiation sustains or leads to another crash
+- Mass extinction events in the second half
+- Late-game stability or continued cycling
+- How high generation count climbs (currently 63)
