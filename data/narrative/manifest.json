@@ -1,0 +1,58 @@
+{
+  "world": {
+    "width": 1600.0,
+    "height": 900.0
+  },
+  "total_ticks": 5000,
+  "seed": 42,
+  "clips": [
+    {
+      "id": "genesis",
+      "title": "Genesis",
+      "description": "The first organisms are dropped into an empty world.",
+      "file": "primordial-genesis.json",
+      "tick_range": [
+        9,
+        209
+      ],
+      "frames": 100,
+      "size_kb": 1973
+    },
+    {
+      "id": "first-split",
+      "title": "First Divergence",
+      "description": "A mutation pushes an offspring past the speciation threshold.",
+      "file": "primordial-first-split.json",
+      "tick_range": [
+        589,
+        789
+      ],
+      "frames": 100,
+      "size_kb": 2220
+    },
+    {
+      "id": "diversity",
+      "title": "Peak Diversity",
+      "description": "13 species coexist.",
+      "file": "primordial-diversity.json",
+      "tick_range": [
+        1299,
+        1499
+      ],
+      "frames": 100,
+      "size_kb": 4385
+    },
+    {
+      "id": "equilibrium",
+      "title": "Equilibrium",
+      "description": "The ecosystem reaches carrying capacity.",
+      "file": "primordial-equilibrium.json",
+      "tick_range": [
+        4189,
+        4389
+      ],
+      "frames": 100,
+      "size_kb": 4507
+    }
+  ]
+}
