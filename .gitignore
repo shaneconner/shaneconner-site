@@ -1,5 +1,6 @@
 .vscode/
 .DS_Store
 Thumbs.db
+NUL
 .claude/
 colormap_visualizer.ipynb
