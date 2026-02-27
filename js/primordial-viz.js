@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  /* ── theme tokens (matching site design system) ── */
+  /* ── theme tokens ── */
   var C = {
     bg: '#090b09',
     card: '#131409',
@@ -12,41 +12,18 @@
     border: '#22231a',
   };
 
-  /* ── node type colors ── */
+  /* ── node type colors & labels ── */
   var NODE_COLOR = {
-    0: '#d4cfc3',  // core
-    1: '#a09888',  // bone
-    2: '#8a3a3a',  // muscle anchor
-    3: '#5a9aaa',  // sensor
-    4: '#9aaa3a',  // mouth
-    5: '#b49a6e',  // fat
-    6: '#7a7868',  // armor
+    0: '#d4cfc3', 1: '#a09888', 2: '#8a3a3a', 3: '#5a9aaa',
+    4: '#9aaa3a', 5: '#b49a6e', 6: '#7a7868',
   };
-
   var NODE_LABEL = {
     0: 'Core', 1: 'Bone', 2: 'Muscle', 3: 'Sensor',
     4: 'Mouth', 5: 'Fat', 6: 'Armor',
   };
-
-  var EDGE_COLOR = {
-    0: '#666655',  // bone
-    1: '#8a3a3a',  // muscle
-    2: '#555544',  // tendon
-  };
-
+  var NODE_SHORT = { 0: 'C', 1: 'B', 2: 'M', 3: 'S', 4: 'Mo', 5: 'F', 6: 'Ar' };
+  var EDGE_COLOR = { 0: '#666655', 1: '#8a3a3a', 2: '#555544' };
   var FOOD_COLOR = { p: '#5a8a2a', m: '#8a3a3a', n: '#6e5a3a' };
-
-  /* ── state ── */
-  var clip = null;
-  var frame = 0;
-  var playing = false;
-  var playInterval = null;
-  var playSpeed = 0.25;
-  var canvas, ctx;
-  var camera = { x: 0, y: 0, zoom: 1 };
-  var worldW = 500, worldH = 500;
-  var selectedOrg = null;
-  var canvasW, canvasH;
 
   /* ── species color palette ── */
   var speciesColors = {};
@@ -66,21 +43,42 @@
     return speciesColors[sp];
   }
 
-  /* ── init ── */
-  function init() {
-    var container = document.getElementById('sim-viewer');
-    if (!container) return;
+  /* ── Viewer class (one per clip) ── */
+  function Viewer(container, clipUrl) {
+    var self = this;
+    self.container = container;
+    self.clipUrl = clipUrl;
+    self.clip = null;
+    self.frame = 0;
+    self.playing = false;
+    self.playInterval = null;
+    self.playSpeed = 0.25;
+    self.frameAccum = 0;
+    self.canvas = null;
+    self.ctx = null;
+    self.camera = { x: 0, y: 0, zoom: 1 };
+    self.worldW = 1600;
+    self.worldH = 900;
+    self.canvasW = 0;
+    self.canvasH = 0;
+    self.selectedOrg = null;
 
-    // Build viewer UI
-    container.innerHTML =
+    self.build();
+    self.load();
+  }
+
+  Viewer.prototype.build = function () {
+    var self = this;
+
+    self.container.innerHTML =
       '<div class="sim-canvas-wrap">' +
-        '<canvas id="sim-canvas"></canvas>' +
+        '<canvas class="sim-canvas"></canvas>' +
       '</div>' +
       '<div class="sim-controls">' +
-        '<button id="sim-play" class="sim-btn">Play</button>' +
-        '<input id="sim-scrub" type="range" min="0" max="1" value="0" step="1" class="sim-scrub" />' +
-        '<span id="sim-frame-label" class="sim-label">0 / 0</span>' +
-        '<select id="sim-speed" class="sim-select">' +
+        '<button class="sim-btn sim-play-btn">Pause</button>' +
+        '<input type="range" min="0" max="1" value="0" step="1" class="sim-scrub" />' +
+        '<span class="sim-label sim-frame-label">0 / 0</span>' +
+        '<select class="sim-select sim-speed-select">' +
           '<option value="0.125">1/8x</option>' +
           '<option value="0.25" selected>1/4x</option>' +
           '<option value="0.5">1/2x</option>' +
@@ -91,261 +89,191 @@
         '</select>' +
       '</div>' +
       '<div class="sim-stats-bar">' +
-        '<span id="sim-stat-pop">Pop: --</span>' +
-        '<span id="sim-stat-species">Species: --</span>' +
-        '<span id="sim-stat-gen">Gen: --</span>' +
-        '<span id="sim-stat-food">Food: --</span>' +
-        '<span id="sim-stat-tick">Tick: --</span>' +
+        '<span class="sim-stat-pop">Pop: --</span>' +
+        '<span class="sim-stat-species">Species: --</span>' +
+        '<span class="sim-stat-gen">Gen: --</span>' +
+        '<span class="sim-stat-food">Food: --</span>' +
+        '<span class="sim-stat-tick">Tick: --</span>' +
       '</div>' +
-      '<div id="sim-inspect" class="sim-inspect" style="display:none;"></div>' +
-      '<div id="sim-species" class="sim-species"></div>';
+      '<div class="sim-legend">' + buildLegendHTML() + '</div>' +
+      '<div class="sim-inspect" style="display:none;"></div>' +
+      '<div class="sim-species"></div>';
 
-    canvas = document.getElementById('sim-canvas');
-    ctx = canvas.getContext('2d');
+    self.canvas = self.container.querySelector('.sim-canvas');
+    self.ctx = self.canvas.getContext('2d');
 
-    // Size canvas
-    var wrap = container.querySelector('.sim-canvas-wrap');
-    canvasW = wrap.clientWidth;
-    canvasH = Math.min(canvasW, 600);
-    canvas.width = canvasW;
-    canvas.height = canvasH;
+    // Size canvas to 16:9
+    var wrap = self.container.querySelector('.sim-canvas-wrap');
+    self.canvasW = wrap.clientWidth;
+    self.canvasH = Math.round(self.canvasW * 9 / 16);
+    self.canvas.width = self.canvasW;
+    self.canvas.height = self.canvasH;
 
-    // Fit world to canvas
-    camera.zoom = Math.min(canvasW / worldW, canvasH / worldH) * 0.95;
-    camera.x = (canvasW / camera.zoom - worldW) / 2;
-    camera.y = (canvasH / camera.zoom - worldH) / 2;
+    // Fit world
+    self.camera.zoom = Math.min(self.canvasW / self.worldW, self.canvasH / self.worldH) * 0.95;
+    self.camera.x = (self.canvasW / self.camera.zoom - self.worldW) / 2;
+    self.camera.y = (self.canvasH / self.camera.zoom - self.worldH) / 2;
 
     // Controls
-    document.getElementById('sim-play').addEventListener('click', togglePlay);
-    document.getElementById('sim-scrub').addEventListener('input', onScrub);
-    document.getElementById('sim-speed').addEventListener('change', onSpeed);
+    self.container.querySelector('.sim-play-btn').addEventListener('click', function () { self.togglePlay(); });
+    self.container.querySelector('.sim-scrub').addEventListener('input', function (e) {
+      self.frame = parseInt(e.target.value);
+      self.renderFrame();
+      self.updateUI();
+    });
+    self.container.querySelector('.sim-speed-select').addEventListener('change', function (e) {
+      self.playSpeed = parseFloat(e.target.value);
+      if (self.playing) self.startPlayback();
+    });
 
-    // Mouse interaction
-    canvas.addEventListener('click', onClick);
-    canvas.addEventListener('wheel', onWheel, { passive: false });
+    // Click / zoom
+    self.canvas.addEventListener('click', function (e) { self.onClick(e); });
+    self.canvas.addEventListener('wheel', function (e) { self.onWheel(e); }, { passive: false });
 
     // Pan
-    var dragging = false, dragStart = { x: 0, y: 0 }, camStart = { x: 0, y: 0 };
-    canvas.addEventListener('mousedown', function (e) {
+    var dragging = false, dragStart = {}, camStart = {};
+    self.canvas.addEventListener('mousedown', function (e) {
       dragging = true;
       dragStart = { x: e.clientX, y: e.clientY };
-      camStart = { x: camera.x, y: camera.y };
+      camStart = { x: self.camera.x, y: self.camera.y };
     });
-    canvas.addEventListener('mousemove', function (e) {
+    self.canvas.addEventListener('mousemove', function (e) {
       if (!dragging) return;
-      camera.x = camStart.x + (e.clientX - dragStart.x) / camera.zoom;
-      camera.y = camStart.y + (e.clientY - dragStart.y) / camera.zoom;
-      if (!playing) renderFrame();
+      self.camera.x = camStart.x + (e.clientX - dragStart.x) / self.camera.zoom;
+      self.camera.y = camStart.y + (e.clientY - dragStart.y) / self.camera.zoom;
+      if (!self.playing) self.renderFrame();
     });
-    canvas.addEventListener('mouseup', function () { dragging = false; });
-    canvas.addEventListener('mouseleave', function () { dragging = false; });
+    self.canvas.addEventListener('mouseup', function () { dragging = false; });
+    self.canvas.addEventListener('mouseleave', function () { dragging = false; });
 
-    // Load clip data
-    loadClip();
-  }
+    // Autoplay when scrolled into view, pause when out
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting && self.clip && !self.playing) {
+          self.togglePlay();
+        } else if (!entry.isIntersecting && self.playing) {
+          self.togglePlay();
+        }
+      });
+    }, { threshold: 0.3 });
+    observer.observe(self.container);
+  };
 
-  function loadClip() {
-    fetch('/data/primordial-clip-long.json')
+  Viewer.prototype.load = function () {
+    var self = this;
+    fetch(self.clipUrl)
       .then(function (r) { return r.json(); })
       .then(function (data) {
-        clip = data;
-        worldW = data.world ? data.world.width : 500;
-        worldH = data.world ? data.world.height : 500;
+        self.clip = data;
+        self.worldW = data.world ? data.world.width : 1600;
+        self.worldH = data.world ? data.world.height : 900;
 
-        // Refit camera
-        camera.zoom = Math.min(canvasW / worldW, canvasH / worldH) * 0.95;
-        camera.x = (canvasW / camera.zoom - worldW) / 2;
-        camera.y = (canvasH / camera.zoom - worldH) / 2;
+        self.camera.zoom = Math.min(self.canvasW / self.worldW, self.canvasH / self.worldH) * 0.95;
+        self.camera.x = (self.canvasW / self.camera.zoom - self.worldW) / 2;
+        self.camera.y = (self.canvasH / self.camera.zoom - self.worldH) / 2;
 
-        var scrub = document.getElementById('sim-scrub');
-        scrub.max = clip.snapshots.length - 1;
-        frame = 0;
-        renderFrame();
-        updateStats();
-        // Autoplay on load
-        if (!playing) togglePlay();
+        self.container.querySelector('.sim-scrub').max = data.snapshots.length - 1;
+        self.frame = 0;
+        self.renderFrame();
+        self.updateUI();
       })
       .catch(function (err) {
-        console.error('Failed to load clip:', err);
+        console.error('Failed to load clip:', self.clipUrl, err);
       });
-  }
+  };
 
-  /* ── playback ── */
-  function togglePlay() {
-    playing = !playing;
-    document.getElementById('sim-play').textContent = playing ? 'Pause' : 'Play';
-    if (playing) {
-      startPlayback();
-    } else {
-      stopPlayback();
-    }
-  }
+  Viewer.prototype.togglePlay = function () {
+    this.playing = !this.playing;
+    this.container.querySelector('.sim-play-btn').textContent = this.playing ? 'Pause' : 'Play';
+    if (this.playing) this.startPlayback();
+    else this.stopPlayback();
+  };
 
-  var frameAccum = 0;
-
-  function startPlayback() {
-    stopPlayback();
-    frameAccum = 0;
-    playInterval = setInterval(function () {
-      frameAccum += playSpeed;
-      var advance = Math.floor(frameAccum);
+  Viewer.prototype.startPlayback = function () {
+    var self = this;
+    self.stopPlayback();
+    self.frameAccum = 0;
+    self.playInterval = setInterval(function () {
+      self.frameAccum += self.playSpeed;
+      var advance = Math.floor(self.frameAccum);
       if (advance >= 1) {
-        frameAccum -= advance;
-        frame += advance;
-        if (frame >= clip.snapshots.length) {
-          frame = 0; // loop
-        }
-        renderFrame();
-        updateStats();
-        document.getElementById('sim-scrub').value = frame;
+        self.frameAccum -= advance;
+        self.frame += advance;
+        if (self.frame >= self.clip.snapshots.length) self.frame = 0;
+        self.renderFrame();
+        self.updateUI();
+        self.container.querySelector('.sim-scrub').value = self.frame;
       }
-    }, 33); // ~30fps
-  }
+    }, 33);
+  };
 
-  function stopPlayback() {
-    if (playInterval) {
-      clearInterval(playInterval);
-      playInterval = null;
-    }
-  }
+  Viewer.prototype.stopPlayback = function () {
+    if (this.playInterval) { clearInterval(this.playInterval); this.playInterval = null; }
+  };
 
-  function onScrub(e) {
-    frame = parseInt(e.target.value);
-    renderFrame();
-    updateStats();
-  }
-
-  function onSpeed(e) {
-    playSpeed = parseFloat(e.target.value);
-    if (playing) {
-      startPlayback(); // restart with new speed
-    }
-  }
-
-  /* ── rendering ── */
-  function renderFrame() {
-    if (!clip || !clip.snapshots[frame]) return;
-    var snap = clip.snapshots[frame];
+  Viewer.prototype.renderFrame = function () {
+    var self = this;
+    if (!self.clip || !self.clip.snapshots[self.frame]) return;
+    var snap = self.clip.snapshots[self.frame];
+    var ctx = self.ctx;
 
     ctx.fillStyle = C.bg;
-    ctx.fillRect(0, 0, canvasW, canvasH);
-
+    ctx.fillRect(0, 0, self.canvasW, self.canvasH);
     ctx.save();
-    ctx.translate(camera.x * camera.zoom, camera.y * camera.zoom);
-    ctx.scale(camera.zoom, camera.zoom);
+    ctx.translate(self.camera.x * self.camera.zoom, self.camera.y * self.camera.zoom);
+    ctx.scale(self.camera.zoom, self.camera.zoom);
 
-    // World border
     ctx.strokeStyle = C.border;
-    ctx.lineWidth = 1 / camera.zoom;
-    ctx.strokeRect(0, 0, worldW, worldH);
+    ctx.lineWidth = 1 / self.camera.zoom;
+    ctx.strokeRect(0, 0, self.worldW, self.worldH);
 
     // Resources
     var resources = snap.r || [];
+    ctx.globalAlpha = 0.45;
     for (var ri = 0; ri < resources.length; ri++) {
       var r = resources[ri];
       ctx.fillStyle = FOOD_COLOR[r[2]] || '#444';
-      ctx.globalAlpha = 0.5;
       ctx.beginPath();
-      ctx.arc(r[0], r[1], 1.5, 0, Math.PI * 2);
+      ctx.arc(r[0], r[1], 2, 0, Math.PI * 2);
       ctx.fill();
     }
     ctx.globalAlpha = 1;
 
     // Organisms
     var orgs = snap.o || [];
+    var wtX = self.worldW * 0.4, wtY = self.worldH * 0.4;
     for (var oi = 0; oi < orgs.length; oi++) {
-      var org = orgs[oi];
-      drawOrganism(org, org === selectedOrg);
+      drawOrganism(ctx, orgs[oi], orgs[oi] === self.selectedOrg, wtX, wtY);
     }
 
     ctx.restore();
+    self.container.querySelector('.sim-frame-label').textContent =
+      (self.frame + 1) + ' / ' + self.clip.snapshots.length;
+  };
 
-    // Frame label
-    document.getElementById('sim-frame-label').textContent =
-      (frame + 1) + ' / ' + clip.snapshots.length;
-  }
+  Viewer.prototype.updateUI = function () {
+    var self = this;
+    if (!self.clip || !self.clip.snapshots[self.frame]) return;
+    var s = self.clip.snapshots[self.frame].s;
+    self.container.querySelector('.sim-stat-pop').textContent = 'Pop: ' + s.pop;
+    self.container.querySelector('.sim-stat-species').textContent = 'Species: ' + s.sp;
+    self.container.querySelector('.sim-stat-gen').textContent = 'Gen: ' + s.gen;
+    self.container.querySelector('.sim-stat-food').textContent = 'Food: ' + s.food;
+    self.container.querySelector('.sim-stat-tick').textContent = 'Tick: ' + self.clip.snapshots[self.frame].t;
+    self.updateSpecies();
+  };
 
-  function drawOrganism(org, highlight) {
-    var nodes = org.n;
-    var edges = org.ed;
-    if (!nodes || nodes.length === 0) return;
+  Viewer.prototype.updateSpecies = function () {
+    var self = this;
+    var panel = self.container.querySelector('.sim-species');
+    if (!self.clip || !self.clip.snapshots[self.frame]) { panel.innerHTML = ''; return; }
+    var orgs = self.clip.snapshots[self.frame].o || [];
 
-    var spColor = getSpeciesColor(org.sp);
-
-    // Draw edges (skip wrap-around artifacts)
-    var wrapThreshX = worldW * 0.4;
-    var wrapThreshY = worldH * 0.4;
-    for (var ei = 0; ei < edges.length; ei++) {
-      var e = edges[ei];
-      var n1 = nodes[e[0]];
-      var n2 = nodes[e[1]];
-      // Skip edges that span across the world wrap boundary
-      if (Math.abs(n1[0] - n2[0]) > wrapThreshX || Math.abs(n1[1] - n2[1]) > wrapThreshY) continue;
-      ctx.strokeStyle = EDGE_COLOR[e[2]] || '#444';
-      ctx.lineWidth = e[2] === 1 ? 1.2 : 0.6; // muscles thicker
-      ctx.beginPath();
-      ctx.moveTo(n1[0], n1[1]);
-      ctx.lineTo(n2[0], n2[1]);
-      ctx.stroke();
-    }
-
-    // Draw nodes
-    for (var ni = 0; ni < nodes.length; ni++) {
-      var n = nodes[ni];
-      var nodeType = n[2];
-      ctx.fillStyle = NODE_COLOR[nodeType] || '#888';
-      var size = nodeType === 0 ? 2.5 : 1.8;
-
-      ctx.beginPath();
-      ctx.arc(n[0], n[1], size, 0, Math.PI * 2);
-      ctx.fill();
-    }
-
-    // Species color ring around core
-    var core = nodes[0];
-    ctx.strokeStyle = spColor;
-    ctx.lineWidth = 0.8;
-    ctx.beginPath();
-    ctx.arc(core[0], core[1], 3.5, 0, Math.PI * 2);
-    ctx.stroke();
-
-    // Highlight ring for selected
-    if (highlight) {
-      ctx.strokeStyle = '#fff';
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.arc(core[0], core[1], 5, 0, Math.PI * 2);
-      ctx.stroke();
-    }
-  }
-
-  function updateStats() {
-    if (!clip || !clip.snapshots[frame]) return;
-    var s = clip.snapshots[frame].s;
-    document.getElementById('sim-stat-pop').textContent = 'Pop: ' + s.pop;
-    document.getElementById('sim-stat-species').textContent = 'Species: ' + s.sp;
-    document.getElementById('sim-stat-gen').textContent = 'Gen: ' + s.gen;
-    document.getElementById('sim-stat-food').textContent = 'Food: ' + s.food;
-    document.getElementById('sim-stat-tick').textContent = 'Tick: ' + clip.snapshots[frame].t;
-    updateSpeciesRoster();
-  }
-
-  var NODE_SHORT = { 0: 'C', 1: 'B', 2: 'M', 3: 'S', 4: 'Mo', 5: 'F', 6: 'Ar' };
-
-  function updateSpeciesRoster() {
-    var panel = document.getElementById('sim-species');
-    if (!clip || !clip.snapshots[frame]) { panel.innerHTML = ''; return; }
-    var orgs = clip.snapshots[frame].o || [];
-
-    // Aggregate per-species stats
     var species = {};
     for (var i = 0; i < orgs.length; i++) {
       var org = orgs[i];
-      var sp = org.sp;
-      if (!species[sp]) {
-        species[sp] = { id: sp, pop: 0, totalEnergy: 0, maxGen: 0, nodeCounts: {}, totalNodes: 0 };
-      }
-      var s = species[sp];
+      if (!species[org.sp]) species[org.sp] = { id: org.sp, pop: 0, totalEnergy: 0, maxGen: 0, nodeCounts: {}, totalNodes: 0 };
+      var s = species[org.sp];
       s.pop++;
       s.totalEnergy += org.e;
       if (org.g > s.maxGen) s.maxGen = org.g;
@@ -356,93 +284,51 @@
       s.totalNodes += org.n.length;
     }
 
-    // Sort by population descending
     var sorted = Object.keys(species).map(function (k) { return species[k]; });
     sorted.sort(function (a, b) { return b.pop - a.pop; });
 
-    // Build HTML
     var html = '<div class="sim-species-title">Active Species</div><div class="sim-species-list">';
-    for (var si = 0; si < sorted.length; si++) {
-      var sp = sorted[si];
-      var color = getSpeciesColor(sp.id);
-      var avgEnergy = Math.round(sp.totalEnergy / sp.pop);
-      var avgNodes = (sp.totalNodes / sp.pop).toFixed(1);
-
-      // Body composition: average node types across organisms
-      var bodyParts = [];
-      var typeKeys = Object.keys(sp.nodeCounts).sort();
-      for (var ti = 0; ti < typeKeys.length; ti++) {
-        var type = typeKeys[ti];
-        var avg = sp.nodeCounts[type] / sp.pop;
-        if (avg >= 0.5) {
-          bodyParts.push('<span class="sim-sp-node" style="color:' + (NODE_COLOR[type] || '#888') + '">' +
-            Math.round(avg) + NODE_SHORT[type] + '</span>');
-        }
+    var maxExpanded = Math.min(sorted.length, 10);
+    for (var si = 0; si < maxExpanded; si++) {
+      html += buildSpeciesCard(sorted[si], true);
+    }
+    if (sorted.length > 10) {
+      html += '<div class="sim-sp-overflow">';
+      for (var si2 = 10; si2 < sorted.length; si2++) {
+        html += buildSpeciesCard(sorted[si2], false);
       }
-
-      html += '<div class="sim-sp-card">' +
-        '<div class="sim-sp-header">' +
-          '<span class="sim-sp-dot" style="background:' + color + '"></span>' +
-          '<span class="sim-sp-name" style="color:' + color + '">' + sp.id + '</span>' +
-          '<span class="sim-sp-pop">' + sp.pop + '</span>' +
-        '</div>' +
-        '<div class="sim-sp-details">' +
-          '<span class="sim-sp-meta">Gen ' + sp.maxGen + '</span>' +
-          '<span class="sim-sp-meta">Avg E: ' + avgEnergy + '</span>' +
-          '<span class="sim-sp-meta">' + avgNodes + ' nodes</span>' +
-        '</div>' +
-        '<div class="sim-sp-body">' + bodyParts.join(' ') + '</div>' +
-      '</div>';
+      html += '</div>';
     }
     html += '</div>';
     panel.innerHTML = html;
-  }
+  };
 
-  /* ── interaction ── */
-  function onClick(e) {
-    if (!clip || !clip.snapshots[frame]) return;
-    var rect = canvas.getBoundingClientRect();
-    var mx = (e.clientX - rect.left) / camera.zoom - camera.x;
-    var my = (e.clientY - rect.top) / camera.zoom - camera.y;
+  Viewer.prototype.onClick = function (e) {
+    var self = this;
+    if (!self.clip || !self.clip.snapshots[self.frame]) return;
+    var rect = self.canvas.getBoundingClientRect();
+    var mx = (e.clientX - rect.left) / self.camera.zoom - self.camera.x;
+    var my = (e.clientY - rect.top) / self.camera.zoom - self.camera.y;
 
-    var orgs = clip.snapshots[frame].o || [];
-    var closest = null;
-    var closestDist = 20; // click radius in world units
-
+    var orgs = self.clip.snapshots[self.frame].o || [];
+    var closest = null, closestDist = 25;
     for (var i = 0; i < orgs.length; i++) {
-      var org = orgs[i];
-      var core = org.n[0];
-      var dx = core[0] - mx;
-      var dy = core[1] - my;
-      var d = Math.sqrt(dx * dx + dy * dy);
-      if (d < closestDist) {
-        closestDist = d;
-        closest = org;
-      }
+      var core = orgs[i].n[0];
+      var d = Math.sqrt((core[0] - mx) * (core[0] - mx) + (core[1] - my) * (core[1] - my));
+      if (d < closestDist) { closestDist = d; closest = orgs[i]; }
     }
 
-    selectedOrg = closest;
-    if (!playing) renderFrame();
-    showInspect(closest);
-  }
+    self.selectedOrg = closest;
+    if (!self.playing) self.renderFrame();
+    self.showInspect(closest);
+  };
 
-  function showInspect(org) {
-    var panel = document.getElementById('sim-inspect');
-    if (!org) {
-      panel.style.display = 'none';
-      return;
-    }
-
+  Viewer.prototype.showInspect = function (org) {
+    var panel = this.container.querySelector('.sim-inspect');
+    if (!org) { panel.style.display = 'none'; return; }
     var nodeTypes = {};
-    for (var i = 0; i < org.n.length; i++) {
-      var t = org.n[i][2];
-      nodeTypes[t] = (nodeTypes[t] || 0) + 1;
-    }
-
-    var bodyDesc = Object.keys(nodeTypes).map(function (t) {
-      return nodeTypes[t] + ' ' + (NODE_LABEL[t] || '?');
-    }).join(', ');
-
+    for (var i = 0; i < org.n.length; i++) { var t = org.n[i][2]; nodeTypes[t] = (nodeTypes[t] || 0) + 1; }
+    var bodyDesc = Object.keys(nodeTypes).map(function (t) { return nodeTypes[t] + ' ' + (NODE_LABEL[t] || '?'); }).join(', ');
     panel.style.display = 'block';
     panel.innerHTML =
       '<strong>' + org.id + '</strong>' +
@@ -450,29 +336,89 @@
       '<div class="sim-inspect-row">Energy: ' + org.e + ' | Gen: ' + org.g + '</div>' +
       '<div class="sim-inspect-row">Body: ' + bodyDesc + '</div>' +
       '<div class="sim-inspect-row">Nodes: ' + org.n.length + ' | Edges: ' + org.ed.length + '</div>';
-  }
+  };
 
-  function onWheel(e) {
+  Viewer.prototype.onWheel = function (e) {
     e.preventDefault();
-    var rect = canvas.getBoundingClientRect();
-    var mx = e.clientX - rect.left;
-    var my = e.clientY - rect.top;
-
-    var oldZoom = camera.zoom;
+    var rect = this.canvas.getBoundingClientRect();
+    var mx = e.clientX - rect.left, my = e.clientY - rect.top;
+    var oldZoom = this.camera.zoom;
     var factor = e.deltaY < 0 ? 1.15 : 1 / 1.15;
-    camera.zoom = Math.max(0.3, Math.min(10, camera.zoom * factor));
+    this.camera.zoom = Math.max(0.2, Math.min(10, this.camera.zoom * factor));
+    this.camera.x += mx / this.camera.zoom - mx / oldZoom;
+    this.camera.y += my / this.camera.zoom - my / oldZoom;
+    if (!this.playing) this.renderFrame();
+  };
 
-    // Zoom toward mouse position
-    camera.x += mx / camera.zoom - mx / oldZoom;
-    camera.y += my / camera.zoom - my / oldZoom;
+  /* ── shared helpers ── */
+  function drawOrganism(ctx, org, highlight, wrapThreshX, wrapThreshY) {
+    var nodes = org.n, edges = org.ed;
+    if (!nodes || nodes.length === 0) return;
+    var spColor = getSpeciesColor(org.sp);
 
-    if (!playing) renderFrame();
+    for (var ei = 0; ei < edges.length; ei++) {
+      var e = edges[ei], n1 = nodes[e[0]], n2 = nodes[e[1]];
+      if (Math.abs(n1[0] - n2[0]) > wrapThreshX || Math.abs(n1[1] - n2[1]) > wrapThreshY) continue;
+      ctx.strokeStyle = EDGE_COLOR[e[2]] || '#444';
+      ctx.lineWidth = e[2] === 1 ? 1.5 : 0.7;
+      ctx.beginPath(); ctx.moveTo(n1[0], n1[1]); ctx.lineTo(n2[0], n2[1]); ctx.stroke();
+    }
+    for (var ni = 0; ni < nodes.length; ni++) {
+      var n = nodes[ni];
+      ctx.fillStyle = NODE_COLOR[n[2]] || '#888';
+      ctx.beginPath(); ctx.arc(n[0], n[1], n[2] === 0 ? 3 : 2.2, 0, Math.PI * 2); ctx.fill();
+    }
+    var core = nodes[0];
+    ctx.strokeStyle = spColor; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.arc(core[0], core[1], 4.5, 0, Math.PI * 2); ctx.stroke();
+    if (highlight) {
+      ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.2;
+      ctx.beginPath(); ctx.arc(core[0], core[1], 6, 0, Math.PI * 2); ctx.stroke();
+    }
   }
 
-  /* ── launch ── */
+  function buildLegendHTML() {
+    var html = '<div class="sim-legend-row">';
+    [0,1,2,3,4,5,6].forEach(function (t) {
+      html += '<span class="sim-legend-item"><span class="sim-legend-dot" style="background:' + NODE_COLOR[t] + '"></span>' + NODE_LABEL[t] + '</span>';
+    });
+    html += '</div><div class="sim-legend-row">';
+    html += '<span class="sim-legend-item"><span class="sim-legend-dot" style="background:#5a8a2a"></span>Plant</span>';
+    html += '<span class="sim-legend-item"><span class="sim-legend-dot" style="background:#8a3a3a"></span>Meat</span>';
+    html += '<span class="sim-legend-item"><span class="sim-legend-dot" style="background:#6e5a3a"></span>Nutrient</span>';
+    html += '</div>';
+    return html;
+  }
+
+  function buildSpeciesCard(sp, expanded) {
+    var color = getSpeciesColor(sp.id);
+    var avgEnergy = Math.round(sp.totalEnergy / sp.pop);
+    var avgNodes = (sp.totalNodes / sp.pop).toFixed(1);
+    var bodyParts = [];
+    Object.keys(sp.nodeCounts).sort().forEach(function (type) {
+      var avg = sp.nodeCounts[type] / sp.pop;
+      if (avg >= 0.5) bodyParts.push('<span class="sim-sp-node" style="color:' + (NODE_COLOR[type] || '#888') + '">' + Math.round(avg) + NODE_SHORT[type] + '</span>');
+    });
+    if (expanded) {
+      return '<div class="sim-sp-card">' +
+        '<div class="sim-sp-header"><span class="sim-sp-dot" style="background:' + color + '"></span><span class="sim-sp-name" style="color:' + color + '">' + sp.id + '</span><span class="sim-sp-pop">' + sp.pop + '</span></div>' +
+        '<div class="sim-sp-details"><span class="sim-sp-meta">Gen ' + sp.maxGen + '</span><span class="sim-sp-meta">Avg E: ' + avgEnergy + '</span><span class="sim-sp-meta">' + avgNodes + ' nodes</span></div>' +
+        '<div class="sim-sp-body">' + bodyParts.join(' ') + '</div></div>';
+    }
+    return '<div class="sim-sp-card sim-sp-compact"><span class="sim-sp-dot" style="background:' + color + '"></span><span class="sim-sp-name" style="color:' + color + '">' + sp.id + '</span><span class="sim-sp-pop">' + sp.pop + '</span></div>';
+  }
+
+  /* ── Initialize all viewers on page ── */
+  function initViewers() {
+    var viewers = document.querySelectorAll('[data-sim-clip]');
+    for (var i = 0; i < viewers.length; i++) {
+      new Viewer(viewers[i], viewers[i].getAttribute('data-sim-clip'));
+    }
+  }
+
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
+    document.addEventListener('DOMContentLoaded', initViewers);
   } else {
-    init();
+    initViewers();
   }
 })();
