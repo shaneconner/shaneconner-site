@@ -95,6 +95,7 @@
         '<span class="sim-stat-food">Food: --</span>' +
         '<span class="sim-stat-tick">Tick: --</span>' +
       '</div>' +
+      '<div class="sim-species"></div>' +
       '<div class="sim-legend">' + buildLegendHTML() + '</div>' +
       '<div class="sim-inspect" style="display:none;"></div>' +
       '';
