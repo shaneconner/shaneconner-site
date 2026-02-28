@@ -4,3 +4,5 @@ Thumbs.db
 NUL
 .claude/
 colormap_visualizer.ipynb
+data/full-frames/
+data/full-frames-p2/

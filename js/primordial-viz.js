@@ -164,9 +164,15 @@
 
   Viewer.prototype.load = function () {
     var self = this;
+    console.log('[viz] Loading clip:', self.clipUrl);
     fetch(self.clipUrl)
-      .then(function (r) { return r.json(); })
+      .then(function (r) {
+        console.log('[viz] Fetch response:', self.clipUrl, 'status:', r.status, 'ok:', r.ok);
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json();
+      })
       .then(function (data) {
+        console.log('[viz] Parsed clip:', self.clipUrl, 'snapshots:', data.snapshots ? data.snapshots.length : 0);
         self.clip = data;
         self.worldW = data.world ? data.world.width : 1600;
         self.worldH = data.world ? data.world.height : 900;
@@ -182,7 +188,7 @@
         self.updateUI();
       })
       .catch(function (err) {
-        console.error('Failed to load clip:', self.clipUrl, err);
+        console.error('[viz] FAILED to load clip:', self.clipUrl, err);
       });
   };
 
