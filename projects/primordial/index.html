@@ -234,8 +234,8 @@
     <h3>The Brain</h3>
     <h2>Neural networks optimized by survival, not gradients</h2>
     <p>Each organism has a feedforward neural network. The input layer receives sensory data: distance and type of nearest food and organisms per sensor node, the organism's energy level and age, and proprioceptive feedback from current muscle lengths. A small memory register persists values across ticks, giving organisms a primitive form of short-term memory.</p>
-    <p>The output layer controls the body. Each muscle gets a contraction target. Two additional outputs signal eating intent and reproductive readiness. The hidden layer size, activation function, and all weights are encoded in the genome.</p>
-    <p>There is no backpropagation and no loss function. Weights are inherited from parents with Gaussian noise, and the mutation scale itself is a genome parameter that evolves. Organisms that survive long enough to reproduce pass their weights to offspring. A child is born pre-wired with its parent's learned behaviors plus small random variations. Over generations, the population converges on effective control strategies through pure selection pressure.</p>
+    <p>The output layer controls the body. Each muscle gets a contraction target. Two additional outputs signal eating intent and reproductive readiness. The hidden layer size and activation function are encoded in the genome and evolve over generations&thinsp;&mdash;&thinsp;organisms can grow or shrink their hidden layer and switch between tanh, relu, and sigmoid activations as mutations test different neural architectures.</p>
+    <p>There is no backpropagation and no loss function. Weights are inherited from parents with Gaussian noise, and the mutation scale itself is a genome parameter that evolves. Organisms that survive long enough to reproduce pass their weights to offspring. A child is born pre-wired with its parent's learned behaviors plus small random variations. Over 128 generations, the population converges on effective control strategies through pure selection pressure.</p>
   </div>
 
   <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
@@ -245,7 +245,7 @@
     <h3>The Mechanism</h3>
     <h2>Mutation, speciation, and meta-evolution</h2>
     <p>Reproduction is energy-gated. An organism must accumulate enough energy (60% of capacity for asexual, 50% for sexual) and survive long enough (100 ticks minimum) before it can split. The offspring inherits a mutated copy of the parent's genome. Body mutations add or remove nodes, change node types, add or remove edges, and perturb node positions. An evolvable symmetry bias makes mirrored mutations more likely, producing bilaterally symmetric creatures.</p>
-    <p>Brain mutations perturb weights, toggle connections, and occasionally change the hidden layer size. Larger bodies cost more energy to maintain and more energy to reproduce, creating natural pressure against unbounded growth.</p>
+    <p>Brain mutations perturb weights, grow or shrink the hidden layer, and switch activation functions. Larger bodies cost more energy to maintain and more energy to reproduce, creating natural pressure against unbounded growth. Organisms age: metabolic costs rise after 60% of their lifespan, and death comes at 5,000 ticks. This forces generational turnover&thinsp;&mdash;&thinsp;even the most successful forager eventually dies, making room for its offspring to test new strategies.</p>
     <p>Speciation emerges from a genome distance metric. When a child's genome diverges past a threshold from its parent, it's assigned a new species ID. This enables tracking of evolutionary lineages and prevents incompatible genomes from sexually reproducing.</p>
     <p>Mutation rates are themselves genome parameters. An organism with a high body mutation rate produces more varied offspring. Some will be worse, but some might discover advantageous new morphologies. An organism with a low mutation rate produces more consistent offspring, preserving what works. Evolution optimizes its own rate of exploration.</p>
   </div>
@@ -258,7 +258,7 @@
     <h2>Food chains that nobody designed</h2>
     <p>The environment is a continuous 2D world with toroidal topology (edges wrap). Plant resources spawn over time with a bias toward nutrient-rich areas. When organisms die, their body mass converts to meat resources that decay slowly. Decayed meat produces nutrients that boost local plant growth. This creates a complete energy cycle: sun to plants to herbivores to carnivores to decomposition to nutrients to plants.</p>
     <p>Organisms with mouth nodes can eat plants by contact. They can also bite other organisms: mouth-on-body contact deals damage proportional to the number of mouths, reduced by the target's armor nodes. If hunting other organisms is more energy-efficient than foraging for plants, evolution will find that strategy. Carnivory, herbivory, and scavenging are emergent strategies, not programmed categories.</p>
-    <p>Anti-extinction safeguards prevent total ecosystem collapse: plant spawn rate never drops to zero, and if the population crashes below a threshold, random viable organisms immigrate into the world. These mechanisms allow dramatic population dynamics (booms, busts, occasional mass extinction followed by rapid diversification) without the simulation going permanently dead.</p>
+    <p>There is no hard population cap. Population self-regulates through energy costs, aging, and finite food supply. Anti-extinction safeguards prevent total ecosystem collapse: plant spawn rate never drops to zero, and if the population crashes below a threshold, random viable organisms immigrate. These mechanisms allow dramatic population dynamics&thinsp;&mdash;&thinsp;booms, busts, and the recurring radiation-consolidation cycles that emerge as the simulation's most surprising behavior&thinsp;&mdash;&thinsp;without the simulation going permanently dead.</p>
   </div>
 
   <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
@@ -267,22 +267,23 @@
   <div class="essay reveal">
     <h3>System</h3>
     <h2>What emerges</h2>
-    <p>Over 5,000 simulation ticks, a founding population of 50 organisms diversifies into 10 species across 8 generations. Bodies accumulate new nodes as morphological mutations that improve survival propagate through the gene pool. The population grows to the environment's carrying capacity and stabilizes, with speciation events producing a diverse ecosystem of coexisting strategies.</p>
-    <p>The simulation engine uses NumPy-vectorized spring physics and spatial hash grids for O(1) neighbor queries. State snapshots are recorded at key narrative moments for D3.js replay visualization on Canvas.</p>
+    <p>Over 100,000 simulation ticks, a founding population of 50 organisms produces 128 generations and 4,345 distinct evolutionary events. The ecosystem cycles between high diversity (36 species during radiation) and low diversity (9 during competitive exclusion) in three full radiation-consolidation cycles. Population self-regulates between 250 and 310 through energy costs, aging, and resource competition&thinsp;&mdash;&thinsp;no hard cap needed.</p>
+    <p>The most unexpected emergent behavior: the generation counter doesn't climb monotonically. Highly evolved lineages go extinct and are replaced by younger ones. The simulation discovers that evolutionary fitness at the individual level can reduce diversity at the ecosystem level&thinsp;&mdash;&thinsp;the fittest organisms simplify their ecosystems rather than enriching them.</p>
+    <p>The simulation engine uses NumPy-vectorized spring physics and spatial hash grids for O(1) neighbor queries. A two-pass export system runs the full simulation for event detection, then replays with the same seed to capture frames at narrative moments for D3.js visualization on Canvas.</p>
   </div>
 
   <div class="stats-row reveal">
     <div class="stat">
-      <div class="stat-value">5k</div>
+      <div class="stat-value">100k</div>
       <div class="stat-label">Simulation Ticks</div>
     </div>
     <div class="stat">
-      <div class="stat-value">10</div>
-      <div class="stat-label">Species Emerged</div>
+      <div class="stat-value">128</div>
+      <div class="stat-label">Generations</div>
     </div>
     <div class="stat">
-      <div class="stat-value">7</div>
-      <div class="stat-label">Node Types</div>
+      <div class="stat-value">4,345</div>
+      <div class="stat-label">Evolutionary Events</div>
     </div>
     <div class="stat">
       <div class="stat-value">0</div>
