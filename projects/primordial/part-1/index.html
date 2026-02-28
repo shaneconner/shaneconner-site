@@ -65,6 +65,55 @@
   <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
 
   <!-- ═══════════════════════════════════════════ -->
+  <!--              TECHNICAL DETAILS              -->
+  <!-- ═══════════════════════════════════════════ -->
+
+  <!-- BODY SYSTEM -->
+  <div class="essay reveal">
+    <h3>The Body</h3>
+    <h2>Spring-mass morphology that evolves</h2>
+    <p>Each organism's body is a graph of point masses connected by springs. The genome encodes node types and edge connections. Nodes come in seven varieties: a <em>core</em> that serves as the center of mass, <em>bone</em> nodes for structural rigidity, <em>muscle anchors</em> that form the endpoints of controllable springs, <em>sensors</em> that detect nearby food and organisms, <em>mouths</em> that eat, <em>fat</em> nodes that store energy, and <em>armor</em> nodes that reduce damage.</p>
+    <p>Edges are springs governed by Hooke's law. Bone springs are rigid with high stiffness and low damping. Muscle springs have a controllable rest length: the neural network sets a contraction target each tick, and the spring force drives the body toward that configuration. Tendon springs are semi-rigid connectors. The physics runs as Verlet integration with multiple substeps per simulation tick.</p>
+    <p>Locomotion is discovered, not programmed. An organism with muscles on its sides has to learn to alternate contractions to produce forward movement. Asymmetric bodies produce turning. Bodies with sensors at the front and muscles at the back evolve to chase food. The relationship between morphology and behavior is entirely emergent.</p>
+  </div>
+
+  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+
+  <!-- NEURAL NETWORK -->
+  <div class="essay reveal">
+    <h3>The Brain</h3>
+    <h2>Neural networks optimized by survival, not gradients</h2>
+    <p>Each organism has a feedforward neural network. The input layer receives sensory data: distance and type of nearest food and organisms per sensor node, the organism's energy level and age, and proprioceptive feedback from current muscle lengths. A small memory register persists values across ticks, giving organisms a primitive form of short-term memory.</p>
+    <p>The output layer controls the body. Each muscle gets a contraction target. Two additional outputs signal eating intent and reproductive readiness. The hidden layer size and activation function are encoded in the genome and evolve over generations&thinsp;&mdash;&thinsp;organisms can grow or shrink their hidden layer and switch between tanh, relu, and sigmoid activations as mutations test different neural architectures.</p>
+    <p>There is no backpropagation and no loss function. Weights are inherited from parents with Gaussian noise, and the mutation scale itself is a genome parameter that evolves. Organisms that survive long enough to reproduce pass their weights to offspring. A child is born pre-wired with its parent's learned behaviors plus small random variations. Over 128 generations, the population converges on effective control strategies through pure selection pressure.</p>
+  </div>
+
+  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+
+  <!-- EVOLUTION -->
+  <div class="essay reveal">
+    <h3>The Mechanism</h3>
+    <h2>Mutation, speciation, and meta-evolution</h2>
+    <p>Reproduction is energy-gated. An organism must accumulate enough energy (60% of capacity for asexual, 50% for sexual) and survive long enough (100 ticks minimum) before it can split. The offspring inherits a mutated copy of the parent's genome. Body mutations add or remove nodes, change node types, add or remove edges, and perturb node positions. An evolvable symmetry bias makes mirrored mutations more likely, producing bilaterally symmetric creatures.</p>
+    <p>Brain mutations perturb weights, grow or shrink the hidden layer, and switch activation functions. Larger bodies cost more energy to maintain and more energy to reproduce, creating natural pressure against unbounded growth. Organisms age: metabolic costs rise after 60% of their lifespan, and death comes at 5,000 ticks. This forces generational turnover&thinsp;&mdash;&thinsp;even the most successful forager eventually dies, making room for its offspring to test new strategies.</p>
+    <p>Speciation emerges from a genome distance metric. When a child's genome diverges past a threshold from its parent, it's assigned a new species ID. This enables tracking of evolutionary lineages and prevents incompatible genomes from sexually reproducing.</p>
+    <p>Mutation rates are themselves genome parameters. An organism with a high body mutation rate produces more varied offspring. Some will be worse, but some might discover advantageous new morphologies. An organism with a low mutation rate produces more consistent offspring, preserving what works. Evolution optimizes its own rate of exploration.</p>
+  </div>
+
+  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+
+  <!-- ECOSYSTEM -->
+  <div class="essay reveal">
+    <h3>The Ecosystem</h3>
+    <h2>Food chains that nobody designed</h2>
+    <p>The environment is a continuous 2D world with toroidal topology (edges wrap). Plant resources spawn over time with a bias toward nutrient-rich areas. When organisms die, their body mass converts to meat resources that decay slowly. Decayed meat produces nutrients that boost local plant growth. This creates a complete energy cycle: sun to plants to herbivores to carnivores to decomposition to nutrients to plants.</p>
+    <p>Organisms with mouth nodes can eat plants by contact. They can also bite other organisms: mouth-on-body contact deals damage proportional to the number of mouths, reduced by the target's armor nodes. If hunting other organisms is more energy-efficient than foraging for plants, evolution will find that strategy. Carnivory, herbivory, and scavenging are emergent strategies, not programmed categories.</p>
+    <p>There is no hard population cap. Population self-regulates through energy costs, aging, and finite food supply. Anti-extinction safeguards prevent total ecosystem collapse: plant spawn rate never drops to zero, and if the population crashes below a threshold, random viable organisms immigrate. These mechanisms allow dramatic population dynamics&thinsp;&mdash;&thinsp;booms, busts, and the recurring radiation-consolidation cycles that emerge as the simulation's most surprising behavior&thinsp;&mdash;&thinsp;without the simulation going permanently dead.</p>
+  </div>
+
+  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+
+  <!-- ═══════════════════════════════════════════ -->
   <!--              THE STORY OF LIFE              -->
   <!-- ═══════════════════════════════════════════ -->
 
@@ -301,55 +350,6 @@
       <a href="/projects/primordial/part-2/" class="part-nav-link">Part 2: Fixing the Rules</a>
     </div>
   </div>
-
-  <!-- ═══════════════════════════════════════════ -->
-  <!--              TECHNICAL DETAILS              -->
-  <!-- ═══════════════════════════════════════════ -->
-
-  <!-- BODY SYSTEM -->
-  <div class="essay reveal">
-    <h3>The Body</h3>
-    <h2>Spring-mass morphology that evolves</h2>
-    <p>Each organism's body is a graph of point masses connected by springs. The genome encodes node types and edge connections. Nodes come in seven varieties: a <em>core</em> that serves as the center of mass, <em>bone</em> nodes for structural rigidity, <em>muscle anchors</em> that form the endpoints of controllable springs, <em>sensors</em> that detect nearby food and organisms, <em>mouths</em> that eat, <em>fat</em> nodes that store energy, and <em>armor</em> nodes that reduce damage.</p>
-    <p>Edges are springs governed by Hooke's law. Bone springs are rigid with high stiffness and low damping. Muscle springs have a controllable rest length: the neural network sets a contraction target each tick, and the spring force drives the body toward that configuration. Tendon springs are semi-rigid connectors. The physics runs as Verlet integration with multiple substeps per simulation tick.</p>
-    <p>Locomotion is discovered, not programmed. An organism with muscles on its sides has to learn to alternate contractions to produce forward movement. Asymmetric bodies produce turning. Bodies with sensors at the front and muscles at the back evolve to chase food. The relationship between morphology and behavior is entirely emergent.</p>
-  </div>
-
-  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
-
-  <!-- NEURAL NETWORK -->
-  <div class="essay reveal">
-    <h3>The Brain</h3>
-    <h2>Neural networks optimized by survival, not gradients</h2>
-    <p>Each organism has a feedforward neural network. The input layer receives sensory data: distance and type of nearest food and organisms per sensor node, the organism's energy level and age, and proprioceptive feedback from current muscle lengths. A small memory register persists values across ticks, giving organisms a primitive form of short-term memory.</p>
-    <p>The output layer controls the body. Each muscle gets a contraction target. Two additional outputs signal eating intent and reproductive readiness. The hidden layer size and activation function are encoded in the genome and evolve over generations&thinsp;&mdash;&thinsp;organisms can grow or shrink their hidden layer and switch between tanh, relu, and sigmoid activations as mutations test different neural architectures.</p>
-    <p>There is no backpropagation and no loss function. Weights are inherited from parents with Gaussian noise, and the mutation scale itself is a genome parameter that evolves. Organisms that survive long enough to reproduce pass their weights to offspring. A child is born pre-wired with its parent's learned behaviors plus small random variations. Over 128 generations, the population converges on effective control strategies through pure selection pressure.</p>
-  </div>
-
-  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
-
-  <!-- EVOLUTION -->
-  <div class="essay reveal">
-    <h3>The Mechanism</h3>
-    <h2>Mutation, speciation, and meta-evolution</h2>
-    <p>Reproduction is energy-gated. An organism must accumulate enough energy (60% of capacity for asexual, 50% for sexual) and survive long enough (100 ticks minimum) before it can split. The offspring inherits a mutated copy of the parent's genome. Body mutations add or remove nodes, change node types, add or remove edges, and perturb node positions. An evolvable symmetry bias makes mirrored mutations more likely, producing bilaterally symmetric creatures.</p>
-    <p>Brain mutations perturb weights, grow or shrink the hidden layer, and switch activation functions. Larger bodies cost more energy to maintain and more energy to reproduce, creating natural pressure against unbounded growth. Organisms age: metabolic costs rise after 60% of their lifespan, and death comes at 5,000 ticks. This forces generational turnover&thinsp;&mdash;&thinsp;even the most successful forager eventually dies, making room for its offspring to test new strategies.</p>
-    <p>Speciation emerges from a genome distance metric. When a child's genome diverges past a threshold from its parent, it's assigned a new species ID. This enables tracking of evolutionary lineages and prevents incompatible genomes from sexually reproducing.</p>
-    <p>Mutation rates are themselves genome parameters. An organism with a high body mutation rate produces more varied offspring. Some will be worse, but some might discover advantageous new morphologies. An organism with a low mutation rate produces more consistent offspring, preserving what works. Evolution optimizes its own rate of exploration.</p>
-  </div>
-
-  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
-
-  <!-- ECOSYSTEM -->
-  <div class="essay reveal">
-    <h3>The Ecosystem</h3>
-    <h2>Food chains that nobody designed</h2>
-    <p>The environment is a continuous 2D world with toroidal topology (edges wrap). Plant resources spawn over time with a bias toward nutrient-rich areas. When organisms die, their body mass converts to meat resources that decay slowly. Decayed meat produces nutrients that boost local plant growth. This creates a complete energy cycle: sun to plants to herbivores to carnivores to decomposition to nutrients to plants.</p>
-    <p>Organisms with mouth nodes can eat plants by contact. They can also bite other organisms: mouth-on-body contact deals damage proportional to the number of mouths, reduced by the target's armor nodes. If hunting other organisms is more energy-efficient than foraging for plants, evolution will find that strategy. Carnivory, herbivory, and scavenging are emergent strategies, not programmed categories.</p>
-    <p>There is no hard population cap. Population self-regulates through energy costs, aging, and finite food supply. Anti-extinction safeguards prevent total ecosystem collapse: plant spawn rate never drops to zero, and if the population crashes below a threshold, random viable organisms immigrate. These mechanisms allow dramatic population dynamics&thinsp;&mdash;&thinsp;booms, busts, and the recurring radiation-consolidation cycles that emerge as the simulation's most surprising behavior&thinsp;&mdash;&thinsp;without the simulation going permanently dead.</p>
-  </div>
-
-  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
 
   <!-- RESULTS -->
   <div class="essay reveal">

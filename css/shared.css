@@ -192,7 +192,7 @@ nav.scrolled { border-bottom-color: var(--border); }
 
 .nav-submenu {
   position: absolute;
-  left: 100%;
+  right: 100%;
   top: -0.45rem;
   min-width: 13rem;
   list-style: none;
