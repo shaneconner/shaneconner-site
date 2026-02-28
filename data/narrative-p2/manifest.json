@@ -1,0 +1,94 @@
+{
+  "world": {
+    "width": 1600.0,
+    "height": 900.0
+  },
+  "total_ticks": 300000,
+  "seed": 137,
+  "clips": [
+    {
+      "id": "genesis",
+      "title": "Genesis",
+      "description": "New organisms enter a harsher world with larger bodies and sharper senses.",
+      "file": "primordial-p2-genesis.json",
+      "tick_range": [
+        1,
+        501
+      ],
+      "frames": 251,
+      "size_kb": 4263
+    },
+    {
+      "id": "first-split",
+      "title": "First Divergence",
+      "description": "Genetic drift produces the first distinct species.",
+      "file": "primordial-p2-first-split.json",
+      "tick_range": [
+        502,
+        1502
+      ],
+      "frames": 501,
+      "size_kb": 6463
+    },
+    {
+      "id": "diversity",
+      "title": "Radiation",
+      "description": "27 species coexist in distinct ecological niches.",
+      "file": "primordial-p2-diversity.json",
+      "tick_range": [
+        7292,
+        8292
+      ],
+      "frames": 501,
+      "size_kb": 12240
+    },
+    {
+      "id": "generation-milestone",
+      "title": "Generational Shift",
+      "description": "Hundreds of generations have refined neural networks and body plans.",
+      "file": "primordial-p2-generation-milestone.json",
+      "tick_range": [
+        153247,
+        154247
+      ],
+      "frames": 501,
+      "size_kb": 10003
+    },
+    {
+      "id": "late-diversity",
+      "title": "Late Radiation",
+      "description": "A late wave of speciation produces 22 species.",
+      "file": "primordial-p2-late-diversity.json",
+      "tick_range": [
+        196947,
+        197947
+      ],
+      "frames": 501,
+      "size_kb": 10640
+    },
+    {
+      "id": "equilibrium",
+      "title": "Balance",
+      "description": "The ecosystem reaches a dynamic equilibrium.",
+      "file": "primordial-p2-equilibrium.json",
+      "tick_range": [
+        262172,
+        263172
+      ],
+      "frames": 501,
+      "size_kb": 10440
+    },
+    {
+      "id": "deep-time",
+      "title": "Deep Time",
+      "description": "Generation 457. Complex body plans refined over thousands of generations.",
+      "file": "primordial-p2-deep-time.json",
+      "tick_range": [
+        299000,
+        300000
+      ],
+      "frames": 501,
+      "size_kb": 10412
+    }
+  ]
+}
