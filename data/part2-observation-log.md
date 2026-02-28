@@ -87,3 +87,54 @@ The narrative is shaping up nicely:
 - Will there be a third radiation? Or does the ecosystem lock into permanent equilibrium?
 - At 200k+ ticks, will we see genuine deep-time effects — bodies that look fundamentally different from the early organisms?
 - ETA: Pass 1 should finish around tick 300k at ~20 t/s = ~2.6 more hours from now
+
+---
+
+## Check-in 3 (tick ~222k, 74% through Pass 1)
+
+### Key Numbers
+- Pop: **dropped** to 85-112 band (was 110-145 last check-in)
+- Species: volatile, crashing to **3** repeatedly then recovering to 12-16
+- Generation: **335** — more than doubled since last check (161 → 335 in 109k ticks)
+- Events: 4,590 (nearly doubled again)
+- Speed: ~21 t/s, slightly faster (smaller populations = less computation)
+
+### Narrative Moments (ticks 113-222k)
+
+**The Great Bottleneck (ticks 125-142k):**
+The most dramatic event since genesis. Population plummeted from 125 (tick 125k) to **73** (tick 136k) — a 42% crash. Species collapsed from 18 to just **3** by tick 142k. Three species out of hundreds that had existed. This is a genuine mass extinction event — not the gentle oscillations of the earlier era, but a near-total wipeout. Whatever environmental or competitive pressure caused this, it nearly ended the simulation.
+
+**The Fragile Recovery (ticks 142-170k):**
+The ecosystem rebuilt from those 3 surviving species, but it never fully recovered to its former carrying capacity. Population stabilized around 90-110 instead of the old 115-145. Species diversity rebounds in quick bursts (up to 16 at tick 155k, 166k) but keeps collapsing back to 3-4. The ecosystem is fragile — repeatedly hitting near-extinction then radiating. It's like watching a patient with recurring crises.
+
+**Repeated Bottleneck Pattern (ticks 168k, 203k, 220k):**
+Species count crashed to 4 at tick 168k, 4 again at 203k, and 4 at 220k. Each time it recovers to 10-16 before crashing again. This is a new pattern — the early sim had stable 12-20 species diversity, but the mid-late game keeps nearly collapsing. The surviving species are likely becoming so well-adapted that they outcompete all newcomers, then periodically one dominant species crashes and opens niches.
+
+**Generation Acceleration (ongoing):**
+The generation counter is now climbing at **1.6 gen/1k ticks** (was 1.4 at last check-in). Gen 200 at tick ~132k. Gen 300 at tick ~204k. The organisms alive now are the product of 335 generations of natural selection. By comparison, Part 1's *entire run* produced only 128 generations. These are deeply refined neural networks and body plans.
+
+**The Lower Carrying Capacity:**
+Population permanently shifted down from ~125 to ~95. Two possible explanations:
+1. Organisms are *bigger* (more nodes = more energy upkeep per organism = fewer can be sustained)
+2. Dominant species are more efficient predators, creating a top-heavy food chain
+Either way, this is interesting — the ecosystem is supporting fewer but potentially more complex organisms.
+
+### The Story So Far (Updated Arc)
+1. **Genesis → Collapse** (0-5k): Brutal start, food scarcity
+2. **Cambrian Explosion** (5-10k): 25 species from chaos
+3. **Oscillation** (10-30k): Wild competitive swings
+4. **Consolidation** (30-60k): Winners emerge, gen counter accelerates
+5. **Maturation** (60-90k): Steady evolution, gen 100
+6. **Second Radiation** (90-95k): Burst of speciation
+7. **Stability** (95-125k): Comfortable equilibrium at ~125 pop
+8. **Mass Extinction** (125-142k): Pop crashes 42%, species → 3 ← **NEW**
+9. **Fragile Recovery** (142-170k): Rebuilds but never fully recovers ← **NEW**
+10. **Boom-Bust Cycles** (170-222k): Repeated near-extinctions and radiations ← **NEW**
+11. **?** (222-300k): Does it stabilize, collapse further, or find new equilibrium?
+
+### Questions for Next Check-in
+- Will the population find a new stable band, or continue declining?
+- At gen 335+, are the neural networks meaningfully more sophisticated than gen 100?
+- The repeated collapses to 3-4 species — is it always the *same* species surviving, or different ones each time?
+- Pass 1 should finish in ~1 hour. Then Pass 2 frame capture begins.
+- Part 1 timeline export at tick 65k — should finish in ~1.5 hours.
