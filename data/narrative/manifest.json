@@ -3,7 +3,7 @@
     "width": 1600.0,
     "height": 900.0
   },
-  "total_ticks": 5000,
+  "total_ticks": 100000,
   "seed": 42,
   "clips": [
     {
@@ -12,47 +12,95 @@
       "description": "The first organisms are dropped into an empty world.",
       "file": "primordial-genesis.json",
       "tick_range": [
-        9,
-        209
+        1,
+        501
       ],
-      "frames": 100,
-      "size_kb": 1973
+      "frames": 251,
+      "size_kb": 4025
     },
     {
       "id": "first-split",
       "title": "First Divergence",
-      "description": "A mutation pushes an offspring past the speciation threshold.",
+      "description": "The first new species emerges from mutation.",
       "file": "primordial-first-split.json",
       "tick_range": [
-        589,
-        789
+        502,
+        1502
       ],
-      "frames": 100,
-      "size_kb": 2220
+      "frames": 501,
+      "size_kb": 5492
+    },
+    {
+      "id": "crash",
+      "title": "Collapse",
+      "description": "Resources deplete and the population crashes.",
+      "file": "primordial-crash.json",
+      "tick_range": [
+        1503,
+        2503
+      ],
+      "frames": 501,
+      "size_kb": 5996
     },
     {
       "id": "diversity",
-      "title": "Peak Diversity",
-      "description": "13 species coexist.",
+      "title": "Radiation",
+      "description": "48 species coexist.",
       "file": "primordial-diversity.json",
       "tick_range": [
-        1299,
-        1499
+        5497,
+        6497
       ],
-      "frames": 100,
-      "size_kb": 4385
+      "frames": 501,
+      "size_kb": 26942
+    },
+    {
+      "id": "generation-milestone",
+      "title": "Generational Shift",
+      "description": "A new generation milestone marks ongoing evolution.",
+      "file": "primordial-generation-milestone.json",
+      "tick_range": [
+        49492,
+        50492
+      ],
+      "frames": 501,
+      "size_kb": 23236
     },
     {
       "id": "equilibrium",
-      "title": "Equilibrium",
+      "title": "Balance",
       "description": "The ecosystem reaches carrying capacity.",
       "file": "primordial-equilibrium.json",
       "tick_range": [
-        4189,
-        4389
+        87172,
+        88172
       ],
-      "frames": 100,
-      "size_kb": 4507
+      "frames": 501,
+      "size_kb": 22696
+    },
+    {
+      "id": "late-diversity",
+      "title": "Second Radiation",
+      "description": "A second wave of speciation produces 38 species.",
+      "file": "primordial-late-diversity.json",
+      "tick_range": [
+        93472,
+        94472
+      ],
+      "frames": 501,
+      "size_kb": 24350
+    },
+    {
+      "id": "deep-time",
+      "title": "Deep Time",
+      "description": "Generation 128. Neural networks refined across many generations.",
+      "file": "primordial-deep-time.json",
+      "tick_range": [
+        99000,
+        100000
+      ],
+      "frames": 501,
+      "size_kb": 23073
     }
   ]
 }
