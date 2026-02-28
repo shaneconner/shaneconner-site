@@ -55,7 +55,7 @@
     <h2>What happens when you let evolution design both the body and the brain?</h2>
     <p>Most machine learning optimizes a fixed architecture toward a fixed objective. A human picks the network topology. A human crafts the loss function. Gradient descent handles the rest. This project throws all of that away and lets evolution do the work from scratch.</p>
     <p>Primordial is an artificial life simulation. Organisms are dropped into a 2D world with food resources and nothing else. They have bodies made of springs and masses, brains made of neural networks, and both are encoded in a genome that mutates when they reproduce. The only optimization signal is survival: organisms that find food live long enough to reproduce. Those that don't, die. Their bodies become food for others.</p>
-    <p>Over thousands of generations, organisms evolve bodies with sensors pointed toward food. They evolve gaits, periodic muscle contraction patterns that produce directed locomotion. They evolve feeding strategies. Species diverge. Ecosystems form. None of this is programmed.</p>
+    <p>Over 128 generations and 100,000 simulation ticks, organisms evolve directed locomotion, foraging strategies, and body plans of increasing complexity. Species diverge, ecosystems form, and recurring cycles of radiation and consolidation emerge from first principles. None of this is programmed.</p>
   </div>
 
   <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
@@ -69,12 +69,13 @@
     <h3>Chapter I</h3>
     <h2>Genesis</h2>
     <p>The simulation begins with 50 organisms scattered across a landscape. Each has a random neural network and a simple five-node body: a core, a sensor, two muscle anchors, and a mouth. Their brains fire random signals. Muscles twitch without purpose. Most organisms wander aimlessly, burning energy faster than they can find food.</p>
-    <p>But a few, by pure chance, have neural weights that produce net movement toward nearby plant resources. These organisms eat. They survive. Everything that follows descends from them.</p>
+    <p>Within 400 ticks, the population crashes from 50 to 10. An anti-extinction floor keeps the simulation alive. A handful of survivors&thinsp;&mdash;&thinsp;organisms whose random weights happen to produce net movement toward food&thinsp;&mdash;&thinsp;cling to existence. These are the founders. Every organism that will ever live descends from them.</p>
+    <p>This is the simulation's answer to whether intelligence can bootstrap itself from random noise. The answer is yes, but barely. Out of 50 random neural networks, only a few produce behavior that happens to correlate with food-seeking. Everything that follows is refinement of those accidental strategies.</p>
   </div>
 
   <div class="essay-wide">
     <div class="viz-container reveal">
-      <p class="viz-title">Genesis — First Moments of Life</p>
+      <p class="viz-title">Genesis &mdash; First Moments of Life</p>
       <div data-sim-clip="/data/narrative/primordial-genesis.json"></div>
       <p class="viz-caption">The founding population. Random neural networks produce uncoordinated movement. Green dots are plant resources. Click an organism to inspect its body plan.</p>
     </div>
@@ -86,13 +87,13 @@
   <div class="essay reveal">
     <h3>Chapter II</h3>
     <h2>First Divergence</h2>
-    <p>Within hundreds of ticks, mutations accumulate. A child's genome diverges far enough from its parent that the speciation threshold is crossed and a new species is born. This first split is modest: the two lineages are nearly identical. But it marks the beginning of an evolutionary tree that will branch dozens of times.</p>
+    <p>Within hundreds of ticks, mutations accumulate. A child's genome diverges far enough from its parent that the speciation threshold is crossed and a new species is born. This first split is modest: the two lineages are nearly identical. But it marks the beginning of an evolutionary tree that will branch hundreds of times over the next 100,000 ticks.</p>
     <p>Each new species represents a slightly different strategy encoded in slightly different neural weights and body configurations. Some add extra sensor nodes. Others shift muscle positions for better locomotion. The genome is the blueprint, and natural selection is the architect.</p>
   </div>
 
   <div class="essay-wide">
     <div class="viz-container reveal">
-      <p class="viz-title">First Divergence — Species Begin to Branch</p>
+      <p class="viz-title">First Divergence &mdash; Species Begin to Branch</p>
       <div data-sim-clip="/data/narrative/primordial-first-split.json"></div>
       <p class="viz-caption">The first speciation event. Colored rings around organisms indicate species identity. Watch for the emergence of distinct body plans.</p>
     </div>
@@ -100,37 +101,114 @@
 
   <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
 
-  <!-- CHAPTER 3: PEAK DIVERSITY -->
+  <!-- CHAPTER 3: COLLAPSE -->
   <div class="essay reveal">
     <h3>Chapter III</h3>
-    <h2>Radiation</h2>
-    <p>As different regions of the world offer different resource densities and competitive pressures, species diversify into distinct niches. Some lineages evolve larger bodies with more sensors. Others stay small and energy-efficient. Body plans vary from compact three-node sprinters to sprawling multi-sensor foragers.</p>
-    <p>This is adaptive radiation: a single ancestral population branching into multiple species, each specialized for slightly different conditions. The ecosystem reaches its peak diversity, with dozens of species coexisting simultaneously.</p>
+    <h2>Collapse</h2>
+    <p>Around tick 3,000, something breaks open. Enough generations have passed that foraging strategies produce reliable food-seeking. The population explodes: 20 to 75 to 231 to 283 in just 3,000 ticks. Speciation events cascade&thinsp;&mdash;&thinsp;36 distinct species at peak diversity. This is the simulation's Cambrian Explosion.</p>
+    <p>But the bloom overshoots. 283 organisms compete for finite food. Plant spawn rate can't sustain the population. Resources deplete. The population crashes: 283 to 209. Species diversity drops from 36 to 27. The weakest strategies&thinsp;&mdash;&thinsp;organisms too large, too metabolically expensive, or too slow&thinsp;&mdash;&thinsp;go extinct. What remains are the leaner, more efficient lineages.</p>
+    <p>This first crash is driven by resource scarcity rather than inability to function. It's a fundamentally different selection pressure from the founding die-off, and it reshapes the ecosystem in ways that echo for tens of thousands of ticks.</p>
   </div>
 
   <div class="essay-wide">
     <div class="viz-container reveal">
-      <p class="viz-title">Radiation — Peak Species Diversity</p>
-      <div data-sim-clip="/data/narrative/primordial-diversity.json"></div>
-      <p class="viz-caption">Maximum biodiversity. Multiple species coexist with distinct body plans and behaviors. The species roster below shows the full ecosystem.</p>
+      <p class="viz-title">Collapse &mdash; The First Resource Crisis</p>
+      <div data-sim-clip="/data/narrative/primordial-crash.json"></div>
+      <p class="viz-caption">Population crash from resource depletion. Watch species disappear as the ecosystem contracts. Only the most efficient lineages survive.</p>
     </div>
   </div>
 
   <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
 
-  <!-- CHAPTER 4: EQUILIBRIUM -->
+  <!-- CHAPTER 4: RADIATION -->
   <div class="essay reveal">
     <h3>Chapter IV</h3>
-    <h2>Balance</h2>
-    <p>After the initial cycles of boom and bust, the ecosystem settles toward a dynamic equilibrium. Population oscillates around the environment's carrying capacity. Species that have survived multiple crashes are well-adapted: efficient foragers with lean body plans and neural networks refined across many generations of selection.</p>
-    <p>The equilibrium is not static. New species still emerge from mutation. Old species still go extinct when outcompeted. But the wild swings of early evolution give way to subtler dynamics: gradual niche shifts, slow optimization of existing strategies, and the occasional disruptive innovation that reshuffles the competitive landscape.</p>
+    <h2>Radiation</h2>
+    <p>After the crash, the ecosystem enters a dynamic equilibrium. Population oscillates between 250 and 310 in irregular, quasi-periodic cycles. Each cycle is a miniature boom-bust: a successful mutation spreads, the population grows, resources tighten, weaker organisms starve, the population contracts.</p>
+    <p>Generations advance rapidly. Neural networks are refined across dozens of generations. Each generation inherits its parent's weights plus small Gaussian perturbations; the mutation scale itself is an evolvable parameter. Organisms that have tuned their own mutation rate&thinsp;&mdash;&thinsp;not too high (destructive), not too low (stagnant)&thinsp;&mdash;&thinsp;leave more descendants.</p>
+    <p>This is also the period of peak species diversity. 36 species coexist simultaneously, each with a slightly different body plan or neural configuration. Some lineages evolve larger bodies with more sensors. Others stay small and energy-efficient. The ecosystem reaches its richest point.</p>
   </div>
 
   <div class="essay-wide">
     <div class="viz-container reveal">
-      <p class="viz-title">Equilibrium — Dynamic Stability</p>
+      <p class="viz-title">Radiation &mdash; Peak Species Diversity</p>
+      <div data-sim-clip="/data/narrative/primordial-diversity.json"></div>
+      <p class="viz-caption">Maximum biodiversity: 36 species coexist with distinct body plans and behaviors. The species roster shows the full ecosystem.</p>
+    </div>
+  </div>
+
+  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+
+  <!-- CHAPTER 5: THE GENERATION PARADOX -->
+  <div class="essay reveal">
+    <h3>Chapter V</h3>
+    <h2>The Innovator's Dilemma</h2>
+    <p>By tick 50,000, one of the most surprising emergent phenomena has become unmistakable: the maximum generation doesn't climb steadily. At tick 45,000, the oldest surviving lineage reaches generation 72. By tick 48,000, it's dropped to 66. A species with 72 generations of evolutionary refinement went extinct, replaced by a younger lineage with fewer iterations but a better fundamental strategy.</p>
+    <p>This is the biological equivalent of the innovator's dilemma. Incumbents optimized for current conditions lose to disruptors with less refinement but better foundational strategies. The older species may have over-specialized for an environment that shifted, while the younger one stumbled into a superior body plan through a lucky mutation.</p>
+    <p>The pattern recurs throughout the simulation. Generation count oscillates: 72, 66, 70, 73, 78, 81, 85, 88, 87, 85, 86, 87. Each dip marks an extinction event where a deep lineage dies and a shallower one takes its place. Evolutionary "success" measured by generational depth doesn't guarantee survival.</p>
+  </div>
+
+  <div class="essay-wide">
+    <div class="viz-container reveal">
+      <p class="viz-title">Generational Shift &mdash; Old Lineages Fall</p>
+      <div data-sim-clip="/data/narrative/primordial-generation-milestone.json"></div>
+      <p class="viz-caption">Midpoint of the simulation. Watch for species turnover as younger lineages displace older, more refined ones.</p>
+    </div>
+  </div>
+
+  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+
+  <!-- CHAPTER 6: EQUILIBRIUM -->
+  <div class="essay reveal">
+    <h3>Chapter VI</h3>
+    <h2>Balance</h2>
+    <p>After 80,000 ticks, the ecosystem has settled into a complex attractor&thinsp;&mdash;&thinsp;not a fixed point, but a bounded orbit in the space of population, diversity, and generation. Population oscillates 255&ndash;305. Species count swings between 17 and 35. Generation advances from 106 to 128.</p>
+    <p>The ecosystem repeatedly cycles between two states: diverse (20&ndash;30 species during radiation) and consolidated (9&ndash;15 during competitive exclusion). Three full radiation-consolidation cycles complete during the simulation. The oscillation between them is itself an emergent pattern&thinsp;&mdash;&thinsp;nobody programmed it. It arises from the interaction between mutation (which creates diversity), competition (which reduces it), and resource dynamics (which modulate the competitive landscape).</p>
+    <p>Senescence forces generational turnover: metabolic costs rise after 60% of max age, and organisms die at age 5,000. Even the most successful forager eventually dies, making room for mutated offspring to test new strategies. The result: 128 generations in 100,000 ticks.</p>
+  </div>
+
+  <div class="essay-wide">
+    <div class="viz-container reveal">
+      <p class="viz-title">Equilibrium &mdash; Dynamic Stability</p>
       <div data-sim-clip="/data/narrative/primordial-equilibrium.json"></div>
-      <p class="viz-caption">The ecosystem at carrying capacity. Populations oscillate but the overall system is stable. Species have specialized.</p>
+      <p class="viz-caption">The ecosystem at carrying capacity. Organisms with neural networks refined across 110+ generations compete for finite resources. Population oscillates but the system is stable.</p>
+    </div>
+  </div>
+
+  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+
+  <!-- CHAPTER 7: SECOND RADIATION -->
+  <div class="essay reveal">
+    <h3>Chapter VII</h3>
+    <h2>Second Radiation</h2>
+    <p>Between ticks 65,000 and 70,000, species diversity plummets to 9&thinsp;&mdash;&thinsp;the absolute lowest in the entire simulation. A few hyper-efficient lineages crowd out everything else. This is competitive exclusion taken to its logical extreme: the fittest organisms don't create the richest ecosystems. They simplify them.</p>
+    <p>But from this bottleneck, diversity rebounds. By tick 76,000, species count jumps back to 26. By tick 94,000, it reaches 27 again. The consolidation removed the old guard of species, creating ecological vacancies that new variants rush to fill. This is the third adaptive radiation cycle, and by now the pattern is unmistakable: consolidation, bottleneck, radiation, consolidation.</p>
+  </div>
+
+  <div class="essay-wide">
+    <div class="viz-container reveal">
+      <p class="viz-title">Second Radiation &mdash; Diversity Rebounds</p>
+      <div data-sim-clip="/data/narrative/primordial-late-diversity.json"></div>
+      <p class="viz-caption">A new wave of speciation fills niches vacated by the consolidation bottleneck. New body plans and neural architectures continue to emerge.</p>
+    </div>
+  </div>
+
+  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+
+  <!-- CHAPTER 8: DEEP TIME -->
+  <div class="essay reveal">
+    <h3>Chapter VIII</h3>
+    <h2>Deep Time</h2>
+    <p>At tick 100,000, the simulation ends&thinsp;&mdash;&thinsp;but the ecosystem doesn't. 282 organisms across 22 species are alive, their neural networks refined across 128 generations of pure evolutionary search. A diversity spike to 35 species at tick 99,000, just before the end, confirms the system remains fundamentally creative. New species are still being born, new body plans still being tested.</p>
+    <p>Generation 100 was reached at tick 75,000&thinsp;&mdash;&thinsp;a symbolic milestone. One hundred generations of neural networks optimized purely through survival pressure. No human ever looked at these networks. No gradient was ever computed. These are optimization products of a process that discovered food-seeking, locomotion, and competitive strategy from random noise.</p>
+    <p>100,000 ticks wasn't enough to exhaust the evolutionary potential of this simple system. Given more time, what would emerge?</p>
+  </div>
+
+  <div class="essay-wide">
+    <div class="viz-container reveal">
+      <p class="viz-title">Deep Time &mdash; Generation 128</p>
+      <div data-sim-clip="/data/narrative/primordial-deep-time.json"></div>
+      <p class="viz-caption">The final moments. Organisms with neural networks refined across 128 generations navigate a world their ancestors could barely survive in. These are the products of pure evolutionary search.</p>
     </div>
   </div>
 

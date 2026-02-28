@@ -169,7 +169,46 @@ The founding population has completely random neural networks. Within 3000 ticks
 ### 5. Meta-Evolution
 Mutation rates are themselves evolvable. The simulation doesn't just evolve organisms — it evolves the evolutionary process itself. Organisms that have "tuned" their mutation rate to the right level (enough variation to discover improvements, not so much that it destroys working strategies) leave more descendants.
 
+### 6. The Radiation-Consolidation Oscillator
+The most unexpected emergent behavior: the ecosystem cycles between high diversity (30+ species) and low diversity (9-15) on irregular but repeating timescales. Three full cycles complete in 100k ticks. This isn't programmed — it arises from the interaction between mutation (which creates diversity), competition (which reduces it), and resource dynamics (which modulate the competitive landscape).
+
+### 7. Senescence as an Evolutionary Driver
+Without aging, the first successful organism could theoretically live forever and dominate the gene pool indefinitely. Senescence (rising metabolic costs after 60% of max age, death at max age) forces generational turnover. This means even the "best" organisms eventually die, making room for their mutated offspring to test new strategies. The result: 128 generations in 100k ticks, compared to ~10 generations in the old cap-limited system.
+
 ---
 
-## Still Running...
-Simulation at tick 64k of 100k at 7 t/s. ~1.4 hours remaining for Pass 1.
+## Complete Data Table
+
+| Tick | Pop | Species | Gen | Events | t/s | Phase |
+|------|-----|---------|-----|--------|-----|-------|
+| 1k   | 11  | 1       | 2   | 3      | 65  | Struggle |
+| 2k   | 15  | 1       | 2   | 6      | 59  | Struggle |
+| 3k   | 20  | 3       | 6   | 11     | 49  | Bloom begins |
+| 4k   | 75  | 7       | 6   | 36     | 35  | Bloom |
+| 5k   | 231 | 32      | 11  | 94     | 20  | Bloom peak |
+| 6k   | 283 | 36      | 13  | 194    | 13  | Peak diversity |
+| 7k   | 209 | 27      | 15  | 264    | 11  | First crash |
+| 10k  | 277 | 21      | 21  | 436    | 9   | Oscillation |
+| 15k  | 263 | 21      | 29  | 646    | 8   | Refinement |
+| 20k  | 281 | 25      | 36  | 888    | 8   | Refinement |
+| 25k  | 293 | 31      | 45  | 1105   | 8   | Radiation 2 ramp |
+| 30k  | 261 | 21      | 52  | 1307   | 8   | Consolidation 1 |
+| 32k  | 258 | 13      | 53  | 1384   | 8   | Consolidation trough |
+| 40k  | 301 | 32      | 63  | 1733   | 7   | Radiation 2 peak |
+| 45k  | 301 | 27      | 72  | 1913   | 7   | Gen paradox |
+| 48k  | 249 | 20      | 66  | 2048   | 7   | Gen rollback |
+| 55k  | 277 | 29      | 78  | 2333   | 7   | Consolidation 2 ramp |
+| 60k  | 267 | 15      | 88  | 2553   | 7   | Consolidation 2 |
+| 64k  | 268 | 18      | 87  | 2731   | 7   | Plateau |
+| 70k  | 254 | 9       | 95  | 2990   | 7   | Diversity nadir |
+| 75k  | 285 | 24      | 100 | 3234   | 7   | Gen 100, radiation 3 |
+| 80k  | 305 | 18      | 106 | 3434   | 7   | Mature ecosystem |
+| 90k  | 292 | 26      | 117 | 3889   | 7   | Late stability |
+| 95k  | 255 | 26      | 122 | 4123   | 7   | Late oscillation |
+| 99k  | 270 | 35      | 126 | 4299   | 7   | Final radiation |
+| 100k | 282 | 22      | 128 | 4345   | 7   | End state |
+
+---
+
+## Re-running simulation with improved clip selection
+Pass 1 data is deterministic (same seed). Re-running to capture more narrative clips (improved overlap logic). Expected clips: genesis, first-split, boom, crash, diversity, recovery, body-evolution, mass-extinction, generation-milestone, late-diversity, equilibrium, deep-time.
