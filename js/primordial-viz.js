@@ -264,6 +264,40 @@
     self.container.querySelector('.sim-stat-gen').textContent = 'Gen: ' + s.gen;
     self.container.querySelector('.sim-stat-food').textContent = 'Food: ' + s.food;
     self.container.querySelector('.sim-stat-tick').textContent = 'Tick: ' + self.clip.snapshots[self.frame].t;
+    self.updateSpecies();
+  };
+
+  Viewer.prototype.updateSpecies = function () {
+    var self = this;
+    var panel = self.container.querySelector('.sim-species');
+    if (!self.clip || !self.clip.snapshots[self.frame]) { panel.innerHTML = ''; return; }
+    var orgs = self.clip.snapshots[self.frame].o || [];
+
+    var species = {};
+    for (var i = 0; i < orgs.length; i++) {
+      var org = orgs[i];
+      if (!species[org.sp]) species[org.sp] = { id: org.sp, pop: 0, totalEnergy: 0, maxGen: 0, nodeCounts: {}, totalNodes: 0 };
+      var s = species[org.sp];
+      s.pop++;
+      s.totalEnergy += org.e;
+      if (org.g > s.maxGen) s.maxGen = org.g;
+      for (var ni = 0; ni < org.n.length; ni++) {
+        var t = org.n[ni][2];
+        s.nodeCounts[t] = (s.nodeCounts[t] || 0) + 1;
+      }
+      s.totalNodes += org.n.length;
+    }
+
+    var sorted = Object.keys(species).map(function (k) { return species[k]; });
+    sorted.sort(function (a, b) { return b.pop - a.pop; });
+
+    var html = '<div class="sim-species-title">Active Species</div><div class="sim-species-list">';
+    var maxShown = Math.min(sorted.length, 10);
+    for (var si = 0; si < maxShown; si++) {
+      html += buildSpeciesCard(sorted[si], si < 5);
+    }
+    html += '</div>';
+    panel.innerHTML = html;
   };
 
   Viewer.prototype.onClick = function (e) {
@@ -375,6 +409,24 @@
       ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.2;
       ctx.beginPath(); ctx.arc(core[0], core[1], ringR + 2, 0, Math.PI * 2); ctx.stroke();
     }
+  }
+
+  function buildSpeciesCard(sp, expanded) {
+    var color = getSpeciesColor(sp.id);
+    var avgEnergy = Math.round(sp.totalEnergy / sp.pop);
+    var avgNodes = (sp.totalNodes / sp.pop).toFixed(1);
+    var bodyParts = [];
+    Object.keys(sp.nodeCounts).sort().forEach(function (type) {
+      var avg = sp.nodeCounts[type] / sp.pop;
+      if (avg >= 0.5) bodyParts.push('<span class="sim-sp-node" style="color:' + (NODE_COLOR[type] || '#888') + '">' + Math.round(avg) + NODE_SHORT[type] + '</span>');
+    });
+    if (expanded) {
+      return '<div class="sim-sp-card">' +
+        '<div class="sim-sp-header"><span class="sim-sp-dot" style="background:' + color + '"></span><span class="sim-sp-name" style="color:' + color + '">' + sp.id + '</span><span class="sim-sp-pop">' + sp.pop + '</span></div>' +
+        '<div class="sim-sp-details"><span class="sim-sp-meta">Gen ' + sp.maxGen + '</span><span class="sim-sp-meta">Avg E: ' + avgEnergy + '</span><span class="sim-sp-meta">' + avgNodes + ' nodes</span></div>' +
+        '<div class="sim-sp-body">' + bodyParts.join(' ') + '</div></div>';
+    }
+    return '<div class="sim-sp-card sim-sp-compact"><span class="sim-sp-dot" style="background:' + color + '"></span><span class="sim-sp-name" style="color:' + color + '">' + sp.id + '</span><span class="sim-sp-pop">' + sp.pop + '</span></div>';
   }
 
   function buildLegendHTML() {
