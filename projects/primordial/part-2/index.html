@@ -49,13 +49,18 @@
     <p class="scroll-hint">Scroll to explore</p>
   </section>
 
+  <div class="part-context">
+    <a href="/projects/primordial/">&larr; Primordial</a>
+    <span class="part-indicator">Part 2 of 2</span>
+  </div>
+
   <!-- THE PREMISE -->
   <div class="essay reveal">
     <h3>The Redesign</h3>
     <h2>What happens when you fix the rules?</h2>
-    <p><a href="/projects/primordial/" style="color:#9aaa3a;">Part 1</a> revealed the limits of the simulation's design. Over 100,000 ticks, evolution converged every organism to the same 3-node minimalist body: a core and two mouths. Sensors went extinct. Muscles disappeared. Bigger bodies offered no advantage, so evolution eliminated them.</p>
-    <p>Part 2 changes seven things simultaneously. Bodies are physically larger and mechanically advantageous&thinsp;&mdash;&thinsp;more nodes generate more force through size-based scaling. Sensors provide six inputs instead of three: food distance, food angle, food type, organism distance, organism size, and organism type. Eating and attacking are separate neural outputs, allowing pure herbivores and dedicated predators to emerge independently. Food spawns at half the rate, making competition fiercer. Lifespans are three times longer, giving complex strategies time to pay off. Bone nodes reduce drag, fat nodes lower reproduction thresholds. And for the first time, organisms can mate&thinsp;&mdash;&thinsp;sexual reproduction with genome crossover between genetically similar organisms.</p>
-    <p>The result: 300,000 ticks, 457 generations, 5,759 evolutionary events, and an ecosystem that never stops surprising.</p>
+    <p><a href="/projects/primordial/part-1/" style="color:#9aaa3a;">Part 1</a> ended with every organism wearing the same body. Three nodes. A core and two mouths. No sensors, no muscles, no bones. Evolution had done exactly what it was supposed to&thinsp;&mdash;&thinsp;optimize for survival&thinsp;&mdash;&thinsp;and survival meant stripping everything away. The problem wasn't evolution. The problem was the world.</p>
+    <p>Part 2 rebuilds the world. Bodies are bigger and mechanically advantageous&thinsp;&mdash;&thinsp;more nodes means more force. Sensors feed six inputs instead of three, including food type and organism size, making awareness actually worth the metabolic cost. Eating and attacking split into separate neural outputs, so herbivores and predators can evolve independently. Food spawns at half the rate. Lifespans triple. Bones reduce drag. Fat helps reproduction. And organisms can mate&thinsp;&mdash;&thinsp;sexual reproduction with genome crossover, for the first time.</p>
+    <p>Seven changes. Same algorithm. Radically different life.</p>
   </div>
 
   <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
@@ -154,9 +159,9 @@
   <div class="essay reveal">
     <h3>Chapter VI</h3>
     <h2>Fragile Recovery</h2>
-    <p>From three surviving species, the ecosystem rebuilds. Species count rebounds to 16 by tick 155,000, crashes back to 4 by tick 168,000, rebounds again to 16, crashes to 4 at tick 203,000. The pattern repeats: speciation, brief flourishing, collapse. The ecosystem is fragile&thinsp;&mdash;&thinsp;like a patient with recurring crises, unable to fully heal.</p>
-    <p>Each recovery produces a different cast of species, but the population never reaches the old levels. The survivors from the mass extinction are so well-adapted that newcomers can barely compete. When they do speciate, they briefly fill empty niches before the incumbents expand to crowd them out again.</p>
-    <p>This boom-bust cycle at the species level&thinsp;&mdash;&thinsp;repeated near-extinctions followed by radiations that mostly fail&thinsp;&mdash;&thinsp;is one of Part 2's most striking emergent behaviors. It's remarkably similar to the pattern of punctuated equilibrium observed in the real fossil record.</p>
+    <p>From three surviving species, the ecosystem rebuilds. Species count rebounds to 16 by tick 155,000, then crashes back to 4 by tick 168,000. Rebounds to 16 again. Crashes to 4 at tick 203,000. The same cycle, over and over: speciation, brief flourishing, collapse. The ecosystem keeps trying to diversify and keeps failing.</p>
+    <p>Each recovery produces a different cast of species, but the population never reaches pre-extinction levels. The three survivors are too well-adapted. They've had tens of thousands of ticks to optimize, and newcomers can barely compete. New species fill empty niches for a few thousand ticks, then the incumbents expand and crowd them out.</p>
+    <p>Biologists have a name for this: punctuated equilibrium. Long periods of stasis interrupted by brief bursts of change. The simulation found it on its own.</p>
   </div>
 
   <div class="essay-wide">
@@ -175,7 +180,7 @@
     <h2>Deep Time</h2>
     <p>By tick 263,000, the simulation crosses generation 400. These organisms have been through 400 rounds of selection, crossover, and mutation. For context: Part 1's entire 100,000-tick run produced only 128 generations. Part 2 has 3.6 times the evolutionary depth. The generation rate holds steady at 1.6 generations per 1,000 ticks&thinsp;&mdash;&thinsp;no slowdown, no plateau. Evolution hasn't finished.</p>
     <p>The late game settles into a clear rhythm. Three to six dominant species occupy most of the population. Periodic bursts of speciation create 10-16 species. The newcomers get outcompeted within 10-15 thousand ticks. The cycle repeats. The incumbents are just too good&thinsp;&mdash;&thinsp;their neural networks are the product of hundreds of generations of refinement.</p>
-    <p>At tick 300,000, the simulation ends with 102 organisms across 11 species at generation 457. The ecosystem is still cycling, still producing new species, still culling them. Given another 300,000 ticks, it would keep going. The system never reaches a fixed point. It finds an attractor that is itself dynamic&thinsp;&mdash;&thinsp;a strange loop of creation and destruction that mirrors the real history of life on Earth.</p>
+    <p>At tick 300,000, the simulation ends. 102 organisms. 11 species. Generation 457. The ecosystem is still cycling, still producing new species, still killing them. Given another 300,000 ticks, it would keep going. There is no equilibrium. There is no final state. Just an endless oscillation between creation and extinction&thinsp;&mdash;&thinsp;the same pattern that real paleontology finds in the fossil record, discovered from scratch by a few thousand lines of Python.</p>
   </div>
 
   <div class="essay-wide">
@@ -194,11 +199,10 @@
 
   <div class="essay reveal">
     <h3>The Comparison</h3>
-    <h2>What changed when we fixed the rules</h2>
-    <p>Part 1 produced 128 generations in 100,000 ticks. Part 2 produced 457 generations in 300,000 ticks&thinsp;&mdash;&thinsp;3.6 times the evolutionary depth. But the differences go deeper than raw numbers.</p>
-    <p>Part 1's ecosystem was stable and monotonous: population locked at ~280, all organisms identical 3-node minimalists. Part 2's ecosystem is volatile and creative: mass extinctions, fragile recoveries, repeated radiations. The population found a carrying capacity of ~95&thinsp;&mdash;&thinsp;a third of Part 1's&thinsp;&mdash;&thinsp;because each organism is bigger, more complex, and more metabolically expensive.</p>
-    <p>The generation counter wobble is unique to Part 2. In Part 1, generations climbed monotonically. In Part 2, the most evolved lineages regularly go extinct, replaced by younger ones with better strategies. Evolution's bleeding edge is dangerous territory.</p>
-    <p>Most critically: Part 1's organisms all converged to the same minimal body. Part 2's ecosystem maintains genuine diversity because the rules reward complexity. Sensors survive because they provide enough information to justify their cost. Bones persist because they reduce drag. Fat helps organisms reproduce. The anti-minimalism mechanics worked.</p>
+    <h2>Two worlds, two histories</h2>
+    <p>Part 1 ran for 100,000 ticks and produced a stable, boring ecosystem. Population locked at 280. Every organism identical. 128 generations of refinement that led to the same minimal body. Part 2 ran three times longer and never settled. Population hovering around 95&thinsp;&mdash;&thinsp;a third of Part 1's&thinsp;&mdash;&thinsp;because each organism costs more to run. Bigger bodies, richer brains, higher metabolic overhead. Fewer creatures, but far more interesting ones.</p>
+    <p>The generation counter tells the story. In Part 1 it climbed steadily&thinsp;&mdash;&thinsp;each generation slightly more refined than the last, a smooth march toward the same destination. In Part 2 it wobbles. The most evolved lineages go extinct regularly, replaced by younger species with better strategies. Being highly evolved doesn't mean being safe. It means you're at the frontier, and the frontier is where things die.</p>
+    <p>Part 1's organisms all converged. Part 2's diverged. Sensors survived because six inputs made them worth keeping. Bones persisted because they made organisms faster. Fat mattered because it lowered reproduction thresholds. The rules rewarded complexity, and evolution responded. Different world, different life.</p>
   </div>
 
   <div class="stats-row reveal">
@@ -228,21 +232,25 @@
 
   <div class="essay reveal">
     <h3>The Changes</h3>
-    <h2>Seven fixes to the simulation</h2>
-    <p><strong>Visible bodies.</strong> Initial body spread increased from 1.5 to 8.0 units. Organisms are now visible structures, not invisible dots. New nodes are biased to grow outward from the core, producing more varied shapes.</p>
-    <p><strong>Separate eat and attack.</strong> The brain now has three action outputs instead of two: eat, attack, and reproduce. An organism can eat without attacking. Pure herbivores and dedicated predators can emerge independently.</p>
-    <p><strong>Richer sensors.</strong> Each sensor provides six inputs instead of three: food distance, food angle, food type (plant vs. meat), organism distance, organism size, and organism type. Sensor field-of-view and range scale with sensor count. More sensors means better awareness.</p>
-    <p><strong>Scarcer resources.</strong> Plant spawn rate halved from 2.5 to 1.2 per tick. Food energy reduced. Meat from dead organisms decays more slowly, making carnivory viable. Competition is fiercer.</p>
-    <p><strong>Sexual reproduction.</strong> Organisms within 50 units that are genetically similar and both reproductively ready can mate. Their genomes cross over, combining traits from both parents. Offspring spawn between the parents with fresh mutations on top.</p>
-    <p><strong>Longer lifespans.</strong> Maximum age tripled from 5,000 to 15,000 ticks. Complex strategies have more time to pay off. Organisms die from competition, not old age.</p>
-    <p><strong>Anti-minimalism mechanics.</strong> Force scales with body size (more nodes = more speed). Bone nodes reduce drag. Fat nodes lower reproduction thresholds. Structural node costs reduced. Bigger bodies have genuine mechanical advantages.</p>
+    <h2>Seven things that changed everything</h2>
+    <p><strong>Bodies you can see.</strong> Spread goes from 1.5 to 8 units. Organisms are structures now, not dots. Nodes grow outward from the core, so bodies actually look different from each other.</p>
+    <p><strong>Eating isn't fighting.</strong> Three neural outputs instead of two: eat, attack, reproduce. A creature can graze without biting its neighbor. Herbivores and predators evolve as separate strategies.</p>
+    <p><strong>Sensors that matter.</strong> Six inputs per sensor instead of three. Food angle, food type, organism size. Awareness scales with sensor count&thinsp;&mdash;&thinsp;more sensors, wider field of view, longer range. Finally worth the metabolic cost.</p>
+    <p><strong>Half the food.</strong> Plant spawn rate drops from 2.5 to 1.2 per tick. Meat decays slower, making carnivory a real option. When food is scarce, every strategy gets tested.</p>
+    <p><strong>Sex.</strong> Two genetically similar organisms within 50 units can mate. Genome crossover. Traits from both parents. Fresh mutations on top. Evolution stops being a solo act.</p>
+    <p><strong>Triple lifespan.</strong> 15,000 ticks instead of 5,000. Complex strategies need time to pay off. Most organisms still die young&thinsp;&mdash;&thinsp;from competition, not old age.</p>
+    <p><strong>Bigger is better.</strong> Force scales with node count. Bones reduce drag. Fat lowers reproduction thresholds. For the first time, there's a mechanical reason to grow.</p>
   </div>
 
   <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
 
-  <!-- BACK LINK -->
-  <div class="essay reveal" style="text-align:center;">
-    <p><a href="/projects/primordial/" style="color:#9aaa3a;">&larr; Back to Part 1</a></p>
+  <div class="part-nav">
+    <div class="part-nav-item part-nav-prev">
+      <span class="part-nav-label">&larr; Previous</span>
+      <a href="/projects/primordial/part-1/" class="part-nav-link">Part 1: Emergent Behaviors</a>
+    </div>
+    <div class="part-nav-item part-nav-next">
+    </div>
   </div>
 
   <!-- TECH STACK -->

@@ -53,8 +53,9 @@ function initNavDropdowns() {
       { label: 'Autonomous Portfolio Intelligence', href: '/projects/ai-investor/' },
       { label: 'Adaptive Task Intelligence', href: '/projects/chores/' },
       { label: 'Resonance: Music Intelligence', href: '/projects/resonance/' },
-      { label: 'Primordial: Part 1', href: '/projects/primordial/' },
-      { label: 'Primordial: Part 2', href: '/projects/primordial/part-2/' }
+      { group: 'Primordial: Neuroevolution', label: 'Overview', href: '/projects/primordial/' },
+      { group: 'Primordial: Neuroevolution', label: 'Part 1: Emergent Behaviors', href: '/projects/primordial/part-1/' },
+      { group: 'Primordial: Neuroevolution', label: 'Part 2: Fixing the Rules', href: '/projects/primordial/part-2/' }
     ],
     contact: [
       { label: 'Details', href: '/contact/#contact-details' },
@@ -84,11 +85,26 @@ function initNavDropdowns() {
     dropdown.setAttribute('role', 'menu');
     dropdown.setAttribute('aria-label', key + ' sections');
 
+    var renderedGroups = {};
     options.forEach(function (opt) {
+      if (opt.group && !renderedGroups[opt.group]) {
+        renderedGroups[opt.group] = true;
+        var divider = document.createElement('li');
+        divider.className = 'nav-dropdown-divider';
+        dropdown.appendChild(divider);
+        var groupHeader = document.createElement('li');
+        groupHeader.className = 'nav-dropdown-group';
+        var groupSpan = document.createElement('span');
+        groupSpan.textContent = opt.group;
+        groupHeader.appendChild(groupSpan);
+        dropdown.appendChild(groupHeader);
+      }
+
       var row = document.createElement('li');
       var a = document.createElement('a');
       a.href = opt.href;
       a.textContent = opt.label;
+      if (opt.group) a.classList.add('nav-dropdown-grouped');
 
       var url = new URL(opt.href, window.location.origin);
       var samePath = normalizePath(url.pathname) === currentPath;

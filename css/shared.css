@@ -178,6 +178,31 @@ nav.scrolled { border-bottom-color: var(--border); }
   background: rgba(154, 170, 58, 0.08);
 }
 
+.nav-dropdown-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 0.35rem 0.6rem;
+  list-style: none;
+}
+
+.nav-dropdown-group {
+  list-style: none;
+  padding: 0.4rem 0.6rem 0.15rem;
+}
+
+.nav-dropdown-group span {
+  font-size: 0.56rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--green);
+  font-weight: 400;
+}
+
+.nav-dropdown a.nav-dropdown-grouped {
+  padding-left: 1.1rem;
+  font-size: 0.6rem;
+}
+
 /* === SECTIONS === */
 section { padding: 6rem 3rem; }
 

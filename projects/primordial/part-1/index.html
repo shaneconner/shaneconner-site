@@ -11,7 +11,7 @@
   <meta property="og:type" content="article" />
   <meta property="og:title" content="Primordial: Emergent Behaviors & Neuroevolution — Shane Conner" />
   <meta property="og:description" content="Organisms evolve bodies and brains from scratch. Spring-mass physics. Neural network locomotion. Emergent ecosystems. No gradient descent — just survival." />
-  <meta property="og:url" content="https://shaneconner.com/projects/primordial" />
+  <meta property="og:url" content="https://shaneconner.com/projects/primordial/part-1" />
   <meta property="og:site_name" content="Shane Conner" />
 
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -42,20 +42,24 @@
     <div class="hero-content">
       <h1 class="resonance-hero-title">
         <span class="resonance-name">Primordial</span>
-        <span class="resonance-descriptor">Emergent Behaviors &amp; Neuroevolution</span>
+        <span class="resonance-descriptor">Part 1 &mdash; Emergent Behaviors &amp; Neuroevolution</span>
       </h1>
       <p class="subtitle">No gradient descent. No reward engineering. Just physics, mutation, and survival.</p>
     </div>
     <p class="scroll-hint">Scroll to explore</p>
   </section>
 
+  <div class="part-context">
+    <a href="/projects/primordial/">&larr; Primordial</a>
+    <span class="part-indicator">Part 1 of 2</span>
+  </div>
+
   <!-- THE PREMISE -->
   <div class="essay reveal">
     <h3>The Premise</h3>
-    <h2>What happens when you let evolution design both the body and the brain?</h2>
-    <p>Most machine learning optimizes a fixed architecture toward a fixed objective. A human picks the network topology. A human crafts the loss function. Gradient descent handles the rest. This project throws all of that away and lets evolution do the work from scratch.</p>
-    <p>Primordial is an artificial life simulation. Organisms are dropped into a 2D world with food resources and nothing else. They have bodies made of springs and masses, brains made of neural networks, and both are encoded in a genome that mutates when they reproduce. The only optimization signal is survival: organisms that find food live long enough to reproduce. Those that don't, die. Their bodies become food for others.</p>
-    <p>Over 128 generations and 100,000 simulation ticks, organisms evolve directed locomotion, foraging strategies, and body plans of increasing complexity. Species diverge, ecosystems form, and recurring cycles of radiation and consolidation emerge from first principles. None of this is programmed.</p>
+    <h2>Let evolution design both the body and the brain</h2>
+    <p>No one picks the network architecture. No one writes a loss function. Fifty organisms go into a 2D world with food and physics and nothing else. They have bodies made of springs and masses, brains made of neural networks, and a genome that encodes both. Find food, survive, reproduce. That's it. Everything else&thinsp;&mdash;&thinsp;locomotion, foraging, body shape, predation, speciation&thinsp;&mdash;&thinsp;has to emerge on its own.</p>
+    <p>What emerges over 100,000 ticks and 128 generations is a miniature history of life. Species diverge. Ecosystems form. Radiations explode across the population, then consolidation sweeps the board. And at the end, evolution reveals something uncomfortable about its own logic&thinsp;&mdash;&thinsp;a result that sets up everything Part 2 is designed to address.</p>
   </div>
 
   <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
@@ -87,8 +91,8 @@
   <div class="essay reveal">
     <h3>Chapter II</h3>
     <h2>First Divergence</h2>
-    <p>Within hundreds of ticks, mutations accumulate. A child's genome diverges far enough from its parent that the speciation threshold is crossed and a new species is born. This first split is modest: the two lineages are nearly identical. But it marks the beginning of an evolutionary tree that will branch hundreds of times over the next 100,000 ticks.</p>
-    <p>Each new species represents a slightly different strategy encoded in slightly different neural weights and body configurations. Some add extra sensor nodes. Others shift muscle positions for better locomotion. The genome is the blueprint, and natural selection is the architect.</p>
+    <p>Within hundreds of ticks, mutations accumulate. A child's genome diverges far enough from its parent that the speciation threshold triggers. A new species is born. The first split is modest&thinsp;&mdash;&thinsp;the two lineages are nearly identical&thinsp;&mdash;&thinsp;but it marks the beginning of a tree that will branch hundreds of times over the next 100,000 ticks.</p>
+    <p>Some offspring add extra sensor nodes. Others shift muscle positions for better locomotion. Each new species is a slightly different bet on which body plan and which neural wiring will turn food into babies fastest.</p>
   </div>
 
   <div class="essay-wide">
@@ -124,9 +128,9 @@
   <div class="essay reveal">
     <h3>Chapter IV</h3>
     <h2>Radiation</h2>
-    <p>After the crash, the ecosystem enters a dynamic equilibrium. Population oscillates between 250 and 310 in irregular, quasi-periodic cycles. Each cycle is a miniature boom-bust: a successful mutation spreads, the population grows, resources tighten, weaker organisms starve, the population contracts.</p>
-    <p>Generations advance rapidly. Neural networks are refined across dozens of generations. Each generation inherits its parent's weights plus small Gaussian perturbations; the mutation scale itself is an evolvable parameter. Organisms that have tuned their own mutation rate&thinsp;&mdash;&thinsp;not too high (destructive), not too low (stagnant)&thinsp;&mdash;&thinsp;leave more descendants.</p>
-    <p>This is also the period of peak species diversity. 36 species coexist simultaneously, each with a slightly different body plan or neural configuration. Some lineages evolve larger bodies with more sensors. Others stay small and energy-efficient. The ecosystem reaches its richest point.</p>
+    <p>After the crash, the ecosystem finds a rhythm. Population bounces between 250 and 310 in irregular cycles. A successful mutation spreads, the population swells, resources tighten, the weakest starve, the population contracts. Boom-bust on repeat, each cycle running a few thousand ticks.</p>
+    <p>Generations stack up fast. Each inherits its parent's neural weights plus small random perturbations&thinsp;&mdash;&thinsp;and the mutation rate itself is evolvable. Organisms that have tuned their own rate of change&thinsp;&mdash;&thinsp;not so high that offspring are broken, not so low that they can't adapt&thinsp;&mdash;&thinsp;leave more descendants. Evolution learns how much to mutate.</p>
+    <p>This is peak diversity. 36 species coexist, each running a slightly different strategy. Some lineages grow larger bodies with more sensors. Others stay small and efficient. The ecosystem is at its richest&thinsp;&mdash;&thinsp;and it's about to simplify.</p>
   </div>
 
   <div class="essay-wide">
@@ -162,9 +166,9 @@
   <div class="essay reveal">
     <h3>Chapter VI</h3>
     <h2>Balance</h2>
-    <p>After 80,000 ticks, the ecosystem has settled into a complex attractor&thinsp;&mdash;&thinsp;not a fixed point, but a bounded orbit in the space of population, diversity, and generation. Population oscillates 255&ndash;305. Species count swings between 17 and 35. Generation advances from 106 to 128.</p>
-    <p>The ecosystem repeatedly cycles between two states: diverse (20&ndash;30 species during radiation) and consolidated (9&ndash;15 during competitive exclusion). Three full radiation-consolidation cycles complete during the simulation. The oscillation between them is itself an emergent pattern&thinsp;&mdash;&thinsp;nobody programmed it. It arises from the interaction between mutation (which creates diversity), competition (which reduces it), and resource dynamics (which modulate the competitive landscape).</p>
-    <p>Senescence forces generational turnover: metabolic costs rise after 60% of max age, and organisms die at age 5,000. Even the most successful forager eventually dies, making room for mutated offspring to test new strategies. The result: 128 generations in 100,000 ticks.</p>
+    <p>By tick 80,000, the ecosystem has found something that isn't quite stability but isn't chaos either. Population oscillates 255&ndash;305. Species swing between 17 and 35. The generation counter climbs from 106 toward 128. It's an orbit&thinsp;&mdash;&thinsp;a bounded loop through the space of possible ecosystems&thinsp;&mdash;&thinsp;that the system traces over and over.</p>
+    <p>Three full radiation-consolidation cycles complete during the run. Diverse phases (20&ndash;30 species) alternate with consolidated ones (9&ndash;15) in a rhythm nobody programmed. Mutation creates diversity. Competition destroys it. Resources modulate the pace. The result is an oscillation that looks, from a distance, like breathing.</p>
+    <p>Senescence keeps the gears turning. Metabolic costs rise after 60% of max age, and death comes at 5,000 ticks. Even the best forager eventually dies, making room for its mutated offspring to try something different. 128 generations in 100,000 ticks.</p>
   </div>
 
   <div class="essay-wide">
@@ -219,7 +223,7 @@
   <div class="essay reveal" id="part-1-analysis">
     <h3>The Data</h3>
     <h2>What evolution actually discovered</h2>
-    <p>The narrative above tells a story of emergent complexity&thinsp;&mdash;&thinsp;radiation-consolidation cycles, the innovator's dilemma, dynamic equilibrium. But the data reveals a deeper truth: evolution optimized for simplicity, not complexity. The organisms at generation 128 are not more sophisticated than their ancestors. They are more minimal.</p>
+    <p>The story above sounds like progress&thinsp;&mdash;&thinsp;radiation cycles, species turnover, deepening generations. But the data tells a different story. Evolution didn't build complexity. It destroyed it. The organisms at generation 128 are simpler than their ancestors. Not refined. Stripped.</p>
   </div>
 
   <div class="essay-wide">
@@ -243,8 +247,8 @@
   </div>
 
   <div class="essay reveal">
-    <p>Why? The economics of the simulation made minimalism optimal. Every node costs energy per tick. Adding a sensor provides three inputs to the neural network&thinsp;&mdash;&thinsp;food distance, organism distance, and organism type&thinsp;&mdash;&thinsp;but this isn't enough information to justify the metabolic cost. The brain can learn to wander toward food using just brownian motion and mouth contact. More nodes means more energy burned, which means dying sooner or reproducing less.</p>
-    <p>The mouth's dual role as both eating organ and weapon made the problem worse. A single neural output controls both feeding and attacking. An organism can't eat without also attacking anything it contacts. This conflation means pure mouth-bodies are optimal: they eat efficiently, they damage competitors, and they have the lowest possible metabolic overhead.</p>
+    <p>The economics are straightforward. Every node costs energy per tick. A sensor gives the brain three inputs&thinsp;&mdash;&thinsp;food distance, organism distance, organism type&thinsp;&mdash;&thinsp;but the brain can find food through brownian motion and mouth contact alone. The sensor doesn't pay for itself. More nodes means more energy burned, which means dying sooner, which means fewer offspring. Evolution does the math.</p>
+    <p>The mouth makes it worse. One neural output controls both eating and attacking. An organism can't eat without biting anything it touches. So pure mouth-bodies are the optimal design: eat efficiently, damage competitors by accident, keep metabolic costs as low as physically possible. Evolution found the answer. It just wasn't the answer anyone wanted.</p>
   </div>
 
   <div class="essay-wide">
@@ -256,8 +260,8 @@
   </div>
 
   <div class="essay reveal">
-    <p>The radiation-consolidation cycles are real, but they're cycling between variants of the same basic strategy. Species differ in neural weights, not body plans. The evolutionary tree branches hundreds of times, but every branch leads to the same destination: three nodes, two mouths, no sensors.</p>
-    <p>This is the paradox of optimization under simplistic constraints. Give evolution a world where food is abundant, lifespans are short, and bigger bodies offer no mechanical advantage&thinsp;&mdash;&thinsp;and it will discover that the best body is the smallest one. The simulation's design inadvertently rewarded minimalism over morphological creativity.</p>
+    <p>The radiation-consolidation cycles are real, but look closer: they're cycling between variants of the same body. Species differ in neural weights, not morphology. The tree branches hundreds of times and every branch leads to the same destination. Three nodes. Two mouths. No sensors.</p>
+    <p>The lesson is blunt. Give evolution a world where food is abundant, lifespans are short, and bigger bodies cost more without doing more&thinsp;&mdash;&thinsp;and it will discover that the best body is the smallest one. The simulation didn't fail. It answered the question honestly. The wrong answer just means we asked the wrong question.</p>
   </div>
 
   <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
@@ -287,16 +291,16 @@
   <!--                   PART 2                    -->
   <!-- ═══════════════════════════════════════════ -->
 
-  <div class="essay reveal" id="part-2">
-    <h3>Part 2</h3>
-    <h2>What happens when we fix the rules?</h2>
-    <p>Part 1 revealed the limits of the simulation's design. If bigger bodies offer no advantage, evolution will shrink them. If sensors provide too little information, evolution will eliminate them. If eating and attacking use the same signal, every organism becomes a predator by default. The rules shaped the outcome.</p>
-    <p>Part 2 changes the rules. Bodies are physically larger and mechanically advantageous&thinsp;&mdash;&thinsp;more nodes generate more force. Sensors provide richer information: food type, direction, organism size. Eating and attacking are separate neural outputs, allowing pure herbivores and dedicated predators to emerge independently. Food is scarcer, making predation a viable alternative to foraging. Lifespans are three times longer, giving complex behaviors time to pay off. And for the first time, organisms can mate&thinsp;&mdash;&thinsp;sexual reproduction between genetically similar organisms produces crossover offspring.</p>
-    <p>300,000 ticks. 457 generations. Mass extinctions, fragile recoveries, and an ecosystem that never stops evolving.</p>
-    <p><a href="/projects/primordial/part-2/" style="color:#9aaa3a;">Read Part 2 &rarr;</a></p>
+  <div class="part-nav">
+    <div class="part-nav-item part-nav-prev">
+      <span class="part-nav-label">&larr; Overview</span>
+      <a href="/projects/primordial/" class="part-nav-link">Primordial: Neuroevolution</a>
+    </div>
+    <div class="part-nav-item part-nav-next">
+      <span class="part-nav-label">Next &rarr;</span>
+      <a href="/projects/primordial/part-2/" class="part-nav-link">Part 2: Fixing the Rules</a>
+    </div>
   </div>
-
-  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
 
   <!-- ═══════════════════════════════════════════ -->
   <!--              TECHNICAL DETAILS              -->
@@ -351,9 +355,9 @@
   <div class="essay reveal">
     <h3>System</h3>
     <h2>What emerges</h2>
-    <p>Over 100,000 simulation ticks, a founding population of 50 organisms produces 128 generations and 4,345 distinct evolutionary events. The ecosystem cycles between high diversity (36 species during radiation) and low diversity (9 during competitive exclusion) in three full radiation-consolidation cycles. Population self-regulates between 250 and 310 through energy costs, aging, and resource competition&thinsp;&mdash;&thinsp;no hard cap needed.</p>
-    <p>The most unexpected emergent behavior: the generation counter doesn't climb monotonically. Highly evolved lineages go extinct and are replaced by younger ones. The simulation discovers that evolutionary fitness at the individual level can reduce diversity at the ecosystem level&thinsp;&mdash;&thinsp;the fittest organisms simplify their ecosystems rather than enriching them.</p>
-    <p>The simulation engine uses NumPy-vectorized spring physics and spatial hash grids for O(1) neighbor queries. A two-pass export system runs the full simulation for event detection, then replays with the same seed to capture frames at narrative moments for D3.js visualization on Canvas.</p>
+    <p>50 organisms. 100,000 ticks. 128 generations. 4,345 evolutionary events. The ecosystem cycles between radiation (36 species) and consolidation (9 species) three times. Population self-regulates between 250 and 310 without any hard cap&thinsp;&mdash;&thinsp;energy costs and finite food do the work.</p>
+    <p>The most unexpected result: the generation counter doesn't climb steadily. Highly evolved lineages go extinct and get replaced by younger ones. The fittest organisms don't enrich their ecosystems. They simplify them.</p>
+    <p>Under the hood: NumPy-vectorized spring physics, spatial hash grids for O(1) neighbor queries, and a two-pass export system that runs the full simulation for event detection then replays deterministically to capture frames at narrative moments.</p>
   </div>
 
   <!-- TECH STACK -->

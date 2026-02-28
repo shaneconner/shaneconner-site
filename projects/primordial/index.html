@@ -52,10 +52,25 @@
   <!-- OVERVIEW -->
   <div class="essay reveal">
     <h3>The Project</h3>
-    <h2>Artificial life through evolutionary computation</h2>
-    <p>Primordial is an evolutionary life simulation. Organisms have spring-mass bodies with evolvable morphology and feedforward neural networks that control locomotion, feeding, and reproduction. There is no loss function, no gradient descent, and no reward shaping. Organisms that accumulate enough energy reproduce. Those that don't, die. Everything else&thinsp;&mdash;&thinsp;body shape, behavior, predation, cooperation, speciation&thinsp;&mdash;&thinsp;emerges from the physics.</p>
-    <p>The simulation runs in a continuous 2D world with toroidal topology. Plant resources spawn over time, dead organisms decay into meat, and decayed matter fertilizes new plant growth. Bodies are graphs of point masses connected by springs: bones for structure, muscles for locomotion, sensors for perception, mouths for feeding, fat for energy storage, armor for defense. Each node type has a metabolic cost, creating natural pressure for efficient design.</p>
-    <p>Primordial is a multi-part investigation. Each part explores a different set of rules and constraints, revealing how small changes to the simulation's mechanics produce dramatically different evolutionary outcomes. The question isn't what organisms <em>can</em> evolve&thinsp;&mdash;&thinsp;it's what they <em>will</em> evolve, given the rules of the world they inhabit.</p>
+    <h2>What evolves when nothing is designed?</h2>
+    <p>Drop fifty organisms into a world with food, physics, and nothing else. No loss function. No gradient descent. No one telling them what to optimize for. They have spring-mass bodies they didn't choose and neural networks they didn't train. The ones that find food survive long enough to reproduce. The ones that don't, disappear. That's it. That's the entire system.</p>
+    <p>What happens next is the interesting part.</p>
+    <p>Bodies change shape. Sensors appear, persist, go extinct. Predators emerge not because anyone programmed predation, but because eating other organisms turned out to be a viable energy strategy. Species radiate into empty niches, then consolidate as the winners crowd everyone else out. Whole lineages vanish in a bad thousand ticks. The technical term is <em>neuroevolution</em>&thinsp;&mdash;&thinsp;evolutionary algorithms optimizing neural network architecture, weights, and morphology simultaneously&thinsp;&mdash;&thinsp;but what it looks like is a miniature history of life, playing out in fast-forward on a laptop.</p>
+  </div>
+
+  <div class="essay reveal">
+    <h3>The Question</h3>
+    <h2>How much does the environment decide?</h2>
+    <p>Change one number&thinsp;&mdash;&thinsp;the rate food spawns&thinsp;&mdash;&thinsp;and evolution produces completely different organisms. Abundant food? Every creature converges on the same minimal body: a core and two mouths. Why waste energy on sensors when lunch is everywhere? Cut the food supply in half and suddenly sensors matter, bones matter, fat stores matter. Bodies diversify. Predation becomes worth the risk. Mass extinctions happen. The ecosystem never settles.</p>
+    <p>The organisms are a reaction to their world. Tweak sensory fidelity, metabolic costs, reproduction mechanics, lifespan&thinsp;&mdash;&thinsp;and the entire evolutionary trajectory shifts. Same algorithm, same physics, same neural network architecture. Different rules, different creatures. The environment isn't just the backdrop. It's the author.</p>
+  </div>
+
+  <div class="essay reveal">
+    <h3>Why It Matters</h3>
+    <h2>Tiny brains with real applications</h2>
+    <p>The neural networks that survive in Primordial are absurdly small. A few dozen weights. No hidden layers worth mentioning. And yet they produce organisms that navigate, forage, flee, hunt, and reproduce&thinsp;&mdash;&thinsp;behaviors that would take thousands of lines of hand-written control logic to approximate. Evolution finds solutions that engineers wouldn't think to try, and it finds them in architectures small enough to fit on a microcontroller.</p>
+    <p>That smallness is the point. Train an agent in a simulated biological environment&thinsp;&mdash;&thinsp;a bloodstream, a tissue matrix, a neural pathway&thinsp;&mdash;&thinsp;and the surviving controller is lightweight enough to transfer onto physical nanotechnology. Nanobots that navigate toward pathological cells. Targeted cancer treatment. Infection response. Plaque removal. The evolutionary approach doesn't need you to hand-design the control policy. You design the environment, define survival, and let selection pressure do the engineering. The "brain" that comes out the other end is battle-tested, minimal, and deployable at scales where every byte of model weight counts.</p>
+    <p>That's the long game. For now, Primordial is a sandbox for watching evolution work&thinsp;&mdash;&thinsp;and for understanding why it produces what it produces.</p>
   </div>
 
   <div class="stats-row reveal">
@@ -81,15 +96,15 @@
 
   <!-- PARTS -->
   <div class="essay reveal">
-    <h3>The Investigation</h3>
-    <h2>Two experiments, two outcomes</h2>
+    <h3>The Experiments</h3>
+    <h2>Same algorithm. Different rules. Different life.</h2>
   </div>
 
   <div class="primordial-parts reveal">
     <a href="/projects/primordial/part-1/" class="primordial-part-card">
       <h3>Part 1</h3>
       <h4>Emergent Behaviors &amp; Neuroevolution</h4>
-      <p>The first run reveals what happens when evolution is given free rein with abundant resources and simple senses. 100,000 ticks produce 128 generations, radiation-consolidation cycles, and a surprising convergence: every organism evolves toward the same minimal body plan. The simulation discovers that simplicity beats complexity when the rules don't reward size.</p>
+      <p>Abundant food, simple senses, short lives. Evolution gets free rein and makes a choice no one expected: it strips organisms down to the bare minimum. Every creature converges on the same 3-node body. Sensors go extinct. The simulation discovers that when the rules don't reward complexity, complexity dies.</p>
       <div class="primordial-part-stats">
         <span>100k ticks</span>
         <span>128 generations</span>
@@ -99,7 +114,7 @@
     <a href="/projects/primordial/part-2/" class="primordial-part-card">
       <h3>Part 2</h3>
       <h4>Fixing the Rules</h4>
-      <p>Seven changes to the simulation mechanics. Larger bodies, richer sensors, separate eat and attack signals, scarcer resources, sexual reproduction, longer lifespans, and mechanical advantages for complexity. The result: mass extinctions, fragile recoveries, boom-bust species cycles, and an ecosystem that never reaches equilibrium.</p>
+      <p>Cut the food. Triple the lifespan. Give sensors real information and bodies a reason to grow. Seven changes to the rules, and the ecosystem comes alive. Mass extinctions. Fragile recoveries. Species that radiate and collapse in boom-bust cycles. 457 generations of organisms that never stop adapting.</p>
       <div class="primordial-part-stats">
         <span>300k ticks</span>
         <span>457 generations</span>

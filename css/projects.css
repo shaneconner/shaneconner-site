@@ -358,6 +358,142 @@
 
 .back-link:hover { color: var(--cream); }
 
+/* Part context bar (top of multi-part pages) */
+.part-context {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 1.2rem 3rem 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.part-context a {
+  color: var(--text-dim);
+  text-decoration: none;
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 300;
+  transition: color 0.3s ease;
+}
+
+.part-context a:hover { color: var(--cream); }
+
+.part-indicator {
+  font-size: 0.62rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  font-weight: 300;
+}
+
+/* Prev/next navigation (bottom of multi-part pages) */
+.part-nav {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 3rem 3rem;
+  display: flex;
+  justify-content: space-between;
+  gap: 2rem;
+  border-top: 1px solid var(--border);
+}
+
+.part-nav-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.part-nav-next { text-align: right; margin-left: auto; }
+
+.part-nav-label {
+  font-size: 0.58rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  font-weight: 300;
+}
+
+.part-nav-link {
+  color: var(--green-bright, #b5c44a);
+  text-decoration: none;
+  font-size: 0.82rem;
+  font-weight: 300;
+  transition: color 0.3s ease;
+}
+
+.part-nav-link:hover { color: var(--cream); }
+
+/* Primordial landing page part cards */
+.primordial-parts {
+  max-width: 780px;
+  margin: 0 auto 3rem;
+  padding: 0 3rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.primordial-part-card {
+  display: block;
+  padding: 1.8rem;
+  border: 1px solid var(--border);
+  text-decoration: none;
+  color: var(--text);
+  transition: border-color 0.3s ease, background 0.3s ease;
+}
+
+.primordial-part-card:hover {
+  border-color: var(--green-dim, rgba(154,170,58,0.35));
+  background: rgba(154, 170, 58, 0.04);
+}
+
+.primordial-part-card h3 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--green);
+  margin: 0 0 0.5rem;
+  font-weight: 400;
+}
+
+.primordial-part-card h4 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.05rem;
+  font-weight: 300;
+  color: var(--cream);
+  margin: 0 0 0.8rem;
+  line-height: 1.35;
+}
+
+.primordial-part-card p {
+  font-size: 0.78rem;
+  line-height: 1.6;
+  color: var(--text-dim);
+  margin: 0 0 1rem;
+}
+
+.primordial-part-stats {
+  display: flex;
+  gap: 1.2rem;
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  font-weight: 300;
+}
+
+@media (max-width: 768px) {
+  .primordial-parts {
+    grid-template-columns: 1fr;
+    padding: 0 1.5rem;
+  }
+  .part-context { padding: 1rem 1.5rem 0; }
+  .part-nav { padding: 2rem 1.5rem; }
+}
+
 /* Chores page additions */
 .domain-chips {
   display: flex;

@@ -79,9 +79,9 @@
   <div class="essay reveal">
     <h3>The Architecture</h3>
     <h2>Seven APIs feed one unified schema</h2>
-    <p>The system starts with Spotify as the canonical source: tracks, albums, artists, and playlists all keyed on Spotify IDs. From there, an enrichment pipeline fans out to six additional data sources, each contributing a different dimension of understanding. Last.fm adds listening history, scrobble patterns, and similarity networks. MusicBrainz provides authoritative metadata: ISRCs, recording relationships, and disambiguation. ListenBrainz contributes open community listening data and collaborative filtering. Deezer adds audio previews and an independent recommendation graph. Discogs provides physical release data and artist lineage. Genius brings lyrics and annotations.</p>
-    <p>All of this collapses into a single normalized SQLite database: 27 tables in a relational schema designed so that any entity (track, artist, album, genre) can be enriched from any source without duplication. A token-bucket rate limiter manages API quotas across all seven services, and the enrichment pipeline handles cross-referencing through external ID mapping.</p>
-    <p>The result is a graph where <em>every track exists in context</em>: its genre lineage, its artist's collaborators, its acoustic neighbors, its listening frequency, and its discovery provenance.</p>
+    <p>Spotify is the spine&thinsp;&mdash;&thinsp;tracks, albums, artists, all keyed on Spotify IDs. From there, six other sources feed in. Last.fm brings listening history and artist similarity. MusicBrainz adds authoritative metadata and recording relationships. ListenBrainz contributes community listening data. Deezer has audio previews and its own recommendation graph. Discogs has physical release lineage. Genius has lyrics.</p>
+    <p>Everything collapses into a single SQLite database: 27 tables, designed so any entity can be enriched from any source without duplication. A rate limiter keeps seven APIs happy simultaneously. Cross-referencing happens automatically through external ID mapping.</p>
+    <p>The result: every track exists in context. Its genre lineage. Its artist's collaborators. Its acoustic neighbors. How often you listen to it and where you found it.</p>
   </div>
 
   <!-- PIPELINE FLOW -->
