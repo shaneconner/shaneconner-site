@@ -138,3 +138,60 @@ Either way, this is interesting — the ecosystem is supporting fewer but potent
 - The repeated collapses to 3-4 species — is it always the *same* species surviving, or different ones each time?
 - Pass 1 should finish in ~1 hour. Then Pass 2 frame capture begins.
 - Part 1 timeline export at tick 65k — should finish in ~1.5 hours.
+
+---
+
+## Check-in 4 (tick ~285k, 95% through Pass 1)
+
+### Key Numbers
+- Pop: 83-122 band, confirming the lower carrying capacity (~95 avg)
+- Species: increasingly volatile — floor dropping to **5-6** regularly
+- Generation: **438** — crossed gen 400 at tick ~263k
+- Events: 5,554 total
+- Speed: 22 t/s (slightly faster with smaller populations)
+- **Pass 1 finishes in ~12 minutes!**
+
+### Narrative Moments (ticks 222-285k)
+
+**Gen 400 — Deep Time (tick ~263k):**
+Generation 400. These organisms have been through 400 rounds of selection, crossover, and mutation. For context: Part 1's *entire* 100k-tick run produced only 128 generations. Part 2 has produced 3.4x more evolutionary refinement. The generation rate has held steady at ~1.6 gen/1k ticks for the entire back half of the sim — no slowdown, no plateau. Evolution hasn't "finished."
+
+**Species Floor Dropping (ticks 230-285k):**
+A concerning/fascinating trend: the minimum species count keeps getting lower. Early sim (0-90k): species never dropped below 9. Post-mass-extinction (142k+): regularly hits 3-4. Now in deep time (230k+): hitting 5-6 at ticks 235k, 259k, 283-285k. The ecosystem is becoming increasingly dominated by a smaller number of highly optimized species. New species emerge (bursts to 14-16) but get outcompeted quickly. The incumbents are just too good.
+
+**Population Stability Paradox:**
+Despite the species volatility, population is remarkably stable in the 83-122 range. The ecosystem can support ~95 organisms regardless of whether there are 5 species or 16. This suggests the total biomass/energy budget is the constraint, not species diversity. When species count drops to 5, those 5 species simply expand to fill the available energy.
+
+**The Endgame Pattern:**
+The sim is settling into a clear late-game rhythm:
+- 3-6 dominant species occupy most of the population
+- Periodic bursts of speciation create 10-16 species
+- New species get outcompeted within ~10-15k ticks
+- Cycle repeats
+This is actually very similar to real ecosystems — dominant species persist for long periods, punctuated by adaptive radiations that mostly fail.
+
+### Final Story Arc (Complete)
+1. **Genesis → Collapse** (0-5k): Brutal start, food scarcity
+2. **Cambrian Explosion** (5-10k): 25 species from chaos
+3. **Oscillation** (10-30k): Wild competitive swings
+4. **Consolidation** (30-60k): Winners emerge, gen counter accelerates
+5. **Maturation** (60-90k): Steady evolution, gen 100
+6. **Second Radiation** (90-95k): Burst of speciation
+7. **Golden Age** (95-125k): Comfortable equilibrium, ~125 pop, 12-16 species
+8. **Mass Extinction** (125-142k): Pop crashes 42%, species → 3
+9. **Fragile Recovery** (142-170k): Rebuilds to lower carrying capacity
+10. **Boom-Bust Cycles** (170-220k): Repeated near-extinctions and radiations
+11. **Deep Time** (220-285k): Gen 400+, dominant species regime, periodic failed radiations
+12. **?** (285-300k): Final state TBD
+
+### Final Numbers Comparison (Part 2 at 285k vs Part 1 at 100k)
+| Metric | Part 1 (100k, final) | Part 2 (285k) |
+|--------|---------------------|---------------|
+| Population | ~282 | ~95 |
+| Species | ~22 | ~6-11 |
+| Generation | 128 | 438 |
+| Events | 4,345 | 5,554 |
+| Gen rate | 1.3/1k ticks | 1.6/1k ticks |
+| Body diversity | None | TBD (need clips!) |
+
+Part 2 has 3.4x the evolutionary depth in 2.85x the runtime. Fewer organisms, fewer species, but far more refined.
