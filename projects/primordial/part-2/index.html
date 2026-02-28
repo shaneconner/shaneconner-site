@@ -24,6 +24,9 @@
 
   <link rel="stylesheet" href="/css/shared.css" />
   <link rel="stylesheet" href="/css/projects.css" />
+
+  <script src="https://d3js.org/d3.v7.min.js" defer></script>
+  <script src="/js/primordial-charts.js" defer></script>
 </head>
 <body>
 
@@ -51,7 +54,7 @@
 
   <div class="part-context">
     <a href="/projects/primordial/">&larr; Primordial</a>
-    <span class="part-indicator">Part 2 of 2</span>
+    <span class="part-indicator">Part 2</span>
   </div>
 
   <!-- THE PREMISE -->
@@ -59,7 +62,7 @@
     <h3>The Redesign</h3>
     <h2>What happens when you fix the rules?</h2>
     <p><a href="/projects/primordial/part-1/" style="color:#9aaa3a;">Part 1</a> ended with every organism wearing the same body. Three nodes. A core and two mouths. No sensors, no muscles, no bones. Evolution had done exactly what it was supposed to&thinsp;&mdash;&thinsp;optimize for survival&thinsp;&mdash;&thinsp;and survival meant stripping everything away. The problem wasn't evolution. The problem was the world.</p>
-    <p>Part 2 rebuilds the world. Bodies are bigger and mechanically advantageous&thinsp;&mdash;&thinsp;more nodes means more force. Sensors feed six inputs instead of three, including food type and organism size, making awareness actually worth the metabolic cost. Eating and attacking split into separate neural outputs, so herbivores and predators can evolve independently. Food spawns at half the rate. Lifespans triple. Bones reduce drag. Fat helps reproduction. And organisms can mate&thinsp;&mdash;&thinsp;sexual reproduction with genome crossover, for the first time.</p>
+    <p>Part 2 rebuilds the world. Bodies are bigger and mechanically advantageous: more nodes means more force. Sensors feed six inputs instead of three, including food type and organism size, making awareness actually worth the metabolic cost. Eating and attacking split into separate neural outputs, so herbivores and predators can evolve independently. Food spawns at half the rate. Lifespans triple. Bones reduce drag. Fat helps reproduction. And organisms can mate, with genome crossover, for the first time.</p>
     <p>Seven changes. Same algorithm. Radically different life.</p>
   </div>
 
@@ -73,8 +76,8 @@
   <div class="essay reveal">
     <h3>Chapter I</h3>
     <h2>Harsh Beginnings</h2>
-    <p>Fifty organisms are dropped into a world with half the food of Part 1. The scarcity hits immediately. Within 1,000 ticks, the population crashes from 50 to just 20&thinsp;&mdash;&thinsp;a 60% die-off in the first moments. Only 3 species survive the initial bottleneck. In Part 1, the founding population had enough resources to decline gently. Here, it's a massacre.</p>
-    <p>But the survivors are different from Part 1's founders. Their bodies are physically larger&thinsp;&mdash;&thinsp;8 units of spread instead of 1.5. They're visible structures in the world, not invisible dots. And the ones that survive have neural networks that, by chance, produce food-seeking behavior strong enough to overcome the scarcity. These three lineages will father hundreds of species.</p>
+    <p>Fifty organisms are dropped into a world with half the food of Part 1. The scarcity hits immediately. Within 1,000 ticks, the population crashes from 50 to just 20. A 60% die-off in the first moments. Only 3 species survive the initial bottleneck. In Part 1, the founding population had enough resources to decline gently. Here, it's a massacre.</p>
+    <p>But the survivors are different from Part 1's founders. Their bodies are physically larger, 8 units of spread instead of 1.5. They're visible structures in the world, not invisible dots. And the ones that survive have neural networks that, by chance, produce food-seeking behavior strong enough to overcome the scarcity. These three lineages will father hundreds of species.</p>
   </div>
 
   <div class="essay-wide">
@@ -110,8 +113,8 @@
   <div class="essay reveal">
     <h3>Chapter III</h3>
     <h2>The Cambrian Moment</h2>
-    <p>At tick 8,000, with only 88 organisms alive, the simulation reaches peak species diversity: <strong>25 species</strong>. That's nearly one species per 3.5 organisms&thinsp;&mdash;&thinsp;an incredibly fragmented ecosystem where most species are represented by just a handful of individuals.</p>
-    <p>This is Part 2's Cambrian Explosion, and it's fundamentally different from Part 1's. In Part 1, peak diversity came with peak population&thinsp;&mdash;&thinsp;lots of organisms, lots of species, but all converging on the same body plan. Here, peak diversity comes at low population. These aren't clones with slightly different weights. The bodies are visible, the node counts vary, and the species occupy genuinely different niches.</p>
+    <p>At tick 8,000, with only 88 organisms alive, the simulation reaches peak species diversity: <strong>25 species</strong>. Nearly one species per 3.5 organisms. An incredibly fragmented ecosystem where most species are represented by just a handful of individuals.</p>
+    <p>This is Part 2's Cambrian Explosion, and it's fundamentally different from Part 1's. In Part 1, peak diversity came with peak population: lots of organisms, lots of species, but all converging on the same body plan. Here, peak diversity comes at low population. These aren't clones with slightly different weights. The bodies are visible, the node counts vary, and the species occupy genuinely different niches.</p>
     <p>Most of these 25 species won't survive. They're evolutionary experiments, most of which will fail. But the ones that succeed will define the ecosystem for the next 100,000 ticks.</p>
   </div>
 
@@ -129,8 +132,8 @@
   <div class="essay reveal">
     <h3>Chapter IV</h3>
     <h2>Deep Evolution</h2>
-    <p>By tick 66,000, the simulation crosses generation 100&thinsp;&mdash;&thinsp;in two-thirds the time it took Part 1 to reach generation 128. The scarcer resources create more selective pressure, forcing constant adaptation. Organisms die from competition, not old age, despite having lifespans three times longer.</p>
-    <p>The generation counter doesn't climb smoothly. It wobbles. At tick 102,000 it reaches 156, then drops to 147 by tick 103,000, then climbs back to 157 by tick 110,000. The most evolved organisms are dying. The bleeding edge of evolution is being culled. Survivors from earlier generations persist while the newest experiments fail. Evolution isn't a smooth march forward&thinsp;&mdash;&thinsp;it's a jagged frontier where innovation is punished as often as it's rewarded.</p>
+    <p>By tick 66,000, the simulation crosses generation 100. Two-thirds the time it took Part 1 to reach generation 128. The scarcer resources create more selective pressure, forcing constant adaptation. Organisms die from competition, not old age, despite having lifespans three times longer.</p>
+    <p>The generation counter doesn't climb smoothly. It wobbles. At tick 102,000 it reaches 156, then drops to 147 by tick 103,000, then climbs back to 157 by tick 110,000. The most evolved organisms are dying. The bleeding edge of evolution is being culled. Survivors from earlier generations persist while the newest experiments fail. Evolution isn't a smooth march forward. It's a jagged frontier where innovation is punished as often as it's rewarded.</p>
     <p>Between ticks 30,000 and 90,000, the ecosystem consolidates. Winners emerge. Species count settles from the wild 20+ swings of early life to a more stable 12-16. The population finds a carrying capacity of about 125 organisms&thinsp;&mdash;&thinsp;roughly half of Part 1's 280. Fewer organisms, but each one has been through more rounds of selection.</p>
   </div>
 
@@ -148,8 +151,8 @@
   <div class="essay reveal">
     <h3>Chapter V</h3>
     <h2>Mass Extinction</h2>
-    <p>Around tick 126,000, the ecosystem breaks. Population plummets from 125 to 73&thinsp;&mdash;&thinsp;a 42% crash. Species collapse from 18 to just <strong>3</strong>. Three species out of hundreds that had existed. This isn't the gentle oscillation of the earlier era. It's a genuine mass extinction event.</p>
-    <p>The cause is likely competitive: a few species became so dominant that they suppressed all others, then their own population outstripped the food supply. With no diversity to buffer the crash, the entire ecosystem nearly collapses. The simulation's anti-extinction safeguards don't trigger&thinsp;&mdash;&thinsp;the population never drops below the minimum floor&thinsp;&mdash;&thinsp;but it comes dangerously close.</p>
+    <p>Around tick 126,000, the ecosystem breaks. Population plummets from 125 to 73. A 42% crash. Species collapse from 18 to just <strong>3</strong>. Three species out of hundreds that had existed. This isn't the gentle oscillation of the earlier era. It's a genuine mass extinction event.</p>
+    <p>The cause is likely competitive: a few species became so dominant that they suppressed all others, then their own population outstripped the food supply. With no diversity to buffer the crash, the entire ecosystem nearly collapses. The simulation's anti-extinction safeguards don't trigger (the population never drops below the minimum floor), but it comes dangerously close.</p>
     <p>The ecosystem never fully recovers. Pre-extinction carrying capacity was ~125 organisms. Post-extinction, it stabilizes around 95. The population permanently shifts to a lower level. The three surviving species rebuild the world, but they build a smaller one.</p>
   </div>
 
@@ -224,6 +227,48 @@
     </div>
   </div>
 
+  <!-- ═══════════════════════════════════════════ -->
+  <!--              DATA ANALYSIS                  -->
+  <!-- ═══════════════════════════════════════════ -->
+
+  <div class="essay reveal">
+    <h3>The Data</h3>
+    <h2>300,000 ticks in three charts</h2>
+    <p>The narrative above tells the story. The charts below show the numbers. Population, species count, and generation depth&thinsp;&mdash;&thinsp;tracked every 100 ticks across the full run. The colored phases correspond to the chapters: initial struggle, Cambrian bloom, long consolidation, mass extinction, and the late-era cycles that never settle.</p>
+  </div>
+
+  <div class="essay-wide">
+    <div class="viz-container reveal">
+      <p class="viz-title">Ecosystem Timeline</p>
+      <div id="ecosystem-timeline" data-timeline-src="/data/primordial-timeline-p2.json" style="width:100%;"></div>
+      <p class="viz-caption">Population (green, left axis), species count (gold, right axis), and max generation (grey, right axis). Hover for exact values at any tick. Phase colors show: Struggle, Bloom, Consolidation, Extinction, Late Life.</p>
+    </div>
+  </div>
+
+  <div class="essay reveal">
+    <p>The streamgraph below shows every species that ever lived as a colored band. Width = population. Watch the early explosion of color, the long dominance of a few survivors, the extinction event that wipes the palette nearly clean, and the tentative new colors that appear in the aftermath.</p>
+  </div>
+
+  <div class="essay-wide">
+    <div class="viz-container reveal">
+      <p class="viz-title">Species Dynamics</p>
+      <div id="species-stream" style="width:100%;"></div>
+      <p class="viz-caption">Streamgraph of species populations over time. Each colored band is one species. Wider = more organisms. Hover for species ID and peak population.</p>
+    </div>
+  </div>
+
+  <div class="essay reveal">
+    <p>Body composition tells the morphological story. Part 1 collapsed to pure mouths. Part 2 is more interesting: bones, sensors, and muscle all persist at non-trivial levels through the early and middle eras. The late game trends toward mouth dominance again, but the path there is far more diverse.</p>
+  </div>
+
+  <div class="essay-wide">
+    <div class="viz-container reveal">
+      <p class="viz-title">Body Composition Over Time</p>
+      <div id="body-composition" style="width:100%;"></div>
+      <p class="viz-caption">Stacked area chart of total node types across the population. Core (cream), bone (grey), muscle (red), sensor (blue), mouth (gold), fat (green), armor (purple). Hover for details.</p>
+    </div>
+  </div>
+
   <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
 
   <!-- ═══════════════════════════════════════════ -->
@@ -244,12 +289,28 @@
 
   <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
 
+  <!-- ═══════════════════════════════════════════ -->
+  <!--              PART 3 TEASER                  -->
+  <!-- ═══════════════════════════════════════════ -->
+
+  <div class="essay reveal">
+    <h3>What's Next</h3>
+    <h2>Part 3: The Environment Fights Back</h2>
+    <p>Parts 1 and 2 share one limitation: the world never changes. Food spawns at the same rate from tick 1 to tick 300,000. Temperature, terrain, resource distribution&thinsp;&mdash;&thinsp;all static. The organisms adapt, but the environment doesn't push back.</p>
+    <p>Part 3 changes that. Seasonal resource cycles. Sudden environmental shocks&thinsp;&mdash;&thinsp;food crashes that hit without warning and recover slowly. Spatial resource gradients that create geographic pressure. The question: does a dynamic environment produce more durable diversity, or does it wipe the slate clean even faster?</p>
+    <p>Part 2's organisms converged toward mouth dominance by the end, the same way Part 1's did&thinsp;&mdash;&thinsp;just slower and messier. If the environment shifts underfoot, that convergence might never happen. Or it might happen repeatedly, with different winners each time. The only way to find out is to run it.</p>
+  </div>
+
+  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+
   <div class="part-nav">
     <div class="part-nav-item part-nav-prev">
       <span class="part-nav-label">&larr; Previous</span>
       <a href="/projects/primordial/part-1/" class="part-nav-link">Part 1: Emergent Behaviors</a>
     </div>
     <div class="part-nav-item part-nav-next">
+      <span class="part-nav-label">Coming Soon &rarr;</span>
+      <span class="part-nav-link" style="opacity:0.5;">Part 3: The Environment Fights Back</span>
     </div>
   </div>
 

@@ -544,15 +544,27 @@
     });
   }
 
+  // Determine data source: check for data-timeline-src on any chart container
+  function getTimelineURL() {
+    var ids = Object.keys(vizMap);
+    for (var i = 0; i < ids.length; i++) {
+      var el = document.getElementById(ids[i]);
+      if (el && el.dataset.timelineSrc) return el.dataset.timelineSrc;
+    }
+    return '/data/primordial-timeline.json';
+  }
+
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function () {
-      loadJSON('/data/primordial-timeline.json').then(function (d) {
+      var url = getTimelineURL();
+      loadJSON(url).then(function (d) {
         if (d) timelineData = d;
         initCharts();
       });
     });
   } else {
-    loadJSON('/data/primordial-timeline.json').then(function (d) {
+    var url = getTimelineURL();
+    loadJSON(url).then(function (d) {
       if (d) timelineData = d;
       initCharts();
     });
