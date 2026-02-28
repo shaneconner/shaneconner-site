@@ -63,8 +63,8 @@
   <div class="essay reveal">
     <h3>Architecture</h3>
     <h2>From raw data to portfolio decisions</h2>
-    <p>The system processes multiple data streams through specialized feature engineering, classifies market regimes, screens the full equity universe through a nine-model ensemble, allocates capital via multi-seed reinforcement learning, and validates every decision through LLM consultation before execution.</p>
-    <p>Click any node below to learn what it does.</p>
+    <p>Raw data comes in. Portfolio weights come out. In between: regime detection figures out what kind of market we're in, nine ML models independently rank the equity universe, an RL agent decides how much capital goes where, and multiple LLMs review the final allocation before anything executes.</p>
+    <p>Click any node below to see what it does.</p>
   </div>
 
   <div class="essay-wide">
@@ -129,7 +129,7 @@
   <!-- MARKET REGIMES -->
   <div class="essay reveal">
     <h2>Market regime awareness</h2>
-    <p>Markets cycle through distinct regimes: expansion, contraction, high volatility, and recovery. Each regime demands a different allocation strategy. The system classifies the current state using VIX levels, trend indicators, and yield curve signals; the RL agent then conditions its policy on the detected regime.</p>
+    <p>What works in a bull market will get you killed in a crash. The system detects four regimes&thinsp;&mdash;&thinsp;expansion, contraction, high volatility, recovery&thinsp;&mdash;&thinsp;using VIX levels, trend indicators, and yield curve signals. The RL agent knows which regime it's in and adjusts accordingly. Different market, different policy.</p>
   </div>
 
   <div class="essay-wide">
@@ -146,8 +146,8 @@
   <div class="essay reveal">
     <h3>Signal Extraction</h3>
     <h2>Nine models, nine perspectives</h2>
-    <p>The system doesn't rely on a single prediction. It orchestrates an ensemble of machine learning architectures, each bringing a different inductive bias to the same problem. Gradient-boosted trees capture nonlinear feature interactions. Attention-based transformers learn cross-sectional relationships across the universe. Regularized linear models provide stability anchors that prevent the ensemble from overfitting to noise.</p>
-    <p>Each architecture ranks the investable universe independently. When diverse models converge on the same names, confidence is structurally higher. When they diverge, the <em>disagreement itself becomes a risk signal</em>: a measure of epistemic uncertainty that feeds into downstream allocation decisions.</p>
+    <p>No single model sees the whole picture. Gradient-boosted trees are good at nonlinear feature interactions. Transformers learn which assets move together across the universe. Regularized linear models keep things grounded and resist overfitting. Nine architectures, nine different ways of looking at the same data.</p>
+    <p>Each model ranks the investable universe independently. When they converge on the same names, that agreement means something. When they disagree, <em>the disagreement itself is a signal</em>&thinsp;&mdash;&thinsp;a measure of how uncertain the system should be, which feeds directly into how much capital it's willing to commit.</p>
   </div>
 
   <div class="essay-wide">
@@ -200,7 +200,7 @@
   <div class="essay reveal">
     <h3>Capabilities</h3>
     <h2>What it does</h2>
-    <p>The system autonomously processes multi-source financial data through nine independent ML architectures, screens the full equity universe, selects top candidates for a multi-seed reinforcement learning allocator, and synthesizes a final portfolio through LLM-reviewed decision making. Every step logged, auditable, and continuously learning.</p>
+    <p>Nine models screen the universe. An RL agent allocates capital across eight independent policy seeds. Three LLM analysts review every trade before execution. A hierarchical memory compresses experience into something that looks a lot like intuition. Every decision logged. Every rationale preserved. The system gets sharper with every market day it survives.</p>
   </div>
 
   <div class="stats-row reveal">

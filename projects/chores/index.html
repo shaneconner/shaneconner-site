@@ -53,8 +53,8 @@
   <div class="essay reveal">
     <h3>The Problem</h3>
     <h2>Most task trackers are isolated checkboxes</h2>
-    <p>Traditional to-do systems treat every task as independent. Check a box and nothing else updates. No relationship awareness. No adaptive cadence. No memory of context beyond completion history.</p>
-    <p>This project flips that model: every log hits a shared hierarchy, and scheduling continuously adapts from actual behavior. Exercise is the easiest place to visualize the hierarchy, but the same engine powers household, hygiene, wellness, and admin routines.</p>
+    <p>Check a box in a normal to-do app and nothing else happens. The box doesn't know it's related to other boxes. It doesn't remember when you last checked it, or how often you tend to. It certainly doesn't adjust its own schedule based on what you actually do.</p>
+    <p>This project treats tasks as a graph, not a list. Log one thing and updates ripple through every parent category it belongs to. Scheduling adapts from real behavior. Exercise is the clearest place to see it&thinsp;&mdash;&thinsp;the hierarchy is deep and the tags are dense&thinsp;&mdash;&thinsp;but the same engine runs household cleaning, plant care, hygiene, and wellness routines.</p>
   </div>
 
   <div class="essay-wide reveal">
@@ -73,8 +73,8 @@
   <div class="essay reveal">
     <h3>The Insight</h3>
     <h2>One log can update an entire graph</h2>
-    <p>When you log one leaf task, the system recursively updates every parent it belongs to. That means one click can update specific leaves, intermediate groups, and broad rollups in a single pass.</p>
-    <p>The visualization below uses exercise because it has dense multi-tag structure (movement, muscles, equipment, energy, objective, type), making the propagation effect obvious.</p>
+    <p>Log one exercise&thinsp;&mdash;&thinsp;say, a kettlebell Bulgarian split squat&thinsp;&mdash;&thinsp;and the system walks up every parent it belongs to. That single log updates "legs," "unilateral," "kettlebell," "strength," and "exercise" all at once. One action, dozens of nodes touched.</p>
+    <p>Exercise is the best place to see this because the tagging runs six dimensions deep: movement pattern, muscles, equipment, energy system, objective, type. The graph below lets you explore the full hierarchy.</p>
   </div>
 
   <!-- SUNBURST -->
@@ -89,7 +89,7 @@
   <!-- CASCADE -->
   <div class="essay reveal">
     <h2>Propagation is recursive, not symbolic</h2>
-    <p>This animation shows one logged task triggering every linked ancestor path. The same pattern applies across non-exercise chores too: cleaning, plant care, and routines all inherit this "one action, many updates" behavior.</p>
+    <p>The animation below shows what happens when one task fires: the update climbs every path to the root. Same thing happens when you log a cleaning task, water a plant, or check off a morning routine. One action, many updates.</p>
   </div>
 
   <div class="essay-wide">
@@ -185,9 +185,9 @@
 
   <div class="essay reveal">
     <h3>Evolution</h3>
-    <h2>From spreadsheet tracking to agentic execution</h2>
-    <p>The system has evolved in three phases: spreadsheet logging, programmatic scheduling, and now MCP-powered agents. Each phase reduced manual data entry while increasing decision quality.</p>
-    <p>With MCP, the assistant can call real task tools directly: log chores, inspect urgency, search semantically, and build context-aware plans. The result is a practical Jarvis-style loop: less typing, better planning, and continuously improving personal context.</p>
+    <h2>From spreadsheet to conversation</h2>
+    <p>This started as a Google Sheet in 2016. I logged tasks by hand, tuned cadences by feel, and it worked well enough for years. Then the sheet became code: a Python engine with recursive logging and adaptive scheduling. Then the code got an interface: MCP tools that let an AI assistant log tasks, check urgency, search the graph, and build plans&thinsp;&mdash;&thinsp;all inside a conversation.</p>
+    <p>Each phase meant less typing and better decisions. The current version feels like talking to someone who remembers what you did, knows what's overdue, and can help you plan the next week.</p>
   </div>
 
   <div class="essay-wide">
@@ -268,9 +268,9 @@
 
   <div class="essay reveal">
     <h3>Model Strategy</h3>
-    <h2>General intelligence for breadth, specialized models for precision</h2>
-    <p>The assistant is the orchestrator: it can converse, reason across domains, and decide which tools to call. The prediction itself is delegated to a task-specific ML ranker trained on structured history, where specialization improves accuracy.</p>
-    <p>This split is intentional: one general layer for coordination, plus narrow high-performance models as callable tools for well-defined tasks.</p>
+    <h2>Let the generalist orchestrate, let the specialist predict</h2>
+    <p>The AI assistant understands what you're asking and decides which tools to call. But when it comes to predicting <em>which task you'll pick next</em>, it hands off to a dedicated ML ranker trained on your actual behavior history. The ranker is better at that one narrow job than any general model.</p>
+    <p>One layer for conversation and reasoning. Another for precision scoring. The assistant decides when to use the ranker, then blends its output with everything else it knows about your goals and context.</p>
   </div>
 
   <div class="essay-wide">
@@ -326,8 +326,8 @@
   <div class="essay reveal">
     <h3>Results</h3>
     <h2>Better structure makes prediction easier</h2>
-    <p>Once logs are structured through hierarchy and adaptive cadence, downstream models get cleaner signals. Sequence and context become easier to learn, enabling useful next-task prediction and recommendation behaviors.</p>
-    <p>The current specialist model is a next-task ranking model exposed as a callable tool. The LLM decides when to use it, then blends its output with context before final recommendations.</p>
+    <p>Structure the data well and prediction becomes almost easy. When every log carries hierarchy, timing, and frequency context, patterns emerge that a flat to-do list would never reveal. The model can learn that after you climb, you tend to stretch. That you clean the kitchen on Sundays. That when urgency spikes on three plant tasks at once, you handle them together.</p>
+    <p>The specialist ranker scores likely next tasks from your behavior history. The assistant decides when to consult it, mixes in its own reasoning about your goals and schedule, and surfaces a recommendation.</p>
   </div>
 
   <div class="stats-row reveal">

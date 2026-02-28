@@ -114,12 +114,23 @@
       .domain([0, spMax * 1.2])
       .range([h, 0]);
 
-    // Phase backgrounds
-    var phases = [
-      { name: 'Struggle', start: 0, end: 3000, color: 'rgba(138,58,90,0.06)' },
-      { name: 'Bloom', start: 3000, end: 6000, color: 'rgba(122,138,42,0.06)' },
-      { name: 'Crash', start: 6000, end: 7500, color: 'rgba(138,58,58,0.06)' },
-    ];
+    // Phase backgrounds (adapt to Part 1 vs Part 2 based on total ticks)
+    var phases;
+    if (data.total_ticks > 200000) {
+      phases = [
+        { name: 'Struggle', start: 0, end: 5000, color: 'rgba(138,58,90,0.06)' },
+        { name: 'Bloom', start: 5000, end: 30000, color: 'rgba(122,138,42,0.06)' },
+        { name: 'Consolidation', start: 30000, end: 126000, color: 'rgba(90,100,50,0.04)' },
+        { name: 'Extinction', start: 126000, end: 160000, color: 'rgba(138,58,58,0.06)' },
+        { name: 'Late Life', start: 160000, end: 300000, color: 'rgba(90,80,120,0.04)' },
+      ];
+    } else {
+      phases = [
+        { name: 'Struggle', start: 0, end: 3000, color: 'rgba(138,58,90,0.06)' },
+        { name: 'Bloom', start: 3000, end: 6000, color: 'rgba(122,138,42,0.06)' },
+        { name: 'Crash', start: 6000, end: 7500, color: 'rgba(138,58,58,0.06)' },
+      ];
+    }
     phases.forEach(function (p) {
       g.append('rect')
         .attr('x', xScale(p.start))
