@@ -277,9 +277,9 @@
 
   <div class="essay-wide">
     <div class="viz-container reveal">
-      <p class="viz-title">Ecosystem Timeline &mdash; Population, Species, and Generation</p>
+      <p class="viz-title">Ecosystem Timeline &mdash; Population and Species</p>
       <div id="ecosystem-timeline" style="width:100%;"></div>
-      <p class="viz-caption">Population oscillates 250&ndash;310 in boom-bust cycles. Species diversity swings between 9 (consolidation) and 36 (radiation). Three full radiation-consolidation cycles complete in 100,000 ticks.</p>
+      <p class="viz-caption">Population (green, left axis) oscillates 250&ndash;310 in boom-bust cycles. Species count (gold, right axis) swings between 9 and 36. Hover for exact values at any tick.</p>
     </div>
   </div>
 
@@ -359,15 +359,6 @@
       <span class="part-nav-label">Next &rarr;</span>
       <a href="/projects/primordial/part-2/" class="part-nav-link">Part 2: Fixing the Rules</a>
     </div>
-  </div>
-
-  <!-- RESULTS -->
-  <div class="essay reveal">
-    <h3>System</h3>
-    <h2>What emerges</h2>
-    <p>50 organisms. 100,000 ticks. 128 generations. 4,345 evolutionary events. The ecosystem cycles between radiation (36 species) and consolidation (9 species) three times. Population self-regulates between 250 and 310 without any hard cap&thinsp;&mdash;&thinsp;energy costs and finite food do the work.</p>
-    <p>The most unexpected result: the generation counter doesn't climb steadily. Highly evolved lineages go extinct and get replaced by younger ones. The fittest organisms don't enrich their ecosystems. They simplify them.</p>
-    <p>Under the hood: NumPy-vectorized spring physics, spatial hash grids for O(1) neighbor queries, and a two-pass export system that runs the full simulation for event detection then replays deterministically to capture frames at narrative moments.</p>
   </div>
 
   <!-- TECH STACK -->

@@ -159,16 +159,10 @@
       .y(function (d) { return ySpScale(d); })
       .curve(d3.curveMonotoneX);
 
-    var genLine = d3.line()
-      .x(function (d, i) { return xScale(data.ticks[i]); })
-      .y(function (d) { return ySpScale(d); })
-      .curve(d3.curveMonotoneX);
-
     // Draw lines
     var lines = [
       { data: data.population, gen: popLine, color: C.greenBr, label: 'Population', width: 2 },
       { data: data.species_count, gen: spLine, color: '#c09040', label: 'Species', width: 1.5 },
-      { data: data.max_generation, gen: genLine, color: C.dim, label: 'Generation', width: 1 },
     ];
 
     lines.forEach(function (line) {
@@ -222,7 +216,6 @@
     var legend = [
       { label: 'Population', color: C.greenBr },
       { label: 'Species', color: '#c09040' },
-      { label: 'Generation', color: C.dim },
     ];
     legend.forEach(function (item, i) {
       var ly = 8 + i * 16;

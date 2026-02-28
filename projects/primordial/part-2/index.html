@@ -57,12 +57,19 @@
     <span class="part-indicator">Part 2</span>
   </div>
 
-  <!-- THE PREMISE -->
+  <!-- THE REDESIGN -->
   <div class="essay reveal">
     <h3>The Redesign</h3>
     <h2>What happens when you fix the rules?</h2>
     <p><a href="/projects/primordial/part-1/" style="color:#9aaa3a;">Part 1</a> ended with every organism wearing the same body. Three nodes. A core and two mouths. No sensors, no muscles, no bones. Evolution had done exactly what it was supposed to&thinsp;&mdash;&thinsp;optimize for survival&thinsp;&mdash;&thinsp;and survival meant stripping everything away. The problem wasn't evolution. The problem was the world.</p>
-    <p>Part 2 rebuilds the world. Bodies are bigger and mechanically advantageous: more nodes means more force. Sensors feed six inputs instead of three, including food type and organism size, making awareness actually worth the metabolic cost. Eating and attacking split into separate neural outputs, so herbivores and predators can evolve independently. Food spawns at half the rate. Lifespans triple. Bones reduce drag. Fat helps reproduction. And organisms can mate, with genome crossover, for the first time.</p>
+    <p>Part 2 rebuilds the world with seven changes:</p>
+    <p><strong>Bodies you can see.</strong> Spread goes from 1.5 to 8 units. Organisms are structures now, not dots. Nodes grow outward from the core, so bodies actually look different from each other.</p>
+    <p><strong>Eating isn't fighting.</strong> Three neural outputs instead of two: eat, attack, reproduce. A creature can graze without biting its neighbor. Herbivores and predators evolve as separate strategies.</p>
+    <p><strong>Sensors that matter.</strong> Six inputs per sensor instead of three. Food angle, food type, organism size. Awareness scales with sensor count&thinsp;&mdash;&thinsp;more sensors, wider field of view, longer range. Finally worth the metabolic cost.</p>
+    <p><strong>Half the food.</strong> Plant spawn rate drops from 2.5 to 1.2 per tick. Meat decays slower, making carnivory a real option. When food is scarce, every strategy gets tested.</p>
+    <p><strong>Sex.</strong> Two genetically similar organisms within 50 units can mate. Genome crossover. Traits from both parents. Fresh mutations on top. Evolution stops being a solo act.</p>
+    <p><strong>Triple lifespan.</strong> 15,000 ticks instead of 5,000. Complex strategies need time to pay off. Most organisms still die young&thinsp;&mdash;&thinsp;from competition, not old age.</p>
+    <p><strong>Bigger is better.</strong> Force scales with node count. Bones reduce drag. Fat lowers reproduction thresholds. For the first time, there's a mechanical reason to grow.</p>
     <p>Seven changes. Same algorithm. Radically different life.</p>
   </div>
 
@@ -241,7 +248,7 @@
     <div class="viz-container reveal">
       <p class="viz-title">Ecosystem Timeline</p>
       <div id="ecosystem-timeline" data-timeline-src="/data/primordial-timeline-p2.json" style="width:100%;"></div>
-      <p class="viz-caption">Population (green, left axis), species count (gold, right axis), and max generation (grey, right axis). Hover for exact values at any tick. Phase colors show: Struggle, Bloom, Consolidation, Extinction, Late Life.</p>
+      <p class="viz-caption">Population (green, left axis) and species count (gold, right axis). Hover for exact values at any tick. Phase colors show: Struggle, Bloom, Consolidation, Extinction, Late Life.</p>
     </div>
   </div>
 
@@ -267,24 +274,6 @@
       <div id="body-composition" style="width:100%;"></div>
       <p class="viz-caption">Stacked area chart of total node types across the population. Core (cream), bone (grey), muscle (red), sensor (blue), mouth (gold), fat (green), armor (purple). Hover for details.</p>
     </div>
-  </div>
-
-  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
-
-  <!-- ═══════════════════════════════════════════ -->
-  <!--              WHAT CHANGED                   -->
-  <!-- ═══════════════════════════════════════════ -->
-
-  <div class="essay reveal">
-    <h3>The Changes</h3>
-    <h2>Seven things that changed everything</h2>
-    <p><strong>Bodies you can see.</strong> Spread goes from 1.5 to 8 units. Organisms are structures now, not dots. Nodes grow outward from the core, so bodies actually look different from each other.</p>
-    <p><strong>Eating isn't fighting.</strong> Three neural outputs instead of two: eat, attack, reproduce. A creature can graze without biting its neighbor. Herbivores and predators evolve as separate strategies.</p>
-    <p><strong>Sensors that matter.</strong> Six inputs per sensor instead of three. Food angle, food type, organism size. Awareness scales with sensor count&thinsp;&mdash;&thinsp;more sensors, wider field of view, longer range. Finally worth the metabolic cost.</p>
-    <p><strong>Half the food.</strong> Plant spawn rate drops from 2.5 to 1.2 per tick. Meat decays slower, making carnivory a real option. When food is scarce, every strategy gets tested.</p>
-    <p><strong>Sex.</strong> Two genetically similar organisms within 50 units can mate. Genome crossover. Traits from both parents. Fresh mutations on top. Evolution stops being a solo act.</p>
-    <p><strong>Triple lifespan.</strong> 15,000 ticks instead of 5,000. Complex strategies need time to pay off. Most organisms still die young&thinsp;&mdash;&thinsp;from competition, not old age.</p>
-    <p><strong>Bigger is better.</strong> Force scales with node count. Bones reduce drag. Fat lowers reproduction thresholds. For the first time, there's a mechanical reason to grow.</p>
   </div>
 
   <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
