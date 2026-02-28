@@ -341,25 +341,38 @@
     var nodes = org.n, edges = org.ed;
     if (!nodes || nodes.length === 0) return;
     var spColor = getSpeciesColor(org.sp);
+    var nCount = nodes.length;
+    // Scale node sizes with body complexity (subtle)
+    var nodeScale = nCount > 5 ? 1 + (nCount - 5) * 0.05 : 1;
+    nodeScale = Math.min(nodeScale, 1.5);
 
     for (var ei = 0; ei < edges.length; ei++) {
       var e = edges[ei], n1 = nodes[e[0]], n2 = nodes[e[1]];
       if (Math.abs(n1[0] - n2[0]) > wrapThreshX || Math.abs(n1[1] - n2[1]) > wrapThreshY) continue;
       ctx.strokeStyle = EDGE_COLOR[e[2]] || '#444';
-      ctx.lineWidth = e[2] === 1 ? 1.5 : 0.7;
+      ctx.lineWidth = (e[2] === 1 ? 1.5 : 0.7) * nodeScale;
       ctx.beginPath(); ctx.moveTo(n1[0], n1[1]); ctx.lineTo(n2[0], n2[1]); ctx.stroke();
     }
     for (var ni = 0; ni < nodes.length; ni++) {
       var n = nodes[ni];
       ctx.fillStyle = NODE_COLOR[n[2]] || '#888';
-      ctx.beginPath(); ctx.arc(n[0], n[1], n[2] === 0 ? 3 : 2.2, 0, Math.PI * 2); ctx.fill();
+      var r = (n[2] === 0 ? 3 : 2.2) * nodeScale;
+      ctx.beginPath(); ctx.arc(n[0], n[1], r, 0, Math.PI * 2); ctx.fill();
     }
+    // Dynamic species ring: radius from core to furthest node + padding
     var core = nodes[0];
+    var maxR = 0;
+    for (var bi = 1; bi < nodes.length; bi++) {
+      var dx = nodes[bi][0] - core[0], dy = nodes[bi][1] - core[1];
+      var d = Math.sqrt(dx * dx + dy * dy);
+      if (d > maxR) maxR = d;
+    }
+    var ringR = Math.max(maxR + 3, 4.5);
     ctx.strokeStyle = spColor; ctx.lineWidth = 1;
-    ctx.beginPath(); ctx.arc(core[0], core[1], 4.5, 0, Math.PI * 2); ctx.stroke();
+    ctx.beginPath(); ctx.arc(core[0], core[1], ringR, 0, Math.PI * 2); ctx.stroke();
     if (highlight) {
       ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.2;
-      ctx.beginPath(); ctx.arc(core[0], core[1], 6, 0, Math.PI * 2); ctx.stroke();
+      ctx.beginPath(); ctx.arc(core[0], core[1], ringR + 2, 0, Math.PI * 2); ctx.stroke();
     }
   }
 
