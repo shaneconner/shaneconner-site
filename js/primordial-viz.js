@@ -294,7 +294,7 @@
     var html = '<div class="sim-species-title">Active Species</div><div class="sim-species-list">';
     var maxShown = Math.min(sorted.length, 10);
     for (var si = 0; si < maxShown; si++) {
-      html += buildSpeciesCard(sorted[si], si < 5);
+      html += buildSpeciesCard(sorted[si], true);
     }
     html += '</div>';
     panel.innerHTML = html;

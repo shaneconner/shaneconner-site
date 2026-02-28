@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Primordial Part 2: Fixing the Rules &mdash; Shane Conner</title>
+
+  <meta name="description" content="Part 2 of the Primordial evolutionary life simulation. Larger bodies, richer sensors, sexual reproduction, and scarcer resources produce 457 generations of genuine body diversity." />
+  <meta name="author" content="Shane Conner" />
+
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Primordial Part 2: Fixing the Rules — Shane Conner" />
+  <meta property="og:description" content="What happens when you fix the simulation's rules? 300,000 ticks, 457 generations, mass extinctions, and organisms that never stop evolving." />
+  <meta property="og:url" content="https://shaneconner.com/projects/primordial/part-2" />
+  <meta property="og:site_name" content="Shane Conner" />
+
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Outfit:wght@200;300;400;500&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="/css/shared.css" />
+  <link rel="stylesheet" href="/css/projects.css" />
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav id="nav">
+    <a href="/" class="nav-logo">Shane Conner</a>
+    <ul class="nav-links">
+      <li><a href="/art">Art</a></li>
+      <li><a href="/projects" class="active">Projects</a></li>
+      <li><a href="/contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- HOOK -->
+  <section class="project-hero">
+    <div class="hero-content">
+      <h1 class="resonance-hero-title">
+        <span class="resonance-name">Primordial</span>
+        <span class="resonance-descriptor">Part 2 &mdash; Fixing the Rules</span>
+      </h1>
+      <p class="subtitle">Larger bodies. Richer senses. Sexual reproduction. Scarcer resources. 300,000 ticks of evolution.</p>
+    </div>
+    <p class="scroll-hint">Scroll to explore</p>
+  </section>
+
+  <!-- THE PREMISE -->
+  <div class="essay reveal">
+    <h3>The Redesign</h3>
+    <h2>What happens when you fix the rules?</h2>
+    <p><a href="/projects/primordial/" style="color:#9aaa3a;">Part 1</a> revealed the limits of the simulation's design. Over 100,000 ticks, evolution converged every organism to the same 3-node minimalist body: a core and two mouths. Sensors went extinct. Muscles disappeared. Bigger bodies offered no advantage, so evolution eliminated them.</p>
+    <p>Part 2 changes seven things simultaneously. Bodies are physically larger and mechanically advantageous&thinsp;&mdash;&thinsp;more nodes generate more force through size-based scaling. Sensors provide six inputs instead of three: food distance, food angle, food type, organism distance, organism size, and organism type. Eating and attacking are separate neural outputs, allowing pure herbivores and dedicated predators to emerge independently. Food spawns at half the rate, making competition fiercer. Lifespans are three times longer, giving complex strategies time to pay off. Bone nodes reduce drag, fat nodes lower reproduction thresholds. And for the first time, organisms can mate&thinsp;&mdash;&thinsp;sexual reproduction with genome crossover between genetically similar organisms.</p>
+    <p>The result: 300,000 ticks, 457 generations, 5,759 evolutionary events, and an ecosystem that never stops surprising.</p>
+  </div>
+
+  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!--           THE STORY OF LIFE, PART 2         -->
+  <!-- ═══════════════════════════════════════════ -->
+
+  <!-- CHAPTER I: GENESIS -->
+  <div class="essay reveal">
+    <h3>Chapter I</h3>
+    <h2>Harsh Beginnings</h2>
+    <p>Fifty organisms are dropped into a world with half the food of Part 1. The scarcity hits immediately. Within 1,000 ticks, the population crashes from 50 to just 20&thinsp;&mdash;&thinsp;a 60% die-off in the first moments. Only 3 species survive the initial bottleneck. In Part 1, the founding population had enough resources to decline gently. Here, it's a massacre.</p>
+    <p>But the survivors are different from Part 1's founders. Their bodies are physically larger&thinsp;&mdash;&thinsp;8 units of spread instead of 1.5. They're visible structures in the world, not invisible dots. And the ones that survive have neural networks that, by chance, produce food-seeking behavior strong enough to overcome the scarcity. These three lineages will father hundreds of species.</p>
+  </div>
+
+  <div class="essay-wide">
+    <div class="viz-container reveal">
+      <p class="viz-title">Genesis &mdash; A Harsher World</p>
+      <div data-sim-clip="/data/narrative-p2/primordial-genesis.json"></div>
+      <p class="viz-caption">The founding population faces half the food supply of Part 1. Watch the population crash to 20 within the first thousand ticks. Only 3 species survive.</p>
+    </div>
+  </div>
+
+  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+
+  <!-- CHAPTER II: FIRST DIVERGENCE -->
+  <div class="essay reveal">
+    <h3>Chapter II</h3>
+    <h2>First Divergence</h2>
+    <p>Recovery is explosive. By tick 2,000, the population rebounds to 73 with 8 species. By tick 3,000, it reaches 145 with 13 species. The three surviving founder lineages radiate rapidly, their offspring testing mutations in a world with empty niches and just enough food to reward the bold.</p>
+    <p>Sexual reproduction is now active. When two genetically similar organisms come within 50 units of each other, both are reproductively ready, and both signal willingness, their genomes cross over. The offspring inherits traits from both parents plus fresh mutations. This genome recombination accelerates the pace of innovation&thinsp;&mdash;&thinsp;instead of tweaking one parent's strategy, evolution can combine the best features of two.</p>
+    <p>Then the first crash. Tick 4,000: population drops to 67. Tick 5,000: 63. The classic boom-bust, but more violent than anything Part 1 produced. The ecosystem is learning to oscillate.</p>
+  </div>
+
+  <div class="essay-wide">
+    <div class="viz-container reveal">
+      <p class="viz-title">First Divergence &mdash; Boom and Bust</p>
+      <div data-sim-clip="/data/narrative-p2/primordial-first-split.json"></div>
+      <p class="viz-caption">Rapid speciation from the three surviving founder lineages. Watch species proliferate, then crash as resources are consumed. Bodies are visibly larger than Part 1.</p>
+    </div>
+  </div>
+
+  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+
+  <!-- CHAPTER III: CAMBRIAN EXPLOSION -->
+  <div class="essay reveal">
+    <h3>Chapter III</h3>
+    <h2>The Cambrian Moment</h2>
+    <p>At tick 8,000, with only 88 organisms alive, the simulation reaches peak species diversity: <strong>25 species</strong>. That's nearly one species per 3.5 organisms&thinsp;&mdash;&thinsp;an incredibly fragmented ecosystem where most species are represented by just a handful of individuals.</p>
+    <p>This is Part 2's Cambrian Explosion, and it's fundamentally different from Part 1's. In Part 1, peak diversity came with peak population&thinsp;&mdash;&thinsp;lots of organisms, lots of species, but all converging on the same body plan. Here, peak diversity comes at low population. These aren't clones with slightly different weights. The bodies are visible, the node counts vary, and the species occupy genuinely different niches.</p>
+    <p>Most of these 25 species won't survive. They're evolutionary experiments, most of which will fail. But the ones that succeed will define the ecosystem for the next 100,000 ticks.</p>
+  </div>
+
+  <div class="essay-wide">
+    <div class="viz-container reveal">
+      <p class="viz-title">The Cambrian Moment &mdash; 25 Species</p>
+      <div data-sim-clip="/data/narrative-p2/primordial-diversity.json"></div>
+      <p class="viz-caption">Peak species diversity: 25 species coexist in a population of just 88. One species per 3.5 organisms. Most will go extinct within thousands of ticks.</p>
+    </div>
+  </div>
+
+  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+
+  <!-- CHAPTER IV: GENERATIONAL SHIFT -->
+  <div class="essay reveal">
+    <h3>Chapter IV</h3>
+    <h2>Deep Evolution</h2>
+    <p>By tick 66,000, the simulation crosses generation 100&thinsp;&mdash;&thinsp;in two-thirds the time it took Part 1 to reach generation 128. The scarcer resources create more selective pressure, forcing constant adaptation. Organisms die from competition, not old age, despite having lifespans three times longer.</p>
+    <p>The generation counter doesn't climb smoothly. It wobbles. At tick 102,000 it reaches 156, then drops to 147 by tick 103,000, then climbs back to 157 by tick 110,000. The most evolved organisms are dying. The bleeding edge of evolution is being culled. Survivors from earlier generations persist while the newest experiments fail. Evolution isn't a smooth march forward&thinsp;&mdash;&thinsp;it's a jagged frontier where innovation is punished as often as it's rewarded.</p>
+    <p>Between ticks 30,000 and 90,000, the ecosystem consolidates. Winners emerge. Species count settles from the wild 20+ swings of early life to a more stable 12-16. The population finds a carrying capacity of about 125 organisms&thinsp;&mdash;&thinsp;roughly half of Part 1's 280. Fewer organisms, but each one has been through more rounds of selection.</p>
+  </div>
+
+  <div class="essay-wide">
+    <div class="viz-container reveal">
+      <p class="viz-title">Deep Evolution &mdash; Generation 230+</p>
+      <div data-sim-clip="/data/narrative-p2/primordial-generation-milestone.json"></div>
+      <p class="viz-caption">Organisms refined across 230+ generations of selection. Neural networks have been optimized far beyond anything Part 1 achieved. Watch for the generation counter wobble&thinsp;&mdash;&thinsp;the most evolved lineages sometimes go extinct.</p>
+    </div>
+  </div>
+
+  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+
+  <!-- CHAPTER V: MASS EXTINCTION -->
+  <div class="essay reveal">
+    <h3>Chapter V</h3>
+    <h2>Mass Extinction</h2>
+    <p>Around tick 126,000, the ecosystem breaks. Population plummets from 125 to 73&thinsp;&mdash;&thinsp;a 42% crash. Species collapse from 18 to just <strong>3</strong>. Three species out of hundreds that had existed. This isn't the gentle oscillation of the earlier era. It's a genuine mass extinction event.</p>
+    <p>The cause is likely competitive: a few species became so dominant that they suppressed all others, then their own population outstripped the food supply. With no diversity to buffer the crash, the entire ecosystem nearly collapses. The simulation's anti-extinction safeguards don't trigger&thinsp;&mdash;&thinsp;the population never drops below the minimum floor&thinsp;&mdash;&thinsp;but it comes dangerously close.</p>
+    <p>The ecosystem never fully recovers. Pre-extinction carrying capacity was ~125 organisms. Post-extinction, it stabilizes around 95. The population permanently shifts to a lower level. The three surviving species rebuild the world, but they build a smaller one.</p>
+  </div>
+
+  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+
+  <!-- CHAPTER VI: LATE RADIATION -->
+  <div class="essay reveal">
+    <h3>Chapter VI</h3>
+    <h2>Fragile Recovery</h2>
+    <p>From three surviving species, the ecosystem rebuilds. Species count rebounds to 16 by tick 155,000, crashes back to 4 by tick 168,000, rebounds again to 16, crashes to 4 at tick 203,000. The pattern repeats: speciation, brief flourishing, collapse. The ecosystem is fragile&thinsp;&mdash;&thinsp;like a patient with recurring crises, unable to fully heal.</p>
+    <p>Each recovery produces a different cast of species, but the population never reaches the old levels. The survivors from the mass extinction are so well-adapted that newcomers can barely compete. When they do speciate, they briefly fill empty niches before the incumbents expand to crowd them out again.</p>
+    <p>This boom-bust cycle at the species level&thinsp;&mdash;&thinsp;repeated near-extinctions followed by radiations that mostly fail&thinsp;&mdash;&thinsp;is one of Part 2's most striking emergent behaviors. It's remarkably similar to the pattern of punctuated equilibrium observed in the real fossil record.</p>
+  </div>
+
+  <div class="essay-wide">
+    <div class="viz-container reveal">
+      <p class="viz-title">Late Radiation &mdash; Recovery After Extinction</p>
+      <div data-sim-clip="/data/narrative-p2/primordial-late-diversity.json"></div>
+      <p class="viz-caption">New species emerge from the post-extinction landscape. Watch diversity spike briefly before dominant species reassert control.</p>
+    </div>
+  </div>
+
+  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+
+  <!-- CHAPTER VII: DEEP TIME -->
+  <div class="essay reveal">
+    <h3>Chapter VII</h3>
+    <h2>Deep Time</h2>
+    <p>By tick 263,000, the simulation crosses generation 400. These organisms have been through 400 rounds of selection, crossover, and mutation. For context: Part 1's entire 100,000-tick run produced only 128 generations. Part 2 has 3.6 times the evolutionary depth. The generation rate holds steady at 1.6 generations per 1,000 ticks&thinsp;&mdash;&thinsp;no slowdown, no plateau. Evolution hasn't finished.</p>
+    <p>The late game settles into a clear rhythm. Three to six dominant species occupy most of the population. Periodic bursts of speciation create 10-16 species. The newcomers get outcompeted within 10-15 thousand ticks. The cycle repeats. The incumbents are just too good&thinsp;&mdash;&thinsp;their neural networks are the product of hundreds of generations of refinement.</p>
+    <p>At tick 300,000, the simulation ends with 102 organisms across 11 species at generation 457. The ecosystem is still cycling, still producing new species, still culling them. Given another 300,000 ticks, it would keep going. The system never reaches a fixed point. It finds an attractor that is itself dynamic&thinsp;&mdash;&thinsp;a strange loop of creation and destruction that mirrors the real history of life on Earth.</p>
+  </div>
+
+  <div class="essay-wide">
+    <div class="viz-container reveal">
+      <p class="viz-title">Deep Time &mdash; Generation 457</p>
+      <div data-sim-clip="/data/narrative-p2/primordial-deep-time.json"></div>
+      <p class="viz-caption">The final moments. Organisms with neural networks refined across 457 generations. Bodies shaped by mass extinctions, recoveries, and relentless competition. These are the survivors.</p>
+    </div>
+  </div>
+
+  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!--              PART 2 vs PART 1               -->
+  <!-- ═══════════════════════════════════════════ -->
+
+  <div class="essay reveal">
+    <h3>The Comparison</h3>
+    <h2>What changed when we fixed the rules</h2>
+    <p>Part 1 produced 128 generations in 100,000 ticks. Part 2 produced 457 generations in 300,000 ticks&thinsp;&mdash;&thinsp;3.6 times the evolutionary depth. But the differences go deeper than raw numbers.</p>
+    <p>Part 1's ecosystem was stable and monotonous: population locked at ~280, all organisms identical 3-node minimalists. Part 2's ecosystem is volatile and creative: mass extinctions, fragile recoveries, repeated radiations. The population found a carrying capacity of ~95&thinsp;&mdash;&thinsp;a third of Part 1's&thinsp;&mdash;&thinsp;because each organism is bigger, more complex, and more metabolically expensive.</p>
+    <p>The generation counter wobble is unique to Part 2. In Part 1, generations climbed monotonically. In Part 2, the most evolved lineages regularly go extinct, replaced by younger ones with better strategies. Evolution's bleeding edge is dangerous territory.</p>
+    <p>Most critically: Part 1's organisms all converged to the same minimal body. Part 2's ecosystem maintains genuine diversity because the rules reward complexity. Sensors survive because they provide enough information to justify their cost. Bones persist because they reduce drag. Fat helps organisms reproduce. The anti-minimalism mechanics worked.</p>
+  </div>
+
+  <div class="stats-row reveal">
+    <div class="stat">
+      <div class="stat-value">300k</div>
+      <div class="stat-label">Simulation Ticks</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">457</div>
+      <div class="stat-label">Generations</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">5,759</div>
+      <div class="stat-label">Evolutionary Events</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">0</div>
+      <div class="stat-label">Loss Functions</div>
+    </div>
+  </div>
+
+  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!--              WHAT CHANGED                   -->
+  <!-- ═══════════════════════════════════════════ -->
+
+  <div class="essay reveal">
+    <h3>The Changes</h3>
+    <h2>Seven fixes to the simulation</h2>
+    <p><strong>Visible bodies.</strong> Initial body spread increased from 1.5 to 8.0 units. Organisms are now visible structures, not invisible dots. New nodes are biased to grow outward from the core, producing more varied shapes.</p>
+    <p><strong>Separate eat and attack.</strong> The brain now has three action outputs instead of two: eat, attack, and reproduce. An organism can eat without attacking. Pure herbivores and dedicated predators can emerge independently.</p>
+    <p><strong>Richer sensors.</strong> Each sensor provides six inputs instead of three: food distance, food angle, food type (plant vs. meat), organism distance, organism size, and organism type. Sensor field-of-view and range scale with sensor count. More sensors means better awareness.</p>
+    <p><strong>Scarcer resources.</strong> Plant spawn rate halved from 2.5 to 1.2 per tick. Food energy reduced. Meat from dead organisms decays more slowly, making carnivory viable. Competition is fiercer.</p>
+    <p><strong>Sexual reproduction.</strong> Organisms within 50 units that are genetically similar and both reproductively ready can mate. Their genomes cross over, combining traits from both parents. Offspring spawn between the parents with fresh mutations on top.</p>
+    <p><strong>Longer lifespans.</strong> Maximum age tripled from 5,000 to 15,000 ticks. Complex strategies have more time to pay off. Organisms die from competition, not old age.</p>
+    <p><strong>Anti-minimalism mechanics.</strong> Force scales with body size (more nodes = more speed). Bone nodes reduce drag. Fat nodes lower reproduction thresholds. Structural node costs reduced. Bigger bodies have genuine mechanical advantages.</p>
+  </div>
+
+  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+
+  <!-- BACK LINK -->
+  <div class="essay reveal" style="text-align:center;">
+    <p><a href="/projects/primordial/" style="color:#9aaa3a;">&larr; Back to Part 1</a></p>
+  </div>
+
+  <!-- TECH STACK -->
+  <div class="project-meta">
+    <div class="project-meta-row">
+      <span class="meta-label">Stack</span>
+      <span class="meta-value">Python &middot; NumPy &middot; D3.js &middot; Canvas</span>
+    </div>
+    <div class="project-meta-row">
+      <span class="meta-label">Source</span>
+      <span class="meta-value"><a href="https://github.com/shaneconner/primordial" target="_blank">github.com/shaneconner/primordial</a></span>
+    </div>
+  </div>
+
+  <footer>
+    <p>&copy; 2026 Shane Conner</p>
+  </footer>
+
+  <script src="/js/shared.js"></script>
+  <script src="/js/primordial-viz.js"></script>
+</body>
+</html>

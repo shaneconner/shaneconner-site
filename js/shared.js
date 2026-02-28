@@ -53,7 +53,8 @@ function initNavDropdowns() {
       { label: 'Autonomous Portfolio Intelligence', href: '/projects/ai-investor/' },
       { label: 'Adaptive Task Intelligence', href: '/projects/chores/' },
       { label: 'Resonance: Music Intelligence', href: '/projects/resonance/' },
-      { label: 'Primordial: Neuroevolution', href: '/projects/primordial/' }
+      { label: 'Primordial: Part 1', href: '/projects/primordial/' },
+      { label: 'Primordial: Part 2', href: '/projects/primordial/part-2/' }
     ],
     contact: [
       { label: 'Details', href: '/contact/#contact-details' },
