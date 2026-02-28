@@ -212,6 +212,89 @@
     </div>
   </div>
 
+  <!-- ═══════════════════════════════════════════ -->
+  <!--           WHAT EVOLUTION DISCOVERED          -->
+  <!-- ═══════════════════════════════════════════ -->
+
+  <div class="essay reveal" id="part-1-analysis">
+    <h3>The Data</h3>
+    <h2>What evolution actually discovered</h2>
+    <p>The narrative above tells a story of emergent complexity&thinsp;&mdash;&thinsp;radiation-consolidation cycles, the innovator's dilemma, dynamic equilibrium. But the data reveals a deeper truth: evolution optimized for simplicity, not complexity. The organisms at generation 128 are not more sophisticated than their ancestors. They are more minimal.</p>
+  </div>
+
+  <div class="essay-wide">
+    <div class="viz-container reveal">
+      <p class="viz-title">Ecosystem Timeline &mdash; Population, Species, and Generation</p>
+      <div id="ecosystem-timeline" style="width:100%;"></div>
+      <p class="viz-caption">Population oscillates 250&ndash;310 in boom-bust cycles. Species diversity swings between 9 (consolidation) and 36 (radiation). Three full radiation-consolidation cycles complete in 100,000 ticks.</p>
+    </div>
+  </div>
+
+  <div class="essay reveal">
+    <p>The founding organisms each have five nodes: a core, a sensor, two muscle anchors, and a mouth. By generation 128, 95% of organisms have exactly three nodes: a core and two mouths. Sensors went completely extinct. Muscle anchors nearly disappeared. Bones, fat, and armor never gained a foothold. Evolution didn't build more complex bodies&thinsp;&mdash;&thinsp;it stripped them down to the minimum viable configuration.</p>
+  </div>
+
+  <div class="essay-wide">
+    <div class="viz-container reveal">
+      <p class="viz-title">Body Composition &mdash; Node Types Over Time</p>
+      <div id="body-composition" style="width:100%;"></div>
+      <p class="viz-caption">Total node count across all organisms, broken down by type. Watch sensors (blue) and muscles (red) disappear as mouths (yellow) dominate. The population converged on a 3-node minimalist design.</p>
+    </div>
+  </div>
+
+  <div class="essay reveal">
+    <p>Why? The economics of the simulation made minimalism optimal. Every node costs energy per tick. Adding a sensor provides three inputs to the neural network&thinsp;&mdash;&thinsp;food distance, organism distance, and organism type&thinsp;&mdash;&thinsp;but this isn't enough information to justify the metabolic cost. The brain can learn to wander toward food using just brownian motion and mouth contact. More nodes means more energy burned, which means dying sooner or reproducing less.</p>
+    <p>The mouth's dual role as both eating organ and weapon made the problem worse. A single neural output controls both feeding and attacking. An organism can't eat without also attacking anything it contacts. This conflation means pure mouth-bodies are optimal: they eat efficiently, they damage competitors, and they have the lowest possible metabolic overhead.</p>
+  </div>
+
+  <div class="essay-wide">
+    <div class="viz-container reveal">
+      <p class="viz-title">Species Dynamics &mdash; The Rise and Fall of Lineages</p>
+      <div id="species-stream" style="width:100%;"></div>
+      <p class="viz-caption">Each band represents a species. Width shows population size. Watch lineages emerge, dominate briefly, then go extinct as new variants replace them. Despite high species turnover, all lineages converge on the same minimal body plan.</p>
+    </div>
+  </div>
+
+  <div class="essay reveal">
+    <p>The radiation-consolidation cycles are real, but they're cycling between variants of the same basic strategy. Species differ in neural weights, not body plans. The evolutionary tree branches hundreds of times, but every branch leads to the same destination: three nodes, two mouths, no sensors.</p>
+    <p>This is the paradox of optimization under simplistic constraints. Give evolution a world where food is abundant, lifespans are short, and bigger bodies offer no mechanical advantage&thinsp;&mdash;&thinsp;and it will discover that the best body is the smallest one. The simulation's design inadvertently rewarded minimalism over morphological creativity.</p>
+  </div>
+
+  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+
+  <div class="stats-row reveal">
+    <div class="stat">
+      <div class="stat-value">100k</div>
+      <div class="stat-label">Simulation Ticks</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">128</div>
+      <div class="stat-label">Generations</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">4,345</div>
+      <div class="stat-label">Evolutionary Events</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">0</div>
+      <div class="stat-label">Loss Functions</div>
+    </div>
+  </div>
+
+  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!--                   PART 2                    -->
+  <!-- ═══════════════════════════════════════════ -->
+
+  <div class="essay reveal" id="part-2">
+    <h3>Part 2</h3>
+    <h2>What happens when we fix the rules?</h2>
+    <p>Part 1 revealed the limits of the simulation's design. If bigger bodies offer no advantage, evolution will shrink them. If sensors provide too little information, evolution will eliminate them. If eating and attacking use the same signal, every organism becomes a predator by default. The rules shaped the outcome.</p>
+    <p>Part 2 changes the rules. Bodies are physically larger and mechanically advantageous&thinsp;&mdash;&thinsp;more nodes generate more force. Sensors provide richer information: food type, direction, organism size. Eating and attacking are separate neural outputs, allowing pure herbivores and dedicated predators to emerge independently. Food is scarcer, making predation a viable alternative to foraging. Lifespans are three times longer, giving complex behaviors time to pay off. And for the first time, organisms can mate&thinsp;&mdash;&thinsp;sexual reproduction between genetically similar organisms produces crossover offspring.</p>
+    <p>Coming soon.</p>
+  </div>
+
   <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
 
   <!-- ═══════════════════════════════════════════ -->
@@ -272,25 +355,6 @@
     <p>The simulation engine uses NumPy-vectorized spring physics and spatial hash grids for O(1) neighbor queries. A two-pass export system runs the full simulation for event detection, then replays with the same seed to capture frames at narrative moments for D3.js visualization on Canvas.</p>
   </div>
 
-  <div class="stats-row reveal">
-    <div class="stat">
-      <div class="stat-value">100k</div>
-      <div class="stat-label">Simulation Ticks</div>
-    </div>
-    <div class="stat">
-      <div class="stat-value">128</div>
-      <div class="stat-label">Generations</div>
-    </div>
-    <div class="stat">
-      <div class="stat-value">4,345</div>
-      <div class="stat-label">Evolutionary Events</div>
-    </div>
-    <div class="stat">
-      <div class="stat-value">0</div>
-      <div class="stat-label">Loss Functions</div>
-    </div>
-  </div>
-
   <!-- TECH STACK -->
   <div class="project-meta">
     <h3>Tech Stack</h3>
@@ -316,6 +380,8 @@
   </footer>
 
   <script src="/js/shared.js"></script>
-  <script src="/js/primordial-viz.js"></script>
+  <script src="https://d3js.org/d3.v7.min.js" defer></script>
+  <script src="/js/primordial-viz.js" defer></script>
+  <script src="/js/primordial-charts.js" defer></script>
 </body>
 </html>
