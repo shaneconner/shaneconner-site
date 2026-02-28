@@ -120,7 +120,35 @@ History repeats. Between ticks 55k-60k, species diversity drops from 29 to 15 wh
 
 A brief diversity spike at tick 61k (back to 27 species) collapses immediately back to 16-18. The ecosystem seems to be cycling between two states: diverse (20-30 species) and consolidated (13-18 species). This oscillation between radiation and consolidation is itself an emergent pattern — nobody programmed it.
 
-The question for the remaining 36k ticks: does this pattern continue, or does the ecosystem reach a final stable configuration?
+The answer: the pattern continues, with one dramatic twist.
+
+---
+
+## Phase 8: The Lowest Point (Ticks 65000-72000)
+
+Species diversity plummets to **9 at tick 70k** — the absolute lowest in the entire 100,000-tick simulation. This is a near-monopoly: just 9 species share a world that once held 36. Population briefly spikes to 309 at tick 71k as the dominant species exploit their lack of competition, then contracts again.
+
+This bottleneck is severe but not catastrophic. Unlike the early crash (which threatened total extinction), this is competitive exclusion taken to its logical extreme. A few hyper-efficient lineages have crowded out everything else. Generation count hits 97 — these are the most evolved organisms yet, with neural networks refined across nearly 100 generations of selection.
+
+The 9-species bottleneck is the simulation's darkest moment from a diversity standpoint. It's also the most biologically fascinating: it demonstrates that evolutionary "fitness" at the individual level can reduce diversity at the ecosystem level. The fittest organisms don't create the richest ecosystems — they simplify them.
+
+---
+
+## Phase 9: Third Radiation (Ticks 72000-80000)
+
+From the diversity nadir of 9, species count rebounds to 23 by tick 74k and 26 by tick 76k. This is the third adaptive radiation cycle, and by now the pattern is unmistakable: **consolidation → bottleneck → radiation → consolidation**. Each cycle operates on a different timescale and amplitude, but the structure repeats.
+
+Generation hits **100 at tick 75k** — a symbolic milestone. One hundred generations of neural networks refined purely through survival pressure. No human ever looked at these networks. No gradient was ever computed. These are optimization products of pure evolutionary search across 100 generational iterations.
+
+---
+
+## Phase 10: Mature Ecosystem (Ticks 80000-100000)
+
+The final 20k ticks show a stabilized but still dynamic ecosystem. Population oscillates 255-305, species count 17-35. Generation advances from 106 to 128. The system has found a complex attractor — not a fixed point, but a bounded orbit in the space of population × diversity × generation.
+
+A diversity spike to **35 species at tick 99k** — just before the simulation ends — suggests the ecosystem remains fundamentally creative. New species are still being born, new body plans still being tested, new neural architectures still being explored. 100,000 ticks wasn't enough to exhaust the evolutionary potential of this simple system.
+
+**Final state at tick 100,000**: 282 organisms, 22 species, generation 128, 4345 distinct events.
 
 ---
 
