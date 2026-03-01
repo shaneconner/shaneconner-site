@@ -50,7 +50,7 @@ function initNavDropdowns() {
       { label: 'Process', href: '/art/#process' }
     ],
     projects: [
-      { label: 'Autonomous Portfolio Intelligence', href: '/projects/ai-investor/' },
+      { label: 'Quorum: Investment Parallax', href: '/projects/quorum/' },
       { label: 'Cadence: Orchestrating Life', href: '/projects/cadence/' },
       { label: 'Resonance: Music Intelligence', href: '/projects/resonance/' },
       { label: 'Primordial: Neuroevolution', href: '/projects/primordial/', submenu: [
