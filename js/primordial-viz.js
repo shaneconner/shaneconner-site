@@ -23,7 +23,7 @@
   };
   var NODE_SHORT = { 0: 'C', 1: 'B', 2: 'M', 3: 'S', 4: 'Mo', 5: 'F', 6: 'Ar' };
   var EDGE_COLOR = { 0: '#666655', 1: '#8a3a3a', 2: '#555544' };
-  var FOOD_COLOR = { p: '#5a8a2a', m: '#8a3a3a', n: '#6e5a3a' };
+  var FOOD_COLOR = { p: '#7aaa3a', m: '#aa4a4a', n: '#8e7a4a' };
 
   /* ── species color palette ── */
   var speciesColors = {};
