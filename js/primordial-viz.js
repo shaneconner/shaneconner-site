@@ -236,12 +236,12 @@
 
     // Resources
     var resources = snap.r || [];
-    ctx.globalAlpha = 0.45;
+    ctx.globalAlpha = 0.7;
     for (var ri = 0; ri < resources.length; ri++) {
       var r = resources[ri];
       ctx.fillStyle = FOOD_COLOR[r[2]] || '#444';
       ctx.beginPath();
-      ctx.arc(r[0], r[1], 2, 0, Math.PI * 2);
+      ctx.arc(r[0], r[1], 3, 0, Math.PI * 2);
       ctx.fill();
     }
     ctx.globalAlpha = 1;
