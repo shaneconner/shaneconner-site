@@ -51,7 +51,7 @@ function initNavDropdowns() {
     ],
     projects: [
       { label: 'Autonomous Portfolio Intelligence', href: '/projects/ai-investor/' },
-      { label: 'Adaptive Task Intelligence', href: '/projects/chores/' },
+      { label: 'Cadence: Orchestrating Life', href: '/projects/cadence/' },
       { label: 'Resonance: Music Intelligence', href: '/projects/resonance/' },
       { label: 'Primordial: Neuroevolution', href: '/projects/primordial/', submenu: [
         { label: 'Part 1: Emergent Behaviors', href: '/projects/primordial/part-1/' },
