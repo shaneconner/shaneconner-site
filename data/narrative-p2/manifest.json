@@ -10,7 +10,7 @@
       "id": "genesis",
       "title": "Genesis",
       "description": "New organisms enter a harsher world with larger bodies and sharper senses.",
-      "file": "primordial-p2-genesis.json",
+      "file": "primordial-genesis.json",
       "tick_range": [
         1,
         501
@@ -22,7 +22,7 @@
       "id": "first-split",
       "title": "First Divergence",
       "description": "Genetic drift produces the first distinct species.",
-      "file": "primordial-p2-first-split.json",
+      "file": "primordial-first-split.json",
       "tick_range": [
         502,
         1502
@@ -34,7 +34,7 @@
       "id": "diversity",
       "title": "Radiation",
       "description": "27 species coexist in distinct ecological niches.",
-      "file": "primordial-p2-diversity.json",
+      "file": "primordial-diversity.json",
       "tick_range": [
         7292,
         8292
@@ -46,7 +46,7 @@
       "id": "generation-milestone",
       "title": "Generational Shift",
       "description": "Hundreds of generations have refined neural networks and body plans.",
-      "file": "primordial-p2-generation-milestone.json",
+      "file": "primordial-generation-milestone.json",
       "tick_range": [
         153247,
         154247
@@ -58,7 +58,7 @@
       "id": "late-diversity",
       "title": "Late Radiation",
       "description": "A late wave of speciation produces 22 species.",
-      "file": "primordial-p2-late-diversity.json",
+      "file": "primordial-late-diversity.json",
       "tick_range": [
         196947,
         197947
@@ -70,7 +70,7 @@
       "id": "equilibrium",
       "title": "Balance",
       "description": "The ecosystem reaches a dynamic equilibrium.",
-      "file": "primordial-p2-equilibrium.json",
+      "file": "primordial-equilibrium.json",
       "tick_range": [
         262172,
         263172
@@ -82,7 +82,7 @@
       "id": "deep-time",
       "title": "Deep Time",
       "description": "Generation 457. Complex body plans refined over thousands of generations.",
-      "file": "primordial-p2-deep-time.json",
+      "file": "primordial-deep-time.json",
       "tick_range": [
         299000,
         300000
