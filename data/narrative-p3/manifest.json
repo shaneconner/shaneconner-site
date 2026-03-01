@@ -1,9 +1,70 @@
 {
   "world": {
-    "width": 1600.0,
-    "height": 900.0
+    "width": 2400.0,
+    "height": 1350.0
   },
-  "total_ticks": 1000,
+  "total_ticks": 300000,
   "seed": 271,
-  "clips": []
+  "clips": [
+    {
+      "id": "first-split",
+      "title": "First Divergence",
+      "description": "Genetic drift produces the first distinct species.",
+      "file": "primordial-p3-first-split.json",
+      "tick_range": [
+        502,
+        1502
+      ],
+      "frames": 250,
+      "size_kb": 11210
+    },
+    {
+      "id": "diversity",
+      "title": "Radiation",
+      "description": "159 species coexist.",
+      "file": "primordial-p3-diversity.json",
+      "tick_range": [
+        2972,
+        3972
+      ],
+      "frames": 251,
+      "size_kb": 22156
+    },
+    {
+      "id": "generation-milestone",
+      "title": "Generational Shift",
+      "description": "Hundreds of generations have refined neural networks and body plans.",
+      "file": "primordial-p3-generation-milestone.json",
+      "tick_range": [
+        159712,
+        160712
+      ],
+      "frames": 251,
+      "size_kb": 23440
+    },
+    {
+      "id": "equilibrium",
+      "title": "Balance",
+      "description": "The ecosystem reaches a dynamic equilibrium.",
+      "file": "primordial-p3-equilibrium.json",
+      "tick_range": [
+        262172,
+        263172
+      ],
+      "frames": 251,
+      "size_kb": 20464
+    },
+    {
+      "id": "late-diversity",
+      "title": "Late Radiation",
+      "description": "A late wave of speciation produces 47 species.",
+      "file": "primordial-p3-late-diversity.json",
+      "tick_range": [
+        292512,
+        293512
+      ],
+      "frames": 251,
+      "size_kb": 27799
+    }
+  ]
 }
