@@ -241,7 +241,7 @@
       var r = resources[ri];
       ctx.fillStyle = FOOD_COLOR[r[2]] || '#444';
       ctx.beginPath();
-      ctx.arc(r[0], r[1], 3, 0, Math.PI * 2);
+      ctx.arc(r[0], r[1], 4, 0, Math.PI * 2);
       ctx.fill();
     }
     ctx.globalAlpha = 1;
