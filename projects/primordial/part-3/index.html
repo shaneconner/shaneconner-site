@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Primordial Part 3: Bodies That Matter &mdash; Shane Conner</title>
+
+  <meta name="description" content="Part 3 of the Primordial evolutionary life simulation. Articulated bodies, muscle-powered locomotion, bone reach, predation pressure, kin recognition, and seasonal environments." />
+  <meta name="author" content="Shane Conner" />
+
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Primordial Part 3: Bodies That Matter — Shane Conner" />
+  <meta property="og:description" content="What happens when the world punishes simplicity? Articulated bodies, muscle speed, bone reach, real predation, and an environment that never sits still." />
+  <meta property="og:url" content="https://shaneconner.com/projects/primordial/part-3" />
+  <meta property="og:site_name" content="Shane Conner" />
+
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Outfit:wght@200;300;400;500&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="/css/shared.css" />
+  <link rel="stylesheet" href="/css/projects.css" />
+
+  <script src="https://d3js.org/d3.v7.min.js" defer></script>
+  <script src="/js/primordial-charts.js" defer></script>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav id="nav">
+    <a href="/" class="nav-logo">Shane Conner</a>
+    <ul class="nav-links">
+      <li><a href="/art">Art</a></li>
+      <li><a href="/projects" class="active">Projects</a></li>
+      <li><a href="/contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- HOOK -->
+  <section class="project-hero">
+    <div class="hero-content">
+      <h1 class="resonance-hero-title">
+        <span class="resonance-name">Primordial</span>
+        <span class="resonance-descriptor">Part 3 &mdash; Bodies That Matter</span>
+      </h1>
+      <p class="subtitle">Articulated limbs. Muscle-powered speed. Bone reach. Seasonal pressure. An environment that punishes simplicity.</p>
+    </div>
+    <p class="scroll-hint">Scroll to explore</p>
+  </section>
+
+  <div class="part-context">
+    <a href="/projects/primordial/">&larr; Primordial</a>
+    <span class="part-indicator">Part 3</span>
+  </div>
+
+  <!-- THE REDESIGN -->
+  <div class="essay reveal">
+    <h3>The Redesign</h3>
+    <h2>Making every body part count</h2>
+    <p>Parts 1 and 2 asked evolution to build complex organisms, and evolution answered honestly: when the rules don't reward complexity, complexity dies. Mouth-and-core spheres won both times because mouths were the only node type that paid for itself. Muscles didn't make you faster. Bones didn't extend your reach. Armor didn't save your life. Every other body part was metabolic overhead.</p>
+    <p>Part 3 rebuilds the relationship between body and world. Each node type now earns its metabolic cost, or goes extinct for real reasons instead of economic ones. And the environment stops being static.</p>
+    <p><strong>Muscle means speed.</strong> Maximum velocity now scales with muscle-to-mass ratio. An organism with no muscles crawls. Add muscles and you accelerate proportionally. Sprint bursts let you double your speed for a few ticks at steep energy cost. Predators need muscle to catch prey. Prey need muscle to escape. For the first time, locomotion has a body plan.</p>
+    <p><strong>Bone means reach.</strong> Mouths positioned far from the center of mass get an expanded eating radius. A mouth pressed against the core eats at the standard range. A mouth at the end of a bone chain eats from twice as far. Body structure translates directly into foraging advantage.</p>
+    <p><strong>Predation gets teeth.</strong> Attack damage nearly doubles. Energy transfer from kills jumps from 50% to 70%. Armor reflects a fraction of incoming damage back at the attacker, making armored organisms expensive to hunt. When predation becomes a genuine cause of death, armor stops being dead weight.</p>
+    <p><strong>Kin recognition.</strong> A new genetic trait controls whether organisms attack their own species. Tolerance ranges from zero (attack everything that moves) to one (never attack kin). This is evolvable. Some lineages discover cooperation. Others stay solitary. Parents stop eating their children, unless evolution decides that's still optimal.</p>
+    <p><strong>Limb chains.</strong> When mutation adds a node to a bone, it preferentially extends outward from that bone rather than clustering around the core. Bodies can form branching, limb-like structures. Paired with muscle-speed and bone-reach, this creates evolutionary pressure for articulated morphology.</p>
+    <p><strong>Seasons.</strong> Food spawning oscillates on a 10,000-tick cycle. Abundance in summer, scarcity in winter. Random resource shocks crash food supply without warning. Spatial gradients make some regions lush and others barren, and the gradient shifts over time. The environment never sits still.</p>
+    <p>Six categories of change. Same algorithm. A world that demands bodies do more than eat.</p>
+  </div>
+
+  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!--           THE STORY OF LIFE, PART 3         -->
+  <!-- ═══════════════════════════════════════════ -->
+
+  <!-- CHAPTER I: GENESIS -->
+  <div class="essay reveal">
+    <h3>Chapter I</h3>
+    <h2>New Pressures</h2>
+    <p class="placeholder-note" style="color:#9aaa3a;font-style:italic;">[Narrative will be written after simulation export completes]</p>
+  </div>
+
+  <div class="essay-wide">
+    <div class="viz-container reveal">
+      <p class="viz-title">Genesis &mdash; A World That Demands More</p>
+      <div data-sim-clip="/data/narrative-p3/primordial-p3-genesis.json"></div>
+      <p class="viz-caption">The founding population faces seasonal food variation and stronger predation pressure from tick one.</p>
+    </div>
+  </div>
+
+  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+
+  <!-- CHAPTER II -->
+  <div class="essay reveal">
+    <h3>Chapter II</h3>
+    <h2>First Divergence</h2>
+    <p class="placeholder-note" style="color:#9aaa3a;font-style:italic;">[Narrative will be written after simulation export completes]</p>
+  </div>
+
+  <div class="essay-wide">
+    <div class="viz-container reveal">
+      <p class="viz-title">First Divergence</p>
+      <div data-sim-clip="/data/narrative-p3/primordial-p3-first-split.json"></div>
+      <p class="viz-caption">Early speciation under the new rules.</p>
+    </div>
+  </div>
+
+  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+
+  <!-- CHAPTER III -->
+  <div class="essay reveal">
+    <h3>Chapter III</h3>
+    <h2>Radiation</h2>
+    <p class="placeholder-note" style="color:#9aaa3a;font-style:italic;">[Narrative will be written after simulation export completes]</p>
+  </div>
+
+  <div class="essay-wide">
+    <div class="viz-container reveal">
+      <p class="viz-title">Radiation</p>
+      <div data-sim-clip="/data/narrative-p3/primordial-p3-diversity.json"></div>
+      <p class="viz-caption">Peak species diversity under body-rewarding rules.</p>
+    </div>
+  </div>
+
+  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+
+  <!-- CHAPTER IV -->
+  <div class="essay reveal">
+    <h3>Chapter IV</h3>
+    <h2>Deep Evolution</h2>
+    <p class="placeholder-note" style="color:#9aaa3a;font-style:italic;">[Narrative will be written after simulation export completes]</p>
+  </div>
+
+  <div class="essay-wide">
+    <div class="viz-container reveal">
+      <p class="viz-title">Deep Evolution</p>
+      <div data-sim-clip="/data/narrative-p3/primordial-p3-generation-milestone.json"></div>
+      <p class="viz-caption">Organisms refined across hundreds of generations of selection under seasonal pressure.</p>
+    </div>
+  </div>
+
+  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+
+  <!-- CHAPTER V -->
+  <div class="essay reveal">
+    <h3>Chapter V</h3>
+    <h2>Equilibrium</h2>
+    <p class="placeholder-note" style="color:#9aaa3a;font-style:italic;">[Narrative will be written after simulation export completes]</p>
+  </div>
+
+  <div class="essay-wide">
+    <div class="viz-container reveal">
+      <p class="viz-title">Equilibrium</p>
+      <div data-sim-clip="/data/narrative-p3/primordial-p3-equilibrium.json"></div>
+      <p class="viz-caption">The ecosystem finds its rhythm.</p>
+    </div>
+  </div>
+
+  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+
+  <!-- CHAPTER VI -->
+  <div class="essay reveal">
+    <h3>Chapter VI</h3>
+    <h2>Deep Time</h2>
+    <p class="placeholder-note" style="color:#9aaa3a;font-style:italic;">[Narrative will be written after simulation export completes]</p>
+  </div>
+
+  <div class="essay-wide">
+    <div class="viz-container reveal">
+      <p class="viz-title">Deep Time</p>
+      <div data-sim-clip="/data/narrative-p3/primordial-p3-deep-time.json"></div>
+      <p class="viz-caption">The final moments. Bodies shaped by an environment that never stopped demanding more.</p>
+    </div>
+  </div>
+
+  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!--              DATA ANALYSIS                  -->
+  <!-- ═══════════════════════════════════════════ -->
+
+  <div class="essay reveal">
+    <h3>The Data</h3>
+    <h2>Did bodies finally matter?</h2>
+    <p class="placeholder-note" style="color:#9aaa3a;font-style:italic;">[Analysis will be written after simulation data is available]</p>
+  </div>
+
+  <div class="essay-wide">
+    <div class="viz-container reveal">
+      <p class="viz-title">Ecosystem Timeline</p>
+      <div id="ecosystem-timeline" data-timeline-src="/data/primordial-timeline-p3.json" style="width:100%;"></div>
+      <p class="viz-caption">Population (green, left axis) and species count (gold, right axis). Hover for exact values at any tick.</p>
+    </div>
+  </div>
+
+  <div class="essay-wide">
+    <div class="viz-container reveal">
+      <p class="viz-title">Species Dynamics</p>
+      <div id="species-stream" style="width:100%;"></div>
+      <p class="viz-caption">Streamgraph of species populations over time. Each colored band is one species.</p>
+    </div>
+  </div>
+
+  <div class="essay-wide">
+    <div class="viz-container reveal">
+      <p class="viz-title">Body Composition Over Time</p>
+      <div id="body-composition" style="width:100%;"></div>
+      <p class="viz-caption">Stacked area chart of total node types across the population. The key question: do muscle, bone, and armor persist?</p>
+    </div>
+  </div>
+
+  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+
+  <div class="stats-row reveal">
+    <div class="stat">
+      <div class="stat-value">300k</div>
+      <div class="stat-label">Simulation Ticks</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value" id="stat-generations">---</div>
+      <div class="stat-label">Generations</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value" id="stat-events">---</div>
+      <div class="stat-label">Evolutionary Events</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">0</div>
+      <div class="stat-label">Loss Functions</div>
+    </div>
+  </div>
+
+  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+
+  <div class="part-nav">
+    <div class="part-nav-item part-nav-prev">
+      <span class="part-nav-label">&larr; Previous</span>
+      <a href="/projects/primordial/part-2/" class="part-nav-link">Part 2: Fixing the Rules</a>
+    </div>
+    <div class="part-nav-item part-nav-next">
+      <span class="part-nav-label">Coming Soon &rarr;</span>
+      <span class="part-nav-link" style="opacity:0.5;">Part 4</span>
+    </div>
+  </div>
+
+  <!-- TECH STACK -->
+  <div class="project-meta">
+    <h3>Tech Stack</h3>
+    <div class="project-tags">
+      <span class="project-tag">Python</span>
+      <span class="project-tag">NumPy</span>
+      <span class="project-tag">Neuroevolution</span>
+      <span class="project-tag">Spring-Mass Physics</span>
+      <span class="project-tag">Spatial Hashing</span>
+      <span class="project-tag">D3.js</span>
+      <span class="project-tag">Canvas API</span>
+    </div>
+    <div style="margin-top:1.5rem;">
+      <a href="https://github.com/shaneconner/primordial" class="back-link" style="margin-right:2rem;">View Source &rarr;</a>
+      <a href="/projects" class="back-link">&larr; All Projects</a>
+    </div>
+  </div>
+
+  <footer>
+    <span>&copy; 2026 Shane Conner</span>
+    <span></span>
+  </footer>
+
+  <script src="/js/shared.js"></script>
+  <script src="/js/primordial-viz.js"></script>
+</body>
+</html>
