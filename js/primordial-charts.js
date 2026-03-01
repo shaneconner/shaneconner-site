@@ -344,9 +344,8 @@
       .attr('class', 'sp-area')
       .attr('d', area)
       .attr('fill', function (d) { return spColorMap[d.key]; })
-      .attr('fill-opacity', 0.75)
-      .attr('stroke', function (d) { return spColorMap[d.key]; })
-      .attr('stroke-width', 0.3)
+      .attr('fill-opacity', 0.8)
+      .attr('stroke', 'none')
       .on('mouseenter', function (event, d) {
         var peakPop = d3.max(data.species_populations[d.key]);
         tooltip.innerHTML = '<strong>' + d.key + '</strong><br>Peak pop: ' + peakPop;
@@ -448,9 +447,8 @@
       .attr('class', 'body-area')
       .attr('d', area)
       .attr('fill', function (d) { return NODE_COLORS[d.key]; })
-      .attr('fill-opacity', 0.75)
-      .attr('stroke', function (d) { return NODE_COLORS[d.key]; })
-      .attr('stroke-width', 0.5)
+      .attr('fill-opacity', 0.8)
+      .attr('stroke', 'none')
       .on('mouseenter', function (event, d) {
         tooltip.innerHTML = '<strong>' + d.key.charAt(0).toUpperCase() + d.key.slice(1) + '</strong>';
         tooltip.style.opacity = '1';
@@ -510,6 +508,277 @@
   }
 
   // ══════════════════════════════════════════════════════════════════════════
+  //  Chart 4: Body Composition — Normalized (100% stacked area)
+  // ══════════════════════════════════════════════════════════════════════════
+
+  function renderBodyCompositionNorm(containerId) {
+    var container = document.getElementById(containerId);
+    if (!container || !timelineData) return;
+    container.innerHTML = '';
+
+    var data = timelineData;
+    var ntc = data.node_type_counts;
+    if (!ntc) return;
+
+    // Build tabular data normalized to percentages
+    var tableData = data.ticks.map(function (tick, i) {
+      var row = { tick: tick };
+      var total = 0;
+      NODE_ORDER.forEach(function (name) {
+        total += (ntc[name] && ntc[name][i]) || 0;
+      });
+      NODE_ORDER.forEach(function (name) {
+        row[name] = total > 0 ? ((ntc[name] && ntc[name][i]) || 0) / total * 100 : 0;
+      });
+      return row;
+    });
+
+    var width = container.clientWidth;
+    var height = Math.max(280, Math.min(360, width * 0.35));
+    var margin = { top: 20, right: 120, bottom: 35, left: 50 };
+    var w = width - margin.left - margin.right;
+    var h = height - margin.top - margin.bottom;
+
+    var tooltip = makeTooltip(container);
+
+    var svg = d3.select(container)
+      .append('svg')
+      .attr('viewBox', '0 0 ' + width + ' ' + height)
+      .attr('width', width)
+      .attr('height', height)
+      .style('display', 'block');
+
+    var g = svg.append('g')
+      .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+    var stack = d3.stack()
+      .keys(NODE_ORDER)
+      .order(d3.stackOrderReverse)
+      .offset(d3.stackOffsetNone);
+
+    var series = stack(tableData);
+
+    var xScale = d3.scaleLinear()
+      .domain([0, data.total_ticks])
+      .range([0, w]);
+
+    var yScale = d3.scaleLinear()
+      .domain([0, 100])
+      .range([h, 0]);
+
+    var area = d3.area()
+      .x(function (d) { return xScale(d.data.tick); })
+      .y0(function (d) { return yScale(d[0]); })
+      .y1(function (d) { return yScale(d[1]); })
+      .curve(d3.curveMonotoneX);
+
+    g.selectAll('.body-norm-area')
+      .data(series)
+      .enter().append('path')
+      .attr('class', 'body-norm-area')
+      .attr('d', area)
+      .attr('fill', function (d) { return NODE_COLORS[d.key]; })
+      .attr('fill-opacity', 0.8)
+      .attr('stroke', 'none')
+      .on('mouseenter', function (event, d) {
+        d3.select(this).attr('fill-opacity', 1);
+        // Find tick index from mouse position
+        var rect = container.getBoundingClientRect();
+        var mx = event.clientX - rect.left - margin.left;
+        var tick = Math.round(xScale.invert(mx));
+        var idx = Math.round(tick / data.sample_interval);
+        idx = Math.max(0, Math.min(data.ticks.length - 1, idx));
+        var name = d.key.charAt(0).toUpperCase() + d.key.slice(1);
+        var pct = (d[idx].data[d.key]).toFixed(1);
+        tooltip.innerHTML = '<strong>' + name + '</strong><br>' + pct + '%';
+        tooltip.style.opacity = '1';
+      })
+      .on('mousemove', function (event, d) {
+        var rect = container.getBoundingClientRect();
+        var mx = event.clientX - rect.left - margin.left;
+        var tick = Math.round(xScale.invert(mx));
+        var idx = Math.round(tick / data.sample_interval);
+        idx = Math.max(0, Math.min(data.ticks.length - 1, idx));
+        var name = d.key.charAt(0).toUpperCase() + d.key.slice(1);
+        var pct = (d[idx].data[d.key]).toFixed(1);
+        tooltip.innerHTML = '<strong>' + name + '</strong> at tick ' + formatTick(data.ticks[idx]) + '<br>' + pct + '%';
+        tooltip.style.left = (event.clientX - rect.left + 12) + 'px';
+        tooltip.style.top = (event.clientY - rect.top - 28) + 'px';
+      })
+      .on('mouseleave', function () {
+        tooltip.style.opacity = '0';
+        d3.select(this).attr('fill-opacity', 0.75);
+      });
+
+    // X axis
+    g.append('g')
+      .attr('transform', 'translate(0,' + h + ')')
+      .call(d3.axisBottom(xScale).ticks(8).tickFormat(formatTick))
+      .call(function (ax) {
+        ax.select('.domain').attr('stroke', C.borderL);
+        ax.selectAll('.tick line').attr('stroke', C.borderL);
+        ax.selectAll('.tick text').attr('fill', C.dim).attr('font-size', 10).attr('font-family', FONT);
+      });
+
+    // Y axis (percentage)
+    g.append('g')
+      .call(d3.axisLeft(yScale).ticks(5).tickFormat(function (d) { return d + '%'; }))
+      .call(function (ax) {
+        ax.select('.domain').attr('stroke', C.borderL);
+        ax.selectAll('.tick line').attr('stroke', C.borderL);
+        ax.selectAll('.tick text').attr('fill', C.dim).attr('font-size', 10).attr('font-family', FONT);
+      });
+
+    // Legend
+    var legendItems = NODE_ORDER.slice().reverse();
+    legendItems.forEach(function (name, i) {
+      var ly = 8 + i * 18;
+      g.append('rect')
+        .attr('x', w + 12).attr('y', ly - 5)
+        .attr('width', 10).attr('height', 10)
+        .attr('fill', NODE_COLORS[name]).attr('fill-opacity', 0.8);
+      g.append('text')
+        .attr('x', w + 26).attr('y', ly + 4)
+        .attr('fill', C.text).attr('font-size', 10)
+        .attr('font-family', FONT)
+        .text(name.charAt(0).toUpperCase() + name.slice(1));
+    });
+  }
+
+  // ══════════════════════════════════════════════════════════════════════════
+  //  Chart 5: Species Dynamics — Normalized (100% stacked area)
+  // ══════════════════════════════════════════════════════════════════════════
+
+  function renderSpeciesStreamNorm(containerId) {
+    var container = document.getElementById(containerId);
+    if (!container || !timelineData) return;
+    container.innerHTML = '';
+
+    var data = timelineData;
+    var species = Object.keys(data.species_populations);
+    if (!species.length) return;
+
+    // Sort species by peak population (largest first)
+    species.sort(function (a, b) {
+      var peakA = d3.max(data.species_populations[a]);
+      var peakB = d3.max(data.species_populations[b]);
+      return peakB - peakA;
+    });
+
+    // Build tabular data normalized to percentages
+    var tableData = data.ticks.map(function (tick, i) {
+      var row = { tick: tick, _idx: i };
+      var total = 0;
+      species.forEach(function (sp) {
+        total += data.species_populations[sp][i] || 0;
+      });
+      species.forEach(function (sp) {
+        row[sp] = total > 0 ? (data.species_populations[sp][i] || 0) / total * 100 : 0;
+      });
+      return row;
+    });
+
+    var width = container.clientWidth;
+    var height = Math.max(300, Math.min(400, width * 0.4));
+    var margin = { top: 20, right: 20, bottom: 35, left: 50 };
+    var w = width - margin.left - margin.right;
+    var h = height - margin.top - margin.bottom;
+
+    var tooltip = makeTooltip(container);
+
+    var svg = d3.select(container)
+      .append('svg')
+      .attr('viewBox', '0 0 ' + width + ' ' + height)
+      .attr('width', width)
+      .attr('height', height)
+      .style('display', 'block');
+
+    var g = svg.append('g')
+      .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+    var stack = d3.stack()
+      .keys(species)
+      .order(d3.stackOrderInsideOut)
+      .offset(d3.stackOffsetNone);
+
+    var series = stack(tableData);
+
+    var xScale = d3.scaleLinear()
+      .domain([0, data.total_ticks])
+      .range([0, w]);
+
+    var yScale = d3.scaleLinear()
+      .domain([0, 100])
+      .range([h, 0]);
+
+    var area = d3.area()
+      .x(function (d) { return xScale(d.data.tick); })
+      .y0(function (d) { return yScale(d[0]); })
+      .y1(function (d) { return yScale(d[1]); })
+      .curve(d3.curveBasis);
+
+    // Color map
+    var spColorMap = {};
+    species.forEach(function (sp, i) {
+      spColorMap[sp] = SP_PALETTE[i % SP_PALETTE.length];
+    });
+
+    g.selectAll('.sp-norm-area')
+      .data(series)
+      .enter().append('path')
+      .attr('class', 'sp-norm-area')
+      .attr('d', area)
+      .attr('fill', function (d) { return spColorMap[d.key]; })
+      .attr('fill-opacity', 0.8)
+      .attr('stroke', 'none')
+      .on('mouseenter', function (event, d) {
+        d3.select(this).attr('fill-opacity', 1);
+        tooltip.style.opacity = '1';
+      })
+      .on('mousemove', function (event, d) {
+        var rect = container.getBoundingClientRect();
+        var mx = event.clientX - rect.left - margin.left;
+        var tick = Math.round(xScale.invert(mx));
+        var idx = Math.round(tick / data.sample_interval);
+        idx = Math.max(0, Math.min(data.ticks.length - 1, idx));
+        var pct = (d[idx].data[d.key]).toFixed(1);
+        tooltip.innerHTML = '<strong>' + d.key + '</strong> at tick ' + formatTick(data.ticks[idx]) + '<br>' + pct + '% of population';
+        tooltip.style.left = (event.clientX - rect.left + 12) + 'px';
+        tooltip.style.top = (event.clientY - rect.top - 28) + 'px';
+      })
+      .on('mouseleave', function () {
+        tooltip.style.opacity = '0';
+        d3.select(this).attr('fill-opacity', 0.75);
+      });
+
+    // X axis
+    g.append('g')
+      .attr('transform', 'translate(0,' + h + ')')
+      .call(d3.axisBottom(xScale).ticks(8).tickFormat(formatTick))
+      .call(function (ax) {
+        ax.select('.domain').attr('stroke', C.borderL);
+        ax.selectAll('.tick line').attr('stroke', C.borderL);
+        ax.selectAll('.tick text').attr('fill', C.dim).attr('font-size', 10).attr('font-family', FONT);
+      });
+
+    // Y axis (percentage)
+    g.append('g')
+      .call(d3.axisLeft(yScale).ticks(5).tickFormat(function (d) { return d + '%'; }))
+      .call(function (ax) {
+        ax.select('.domain').attr('stroke', C.borderL);
+        ax.selectAll('.tick line').attr('stroke', C.borderL);
+        ax.selectAll('.tick text').attr('fill', C.dim).attr('font-size', 10).attr('font-family', FONT);
+      });
+
+    // Label
+    g.append('text')
+      .attr('x', w / 2).attr('y', h + 30)
+      .attr('text-anchor', 'middle')
+      .attr('fill', C.dim).attr('font-size', 10).attr('font-family', FONT)
+      .text('Simulation Ticks');
+  }
+
+  // ══════════════════════════════════════════════════════════════════════════
   //  Init
   // ══════════════════════════════════════════════════════════════════════════
 
@@ -517,6 +786,8 @@
     'ecosystem-timeline': renderEcosystemTimeline,
     'species-stream': renderSpeciesStream,
     'body-composition': renderBodyComposition,
+    'body-composition-norm': renderBodyCompositionNorm,
+    'species-stream-norm': renderSpeciesStreamNorm,
   };
 
   function initCharts() {
