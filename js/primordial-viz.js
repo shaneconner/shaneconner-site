@@ -406,11 +406,18 @@
       if (d > maxR) maxR = d;
     }
     var ringR = Math.max(maxR + 3, 4.5);
-    ctx.strokeStyle = spColor; ctx.lineWidth = 1;
-    ctx.beginPath(); ctx.arc(core[0], core[1], ringR, 0, Math.PI * 2); ctx.stroke();
     if (highlight) {
+      // Selected: clear species-colored ring + white highlight
+      ctx.strokeStyle = spColor; ctx.lineWidth = 1.2;
+      ctx.beginPath(); ctx.arc(core[0], core[1], ringR, 0, Math.PI * 2); ctx.stroke();
       ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.2;
       ctx.beginPath(); ctx.arc(core[0], core[1], ringR + 2, 0, Math.PI * 2); ctx.stroke();
+    } else {
+      // Default: soft filled glow showing body extent
+      ctx.globalAlpha = 0.07;
+      ctx.fillStyle = spColor;
+      ctx.beginPath(); ctx.arc(core[0], core[1], ringR, 0, Math.PI * 2); ctx.fill();
+      ctx.globalAlpha = 1;
     }
   }
 
