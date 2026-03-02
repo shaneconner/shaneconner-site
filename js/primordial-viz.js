@@ -61,7 +61,7 @@
     self.worldH = 900;
     self.canvasW = 0;
     self.canvasH = 0;
-    self.selectedOrg = null;
+    self.selectedOrgId = null;
 
     self.build();
     self.load();
@@ -249,8 +249,16 @@
     // Organisms
     var orgs = snap.o || [];
     var wtX = self.worldW * 0.4, wtY = self.worldH * 0.4;
+    // Clear selection if organism died
+    if (self.selectedOrgId) {
+      var found = false;
+      for (var si = 0; si < orgs.length; si++) {
+        if (orgs[si].id === self.selectedOrgId) { found = true; break; }
+      }
+      if (!found) { self.selectedOrgId = null; self.showInspect(null); }
+    }
     for (var oi = 0; oi < orgs.length; oi++) {
-      drawOrganism(ctx, orgs[oi], orgs[oi] === self.selectedOrg, wtX, wtY);
+      drawOrganism(ctx, orgs[oi], orgs[oi].id === self.selectedOrgId, wtX, wtY);
     }
 
     ctx.restore();
@@ -318,7 +326,7 @@
       if (d < closestDist) { closestDist = d; closest = orgs[i]; }
     }
 
-    self.selectedOrg = closest;
+    self.selectedOrgId = closest ? closest.id : null;
     if (!self.playing) self.renderFrame();
     self.showInspect(closest);
   };
@@ -384,6 +392,16 @@
     var nodeScale = nCount > 5 ? 1 + (nCount - 5) * 0.05 : 1;
     nodeScale = Math.min(nodeScale, 1.5);
 
+    // Per-node glow: soft halos that follow the organism's actual shape
+    ctx.globalAlpha = 0.035;
+    ctx.fillStyle = spColor;
+    var glowR = 6 * nodeScale;
+    for (var gi = 0; gi < nodes.length; gi++) {
+      ctx.beginPath(); ctx.arc(nodes[gi][0], nodes[gi][1], glowR, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+
+    // Edges
     for (var ei = 0; ei < edges.length; ei++) {
       var e = edges[ei], n1 = nodes[e[0]], n2 = nodes[e[1]];
       if (Math.abs(n1[0] - n2[0]) > wrapThreshX || Math.abs(n1[1] - n2[1]) > wrapThreshY) continue;
@@ -391,33 +409,29 @@
       ctx.lineWidth = (e[2] === 1 ? 1.5 : 0.7) * nodeScale;
       ctx.beginPath(); ctx.moveTo(n1[0], n1[1]); ctx.lineTo(n2[0], n2[1]); ctx.stroke();
     }
+
+    // Nodes
     for (var ni = 0; ni < nodes.length; ni++) {
       var n = nodes[ni];
       ctx.fillStyle = NODE_COLOR[n[2]] || '#888';
       var r = (n[2] === 0 ? 3 : 2.2) * nodeScale;
       ctx.beginPath(); ctx.arc(n[0], n[1], r, 0, Math.PI * 2); ctx.fill();
     }
-    // Dynamic species ring: radius from core to furthest node + padding
-    var core = nodes[0];
-    var maxR = 0;
-    for (var bi = 1; bi < nodes.length; bi++) {
-      var dx = nodes[bi][0] - core[0], dy = nodes[bi][1] - core[1];
-      var d = Math.sqrt(dx * dx + dy * dy);
-      if (d > maxR) maxR = d;
-    }
-    var ringR = Math.max(maxR + 3, 4.5);
+
+    // Selected organism: species ring + white highlight
     if (highlight) {
-      // Selected: clear species-colored ring + white highlight
+      var core = nodes[0];
+      var maxR = 0;
+      for (var bi = 1; bi < nodes.length; bi++) {
+        var dx = nodes[bi][0] - core[0], dy = nodes[bi][1] - core[1];
+        var d = Math.sqrt(dx * dx + dy * dy);
+        if (d > maxR) maxR = d;
+      }
+      var ringR = Math.max(maxR + 3, 4.5);
       ctx.strokeStyle = spColor; ctx.lineWidth = 1.2;
       ctx.beginPath(); ctx.arc(core[0], core[1], ringR, 0, Math.PI * 2); ctx.stroke();
       ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.2;
       ctx.beginPath(); ctx.arc(core[0], core[1], ringR + 2, 0, Math.PI * 2); ctx.stroke();
-    } else {
-      // Default: soft filled glow showing body extent
-      ctx.globalAlpha = 0.07;
-      ctx.fillStyle = spColor;
-      ctx.beginPath(); ctx.arc(core[0], core[1], ringR, 0, Math.PI * 2); ctx.fill();
-      ctx.globalAlpha = 1;
     }
   }
 
