@@ -56,7 +56,8 @@ function initNavDropdowns() {
       { label: 'Primordial: Neuroevolution', href: '/projects/primordial/', submenu: [
         { label: 'Part 1: Emergent Behaviors', href: '/projects/primordial/part-1/' },
         { label: 'Part 2: Fixing the Rules', href: '/projects/primordial/part-2/' },
-        { label: 'Part 3: Bodies That Matter', href: '/projects/primordial/part-3/' }
+        { label: 'Part 3: Bodies That Matter', href: '/projects/primordial/part-3/' },
+        { label: 'Part 4: Minds and Signals', href: '/projects/primordial/part-4/' }
       ]}
     ],
     contact: [

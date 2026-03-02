@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Primordial Part 4: Minds and Signals &mdash; Shane Conner</title>
+
+  <meta name="description" content="Part 4 of the Primordial evolutionary life simulation. Recurrent neural networks, chemical signaling, terrain biomes, day-night cycles, resource sharing, and organism collisions." />
+  <meta name="author" content="Shane Conner" />
+
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Primordial Part 4: Minds and Signals — Shane Conner" />
+  <meta property="og:description" content="Organisms gain memory, communication, and a world that changes around them. Recurrent brains, pheromone signaling, terrain biomes, and the first real collisions." />
+  <meta property="og:url" content="https://shaneconner.com/projects/primordial/part-4" />
+  <meta property="og:site_name" content="Shane Conner" />
+
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Outfit:wght@200;300;400;500&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="/css/shared.css" />
+  <link rel="stylesheet" href="/css/projects.css" />
+
+  <script src="https://d3js.org/d3.v7.min.js" defer></script>
+  <script src="/js/primordial-charts.js" defer></script>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav id="nav">
+    <a href="/" class="nav-logo">Shane Conner</a>
+    <ul class="nav-links">
+      <li><a href="/art">Art</a></li>
+      <li><a href="/projects" class="active">Projects</a></li>
+      <li><a href="/contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section class="project-hero">
+    <div class="hero-content">
+      <h1 class="resonance-hero-title">
+        <span class="resonance-name">Primordial</span>
+        <span class="resonance-descriptor">Part 4 &mdash; Minds and Signals</span>
+      </h1>
+      <p class="subtitle">Recurrent memory. Chemical signaling. Terrain biomes. Day-night cycles. An environment that demands more than reflexes.</p>
+    </div>
+    <p class="scroll-hint">Scroll to explore</p>
+  </section>
+
+  <!-- CONTEXT -->
+  <div class="part-context">
+    <a href="/projects/primordial/">&larr; Primordial</a>
+    <span class="part-indicator">Part 4 of 4</span>
+  </div>
+
+  <!-- INTRO -->
+  <div class="essay reveal">
+    <h3>The Setup</h3>
+    <h2>What happens when organisms can remember and communicate?</h2>
+    <p>Part 3 proved that bodies matter. Every node type earned its cost. Organisms grew to 29 nodes and found a dynamic equilibrium across all seven body parts. The environment wrote the organisms.</p>
+    <p>Part 4 changes the question. Bodies still matter, but now brains do too. Organisms get recurrent neural networks: hidden states that persist across ticks, giving them something that functions like short-term memory. They get neuromodulation, where dedicated brain outputs scale the gain on all other outputs. They get eight memory registers instead of two, with configurable decay rates.</p>
+    <p>And they get a way to talk. Signal nodes broadcast chemical vectors into the environment. Nearby organisms sense the direction, intensity, and similarity of those signals. The infrastructure for communication, coordination, and deception. Whether evolution uses it for cooperation or conflict is the experiment.</p>
+  </div>
+
+  <!-- PLACEHOLDER: Charts will go here after simulation runs -->
+  <!-- <div class="chart-container reveal" data-timeline-src="/data/primordial-timeline-p4.json" data-chart="population"></div> -->
+
+  <div class="essay reveal">
+    <h3>The World</h3>
+    <h2>Four biomes, one day-night cycle, and things that want to kill you</h2>
+    <p>The world doubles in size to 4000 by 2250 units. Terrain biomes tile the landscape: fertile grasslands where food spawns at 1.5x normal rate, dense vegetation with 2x food but 60% movement speed, rocky terrain with sparse resources, and water zones where nothing grows but movement is fast. The terrain shapes migration patterns and creates natural corridors between resource-rich areas.</p>
+    <p>A day-night cycle runs on a 2000-tick period. At midnight, sensor range drops to 40% of its daytime value. Organisms that rely on vision to find food become effectively blind. Three hazard zones drift across the map, dealing 1.5 energy damage per tick to anything caught inside. And 8% of the food supply is toxic: indistinguishable from regular algae until you eat it, at which point it deals 15 damage instead of providing energy.</p>
+    <p>Stomachs help. A new node type that improves digestion efficiency by 10% per node, partially compensating for the base efficiency drop from 80% to 60%. Organisms without stomachs waste 40% of every meal. Organisms with three stomachs waste only 10%.</p>
+  </div>
+
+  <div class="essay reveal">
+    <h3>Social Systems</h3>
+    <h2>Sharing, signaling, and the group bonus</h2>
+    <p>Organisms can share energy with nearby kin when their brain's share output exceeds 0.5. They can broadcast chemical signals through signal nodes, paying an energy cost proportional to broadcast intensity. And they get a group bonus: when three or more same-species organisms cluster within 100 units, all of them gain increased sensor range.</p>
+    <p>The group bonus creates an interesting evolutionary pressure. Organisms that cluster with kin see further, find more food, and detect threats earlier. But clustering also means competing for the same local resources. Whether the sensor bonus outweighs the resource competition depends on the food density, the terrain, and the time of day.</p>
+  </div>
+
+  <div class="essay reveal">
+    <h3>Physical Contact</h3>
+    <h2>Bodies that collide</h2>
+    <p>For the first time, organisms physically interact. A soft repulsive force prevents bodies from passing through each other, proportional to their overlap depth and weighted by inverse mass. Smaller organisms bounce off larger ones. Combat now checks edge proximity, not just node positions, so attacks can land on the connective tissue between nodes. Individual nodes have hit points proportional to their mass. A damaged node can be disabled, removing its function until it regenerates above 50% HP.</p>
+  </div>
+
+  <!-- PLACEHOLDER: Viewer clips will go here -->
+  <!-- <div class="sim-viewer reveal" data-sim-clip="/data/narrative-p4/primordial-p4-genesis.json"></div> -->
+
+  <!-- PLACEHOLDER: Results sections after simulation -->
+  <div class="essay reveal">
+    <h3>Coming Soon</h3>
+    <h2>Simulation pending</h2>
+    <p>Part 4 is implemented and ready to run. The narrative will be written after the simulation completes its 500,000 ticks with seed 314. Check back for the full results, charts, and curated clips.</p>
+  </div>
+
+  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+
+  <div class="part-nav">
+    <div class="part-nav-item part-nav-prev">
+      <span class="part-nav-label">&larr; Previous</span>
+      <a href="/projects/primordial/part-3/" class="part-nav-link">Part 3: Bodies That Matter</a>
+    </div>
+    <div class="part-nav-item part-nav-next">
+      <span class="part-nav-label">&nbsp;</span>
+      <span class="part-nav-link" style="opacity:0.3;">Latest Part</span>
+    </div>
+  </div>
+
+  <!-- TECH STACK -->
+  <div class="project-meta">
+    <h3>Tech Stack</h3>
+    <div class="project-tags">
+      <span class="project-tag">Python</span>
+      <span class="project-tag">NumPy</span>
+      <span class="project-tag">Neuroevolution</span>
+      <span class="project-tag">Spring-Mass Physics</span>
+      <span class="project-tag">Spatial Hashing</span>
+      <span class="project-tag">D3.js</span>
+      <span class="project-tag">Canvas API</span>
+    </div>
+    <div style="margin-top:1.5rem;">
+      <a href="https://github.com/shaneconner/primordial" class="back-link" style="margin-right:2rem;">View Source &rarr;</a>
+      <a href="/projects" class="back-link">&larr; All Projects</a>
+    </div>
+  </div>
+
+  <footer>
+    <span>&copy; 2026 Shane Conner</span>
+    <span></span>
+  </footer>
+
+  <script src="/js/shared.js"></script>
+  <script src="/js/primordial-viz.js"></script>
+</body>
+</html>
