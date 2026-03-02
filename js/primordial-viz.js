@@ -129,24 +129,30 @@
     });
 
     // Click / zoom
-    self.canvas.addEventListener('click', function (e) { self.onClick(e); });
     self.canvas.addEventListener('wheel', function (e) { self.onWheel(e); }, { passive: false });
 
-    // Pan
-    var dragging = false, dragStart = {}, camStart = {};
+    // Pan (with drag threshold to distinguish from click)
+    var dragging = false, didDrag = false, dragStart = {}, camStart = {};
     self.canvas.addEventListener('mousedown', function (e) {
       dragging = true;
+      didDrag = false;
       dragStart = { x: e.clientX, y: e.clientY };
       camStart = { x: self.camera.x, y: self.camera.y };
     });
     self.canvas.addEventListener('mousemove', function (e) {
       if (!dragging) return;
-      self.camera.x = camStart.x + (e.clientX - dragStart.x) / self.camera.zoom;
-      self.camera.y = camStart.y + (e.clientY - dragStart.y) / self.camera.zoom;
+      var dx = e.clientX - dragStart.x, dy = e.clientY - dragStart.y;
+      if (Math.abs(dx) > 3 || Math.abs(dy) > 3) didDrag = true;
+      if (!didDrag) return;
+      self.camera.x = camStart.x - dx / self.camera.zoom;
+      self.camera.y = camStart.y - dy / self.camera.zoom;
       self.clampCamera();
-      if (!self.playing) self.renderFrame();
+      self.renderFrame();
     });
-    self.canvas.addEventListener('mouseup', function () { dragging = false; });
+    self.canvas.addEventListener('mouseup', function (e) {
+      if (!didDrag && dragging) self.onClick(e);
+      dragging = false;
+    });
     self.canvas.addEventListener('mouseleave', function () { dragging = false; });
 
     // Autoplay when scrolled into view, pause when out
@@ -227,8 +233,8 @@
     ctx.fillStyle = C.bg;
     ctx.fillRect(0, 0, self.canvasW, self.canvasH);
     ctx.save();
-    ctx.translate(self.camera.x * self.camera.zoom, self.camera.y * self.camera.zoom);
     ctx.scale(self.camera.zoom, self.camera.zoom);
+    ctx.translate(-self.camera.x, -self.camera.y);
 
     ctx.strokeStyle = C.border;
     ctx.lineWidth = 1 / self.camera.zoom;
@@ -315,8 +321,8 @@
     var self = this;
     if (!self.clip || !self.clip.snapshots[self.frame]) return;
     var rect = self.canvas.getBoundingClientRect();
-    var mx = (e.clientX - rect.left) / self.camera.zoom - self.camera.x;
-    var my = (e.clientY - rect.top) / self.camera.zoom - self.camera.y;
+    var mx = self.camera.x + (e.clientX - rect.left) / self.camera.zoom;
+    var my = self.camera.y + (e.clientY - rect.top) / self.camera.zoom;
 
     var orgs = self.clip.snapshots[self.frame].o || [];
     var closest = null, closestDist = 25;
@@ -347,7 +353,8 @@
   };
 
   Viewer.prototype.clampCamera = function () {
-    // Minimum zoom: world exactly fills canvas (no void beyond edges)
+    // camera.x/y = world coordinate at screen top-left
+    // Minimum zoom: world fills canvas (no void)
     var minZoom = Math.min(this.canvasW / this.worldW, this.canvasH / this.worldH);
     if (this.camera.zoom < minZoom) this.camera.zoom = minZoom;
 
@@ -356,14 +363,14 @@
     var visH = this.canvasH / this.camera.zoom;
 
     if (visW >= this.worldW) {
-      // World fits horizontally — center it
-      this.camera.x = (visW - this.worldW) / 2;
+      // World fits — center it (negative offset so world is centered)
+      this.camera.x = -(visW - this.worldW) / 2;
     } else {
-      // Clamp pan so we don't show void
+      // Clamp: left edge >= 0, right edge <= worldW
       this.camera.x = Math.max(0, Math.min(this.worldW - visW, this.camera.x));
     }
     if (visH >= this.worldH) {
-      this.camera.y = (visH - this.worldH) / 2;
+      this.camera.y = -(visH - this.worldH) / 2;
     } else {
       this.camera.y = Math.max(0, Math.min(this.worldH - visH, this.camera.y));
     }
@@ -372,14 +379,19 @@
   Viewer.prototype.onWheel = function (e) {
     e.preventDefault();
     var rect = this.canvas.getBoundingClientRect();
-    var mx = e.clientX - rect.left, my = e.clientY - rect.top;
+    var sx = e.clientX - rect.left, sy = e.clientY - rect.top;
     var oldZoom = this.camera.zoom;
+    // World point under mouse before zoom
+    var wx = this.camera.x + sx / oldZoom;
+    var wy = this.camera.y + sy / oldZoom;
+    // Apply zoom
     var factor = e.deltaY < 0 ? 1.15 : 1 / 1.15;
     this.camera.zoom = Math.min(10, this.camera.zoom * factor);
-    this.camera.x += mx / this.camera.zoom - mx / oldZoom;
-    this.camera.y += my / this.camera.zoom - my / oldZoom;
+    // Adjust camera so world point stays under mouse
+    this.camera.x = wx - sx / this.camera.zoom;
+    this.camera.y = wy - sy / this.camera.zoom;
     this.clampCamera();
-    if (!this.playing) this.renderFrame();
+    this.renderFrame();
   };
 
   /* ── shared helpers ── */
@@ -393,9 +405,9 @@
     nodeScale = Math.min(nodeScale, 1.5);
 
     // Per-node glow: soft halos that follow the organism's actual shape
-    ctx.globalAlpha = 0.12;
+    ctx.globalAlpha = 0.10;
     ctx.fillStyle = spColor;
-    var glowR = 8 * nodeScale;
+    var glowR = 10 * nodeScale;
     for (var gi = 0; gi < nodes.length; gi++) {
       ctx.beginPath(); ctx.arc(nodes[gi][0], nodes[gi][1], glowR, 0, Math.PI * 2); ctx.fill();
     }
