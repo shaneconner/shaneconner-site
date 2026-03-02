@@ -393,9 +393,9 @@
     nodeScale = Math.min(nodeScale, 1.5);
 
     // Per-node glow: soft halos that follow the organism's actual shape
-    ctx.globalAlpha = 0.035;
+    ctx.globalAlpha = 0.12;
     ctx.fillStyle = spColor;
-    var glowR = 6 * nodeScale;
+    var glowR = 8 * nodeScale;
     for (var gi = 0; gi < nodes.length; gi++) {
       ctx.beginPath(); ctx.arc(nodes[gi][0], nodes[gi][1], glowR, 0, Math.PI * 2); ctx.fill();
     }
