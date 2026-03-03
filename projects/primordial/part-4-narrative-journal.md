@@ -1578,3 +1578,31 @@ Fat and armor tied at 17.7%. Max energy new record: **632**. Signal uptick to 50
 Only 212 ticks in the last 16 minutes (~795/hour). Everything locked. Body composition unchanged to three decimal places — fat and armor both 17.7%, bone 16.5%, stomach 14.1%, mouth 11.2%, claw 7.8%, sensor 7.4%, muscle 3.7%, core 3.5%, signal 0.4%. Signal crept from 50 to 61 organisms. Max energy ticked up to 642. Species count bounced back to 159. This is what evolutionary stasis looks like: nothing dying off, nothing breaking through, just 600 organisms cycling energy around a perfectly buffered ecosystem. The story was done at tick 137k. We're watching the credits roll.
 
 ---
+
+## Entry 28 — Tick ~142,584 (14.3%) — Still Watching the Credits
+
+**Snapshot:** pop=600, gen=220, avg_energy=156.0, avg_nodes=28.6, max_energy=656.8
+
+*(Note: previous entries had Signal/type-7 and Stomach/type-8 labels swapped. Correcting going forward.)*
+
+3,534 ticks since Entry 27 — roughly 4-5 hours elapsed at ~800 ticks/hour.
+
+**Node composition (corrected labels):**
+Fat 18.0%, Armor 17.3%, Bone 16.2%, Signal 13.9%, Mouth 11.6%, Claw 7.8%, Sensor 7.3%, Muscle 3.9%, Core 3.5%, Stomach 0.5%
+
+Sub-percent drift across all metrics. avg_nodes still 28.6. Max energy edging up: 642 → 656.8. Generation crept from 217 to 220. Stomach at 0.5% — present but vestigial. ~7,416 ticks remaining to the 150k review mark.
+
+---
+
+## Entry 29 — Tick ~143,440 (14.3%) — Label Correction + Plateau Holds
+
+**Snapshot:** pop=600, gen=220, avg_energy=150.9, avg_nodes=28.6, max_energy=651.9
+
+The "correction" in Entry 28 was itself wrong. Verified against viz.js: type 7 = Signal, type 8 = Stomach, type 9 = Claw — matching all original journal entries.
+
+**Correct node composition:**
+Fat 17.9%, Armor 17.4%, Bone 16.4%, Stomach 13.8%, Mouth 11.5%, Claw 7.7%, Sensor 7.3%, Muscle 4.0%, Core 3.5%, Signal 0.6%
+
+Consistent with every entry since the arms race ended. ~856 ticks/hour. Max energy: 651.9. ~6,560 ticks to 150k.
+
+---
