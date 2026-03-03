@@ -144,12 +144,22 @@
     // Fullscreen
     self.container.querySelector('.sim-fs-btn').addEventListener('click', function () { self.toggleFullscreen(); });
     document.addEventListener('fullscreenchange', function () {
+      var exiting = self.isFullscreen && !document.fullscreenElement;
       self.isFullscreen = document.fullscreenElement === self.container;
       var expandIcon = self.container.querySelector('.sim-fs-icon-expand');
       var compressIcon = self.container.querySelector('.sim-fs-icon-compress');
       if (expandIcon) expandIcon.style.display = self.isFullscreen ? 'none' : '';
       if (compressIcon) compressIcon.style.display = self.isFullscreen ? '' : 'none';
-      setTimeout(function () { self.resizeCanvas(); }, 50);
+      setTimeout(function () {
+        self.resizeCanvas();
+        if (exiting) {
+          self.camera.zoom = Math.min(self.canvasW / self.worldW, self.canvasH / self.worldH);
+          self.camera.x = 0;
+          self.camera.y = 0;
+          self.clampCamera();
+          self.renderFrame();
+        }
+      }, 50);
     });
 
     // Click / zoom
