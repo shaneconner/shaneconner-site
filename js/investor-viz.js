@@ -1,4 +1,4 @@
-// AI Investor Agent — D3.js visualizations
+// Quorum — D3.js visualizations
 // Renders into #architecture-viz, #attention-viz, #reward-viz, #regime-viz
 
 (function () {
@@ -1244,3 +1244,4 @@
   document.addEventListener('DOMContentLoaded', initVisualizations);
 
 })();
+

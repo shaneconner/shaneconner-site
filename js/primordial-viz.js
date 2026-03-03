@@ -16,14 +16,14 @@
   var NODE_COLOR = {
     0: '#d4cfc3', 1: '#a09888', 2: '#8a3a3a', 3: '#5a9aaa',
     4: '#9aaa3a', 5: '#b49a6e', 6: '#7a7868',
-    7: '#4ac9c9', 8: '#c9923a',
+    7: '#4ac9c9', 8: '#c9923a', 9: '#cc4444',
   };
   var NODE_LABEL = {
     0: 'Core', 1: 'Bone', 2: 'Muscle', 3: 'Sensor',
     4: 'Mouth', 5: 'Fat', 6: 'Armor',
-    7: 'Signal', 8: 'Stomach',
+    7: 'Signal', 8: 'Stomach', 9: 'Claw',
   };
-  var NODE_SHORT = { 0: 'C', 1: 'B', 2: 'M', 3: 'S', 4: 'Mo', 5: 'F', 6: 'Ar', 7: 'Sg', 8: 'St' };
+  var NODE_SHORT = { 0: 'C', 1: 'B', 2: 'M', 3: 'S', 4: 'Mo', 5: 'F', 6: 'Ar', 7: 'Sg', 8: 'St', 9: 'Cl' };
   var EDGE_COLOR = { 0: '#666655', 1: '#8a3a3a', 2: '#555544' };
   var FOOD_COLOR = { p: '#7aaa3a', m: '#aa4a4a', n: '#8e7a4a', a: '#7aaa3a', f: '#cc9933', t: '#7aaa3a' };
 

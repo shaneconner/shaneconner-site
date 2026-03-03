@@ -5,12 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Primordial Part 4: Minds and Signals &mdash; Shane Conner</title>
 
-  <meta name="description" content="Part 4 of the Primordial evolutionary life simulation. Recurrent neural networks, chemical signaling, terrain biomes, day-night cycles, resource sharing, and organism collisions." />
+  <meta name="description" content="Part 4 of the Primordial evolutionary life simulation. Recurrent brains, dedicated claws, terrain biomes, day-night cycles, and a 47,000-tick arms race that ended when every organism had every weapon." />
   <meta name="author" content="Shane Conner" />
 
   <meta property="og:type" content="article" />
   <meta property="og:title" content="Primordial Part 4: Minds and Signals — Shane Conner" />
-  <meta property="og:description" content="Organisms gain memory, communication, and a world that changes around them. Recurrent brains, pheromone signaling, terrain biomes, and the first real collisions." />
+  <meta property="og:description" content="Organisms gain memory, chemical signaling, and dedicated claws. What followed was the most complete arms race in the project's history." />
   <meta property="og:url" content="https://shaneconner.com/projects/primordial/part-4" />
   <meta property="og:site_name" content="Shane Conner" />
 
@@ -47,7 +47,7 @@
         <span class="resonance-name">Primordial</span>
         <span class="resonance-descriptor">Part 4 &mdash; Minds and Signals</span>
       </h1>
-      <p class="subtitle">Recurrent memory. Chemical signaling. Terrain biomes. Day-night cycles. An environment that demands more than reflexes.</p>
+      <p class="subtitle">Recurrent memory. Chemical signaling. Terrain biomes. Day-night cycles. And claws that changed everything.</p>
     </div>
     <p class="scroll-hint">Scroll to explore</p>
   </section>
@@ -58,47 +58,135 @@
     <span class="part-indicator">Part 4 of 4</span>
   </div>
 
-  <!-- INTRO -->
+  <!-- THE REDESIGN -->
   <div class="essay reveal">
-    <h3>The Setup</h3>
-    <h2>What happens when organisms can remember and communicate?</h2>
-    <p>Part 3 proved that bodies matter. Every node type earned its cost. Organisms grew to 29 nodes and found a dynamic equilibrium across all seven body parts. The environment wrote the organisms.</p>
-    <p>Part 4 changes the question. Bodies still matter, but now brains do too. Organisms get recurrent neural networks: hidden states that persist across ticks, giving them something that functions like short-term memory. They get neuromodulation, where dedicated brain outputs scale the gain on all other outputs. They get eight memory registers instead of two, with configurable decay rates.</p>
-    <p>And they get a way to talk. Signal nodes broadcast chemical vectors into the environment. Nearby organisms sense the direction, intensity, and similarity of those signals. The infrastructure for communication, coordination, and deception. Whether evolution uses it for cooperation or conflict is the experiment.</p>
+    <h3>The Redesign</h3>
+    <h2>Giving combat a body plan</h2>
+    <p>Part 3 solved body diversity. Every node type earned its cost, organisms grew to 29 nodes, and the ecosystem found a stable seven-type equilibrium that held for 275,000 ticks. But Part 3 had a quiet failure hiding inside its success: mouths were doing two jobs. They ate food, and they attacked enemies. Every organism built three or four mouths because mouths were free weapons. Combat was just more eating.</p>
+    <p>Part 4 separates those two jobs and sees what happens.</p>
+    <p><strong>CLAW: a dedicated attack node.</strong> Damage scales with node velocity: base five plus node velocity times a factor. Light mass (0.5) so claws move fast at limb tips. Expensive at 0.015 energy per tick. The velocity mechanic creates an implicit musculoskeletal synergy: muscles contract, tendons snap back, bones provide leverage, and the claw at the tip whips forward. No hardcoded bonus needed. The physics engine creates the synergy.</p>
+    <p><strong>Mouths nerfed to 3 damage.</strong> Down from 15. Mouths eat. Claws fight. Organisms now have to decide whether they're building a forager or a predator, and the answer costs something either way.</p>
+    <p><strong>Nonlinear tendon stiffness.</strong> Past 20% stretch, tendons get 5x stiffer. Elastic snap-back, spring-loaded transmission. Distinct from rigid bone and neural-controlled muscle. The three edge types finally mean three different things.</p>
+    <p><strong>Bone metabolic discount.</strong> Bone edges reduce metabolic cost by up to 15%, scaled by bone edge ratio. The skeleton pays for itself directly, not through secondary mechanics.</p>
+    <p>And beyond the combat redesign: recurrent neural networks with persistent hidden state across ticks, eight memory registers, two neuromodulators. Chemical signaling through SIGNAL nodes that broadcast pheromone vectors. Four terrain biomes that shape where food grows and how fast organisms move. A day-night cycle that drops sensor range to 40% at midnight. Toxic food. Drifting hazard zones. Organism collisions with soft repulsion forces. Two new node types: STOMACH for digestion efficiency and SIGNAL for chemical broadcast.</p>
+    <p>The world is larger, 4000 by 2250 units, double the footprint of Part 3. The population cap is higher. The plan was to run one million ticks.</p>
   </div>
 
-  <!-- PLACEHOLDER: Charts will go here after simulation runs -->
-  <!-- <div class="chart-container reveal" data-timeline-src="/data/primordial-timeline-p4.json" data-chart="population"></div> -->
+  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
 
+  <!-- CHAPTER I -->
   <div class="essay reveal">
-    <h3>The World</h3>
-    <h2>Four biomes, one day-night cycle, and things that want to kill you</h2>
-    <p>The world doubles in size to 4000 by 2250 units. Terrain biomes tile the landscape: fertile grasslands where food spawns at 1.5x normal rate, dense vegetation with 2x food but 60% movement speed, rocky terrain with sparse resources, and water zones where nothing grows but movement is fast. The terrain shapes migration patterns and creates natural corridors between resource-rich areas.</p>
-    <p>A day-night cycle runs on a 2000-tick period. At midnight, sensor range drops to 40% of its daytime value. Organisms that rely on vision to find food become effectively blind. Three hazard zones drift across the map, dealing 1.5 energy damage per tick to anything caught inside. And 8% of the food supply is toxic: indistinguishable from regular algae until you eat it, at which point it deals 15 damage instead of providing energy.</p>
-    <p>Stomachs help. A new node type that improves digestion efficiency by 10% per node, partially compensating for the base efficiency drop from 80% to 60%. Organisms without stomachs waste 40% of every meal. Organisms with three stomachs waste only 10%.</p>
+    <h3>Chapter I</h3>
+    <h2>The Founding Crisis</h2>
+    <p>The early simulation looks worse than Part 3. Much worse. Bodies average 8 to 10 nodes instead of 15. The population cycles between 120 and 250 instead of holding near 500. Claws, the new expensive node type, appear on fewer than 10% of organisms and nearly go extinct twice before tick 90,000.</p>
+    <p>This is what the mouth nerf actually means. In Part 3, organisms funded growth with combat income: kill something, absorb 70% of its energy, fund three new nodes. Mouths dealt 15 damage. A well-built organism could sustain itself partly by fighting. In Part 4, a mouth deals 3 damage. The math no longer works. The only reliable income is eating food, and eating food is hard when base digestion efficiency is 60% and toxic items are invisible until you bite them.</p>
+    <p>The ecosystem responds to austerity with efficiency. Stomach nodes, which improve digestion efficiency by 10% each, spread to universal adoption within 20,000 ticks. Every organism has at least one stomach. Many have three, which brings effective efficiency to 80% and partially recovers what the base-rate reduction took away. Bodies are lean and tight: a core, two or three mouths, two bone struts, a stomach, a sensor. The bare minimum that survives.</p>
+    <p>One species dominates this lean era with an iron grip. <strong>sp_244</strong>, which emerges around tick 24,000, holds majority control for over 55,000 consecutive ticks. Its competitors appear, grow to a few dozen members, and then quietly disappear. The top position barely flickers. In a harsh economy, the incumbent has an enormous advantage: established neural patterns, refined body layout, a population large enough to buffer bad luck. Whatever sp_244 is doing, nothing does it better for 55,000 ticks.</p>
+    <p>The claw situation is instructive. The few organisms that carry claws average 14 nodes and 50 energy, well above the population average. Claws are profitable on the individual level. But claws don't spread. Predation works when there are soft targets. When 95% of the ecosystem is playing the same defensive forager game with similar body sizes, the return per kill isn't enough to fund the offspring that would spread the trait. Claws are frequency-dependent: viable when rare, self-defeating when common. So they stay rare. Barely.</p>
+    <p>By tick 79,000, average body size has actually shrunk from 10 to 8.1 nodes. The simulation is doing the opposite of what Part 3 did. Bodies are getting smaller, not larger. sp_244 controls 45% of the population. Signal nodes have gone completely extinct. Claws are down to three organisms out of 177. The ecosystem is converging toward a single lean template and pruning everything that isn't essential.</p>
   </div>
 
+  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+
+  <!-- CHAPTER II -->
   <div class="essay reveal">
-    <h3>Social Systems</h3>
-    <h2>Sharing, signaling, and the group bonus</h2>
-    <p>Organisms can share energy with nearby kin when their brain's share output exceeds 0.5. They can broadcast chemical signals through signal nodes, paying an energy cost proportional to broadcast intensity. And they get a group bonus: when three or more same-species organisms cluster within 100 units, all of them gain increased sensor range.</p>
-    <p>The group bonus creates an interesting evolutionary pressure. Organisms that cluster with kin see further, find more food, and detect threats earlier. But clustering also means competing for the same local resources. Whether the sensor bonus outweighs the resource competition depends on the food density, the terrain, and the time of day.</p>
+    <h3>Chapter II</h3>
+    <h2>The Armor Rush</h2>
+    <p>The first uncharted territory begins at tick 89,000. Everything before it replayed a crashed earlier run, deterministically identical tick for tick. After it, no data exists. The ecosystem that emerges from that boundary is not the one the previous 89,000 ticks suggested.</p>
+    <p>At tick 90,000, armor goes from a curiosity to a phenomenon. One lonely armored organism at tick 70,000. Eight at tick 79,000. Then <strong>65 out of 260</strong> at tick 90,000, a jump from 0.7% to 25% adoption in roughly 11,000 ticks. The fastest compositional shift of any part in the project's history, including Part 3's famous armor rush.</p>
+    <p>The trigger is the species succession. sp_975 has been slowly climbing at the expense of sp_244. By tick 84,000, sp_975 holds 88 members to sp_244's 31. A more homogeneous prey population is easier to specialize against. The few claw organisms, still present at the margins, start hitting the same body plan repeatedly. Armor, which reflects 20% of incoming damage back at attackers, becomes a viable counter. The claw population doesn't need to be large to create selection pressure. It just needs to be consistent.</p>
+    <p>Bodies start growing again. The shrinking era reverses. Average nodes climb from 8.1 to 9.9, and the maximum reaches 18. Armor nodes are cheap at 0.003 energy per tick, so organisms that would normally hold at 8 or 9 nodes can grow to 11 or 12 while barely increasing their metabolic burden. The first growth spurt in 70,000 ticks is funded by armor nodes that are nearly free to carry.</p>
+    <p>Stomach overtakes mouth somewhere around tick 95,000. After 95,000 ticks of mouth leading every composition chart in the simulation, the crossover is quiet and almost invisible until you check the numbers. At tick 90,000: mouth 25.7%, stomach 23.7%. At tick 110,000: mouth 20.2%, stomach 27.1%. The simulation started as an eating contest. It just became something else.</p>
   </div>
 
+  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+
+  <!-- CHAPTER III -->
   <div class="essay reveal">
-    <h3>Physical Contact</h3>
-    <h2>Bodies that collide</h2>
-    <p>For the first time, organisms physically interact. A soft repulsive force prevents bodies from passing through each other, proportional to their overlap depth and weighted by inverse mass. Smaller organisms bounce off larger ones. Combat now checks edge proximity, not just node positions, so attacks can land on the connective tissue between nodes. Individual nodes have hit points proportional to their mass. A damaged node can be disabled, removing its function until it regenerates above 50% HP.</p>
+    <h3>Chapter III</h3>
+    <h2>The Cambrian Moment</h2>
+    <p>Between tick 110,000 and 115,000, the ecosystem undergoes the fastest transformation in 115,000 ticks of simulation. In five thousand ticks, claws go from 30 organisms to 118. Armor goes from 25% to 51% adoption. Fat, nearly extinct for 90,000 ticks, appears on 25% of organisms. Species diversity hits 103, the highest since before the claw redesign. The three-way equilibrium of the founding era, one dominant species, a handful of challengers, a sea of minor players, shatters completely.</p>
+    <p>The cause is self-reinforcing. Larger bodies with more energy reserves make better prey. When average energy crosses 46 and bodies average 12 nodes, a successful predator absorbs 70% of a meaningful kill. That energy funds offspring, which inherit claw morphologies, which increase predator pressure, which makes armor more valuable, which makes fat stores more valuable, which makes bodies larger, which makes prey more valuable. The loop closes.</p>
+    <p>Three distinct strategies become visible for the first time. <strong>Armored tanks</strong>: large bodies (averaging 18 nodes), heavy armor investment, stomach-heavy for maximum digestion efficiency. <strong>Predators</strong>: mid-to-large bodies (averaging 16 nodes), claws positioned for maximum velocity, energy reserves well above average. <strong>Lean foragers</strong>: the original body plan, smaller, no armor or claws, surviving on speed and efficiency. The ecosystem that spent 90,000 ticks converging on a single template has fractured into three.</p>
+    <p>The old dynasties are gone. sp_244 and sp_975, which between them controlled the population for most of the simulation's history, have both vanished from the leaderboard. The top five species at tick 110,000 control 48% of the population between them with no single species above 13%. Power is distributed and contested in ways it never was when one species held 40-45% for decades.</p>
   </div>
 
-  <!-- PLACEHOLDER: Viewer clips will go here -->
-  <!-- <div class="sim-viewer reveal" data-sim-clip="/data/narrative-p4/primordial-p4-genesis.json"></div> -->
+  <div class="essay-wide">
+    <div class="viz-container reveal">
+      <p class="viz-title">The Cambrian Moment &mdash; Tick 109,000&ndash;110,000</p>
+      <div data-sim-clip="/data/narrative-p4/primordial-p4-cambrian.json"></div>
+      <p class="viz-caption">The hinge point: stomach just overtook mouth as the most common node type. Claws (red) are breaking out, armor (purple) is spreading. Bodies averaging 12 nodes with representatives from all 10 types for the first time.</p>
+    </div>
+  </div>
 
-  <!-- PLACEHOLDER: Results sections after simulation -->
+  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+
+  <!-- CHAPTER IV -->
   <div class="essay reveal">
-    <h3>Coming Soon</h3>
-    <h2>Simulation pending</h2>
-    <p>Part 4 is implemented and ready to run. The narrative will be written after the simulation completes its 500,000 ticks with seed 314. Check back for the full results, charts, and curated clips.</p>
+    <h3>Chapter IV</h3>
+    <h2>The Arms Race</h2>
+    <p>The arms race that began at tick 115,000 runs for 22,000 more ticks and doesn't stop until it runs out of things to arm. The numbers trace a trajectory that has no analog in the earlier parts.</p>
+    <p>At tick 118,000: 62% claws, 79% armor, 65% fat, bodies averaging 17.5 nodes. At tick 121,000: 71% claws, 99% armor, 71% fat. At tick 126,000: 80% claws, 100% armor, 91% fat. At tick 137,000: <strong>100% claws, 100% armor, 100% fat.</strong></p>
+    <p>Six of ten node types reach universal adoption. Every organism in the simulation carries a core, bone, stomach, armor, fat reserves, and claws. The minimum body size, which was 7 nodes at the lean era's nadir and 14 nodes when the arms race began, reaches <strong>25 nodes</strong> when it ends. There is no such thing as a small organism anymore.</p>
+    <p>The node hierarchy inverts completely. Stomach, which led every composition chart from tick 20,000 onward, falls to fourth behind fat, armor, and bone. The typical body plan in the post-arms-race world: 3-4 fat nodes, 3-4 armor nodes, 3-4 bone struts, 3-4 stomachs, 2-3 mouths, 2 sensors, 1-2 claws, 1 muscle, 1 core. The body budget that once went mostly to mouths and digestion now goes mostly to defense and energy reserves.</p>
+    <p>The Red Queen runs her full course. Armor at 20% creates pressure to add claws. Claws at 60% create pressure to add armor. Armor at 100% makes predation more expensive and drives larger bodies for more claw velocity. Fat at 100% means every organism survives encounters that would have killed the lean-era versions. Energy climbs: average 40 at tick 90,000, average 150 at tick 137,000. Maximum energy exceeds 600. Predation's 70% energy transfer creates a closed loop where kills recycle wealth between organisms instead of destroying it, and the ecosystem inflates.</p>
+    <p>Species diversity peaks at 195 during the mid-arms-race chaos, then declines to the 150 range as the mandatory trait list grows. When every organism must carry the same six traits, the design space for distinct body plans shrinks. Differences between species become subtle: how many of each node type, where they are placed, what the neural weights do. The ecosystem moves from competing body plans to competing body implementations.</p>
+  </div>
+
+  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+
+  <!-- CHAPTER V: VERDICT / EARLY CALL -->
+  <div class="essay reveal">
+    <h3>Chapter V</h3>
+    <h2>Calling it early</h2>
+    <p>The plan was one million ticks. The world is 4000 by 2250 units, the most complex environment in the project's history. Recurrent brains, terrain biomes, ten node types, organism collisions, pheromone signaling. A run of this scope was always going to be slow.</p>
+    <p>What nobody anticipated was that it would get slower over time. The physics engine simulates every spring, every mass, every collision in the population. At the lean era's peak of 200 organisms averaging 9 nodes, that's around 1,800 nodes in the world. At tick 137,000 with 600 organisms averaging 28 nodes, it's 16,800 nodes, more than nine times the load. The simulation that ran at 1,400 ticks per hour in the founding era slowed to under 900 by the post-arms-race plateau. One million ticks at that rate would have taken months of continuous compute.</p>
+    <p>The simulation was stopped at approximately 150,000 ticks.</p>
+    <p>Fortunately, the story was already complete. The arms race, which is the story of Part 4, started at tick 90,000 and ended at tick 137,000. Everything that happened happened within that 47,000-tick window: three strategic archetypes emerged and collapsed into one, six node types achieved universal adoption, minimum body size tripled, average energy quadrupled. The founding crisis, the armor rush, the Cambrian explosion, the Red Queen cascade, the universalization of every trait. The simulation ran long enough to tell the full story. It just didn't need a million ticks to do it.</p>
+    <p>The remaining 850,000 planned ticks would have been refinement, not revolution. Post-arms-race ecosystems optimize topology and neural behavior, not body plans. Those are harder to read from the data and harder to narrate. The part that matters is the part that happened.</p>
+  </div>
+
+  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+
+  <!-- THE DATA -->
+  <div class="essay reveal">
+    <h3>The Data</h3>
+    <h2>An arms race, frame by frame</h2>
+    <p>The composition charts tell the story more clearly than any other metric. Watch the fat and armor lines, both essentially flat near zero for the first 90,000 ticks, then climb in parallel through the arms race. Watch mouth decline from 34% at tick 28,000 to under 12% at the end as body budget shifts from feeding to fighting. Watch stomach rise and then get crowded out by the combat traits it made possible: by enabling energy surplus, stomach funded the arms race that ultimately demoted it.</p>
+    <p>The species chart shows the arc differently. Long dynasties in the founding era, sp_244 holding 40-45% for 55,000 ticks. Then fragmentation during the Cambrian explosion: no species above 13%, 195 distinct lineages competing. Then slow re-consolidation as the body plan converges and the differences between species become neural rather than morphological.</p>
+    <p>Signal nodes, which the simulation was partly designed to study, never find their moment. They peak at 7.5% during the arms race, briefly. The group sensor bonus, which should reward clustering, is outweighed by the metabolic cost of broadcasting and by the fact that sensor investment itself collapses under the pressure to carry armor and fat instead. Signal is the part of the experiment that didn't work. Part 5 will need a stronger mechanic to make communication matter.</p>
+  </div>
+
+  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+
+  <!-- THE VERDICT -->
+  <div class="essay reveal">
+    <h3>The Verdict</h3>
+    <h2>The world gave them weapons and they used them</h2>
+    <p>Part 3 ended with a question embedded in its conclusion: if the environment demands all of them, evolution supplies all of them. What happens when the environment demands combat instead?</p>
+    <p>Part 4 answers that. Give evolution a dedicated attack node with velocity-based damage and watch the entire ecosystem reorganize around it. Not because the simulation forced it. Because the arms race logic is self-executing once the first condition is met: if killing is profitable, predators appear; if predators appear, armor appears; if armor appears, fat appears to survive armored combat; if everyone is armored and fat-padded, claws need to be larger and faster to penetrate; if claws need to be larger, bodies need to be larger. The loop runs to completion.</p>
+    <p>The ecosystem that started as a lean-era economy of 8-node herbivores converging on a single template ended as a world of 28-node armored predators where every organism carries every weapon and every defense. Bodies three times larger. Energy four times higher. A minimum body size that excludes any organism smaller than the average organism of 50,000 ticks ago.</p>
+    <p>The brain experiment, the recurrent networks, the memory registers, the pheromone signaling, will need a follow-up to properly evaluate. In a world undergoing a total arms race, the behavioral advantages of better memory are hard to measure against the immediate pressure to add another armor node. Signal nodes never mattered. Neural sophistication likely did, but quietly, embedded in the neural weights of the species that won each succession cycle rather than visible in any aggregate metric.</p>
+    <p>What Part 4 demonstrated, beyond the arms race, is that the design space for evolutionary surprises is far from exhausted. A single new node type, with a single mechanically interesting property, produced 47,000 ticks of dynamics that no amount of prior reasoning would have predicted in detail. The morphological story was complete at tick 137,000. The behavioral story is still unwritten.</p>
+  </div>
+
+  <div class="stats-row reveal">
+    <div class="stat">
+      <div class="stat-value">&sim;150k</div>
+      <div class="stat-label">Simulation Ticks</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">260+</div>
+      <div class="stat-label">Generations</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">6 / 10</div>
+      <div class="stat-label">Traits Universalized</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">0</div>
+      <div class="stat-label">Loss Functions</div>
+    </div>
   </div>
 
   <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>

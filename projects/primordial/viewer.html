@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Primordial Clip Viewer</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #0a0a0a; color: #ccc; font-family: monospace; }
+    .controls {
+      padding: 12px 20px;
+      background: #151515;
+      border-bottom: 1px solid #333;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .controls label { font-size: 13px; }
+    .controls input[type="file"] { font-size: 13px; }
+    .controls button {
+      background: #2a5a2a; color: #ccc; border: 1px solid #444;
+      padding: 4px 14px; cursor: pointer; font-family: monospace;
+    }
+    .controls button:hover { background: #3a6a3a; }
+    .controls .speed-label { font-size: 12px; color: #888; }
+    #drop-zone {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: calc(100vh - 50px);
+      font-size: 18px;
+      color: #555;
+    }
+    #drop-zone.hidden { display: none; }
+    .sim-viewer { width: 100%; }
+    .sim-viewer.hidden { display: none; }
+  </style>
+</head>
+<body>
+  <div class="controls">
+    <label>Load clip: <input type="file" id="file-input" accept=".json"></label>
+    <span class="speed-label">or drag &amp; drop a .json clip file</span>
+  </div>
+
+  <div id="drop-zone">Drop a clip JSON file here, or use the file picker above.<br><br>
+    Extract clips with:<br>
+    <code>python scripts/extract_clip.py --start 108000 --end 112000</code>
+  </div>
+
+  <div class="sim-viewer hidden" data-sim-clip="">
+  </div>
+
+  <script src="/js/primordial-viz.js"></script>
+  <script>
+    var viewer = null;
+    var viewerEl = document.querySelector('.sim-viewer');
+    var dropZone = document.getElementById('drop-zone');
+
+    function loadClipData(data) {
+      dropZone.classList.add('hidden');
+      viewerEl.classList.remove('hidden');
+
+      // Inject data directly instead of fetching
+      if (viewer) {
+        viewer.stopPlayback();
+      }
+
+      // Create a blob URL so the viewer can fetch it
+      var blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
+      var url = URL.createObjectURL(blob);
+      viewerEl.setAttribute('data-sim-clip', url);
+
+      // Re-initialize viewer
+      viewerEl.innerHTML = '';
+      viewer = new PrimordialViz.Viewer(viewerEl);
+    }
+
+    function handleFile(file) {
+      if (!file || !file.name.endsWith('.json')) return;
+      var reader = new FileReader();
+      reader.onload = function (e) {
+        try {
+          var data = JSON.parse(e.target.result);
+          loadClipData(data);
+        } catch (err) {
+          alert('Failed to parse JSON: ' + err.message);
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    document.getElementById('file-input').addEventListener('change', function (e) {
+      handleFile(e.target.files[0]);
+    });
+
+    // Drag and drop
+    document.body.addEventListener('dragover', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    });
+    document.body.addEventListener('drop', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (e.dataTransfer.files.length > 0) {
+        handleFile(e.dataTransfer.files[0]);
+      }
+    });
+  </script>
+</body>
+</html>
