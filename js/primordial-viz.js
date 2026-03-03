@@ -143,8 +143,13 @@
 
     // Fullscreen
     self.container.querySelector('.sim-fs-btn').addEventListener('click', function () { self.toggleFullscreen(); });
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && self.isFullscreen) self.toggleFullscreen();
+    document.addEventListener('fullscreenchange', function () {
+      self.isFullscreen = document.fullscreenElement === self.container;
+      var expandIcon = self.container.querySelector('.sim-fs-icon-expand');
+      var compressIcon = self.container.querySelector('.sim-fs-icon-compress');
+      if (expandIcon) expandIcon.style.display = self.isFullscreen ? 'none' : '';
+      if (compressIcon) compressIcon.style.display = self.isFullscreen ? '' : 'none';
+      setTimeout(function () { self.resizeCanvas(); }, 50);
     });
 
     // Click / zoom
@@ -244,30 +249,24 @@
   };
 
   Viewer.prototype.toggleFullscreen = function () {
-    var self = this;
-    self.isFullscreen = !self.isFullscreen;
-    self.container.classList.toggle('sim-fs-active', self.isFullscreen);
-    document.body.classList.toggle('sim-fs-scroll-lock', self.isFullscreen);
-    var expandIcon = self.container.querySelector('.sim-fs-icon-expand');
-    var compressIcon = self.container.querySelector('.sim-fs-icon-compress');
-    if (expandIcon) expandIcon.style.display = self.isFullscreen ? 'none' : '';
-    if (compressIcon) compressIcon.style.display = self.isFullscreen ? '' : 'none';
-    self.resizeCanvas();
+    if (!document.fullscreenElement) {
+      this.container.requestFullscreen().catch(function () {});
+    } else {
+      document.exitFullscreen();
+    }
   };
 
   Viewer.prototype.resizeCanvas = function () {
     var self = this;
-    requestAnimationFrame(function () {
-      var wrap = self.container.querySelector('.sim-canvas-wrap');
-      self.canvasW = wrap.clientWidth;
-      self.canvasH = Math.round(self.canvasW * 9 / 16);
-      self.canvas.width = self.canvasW;
-      self.canvas.height = self.canvasH;
-      var minZoom = Math.min(self.canvasW / self.worldW, self.canvasH / self.worldH);
-      if (self.camera.zoom < minZoom) self.camera.zoom = minZoom;
-      self.clampCamera();
-      self.renderFrame();
-    });
+    var wrap = self.container.querySelector('.sim-canvas-wrap');
+    self.canvasW = wrap.clientWidth;
+    self.canvasH = Math.round(self.canvasW * 9 / 16);
+    self.canvas.width = self.canvasW;
+    self.canvas.height = self.canvasH;
+    var minZoom = Math.min(self.canvasW / self.worldW, self.canvasH / self.worldH);
+    if (self.camera.zoom < minZoom) self.camera.zoom = minZoom;
+    self.clampCamera();
+    self.renderFrame();
   };
 
   Viewer.prototype.renderFrame = function () {
