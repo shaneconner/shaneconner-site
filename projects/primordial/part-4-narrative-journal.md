@@ -1562,3 +1562,19 @@ Every organism grew 3x larger, got 3.6x wealthier, and acquired a full combat lo
 All six universal traits holding at 100%. Tick rate ~802/hour (slowing further). sp_3683 crossed **101 members** (17%), first species to break 100 in this run. sp_2892 collapsed to 26. Max energy hit new record of 607. p90 crossed 412. Stomach at 14.1%, still declining. Bodies stable at 25-35 node range, avg 28.4. Species rebounded slightly to 161. The ecosystem drifts slowly in all metrics. Watching for: population crash (seasonal trough), muscle dropping below 3%, any species breaking 20%, stomach stabilizing or bottoming out.
 
 ---
+
+## Entry 26 — Tick ~139,000 (13.9%) — Plateau Check
+
+**Snapshot:** pop=600, species=149, gen=217, avg_energy=155.5, avg_nodes=28.5, bodies 25-33 nodes
+
+Fat and armor tied at 17.7%. Max energy new record: **632**. Signal uptick to 50/600 (8.3%) — signal nodes are quietly accumulating as sensors decline. sp_3683 holds at 94, sp_3505 at 72. Species at 149. Stomach at 14.1%. All metrics drifting slowly. At 13.9% and ~800 ticks/hour, calling it at 150k gives roughly 11k more ticks. The Part 4 website page is live.
+
+---
+
+## Entry 27 — Tick ~139,050 (13.9%) — Hard Equilibrium
+
+**Snapshot:** pop=600, species=159, gen=217, avg_energy=156.0, avg_nodes=28.5, bodies 25-33 nodes
+
+Only 212 ticks in the last 16 minutes (~795/hour). Everything locked. Body composition unchanged to three decimal places — fat and armor both 17.7%, bone 16.5%, stomach 14.1%, mouth 11.2%, claw 7.8%, sensor 7.4%, muscle 3.7%, core 3.5%, signal 0.4%. Signal crept from 50 to 61 organisms. Max energy ticked up to 642. Species count bounced back to 159. This is what evolutionary stasis looks like: nothing dying off, nothing breaking through, just 600 organisms cycling energy around a perfectly buffered ecosystem. The story was done at tick 137k. We're watching the credits roll.
+
+---
