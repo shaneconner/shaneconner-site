@@ -1341,39 +1341,17 @@ body.lightbox-open {
   flex-shrink: 0;
 }
 
-/* Fullscreen toggle button */
+/* Fullscreen toggle button (lives in sim-controls bar) */
 .sim-fs-btn {
-  position: absolute;
-  bottom: 0.5rem;
-  right: 0.5rem;
-  width: 2rem;
-  height: 2rem;
-  background: rgba(9, 11, 9, 0.72);
-  border: 1px solid var(--border-light);
-  color: var(--text-dim);
-  cursor: pointer;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0;
-  opacity: 0;
-  transition: opacity 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  padding: 0.35rem 0.5rem;
+  flex-shrink: 0;
 }
 
 .sim-fs-btn svg {
-  width: 14px;
-  height: 14px;
   display: block;
-}
-
-.sim-canvas-wrap:hover .sim-fs-btn {
-  opacity: 0.5;
-}
-
-.sim-fs-btn:hover {
-  opacity: 1 !important;
-  border-color: var(--green);
-  color: var(--green-bright);
 }
 
 /* Fullscreen state */
@@ -1389,10 +1367,6 @@ body.lightbox-open {
 
 [data-sim-clip].sim-fs-active .sim-canvas-wrap {
   border: none;
-}
-
-[data-sim-clip].sim-fs-active .sim-fs-btn {
-  opacity: 0.4;
 }
 
 body.sim-fs-scroll-lock {

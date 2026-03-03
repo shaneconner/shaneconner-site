@@ -76,16 +76,6 @@
     self.container.innerHTML =
       '<div class="sim-canvas-wrap">' +
         '<canvas class="sim-canvas"></canvas>' +
-        '<button class="sim-fs-btn" title="Fullscreen">' +
-          '<svg class="sim-fs-icon-expand" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">' +
-            '<polyline points="4,1 1,1 1,4"/><polyline points="10,1 13,1 13,4"/>' +
-            '<polyline points="1,10 1,13 4,13"/><polyline points="13,10 13,13 10,13"/>' +
-          '</svg>' +
-          '<svg class="sim-fs-icon-compress" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" style="display:none">' +
-            '<polyline points="1,4 4,4 4,1"/><polyline points="13,4 10,4 10,1"/>' +
-            '<polyline points="4,13 4,10 1,10"/><polyline points="10,13 10,10 13,10"/>' +
-          '</svg>' +
-        '</button>' +
       '</div>' +
       '<div class="sim-controls">' +
         '<button class="sim-btn sim-play-btn">Pause</button>' +
@@ -100,6 +90,16 @@
           '<option value="4">4x</option>' +
           '<option value="8">8x</option>' +
         '</select>' +
+        '<button class="sim-btn sim-fs-btn" title="Fullscreen">' +
+          '<svg class="sim-fs-icon-expand" width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">' +
+            '<polyline points="4,1 1,1 1,4"/><polyline points="10,1 13,1 13,4"/>' +
+            '<polyline points="1,10 1,13 4,13"/><polyline points="13,10 13,13 10,13"/>' +
+          '</svg>' +
+          '<svg class="sim-fs-icon-compress" width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="display:none">' +
+            '<polyline points="1,4 4,4 4,1"/><polyline points="13,4 10,4 10,1"/>' +
+            '<polyline points="4,13 4,10 1,10"/><polyline points="10,13 10,10 13,10"/>' +
+          '</svg>' +
+        '</button>' +
       '</div>' +
       '<div class="sim-stats-bar">' +
         '<span class="sim-stat-pop">Pop: --</span>' +
