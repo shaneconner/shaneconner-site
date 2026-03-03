@@ -64,6 +64,7 @@
     self.canvasW = 0;
     self.canvasH = 0;
     self.selectedOrgId = null;
+    self.isFullscreen = false;
 
     self.build();
     self.load();
@@ -75,6 +76,16 @@
     self.container.innerHTML =
       '<div class="sim-canvas-wrap">' +
         '<canvas class="sim-canvas"></canvas>' +
+        '<button class="sim-fs-btn" title="Fullscreen">' +
+          '<svg class="sim-fs-icon-expand" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">' +
+            '<polyline points="4,1 1,1 1,4"/><polyline points="10,1 13,1 13,4"/>' +
+            '<polyline points="1,10 1,13 4,13"/><polyline points="13,10 13,13 10,13"/>' +
+          '</svg>' +
+          '<svg class="sim-fs-icon-compress" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" style="display:none">' +
+            '<polyline points="1,4 4,4 4,1"/><polyline points="13,4 10,4 10,1"/>' +
+            '<polyline points="4,13 4,10 1,10"/><polyline points="10,13 10,10 13,10"/>' +
+          '</svg>' +
+        '</button>' +
       '</div>' +
       '<div class="sim-controls">' +
         '<button class="sim-btn sim-play-btn">Pause</button>' +
@@ -128,6 +139,12 @@
     self.container.querySelector('.sim-speed-select').addEventListener('change', function (e) {
       self.playSpeed = parseFloat(e.target.value);
       if (self.playing) self.startPlayback();
+    });
+
+    // Fullscreen
+    self.container.querySelector('.sim-fs-btn').addEventListener('click', function () { self.toggleFullscreen(); });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && self.isFullscreen) self.toggleFullscreen();
     });
 
     // Click / zoom
@@ -224,6 +241,33 @@
 
   Viewer.prototype.stopPlayback = function () {
     if (this.playInterval) { clearInterval(this.playInterval); this.playInterval = null; }
+  };
+
+  Viewer.prototype.toggleFullscreen = function () {
+    var self = this;
+    self.isFullscreen = !self.isFullscreen;
+    self.container.classList.toggle('sim-fs-active', self.isFullscreen);
+    document.body.classList.toggle('sim-fs-scroll-lock', self.isFullscreen);
+    var expandIcon = self.container.querySelector('.sim-fs-icon-expand');
+    var compressIcon = self.container.querySelector('.sim-fs-icon-compress');
+    if (expandIcon) expandIcon.style.display = self.isFullscreen ? 'none' : '';
+    if (compressIcon) compressIcon.style.display = self.isFullscreen ? '' : 'none';
+    self.resizeCanvas();
+  };
+
+  Viewer.prototype.resizeCanvas = function () {
+    var self = this;
+    requestAnimationFrame(function () {
+      var wrap = self.container.querySelector('.sim-canvas-wrap');
+      self.canvasW = wrap.clientWidth;
+      self.canvasH = Math.round(self.canvasW * 9 / 16);
+      self.canvas.width = self.canvasW;
+      self.canvas.height = self.canvasH;
+      var minZoom = Math.min(self.canvasW / self.worldW, self.canvasH / self.worldH);
+      if (self.camera.zoom < minZoom) self.camera.zoom = minZoom;
+      self.clampCamera();
+      self.renderFrame();
+    });
   };
 
   Viewer.prototype.renderFrame = function () {

@@ -50,7 +50,7 @@ function initNavDropdowns() {
       { label: 'Process', href: '/art/#process' }
     ],
     projects: [
-      { label: 'Quorum: Investment Parallax', href: '/projects/quorum/' },
+      { label: 'Quorum: Investment Consensus', href: '/projects/quorum/' },
       { label: 'Cadence: Orchestrating Life', href: '/projects/cadence/' },
       { label: 'Resonance: Music Intelligence', href: '/projects/resonance/' },
       { label: 'Primordial: Neuroevolution', href: '/projects/primordial/', submenu: [
@@ -154,6 +154,8 @@ function initNavDropdowns() {
 
     dropdown.querySelectorAll('a').forEach(function (subLink) {
       subLink.addEventListener('click', function () {
+        // On mobile, don't close the dropdown when tapping a submenu-parent link
+        if (isMobileNav() && subLink.parentElement.classList.contains('nav-has-submenu')) return;
         closeAllDropdowns();
       });
     });
