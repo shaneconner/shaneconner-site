@@ -1686,3 +1686,38 @@ Muscle 17.6%, Fat 17.5%, Mouth 16.3%, Stomach 13.7%, Sensor 12.1%, Claw 7.5%, Bo
 Species count bounced back to 166 — the ecosystem is shuffling internal diversity without changing overall shape. Signal back up to 88 organisms. Everything else flat. One more timer should put us past 150k.
 
 ---
+
+## Entry 36 — Tick 149,358 (14.9%) — 642 Ticks Out
+
+**Snapshot:** pop=600, species=173, gen=226, avg_energy=157.8, max_energy=560.8, avg_nodes=29.0
+
+810 ticks in the last hour. 642 remaining — ~47 minutes to 150k.
+
+Muscle 17.6%, Fat 17.4%, Mouth 16.7%, Stomach 13.6%, Sensor 12.1%, Claw 7.3%, Bone 7.1%, Core 3.4%, Armor 4.2%, Signal 0.5%
+
+Species bounced to 173. Everything else unmoved. The simulation will cross 150k before the next timer fires.
+
+---
+
+## Entry 37 — Tick 150,140 — DONE
+
+**Final snapshot:** pop=600, species=164, gen=228, avg_energy=155.3, max_energy=599.2, avg_nodes=29.1 (range 26–36)
+
+**Final node composition:**
+Muscle 17.7%, Fat 17.4%, Mouth 16.7%, Stomach 13.3%, Sensor 12.1%, Claw 7.5%, Bone 7.0%, Core 3.4%, Armor 4.3%, Signal 0.6%, Memory 0.0%
+
+Signal at 94 organisms (15.7% adoption) — the high-water mark of its slow climb. No memory nodes ever emerged in Part 4. The body plan locked in at the arms-race equilibrium and held for 13,000+ ticks without deviation.
+
+**Part 4 summary:**
+- 150,140 ticks, seed 314, 4000×2250 world
+- 228 generations
+- Body size stabilized: 29 nodes average (vs 3 in Parts 1–2)
+- Six universal traits: mouth, armor, bone, sensor, fat, claw (100% adoption by tick 137k)
+- Dominant composition: locomotion (muscle 18%) + storage (fat 17%) + feeding (mouth 17%)
+- Armor rare in abundance (4%) despite universal adoption — one node per organism, minimum viable defense
+- Recurrent brains, day/night, terrain, hazards, signals all evolved alongside a complete arms race
+- Signal never broke out: 15.7% adoption ceiling, 0.6% of nodes, functionally peripheral
+
+The experiment answered Part 3's arms race story with a new question: when every organism is equally armed, what determines survival? The answer in Part 4: body size and metabolic efficiency. Bigger bodies with more muscle and fat outcompeted smaller ones. The brain complexity (recurrent state, memory registers) went unused by evolution — the fitness landscape didn't reward it. Part 5 will force the question by making big bodies expensive.
+
+---

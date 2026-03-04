@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Primordial Part 5: The Economics of Death &mdash; Shane Conner</title>
+
+  <meta name="description" content="Part 5 of the Primordial evolutionary life simulation. Corpse drops, lethal thresholds, moving food superpatches, and a metabolic scaling law that shrank organisms to three nodes." />
+  <meta name="author" content="Shane Conner" />
+
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Primordial Part 5: The Economics of Death — Shane Conner" />
+  <meta property="og:description" content="Death becomes profitable. Corpse drops and instant lethality create the first genuine predator-prey economics in the project's history." />
+  <meta property="og:url" content="https://shaneconner.com/projects/primordial/part-5" />
+  <meta property="og:site_name" content="Shane Conner" />
+
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Outfit:wght@200;300;400;500&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="/css/shared.css" />
+  <link rel="stylesheet" href="/css/projects.css" />
+
+  <script src="https://d3js.org/d3.v7.min.js" defer></script>
+  <script src="/js/primordial-charts.js" defer></script>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav id="nav">
+    <a href="/" class="nav-logo">Shane Conner</a>
+    <ul class="nav-links">
+      <li><a href="/art">Art</a></li>
+      <li><a href="/projects" class="active">Projects</a></li>
+      <li><a href="/contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section class="project-hero">
+    <div class="hero-content">
+      <h1 class="resonance-hero-title">
+        <span class="resonance-name">Primordial</span>
+        <span class="resonance-descriptor">Part 5 &mdash; The Economics of Death</span>
+      </h1>
+      <p class="subtitle">Corpse drops. Instant lethality. Moving food patches. A metabolic law that punishes size. And evolution's answer: the smallest predators the simulation has ever produced.</p>
+    </div>
+    <p class="scroll-hint">Scroll to explore</p>
+  </section>
+
+  <!-- CONTEXT -->
+  <div class="part-context">
+    <a href="/projects/primordial/">&larr; Primordial</a>
+    <span class="part-indicator">Part 5 of 5</span>
+  </div>
+
+  <!-- THE REDESIGN -->
+  <div class="essay reveal">
+    <h3>The Redesign</h3>
+    <h2>Making death profitable</h2>
+    <p>Part 4 ended in stasis. Six hundred organisms, all carrying the same six node types, all roughly the same size, drifting through a world they had thoroughly saturated. The arms race produced convergence so complete that the only variation left was neural. The problem wasn't that evolution stopped working. The problem was that the environment stopped selecting.</p>
+    <p>Part 5 changes the economics.</p>
+    <p><strong>Corpse drops.</strong> When an organism dies, 70% of its energy falls as food right where it died. A fat organism at 150 energy becomes a 105-unit meal. Killing is now immediately profitable. Scavenging becomes a viable niche. Being fat makes you a target, not just a tank.</p>
+    <p><strong>Lethal threshold.</strong> Take 30% of your max energy as damage in a single exchange and you die outright. No war of attrition. No slow grinding. A well-placed hit from a claw can end an organism in one tick. This eliminates the attritional combat that dominated Part 4 and replaces it with an economy where a single encounter decides everything.</p>
+    <p><strong>Moving food superpatches.</strong> Four dense food zones drift on sine-wave paths across the map. Organisms that can track the patches eat well. Organisms that stumble into the path eat when the patch happens to pass by. The moving patches were designed to reward memory and sensing, to make anticipation valuable, to give the Memory node type a concrete advantage over random foraging.</p>
+    <p><strong>Quadratic metabolic scaling.</strong> An organism's metabolic cost scales as (n/10)<sup>0.7</sup> where n is node count. This is sublinear but still punishes size: a 10-node organism pays 1.0x, a 30-node organism pays 2.2x. The scaling is gentler than linear but harsh enough to make every node justify its existence.</p>
+    <p><strong>Fat nerf.</strong> Fat nodes cap at 30 energy each (down from 50 in Part 4) and recharge at only 25% rate. Fat still provides a buffer, but the Part 4 strategy of stacking unlimited fat reserves is no longer viable. Organisms have to spend their energy on something other than hoarding.</p>
+    <p><strong>Memory nodes.</strong> A new node type that adds four brain registers per node. These registers persist across ticks, giving the neural network a form of working memory. The registers are visible in the body composition data, unlike the recurrent hidden states of Part 4's brains. If evolution selects for memory, we'll see it in the charts.</p>
+    <p><strong>No population cap.</strong> The maximum is set to 10,000, effectively uncapped. The dynamics have to enforce their own limits. If predation doesn't cull the population, resource competition will. If neither does, the simulation will bloat. Two concrete hypotheses: will corpse drops create genuine predator-prey oscillations, and will memory nodes earn their metabolic cost when food patches move predictably?</p>
+  </div>
+
+  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+
+  <!-- GENESIS -->
+  <div class="essay reveal">
+    <h3>Genesis</h3>
+    <h2>Fast expansion into an empty world</h2>
+    <p>Sixty organisms seed into a 4000 by 2250 world. Each carries the default genome: one core, two muscle anchors, one sensor, one mouth. Five nodes. Random neural weights. The world is empty and the food is everywhere.</p>
+    <p>By tick 3,726, the population has exploded to 387. Fifty-seven species have already diverged from the single founding genome. Average body size has crept up to 5.9 nodes as organisms add a sixth node, usually another mouth. The logic is simple: in an empty world with abundant food, more mouths means more energy. Muscle dominates at 34% of total nodes because the default genome starts with two anchors, but mouth is climbing fast at 27%.</p>
+    <p>The exotic node types are already appearing. Signal at 1.9%, stomach at 1.1%. Memory nodes appeared briefly at tick 402 but haven't established yet. The big question for this simulation is whether memory will take hold before the body plan locks in, and at tick 3,726, the answer is still unknown.</p>
+    <p>Food sits at 901 items. Corpse drops are active but barely relevant: organisms are small and cheap, so dying releases only a few energy units. The economy of death that Part 5 was designed to test hasn't started yet. The world is still in the gift phase, where everything is free.</p>
+  </div>
+
+  <div class="essay-wide">
+    <div class="viz-container reveal">
+      <p class="viz-title">Genesis &mdash; Tick 2,000&ndash;2,100</p>
+      <div data-sim-clip="/data/narrative-p5/primordial-p5-genesis.json"></div>
+      <p class="viz-caption">The first 2,000 ticks: 387 organisms filling an empty world. Bodies average 5-6 nodes. The default genome is visible everywhere: a core with two muscle anchors, a sensor, and a mouth. Watch the clustering around food patches as the first foraging behaviors emerge from random neural weights.</p>
+    </div>
+  </div>
+
+  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+
+  <!-- CHAPTER I -->
+  <div class="essay reveal">
+    <h3>Chapter I</h3>
+    <h2>The Mouth Takeover</h2>
+    <p>The gift phase ends somewhere around tick 15,000. The population, which peaked above 400 in the initial expansion, crashes back to 277. Food drops from 901 to 820. The organisms that filled the world ate through the surplus and now face genuine scarcity. This is the first real selection event: the organisms that overfilled the world die, and the 277 that remain are the ones that ate most efficiently.</p>
+    <p>Evolution's answer to scarcity is to stack mouths. The default genome carried one mouth. By tick 26,148, the average organism carries 2.4. Mouth nodes have climbed from 27% to 38.7% of all nodes, the dominant type in the simulation. Muscle anchors, which started at 34%, have fallen to 25.9%. The trade is explicit: locomotion capacity for intake throughput. Organisms are getting slower but eating faster.</p>
+    <p>Whether this trade-off is sustainable depends on what happens next. In a world with corpse drops and instant lethality, being slow and mouth-heavy is a predation invitation. But at tick 26,148, predation hasn't launched. Only two organisms carry claws. The math doesn't work yet: targets average 35.7 energy, and a corpse drop from a 36-energy kill yields about 25 energy. The payoff doesn't exceed the metabolic cost of carrying a claw on a 6-node body. Predation needs bigger, fatter targets to become viable.</p>
+    <p>Five organisms carry memory nodes. That's 1.8% adoption, 0.3% of total nodes. Memory survived the crash. The initial population boom-bust would have wiped out any trait that didn't confer real advantage, or at least neutrality. Five memory-carriers still alive at generation 36 suggests memory is pulling its weight, possibly in patch-tracking. The question is whether 5 organisms is the start of a trend or the remnant of a lineage about to go extinct.</p>
+  </div>
+
+  <div class="essay-wide">
+    <div class="viz-container reveal">
+      <p class="viz-title">Post-Boom Crash &mdash; Tick 26,000&ndash;26,100</p>
+      <div data-sim-clip="/data/narrative-p5/primordial-p5-mouth-era.json"></div>
+      <p class="viz-caption">Population down to 277 after the initial boom. Mouth-heavy organisms dominate: 38.7% of all nodes are mouths. Bodies are still small at 6.2 nodes, built for eating, not fighting. Food has dropped from 901 to 820. The economy of scarcity is asserting itself.</p>
+    </div>
+  </div>
+
+  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+
+  <!-- CHAPTER II -->
+  <div class="essay reveal">
+    <h3>Chapter II</h3>
+    <h2>The Miniaturization</h2>
+    <p>Between tick 26,000 and tick 181,000, the simulation runs for 155,000 ticks and tells a story that no previous part has told. Bodies don't grow. They shrink.</p>
+    <p>Average node count drops from 6.2 to 3.8. The quadratic metabolic scaling at (n/10)<sup>0.7</sup> is selecting hard against size. At 3.8 nodes, organisms pay roughly half the metabolic rate of a 6-node body. Evolution found the minimum viable organism: core plus mouth plus muscle. Three nodes. That's the cheapest thing that can move and eat. Most bodies are 3 or 4 nodes. A few reach 8. This is a world of miniatures, the total opposite of Part 4's 29-node armored giants.</p>
+    <p>The miniaturization has consequences that ripple through every other metric.</p>
+    <p><strong>Sensors collapsed.</strong> From 15.6% of nodes at tick 26k to 1.0% at tick 181k. Nearly blind. Evolution decided that the metabolic cost of a sensor node isn't justified by the information it provides when bodies are this small. Organisms find food by random walk and encounter, not directed search. The moving superpatches were designed to reward sensing and memory, but apparently random motion intersects the patches often enough that the advantage of seeing them coming doesn't justify a fourth node.</p>
+    <p><strong>Predation ignited.</strong> This is the big story. Claw adoption went from 2 organisms (0.7%) to 75 organisms (26.2%). From 0.1% of nodes to 7.2%. With the lethal threshold at 30% and tiny bodies, combat is fast and fatal. A 3-node organism at 40 energy dies from a 12-damage hit. Corpse drops make killing profitable: a 40-energy corpse yields about 28 energy, delivered as food right where the predator is standing. The economics of murder work because bodies are small enough that the payoff exceeds the cost of carrying a claw.</p>
+    <p>This is exactly what Part 5 was designed to test. Corpse drops plus lethal threshold plus small bodies creates a genuine predator economy. The organisms with claws aren't occasional, incidental killers. They're specialists. A quarter of the population now carries dedicated weapons on bodies averaging fewer than 4 nodes. Kill, eat the corpse, reproduce. The Lotka-Volterra dynamics that never appeared in Parts 1 through 4 might finally be emerging.</p>
+    <p><strong>Memory holding at 5 organisms.</strong> The same count as tick 26,148. It could be a single persistent lineage threading through 127 generations. Five out of 286 is marginal, but survival through 155,000 ticks of intense selection means memory is at least neutral. The fact that it hasn't spread suggests it isn't strongly advantageous either. The moving superpatches may not be enough of an advantage when bodies are this small and lifespans this short.</p>
+    <p>Armor has appeared at 1.8% in response to the claw boom. The arms race is starting again, this time at miniature scale. Population stable at 286. Food at 420, down from 820 at tick 26k. Resources are genuinely scarce. The simulation is regulating itself without a cap.</p>
+  </div>
+
+  <div class="essay-wide">
+    <div class="viz-container reveal">
+      <p class="viz-title">The Miniaturization &mdash; Tick 180,000&ndash;180,100</p>
+      <div data-sim-clip="/data/narrative-p5/primordial-p5-miniaturization.json"></div>
+      <p class="viz-caption">Bodies averaging 3.8 nodes. A quarter of the population carries claws (red). Sensors have nearly vanished. This is the smallest average organism size in the project's history: core, mouth, muscle. The minimum viable predator.</p>
+    </div>
+  </div>
+
+  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+
+  <!-- ONGOING -->
+  <div class="essay reveal">
+    <h3>Still Running</h3>
+    <h2>What to watch for</h2>
+    <p>The simulation is targeting 500,000 ticks. At tick 181,000 with a claw boom underway and armor just emerging, the next phase should answer several questions. Will the miniature arms race follow the same pattern as Part 4's, driving universal adoption of armor and fat? Or will the metabolic scaling prevent body inflation? With bodies at 3-4 nodes, every additional node is a 25-33% increase in mass. The cost curve is steep.</p>
+    <p>The predator-prey dynamics are the most interesting thing happening. If claw adoption continues to rise, prey mortality will increase, corpse food will become more abundant, and the population may oscillate between predator-heavy periods (lots of killing, lots of corpses, prey population drops) and prey-heavy periods (predators starve without targets, prey recovers). These are the Lotka-Volterra cycles that Part 5 was designed to test.</p>
+    <p>Memory remains a question mark. Five organisms across 181,000 ticks is survival, not adoption. If memory is ever going to matter, it will be in the next phase: when food patches move and predators force organisms to make decisions about where to forage and when to flee.</p>
+    <p>This page will be updated as the simulation progresses.</p>
+  </div>
+
+  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+
+  <div class="stats-row reveal">
+    <div class="stat">
+      <div class="stat-value">500k</div>
+      <div class="stat-label">Target Ticks</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">127</div>
+      <div class="stat-label">Generations (so far)</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">3.8</div>
+      <div class="stat-label">Avg Nodes</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">0</div>
+      <div class="stat-label">Loss Functions</div>
+    </div>
+  </div>
+
+  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+
+  <div class="part-nav">
+    <div class="part-nav-item part-nav-prev">
+      <span class="part-nav-label">&larr; Previous</span>
+      <a href="/projects/primordial/part-4/" class="part-nav-link">Part 4: Minds and Signals</a>
+    </div>
+    <div class="part-nav-item part-nav-next">
+      <span class="part-nav-label">Next &rarr;</span>
+      <span class="part-nav-link" style="opacity:0.4;">In progress</span>
+    </div>
+  </div>
+
+  <!-- TECH STACK -->
+  <div class="project-meta">
+    <h3>Tech Stack</h3>
+    <div class="project-tags">
+      <span class="project-tag">Python</span>
+      <span class="project-tag">NumPy</span>
+      <span class="project-tag">Neuroevolution</span>
+      <span class="project-tag">Spring-Mass Physics</span>
+      <span class="project-tag">Spatial Hashing</span>
+      <span class="project-tag">D3.js</span>
+      <span class="project-tag">Canvas API</span>
+    </div>
+    <div style="margin-top:1.5rem;">
+      <a href="https://github.com/shaneconner/primordial" class="back-link" style="margin-right:2rem;">View Source &rarr;</a>
+      <a href="/projects" class="back-link">&larr; All Projects</a>
+    </div>
+  </div>
+
+  <footer>
+    <span>&copy; 2026 Shane Conner</span>
+    <span></span>
+  </footer>
+
+  <script src="/js/shared.js"></script>
+  <script src="/js/primordial-viz.js"></script>
+</body>
+</html>

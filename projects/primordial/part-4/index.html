@@ -55,7 +55,7 @@
   <!-- CONTEXT -->
   <div class="part-context">
     <a href="/projects/primordial/">&larr; Primordial</a>
-    <span class="part-indicator">Part 4 of 4</span>
+    <span class="part-indicator">Part 4 of 5</span>
   </div>
 
   <!-- THE REDESIGN -->
@@ -188,7 +188,19 @@
     <p>What nobody anticipated was that it would get slower over time. The physics engine simulates every spring, every mass, every collision in the population. At the lean era's peak of 200 organisms averaging 9 nodes, that's around 1,800 nodes in the world. At tick 137,000 with 600 organisms averaging 28 nodes, it's 16,800 nodes, more than nine times the load. The simulation that ran at 1,400 ticks per hour in the founding era slowed to under 900 by the post-arms-race plateau. One million ticks at that rate would have taken months of continuous compute.</p>
     <p>The simulation was stopped at approximately 150,000 ticks.</p>
     <p>Fortunately, the story was already complete. The arms race, which is the story of Part 4, started at tick 90,000 and ended at tick 137,000. Everything that happened happened within that 47,000-tick window: three strategic archetypes emerged and collapsed into one, six node types achieved universal adoption, minimum body size tripled, average energy quadrupled. The founding crisis, the armor rush, the Cambrian explosion, the Red Queen cascade, the universalization of every trait. The simulation ran long enough to tell the full story. It just didn't need a million ticks to do it.</p>
-    <p>The remaining 850,000 planned ticks would have been refinement, not revolution. Post-arms-race ecosystems optimize topology and neural behavior, not body plans. Those are harder to read from the data and harder to narrate. The part that matters is the part that happened.</p>
+  </div>
+
+  <div class="essay-wide">
+    <div class="viz-container reveal">
+      <p class="viz-title">Post-Arms-Race Equilibrium &mdash; Tick 147,000&ndash;147,100</p>
+      <div data-sim-clip="/data/narrative-p4/primordial-p4-plateau.json"></div>
+      <p class="viz-caption">The world at tick 147,000: 600 organisms averaging 29 nodes. Every body carries armor, fat, claws, bone, sensors, and stomach. Species colors still vary, but the silhouettes are almost identical.</p>
+    </div>
+  </div>
+
+  <div class="essay reveal">
+    <p>This is what the last 13,000 ticks looked like. Six hundred organisms, all roughly the same size, all carrying the same complement of nodes, drifting through a world they have thoroughly saturated. The population hit its cap and stayed there. The species count fluctuated between 140 and 175, but the differences between species had become invisible to any metric except neural weights. Every body was a 26-to-34-node chassis built to the same blueprint: bone scaffolding, armor shell, fat reserves, claw armament, sensor array, stomach lining. The only variation was how the brain used all of it.</p>
+    <p>Nothing went extinct. Nothing broke through. The composition held to within a percentage point across 13,000 ticks of stasis. Fat and armor both locked at 17%. Bone at 17%. Stomach at 14%. The ecosystem had found its Nash equilibrium: no individual mutation could improve on the universal body plan, and no environmental pressure existed to disrupt it. The remaining 850,000 planned ticks would have been refinement, not revolution. The part that matters is the part that happened.</p>
   </div>
 
   <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
@@ -200,6 +212,46 @@
     <p>The composition charts tell the story more clearly than any other metric. Watch the fat and armor lines, both essentially flat near zero for the first 90,000 ticks, then climb in parallel through the arms race. Watch mouth decline from 34% at tick 28,000 to under 12% at the end as body budget shifts from feeding to fighting. Watch stomach rise and then get crowded out by the combat traits it made possible: by enabling energy surplus, stomach funded the arms race that ultimately demoted it.</p>
     <p>The species chart shows the arc differently. Long dynasties in the founding era, sp_244 holding 40-45% for 55,000 ticks. Then fragmentation during the Cambrian explosion: no species above 13%, 195 distinct lineages competing. Then slow re-consolidation as the body plan converges and the differences between species become neural rather than morphological.</p>
     <p>Signal nodes, which the simulation was partly designed to study, never find their moment. They peak at 7.5% during the arms race, briefly. The group sensor bonus, which should reward clustering, is outweighed by the metabolic cost of broadcasting and by the fact that sensor investment itself collapses under the pressure to carry armor and fat instead. Signal is the part of the experiment that didn't work. Part 5 will need a stronger mechanic to make communication matter.</p>
+  </div>
+
+  <div class="essay-wide">
+    <div class="viz-container reveal">
+      <p class="viz-title">Ecosystem Timeline</p>
+      <div id="ecosystem-timeline" data-timeline-src="/data/primordial-timeline-p4.json" style="width:100%;"></div>
+      <p class="viz-caption">Population (green, left axis) and species count (gold, right axis). The founding crisis plateau, the Cambrian explosion, and the arms-race convergence are all visible in the species line.</p>
+    </div>
+  </div>
+
+  <div class="essay-wide">
+    <div class="viz-container reveal">
+      <p class="viz-title">Species Dynamics</p>
+      <div id="species-stream" style="width:100%;"></div>
+      <p class="viz-caption">Streamgraph of species populations over time. sp_244's 55,000-tick dynasty dominates the early era before fragmentation during the Cambrian explosion.</p>
+    </div>
+  </div>
+
+  <div class="essay-wide">
+    <div class="viz-container reveal">
+      <p class="viz-title">Body Composition Over Time</p>
+      <div id="body-composition" style="width:100%;"></div>
+      <p class="viz-caption">Total node counts by type. Fat and armor are invisible for 90,000 ticks, then climb steeply through the arms race.</p>
+    </div>
+  </div>
+
+  <div class="essay-wide">
+    <div class="viz-container reveal">
+      <p class="viz-title">Body Composition &mdash; Proportional</p>
+      <div id="body-composition-norm" style="width:100%;"></div>
+      <p class="viz-caption">Each node type as a percentage of total nodes. Shows how body budget shifted from feeding (mouth, stomach) to combat (armor, fat, claw) over 150,000 ticks.</p>
+    </div>
+  </div>
+
+  <div class="essay-wide">
+    <div class="viz-container reveal">
+      <p class="viz-title">Species Dynamics &mdash; Proportional</p>
+      <div id="species-stream-norm" style="width:100%;"></div>
+      <p class="viz-caption">Each species as a percentage of total population. sp_244's iron grip on 40&ndash;45% through the founding era gives way to genuine competition during the explosion.</p>
+    </div>
   </div>
 
   <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
@@ -221,7 +273,7 @@
       <div class="stat-label">Simulation Ticks</div>
     </div>
     <div class="stat">
-      <div class="stat-value">260+</div>
+      <div class="stat-value">228</div>
       <div class="stat-label">Generations</div>
     </div>
     <div class="stat">
@@ -252,7 +304,7 @@
     </div>
     <div class="part-nav-item part-nav-next">
       <span class="part-nav-label">Next &rarr;</span>
-      <span class="part-nav-link" style="opacity:0.4;">Part 5: The Economics of Death</span>
+      <a href="/projects/primordial/part-5/" class="part-nav-link">Part 5: The Economics of Death</a>
     </div>
   </div>
 

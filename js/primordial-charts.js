@@ -28,9 +28,13 @@
     mouth:   '#e0c050',
     fat:     '#80c060',
     armor:   '#a080c0',
+    signal:  '#4ac9c9',
+    stomach: '#c9923a',
+    claw:    '#cc4444',
+    memory:  '#9a5ac9',
   };
 
-  var NODE_ORDER = ['core', 'bone', 'muscle', 'sensor', 'mouth', 'fat', 'armor'];
+  var NODE_ORDER = ['core', 'bone', 'muscle', 'sensor', 'mouth', 'fat', 'armor', 'signal', 'stomach', 'claw', 'memory'];
 
   // Species color palette (distinct, readable on dark bg)
   var SP_PALETTE = [

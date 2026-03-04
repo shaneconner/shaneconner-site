@@ -1,0 +1,12 @@
+.vscode/
+.DS_Store
+Thumbs.db
+NUL
+.claude/
+colormap_visualizer.ipynb
+data/full-frames/
+data/full-frames-p2/
+data/full-frames-p3/
+data/full-frames-p4/
+data/full-frames-p5/
+bash.exe.stackdump
