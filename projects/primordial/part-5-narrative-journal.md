@@ -248,3 +248,105 @@ Average body size has crossed 5.0 nodes for the first time since the miniaturiza
 Food at 143, the same critical low as Entry 7. The ecosystem is running at capacity. The next 20,000 ticks should show whether claws peak again or whether the parallel armor buildup dampens the oscillation into something more stable.
 
 ---
+
+## Entry 10 — Tick 353,292 — The Dampened Oscillation
+
+**Snapshot:** pop=255, species=52, gen=299, avg_energy=36.6, max_energy=119.7, avg_nodes=4.6 (range 3–10)
+
+24,000 ticks since Entry 9. The second predation cycle peaked and crashed, but the amplitude was smaller.
+
+**Node composition:**
+Stomach 22.8%, Mouth 22.2%, Core 21.6%, Muscle 21.5%, Claw 4.0%, Armor 2.7%, Bone 2.0%, Sensor 1.2%, Fat 1.2%, Signal 0.8%, Memory 0.2%
+
+**The oscillation is dampening:**
+
+| Trait | Cycle 1 peak (E5, 221k) | Cycle 2 peak (~340k est.) | Cycle 2 now (E10, 353k) |
+|-------|-------------------------|--------------------------|-------------------------|
+| Claw | 96% | ~42% (E9) | **14.5%** |
+| Armor | 12% → 64% (E7) | ~13% (E9) | **7.8%** |
+| Stomach | 92% | ~88% (E9) | **97.3%** |
+| Pop | 179 | ~252 (E9) | **255** |
+
+Cycle 1 drove claws to 96% before crashing. Cycle 2 appears to have peaked around 42% (Entry 9) and is already crashing back to 14.5%. The co-evolution of defense alongside offense truncated the peak — when armor, bone, and fat rise alongside claws, predation never becomes as universally profitable as it did in cycle 1. The overshoot is smaller, so the crash is smaller.
+
+**Food at 128** — a new all-time low, down from 143. The ecosystem is running at its leanest yet. 255 organisms competing for 128 food items. This scarcity may be suppressing the oscillation by keeping energy budgets tight: organisms can't afford the metabolic overhead of arms-race traits when food is this scarce.
+
+**sp_652 at 54.9%** (140/255). Stable. The dynasty has held majority control since Entry 4 (tick 199k), through two full predation cycles. sp_652 is the story of Part 5's adaptive capacity — a single lineage that pivoted from predator to herbivore to armored herbivore to whatever the current meta demands.
+
+**Stomach at 97.3%** — the permanent winner. It rose during the predator economy, survived the crash, dropped during the armor pivot, and recovered. Stomach is now the most reliably adopted non-default trait in Part 5's history.
+
+**Memory at 2 organisms (0.8%).** Still marginal.
+
+**Bodies at 4.6 avg nodes**, down slightly from 5.0 at Entry 9. The post-cycle contraction is stripping the offensive/defensive nodes back off. The lean forager template (core + muscle + mouth + stomach = 4 nodes) reasserts itself between cycles.
+
+If the oscillation continues dampening, the ecosystem may be converging on a stable equilibrium: mostly unarmed foragers with stomach, a small persistent minority of claw-carriers (10-15%), and occasional armor in response. The wild swings of cycle 1 (0% to 96% to 5%) becoming the gentle waves of cycle 2 (14% to 42% to 14%) would be a textbook dampened oscillation.
+
+Watching for: Does claw adoption bottom out here, or continue falling? Does a third cycle start? Is the oscillation converging on a fixed point?
+
+---
+
+## Entry 11 — Tick 377,764 — Convergence
+
+**Snapshot:** pop=320, species=42, gen=294, avg_energy=36.2, max_energy=106.9, avg_nodes=4.3 (range 3–7)
+
+24,000 ticks since Entry 10. The oscillation is over.
+
+**Node composition:**
+Stomach 24.4%, Mouth 23.6%, Core 23.1%, Muscle 22.9%, Bone 1.2%, Signal 1.2%, Claw 1.1%, Fat 1.0%, Armor 0.9%, Sensor 0.6%, Memory 0.1%
+
+**The answer: dampened to equilibrium.**
+
+| Trait | Cycle 1 peak (221k) | Cycle 2 peak (~329k) | E10 (353k) | E11 (378k) |
+|-------|---------------------|----------------------|------------|------------|
+| Claw | 96% | 42% | 14.5% | **4.1%** |
+| Armor | 64% (E7) | 13% | 7.8% | **3.8%** |
+| Pop | 179 | 252 | 255 | **320** |
+| Food | 227 | 143 | 128 | **68** |
+
+No third cycle. Claw continued falling from 14.5% to 4.1%. Armor at 3.8%. Both offensive and defensive traits have been stripped to background noise. The ecosystem converged on the lean forager: core + muscle + mouth + stomach. Four nodes. The minimum viable organism that can move, eat, and digest.
+
+**Food crashed to 68** — the most extreme scarcity in the entire simulation. 320 organisms competing for 68 food items is a ratio of 4.7 organisms per food item. For comparison, Entry 1 had 387 organisms for 901 food items (0.4 per food). The ecosystem has eaten through everything. The quadratic metabolic scaling means these lean foragers are cheap to run, so they survive on very little, but 68 food items for 320 organisms is unsustainable.
+
+**sp_652 at 70.9%** (227/320). The strongest single-species grip in the entire Part 5 run. sp_652 has dominated through the predator economy, the crash, the armor pivot, the oscillation, and now the convergence. Its neural weights must encode a highly flexible foraging strategy that adapts to whatever the current meta demands. No other species exceeds 5.3%.
+
+**Population at 320**, the highest since the armor pivot (324 at Entry 7). Without predation culling the population, organisms proliferate until food becomes the limiting factor. The food crisis will correct this — we should see a population crash in the next 20,000 ticks as starvation takes hold.
+
+**Signal at 5.0% adoption** (16 organisms) — the highest meaningful signal presence in the simulation. Pheromone broadcasting may have value when organisms are densely packed and competing for scarce food. At 320 organisms in a 4000x2250 world, average spacing is about 170 units. Signal range might cover several neighbors. Whether this persists depends on whether the food crisis wipes out the signal-carriers.
+
+**Memory at 1 organism.** The experiment is concluded: memory nodes failed to establish in Part 5.
+
+The simulation is at 378k of 500k ticks. The remaining 122k ticks should show the food crisis resolution: either a population crash brings food back to sustainable levels, or the ecosystem stabilizes at this extreme scarcity with very short lifespans and rapid turnover. The Lotka-Volterra oscillation was real but transient — two cycles, dampened by co-evolution, converging on a stable equilibrium of lean foragers. The drama is over. What remains is the steady state.
+
+---
+
+## Entry 12 — Tick 402,394 — The Third Cycle (Gentle)
+
+**Snapshot:** pop=258, species=38, gen=325, avg_energy=34.5, max_energy=118.9, avg_nodes=4.9 (range 3–11)
+
+25,000 ticks since Entry 11. The food crisis resolved, and a third cycle is building — but it's the gentlest yet.
+
+**Node composition:**
+Stomach 22.1%, Mouth 22.0%, Muscle 20.5%, Core 20.3%, Armor 4.3%, Bone 3.4%, Claw 2.7%, Fat 1.8%, Signal 1.7%, Sensor 0.9%, Memory 0.5%
+
+**The food crisis corrected itself.** Population crashed from 320 to 258. Food recovered from 68 to 258 — a perfect 1:1 ratio, the healthiest food-to-organism balance since the early simulation. The density-dependent crash worked exactly as predicted: starvation culled the weakest, survivors spread out, food regenerated.
+
+**A third cycle is emerging, but dampened further:**
+
+| Trait | Cycle 1 peak | Cycle 2 peak | Cycle 3 now (E12) |
+|-------|-------------|-------------|-------------------|
+| Claw | 96% | 42% | **12.4%** (rising) |
+| Armor | 64% | 13% | **14.3%** (rising) |
+
+Both claw and armor rising together from the start. No lag. The ecosystem has fully internalized the co-evolution pattern: offense and defense appear simultaneously. Bone at 8.9%, fat at 8.9% — structural and reserve investment alongside the arms race.
+
+**Signal at 7.4% adoption** (19/258). The highest sustained signal presence in the entire simulation. Signal was noise for 350,000 ticks and is now establishing as a minor but persistent trait. At this population density, pheromone broadcasting might help coordinate foraging or warn of predators. Alternatively, signal may be free-riding: organisms that emit signals attract kin, and kin aggregation provides group bonuses (the +20% sensor range per same-species neighbor mechanic).
+
+**Memory at 5 organisms (1.9%).** Highest adoption rate since Entry 8's brief spike. Memory keeps refusing to die.
+
+**sp_652 at 67.4%** (174/258). Still the dominant lineage. Through predator economy, crash, armor pivot, two oscillations, food crisis, and recovery. sp_652 has held majority control for over 200,000 ticks.
+
+**Bodies at 4.9 avg nodes**, up from 4.3. The 5th node is cycling between claw, armor, bone, and signal — all roughly equally popular. The ecosystem has diversified its investment rather than converging on a single extra trait. This is new. In cycles 1 and 2, one trait dominated the 5th slot (claw in cycle 1, armor after the crash). Now four traits compete for it roughly equally.
+
+80% through the simulation. The remaining 98k ticks should show whether cycle 3 peaks at all, or whether the oscillation has dampened to a stable mixed equilibrium where 10-15% of the population is armed, 10-15% is armored, and the rest are lean foragers.
+
+---
