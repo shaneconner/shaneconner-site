@@ -185,7 +185,7 @@
     <h3>Chapter V</h3>
     <h2>Calling it early</h2>
     <p>The plan was one million ticks. The world is 4000 by 2250 units, the most complex environment in the project's history. Recurrent brains, terrain biomes, ten node types, organism collisions, pheromone signaling. A run of this scope was always going to be slow.</p>
-    <p>What nobody anticipated was that it would get slower over time. The physics engine simulates every spring, every mass, every collision in the population. At the lean era's peak of 200 organisms averaging 9 nodes, that's around 1,800 nodes in the world. At tick 137,000 with 600 organisms averaging 28 nodes, it's 16,800 nodes, more than nine times the load. The simulation that ran at 1,400 ticks per hour in the founding era slowed to under 900 by the post-arms-race plateau. One million ticks at that rate would have taken months of continuous compute.</p>
+    <p>What I didn't anticipate was that it would get slower over time. The physics engine simulates every spring, every mass, every collision in the population. At the lean era's peak of 200 organisms averaging 9 nodes, that's around 1,800 nodes in the world. At tick 137,000 with 600 organisms averaging 28 nodes, it's 16,800 nodes, more than nine times the load. The simulation that ran at 1,400 ticks per hour in the founding era slowed to under 900 by the post-arms-race plateau. One million ticks at that rate would have taken months of continuous compute.</p>
     <p>The simulation was stopped at approximately 150,000 ticks.</p>
     <p>Fortunately, the story was already complete. The arms race, which is the story of Part 4, started at tick 90,000 and ended at tick 137,000. Everything that happened happened within that 47,000-tick window: three strategic archetypes emerged and collapsed into one, six node types achieved universal adoption, minimum body size tripled, average energy quadrupled. The founding crisis, the armor rush, the Cambrian explosion, the Red Queen cascade, the universalization of every trait. The simulation ran long enough to tell the full story. It just didn't need a million ticks to do it.</p>
   </div>
@@ -222,12 +222,21 @@
     </div>
   </div>
 
+  <div class="essay reveal">
+    <p>The ecosystem timeline is a story in two halves. The first 90,000 ticks are a long plateau: population oscillating between 100 and 300, species count holding between 50 and 100. The lean era. Then at tick 90,000, both lines break upward simultaneously. Population climbs past 400, past 500, to 600. Species diversity explodes past 150, peaks near 200. The Cambrian moment and the arms race are visible as a single coordinated surge. Bigger bodies carry more energy, more energy funds more offspring, more offspring means more species. The two lines decouple only at the very end, when population holds at 600 while species diversity drifts back down. Convergence: different species, same body plan.</p>
+  </div>
+
   <div class="essay-wide">
     <div class="viz-container reveal">
       <p class="viz-title">Species Dynamics</p>
       <div id="species-stream" style="width:100%;"></div>
       <p class="viz-caption">Streamgraph of species populations over time. sp_244's 55,000-tick dynasty dominates the early era before fragmentation during the Cambrian explosion.</p>
     </div>
+  </div>
+
+  <div class="essay reveal">
+    <p>The streamgraph makes the dynastic structure visible in a way the timeline can't. That wide band dominating the first 60,000 ticks is sp_244, the founding dynasty, holding 40-45% of the population for 55,000 consecutive ticks. No challenger comes close. Then sp_975 rises to replace it, holding a similar grip for another 20,000 ticks. These are not just the biggest species; they are the only species that matter. Everything else is noise at the margins.</p>
+    <p>Then the explosion. Around tick 100,000, the streamgraph shatters into dozens of thin bands. No species holds more than 13%. The visual shift from two-color dominance to a fragmented rainbow is the arms race arriving: when the mandatory trait list expands and bodies diversify, the design space opens and no single lineage can monopolize it. The late-game reconsolidation is visible too, as a few bands widen again at the right edge. But they never reach anything close to sp_244's grip. The era of dynasties is over.</p>
   </div>
 
   <div class="essay-wide">
@@ -238,6 +247,10 @@
     </div>
   </div>
 
+  <div class="essay reveal">
+    <p>This is the chart that tells the arms race story most directly. For 90,000 ticks, the total node count in the world barely changes. A few thousand nodes spread across a couple hundred organisms, dominated by mouth and stomach. Then the curve goes vertical. Total nodes in the world go from roughly 2,000 at tick 90,000 to over 16,000 at tick 137,000. An eightfold increase in 47,000 ticks. The new mass is almost entirely combat infrastructure: fat (green), armor (purple), bone (gray), and claw (red) stacking on top of the original feeding body in visible layers. The mouth and stomach bands at the bottom barely change in absolute terms. They aren't shrinking. They're being buried under the weight of everything the arms race added on top.</p>
+  </div>
+
   <div class="essay-wide">
     <div class="viz-container reveal">
       <p class="viz-title">Body Composition &mdash; Proportional</p>
@@ -246,12 +259,20 @@
     </div>
   </div>
 
+  <div class="essay reveal">
+    <p>The proportional view tells a different version of the same story. In the lean era, mouth (gold) and stomach (brown) together account for 50-60% of all nodes. Core and sensor fill most of the rest. The body budget is spent almost entirely on feeding. Then the arms race compresses the feeding traits into a narrow band at the bottom. By tick 137,000, mouth and stomach together are under 25%. Fat, armor, bone, and claw have claimed the majority. The crossover happens around tick 110,000, the same moment the narrative identifies as the Cambrian explosion. Stomach's arc is particularly telling: it rises through the lean era as organisms invest in digestion efficiency, peaks around tick 95,000, then gets squeezed as combat traits crowd the body budget. Stomach enabled the energy surplus that funded the arms race, and then the arms race demoted it.</p>
+  </div>
+
   <div class="essay-wide">
     <div class="viz-container reveal">
       <p class="viz-title">Species Dynamics &mdash; Proportional</p>
       <div id="species-stream-norm" style="width:100%;"></div>
       <p class="viz-caption">Each species as a percentage of total population. sp_244's iron grip on 40&ndash;45% through the founding era gives way to genuine competition during the explosion.</p>
     </div>
+  </div>
+
+  <div class="essay reveal">
+    <p>The proportional species view is the clearest picture of political power in the simulation. The founding era is a two-party system: sp_244 commands nearly half the population, one or two challengers split the rest, and dozens of minor species survive at the margins. The transition around tick 80,000 is sudden. The incumbent dynasty collapses and nothing replaces it. The proportional chart goes from one dominant color to a patchwork of equal-sized bands, each species holding 5-10% at most. This is what genuine ecological competition looks like: no dynasty, no monoculture, just a shifting mosaic of lineages that rise and fall on timescales of a few thousand ticks. The late-game narrowing, where a few bands widen slightly, reflects morphological convergence rather than competitive dominance. The species that grow are the ones that happened to arrive at the universal body plan first.</p>
   </div>
 
   <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
