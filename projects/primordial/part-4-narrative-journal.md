@@ -1606,3 +1606,83 @@ Fat 17.9%, Armor 17.4%, Bone 16.4%, Stomach 13.8%, Mouth 11.5%, Claw 7.7%, Senso
 Consistent with every entry since the arms race ended. ~856 ticks/hour. Max energy: 651.9. ~6,560 ticks to 150k.
 
 ---
+
+## Entry 30 — Tick 144,302 (14.4%) — Composition Labels Finally Correct
+
+**Snapshot:** pop=600, species=149, gen=221, avg_energy=158.3, max_energy=576.8, avg_nodes=28.7 (range 26–34)
+
+Another label correction. Entries 25–29 tracked *adoption* rates (% of organisms with the trait) accurately but had wrong type→name mappings for types 1–6 in the node composition breakdowns. The only reliable anchors were types 0, 7, 8, 9 (core, signal, stomach, claw — always consistent). Verified now against core=3.5% (600 nodes, exactly 1 per organism).
+
+**Verified node composition (types 0–9 mapped per viz.js):**
+Muscle 17.9%, Fat 17.4%, Mouth 16.4%, Stomach 13.7%, Sensor 11.5%, Claw 7.7%, Bone 7.2%, Core 3.5%, Armor 4.1%, Signal 0.5%
+
+This is coherent: the arms race selected for *having* armor and claw (universal adoption), not for *stacking* them. The dominant strategy is locomotion (muscle) + storage (fat) + feeding (mouth) + digestion (stomach) + sensing. Average organism carries ~0.7 armor nodes and ~2.2 claw nodes — armor is the cheapest defensive hedge, claw is the real offensive investment.
+
+Signal nodes present on 86 of 600 organisms (14.3% adoption), but only 94 total signal nodes across the population (0.5% of all nodes). Slow growth — a niche that can't break through.
+
+~5,700 ticks to 150k at ~862 ticks/hour (~6.6 hours).
+
+---
+
+## Entry 31 — Tick 145,250 (14.5%) — Timer Path Fixed, Plateau Confirmed
+
+**Snapshot:** pop=600, species=155, gen=222, avg_energy=160.9, max_energy=655.3, P90=412.9, avg_nodes=28.8 (range 26–34)
+
+Previous hourly timer used wrong data path and returned empty. Read directly from `data/full-frames-p4/frames-0014.jsonl`. Corrected path for future timers.
+
+**Node composition (core check: 600/600 = 1.000 per org ✓):**
+Muscle 17.8%, Fat 17.3%, Mouth 16.2%, Stomach 13.8%, Sensor 11.6%, Claw 7.8%, Bone 7.3%, Core 3.5%, Armor 4.1%, Signal 0.5%, Memory 0.0%
+
+Essentially flat since Entry 30 (948 ticks). All metrics drifting sub-percent. Signal down slightly to 81 organisms (13.5% adoption). No memory nodes. The simulation is locked in its final equilibrium.
+
+~4,750 ticks to 150k at ~862 ticks/hour (~5.5 hours).
+
+---
+
+## Entry 32 — Tick 146,016 (14.6%) — Still Locked
+
+**Snapshot:** pop=600, species=150, gen=222, avg_energy=159.7, max_energy=634.2, P90=391.6, avg_nodes=28.8 (range 26–34)
+
+766 ticks in the last hour (~766/hour, slight slowdown). Composition unmoved:
+
+Muscle 17.8%, Fat 17.4%, Mouth 16.3%, Stomach 13.8%, Sensor 11.7%, Claw 7.7%, Bone 7.3%, Core 3.5%, Armor 4.1%, Signal 0.6%, Memory 0.0%
+
+Signal ticked up to 86 organisms / 104 nodes. Everything else within rounding error of Entry 31. Generation stuck at 222 — the lineage clock is running at near-zero net turnover. 3,984 ticks to 150k at current rate (~5.2 hours).
+
+---
+
+## Entry 33 — Tick 146,880 (14.7%) — Final Approach
+
+**Snapshot:** pop=600, species=144, gen=223, avg_energy=158.2, max_energy=561.9, P90=399.5, avg_nodes=29.0 (range 26–34)
+
+864 ticks in the last hour. 3,120 ticks remaining (~3.6 hours). Composition unchanged:
+
+Muscle 17.8%, Fat 17.3%, Mouth 16.1%, Stomach 13.8%, Sensor 11.7%, Claw 7.7%, Bone 7.3%, Core 3.4%, Armor 4.2%, Signal 0.6%, Memory 0.0%
+
+Species count drifted down to 144. Max energy pulled back to 561.9 (was 634 last entry) — snapshot variance, not a trend. Average body size edged up slightly to 29.0 nodes. Nothing is happening. This is exactly what evolutionary stasis looks like from the inside.
+
+---
+
+## Entry 34 — Tick 147,720 (14.8%) — 2,280 Ticks Out
+
+**Snapshot:** pop=600, species=154, gen=225, avg_energy=159.2, max_energy=583.8, avg_nodes=29.0
+
+840 ticks in the last hour. 2,280 remaining — roughly 2.7 hours.
+
+Muscle 17.6%, Fat 17.3%, Mouth 16.1%, Stomach 13.8%, Sensor 12.0%, Claw 7.6%, Bone 7.3%, Core 3.5%, Armor 4.2%, Signal 0.5%
+
+Sensor nudged up slightly to 12.0%. Signal down to 79 organisms. Generation crept to 225. Still no meaningful movement in any direction. Watching for 150k.
+
+---
+
+## Entry 35 — Tick 148,548 (14.9%) — 1,452 Ticks Out
+
+**Snapshot:** pop=600, species=166, gen=225, avg_energy=161.3, max_energy=512.7, avg_nodes=29.1
+
+828 ticks in the last hour. 1,452 remaining (~1.75 hours to 150k).
+
+Muscle 17.6%, Fat 17.5%, Mouth 16.3%, Stomach 13.7%, Sensor 12.1%, Claw 7.5%, Bone 7.1%, Core 3.4%, Armor 4.2%, Signal 0.6%
+
+Species count bounced back to 166 — the ecosystem is shuffling internal diversity without changing overall shape. Signal back up to 88 organisms. Everything else flat. One more timer should put us past 150k.
+
+---
