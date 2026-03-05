@@ -1,0 +1,70 @@
+{
+  "world": {
+    "width": 4000.0,
+    "height": 2250.0
+  },
+  "total_ticks": 500000,
+  "seed": 628,
+  "clips": [
+    {
+      "id": "first-split",
+      "title": "First Divergence",
+      "description": "Genetic drift produces the first distinct species.",
+      "file": "primordial-p5-first-split.json",
+      "tick_range": [
+        502,
+        1502
+      ],
+      "frames": 501,
+      "size_kb": 21208
+    },
+    {
+      "id": "body-evolution",
+      "title": "Body Diversity",
+      "description": "Organisms evolve distinct body plans.",
+      "file": "primordial-p5-body-evolution.json",
+      "tick_range": [
+        9942,
+        10942
+      ],
+      "frames": 501,
+      "size_kb": 22210
+    },
+    {
+      "id": "generation-milestone",
+      "title": "Generational Shift",
+      "description": "Hundreds of generations have refined neural networks and body plans.",
+      "file": "primordial-p5-generation-milestone.json",
+      "tick_range": [
+        254362,
+        255362
+      ],
+      "frames": 501,
+      "size_kb": 26511
+    },
+    {
+      "id": "diversity",
+      "title": "Radiation",
+      "description": "71 species coexist.",
+      "file": "primordial-p5-diversity.json",
+      "tick_range": [
+        326812,
+        327812
+      ],
+      "frames": 501,
+      "size_kb": 28406
+    },
+    {
+      "id": "equilibrium",
+      "title": "Balance",
+      "description": "The ecosystem reaches a dynamic equilibrium.",
+      "file": "primordial-p5-equilibrium.json",
+      "tick_range": [
+        437172,
+        438172
+      ],
+      "frames": 501,
+      "size_kb": 19246
+    }
+  ]
+}
