@@ -320,6 +320,128 @@
 
   <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
 
+  <!-- IN PRACTICE -->
+  <div class="essay reveal">
+    <h3>In Practice</h3>
+    <h2>What a session actually looks like</h2>
+    <p>Start a recommendation session and the system meets you with a question: how do you want to find music today? Vibe check, seed artist, genre exploration, or just let it surprise you. Each mode leads to a different discovery strategy, but the interface is the same: a short conversation that narrows intent before the system goes searching.</p>
+  </div>
+
+  <div class="essay-wide">
+    <div class="usage-stack reveal">
+      <figure class="usage-panel">
+        <div class="usage-media">
+          <img src="imgs/recommend-mode.png" alt="Recommendation mode selection showing five options: Vibe check, Seed artist, Explore genre, Surprise me, and Other" />
+        </div>
+        <figcaption>
+          <span class="usage-subtitle">Mode Selection</span>
+          <span class="usage-context">Five discovery modes, each backed by different tool chains and data sources. "Surprise me" factors in overdue artists, taste profile, and time-of-day patterns.</span>
+        </figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <div class="essay reveal">
+    <p>Pick "Vibe check" and the system asks two follow-ups: what's the mood, and what about vocals? These aren't filters on a database query. They're context for the agent, shaping how it searches, what it prioritizes, and how it sequences the final set.</p>
+  </div>
+
+  <div class="essay-wide">
+    <div class="resonance-ui-pair reveal">
+      <figure class="usage-panel">
+        <div class="usage-media">
+          <img src="imgs/recommend-vibe.png" alt="Vibe selection with options: Chill and atmospheric, Deep and hypnotic, Upbeat and groovy, Dark and experimental" />
+        </div>
+        <figcaption>
+          <span class="usage-subtitle">Vibe</span>
+          <span class="usage-context">Mood direction. Each option maps to genre neighborhoods and acoustic features in the knowledge graph.</span>
+        </figcaption>
+      </figure>
+      <figure class="usage-panel">
+        <div class="usage-media">
+          <img src="imgs/recommend-sound.png" alt="Sound preference with options: Instrumental only, Vocals OK, Beats-focused" />
+        </div>
+        <figcaption>
+          <span class="usage-subtitle">Sound</span>
+          <span class="usage-context">Vocal preference. "Beats-focused" means rhythm-forward, DJ-set energy, not necessarily instrumental.</span>
+        </figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <div class="essay reveal">
+    <p>The system comes back with a curated set: a name, a tracklist with roles (opener, build, peak, cool-down), and a choice. Queue the whole thing, cherry-pick tracks, or start over. Every track is already matched against your library so nothing duplicates what you own.</p>
+  </div>
+
+  <div class="essay-wide">
+    <div class="usage-stack reveal">
+      <figure class="usage-panel">
+        <div class="usage-media">
+          <img src="imgs/recommend-set.png" alt="A curated set called Dark Machine Logic with 10 industrial dark techno tracks, each assigned a role in the set" />
+        </div>
+        <figcaption>
+          <span class="usage-subtitle">Curated Set</span>
+          <span class="usage-context">"Dark Machine Logic" &mdash; 10 tracks, all instrumental, beats-forward industrial/dark techno. Each track has a role in the set arc: openers, builds, peaks, and cool-downs. All new artists discovered from genre exploration.</span>
+        </figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <div class="essay reveal">
+    <p>The structured flow is one way in. The other is just talking. Ask for "more Gesaffelstein type vibes but not his collab stuff with lyrics" and the agent figures out the intent, queries the knowledge graph for what's already in your library, then searches across sources for tracks that fit. It thinks through taste zones, checks for duplicates, and hunts down specific albums and artists.</p>
+  </div>
+
+  <div class="essay-wide">
+    <div class="usage-stack reveal">
+      <figure class="usage-panel usage-panel-full">
+        <div class="usage-media">
+          <img src="imgs/followup.png" alt="A conversational request for Gesaffelstein-style music, with the agent searching multiple artists and thinking through the request" />
+        </div>
+        <figcaption>
+          <span class="usage-subtitle">Conversational Request</span>
+          <span class="usage-context">Natural language in, structured tool calls out. The agent interprets "Gesaffelstein type vibes" as dark electronic/industrial, excludes vocal collaborations, and searches across Spotify, the local library, and related-artist graphs.</span>
+        </figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <div class="essay reveal">
+    <p>Behind the scenes, that single request triggers a cascade: SQL queries against the knowledge graph, searches across Spotify's catalog, thinking steps to plan genre coverage, and deduplication against the existing library. All of it visible. The agent searches for Aphex Twin, Boards of Canada, Floating Points, Four Tet, Nils Frahm, Jamie xx, and dozens more, building a set that spans the user's taste zones.</p>
+  </div>
+
+  <div class="essay-wide">
+    <div class="usage-stack reveal">
+      <figure class="usage-panel usage-panel-full">
+        <div class="usage-media">
+          <img src="imgs/search.png" alt="The agent searching across multiple artists and running SQL queries to build a recommendation set" />
+        </div>
+        <figcaption>
+          <span class="usage-subtitle">Search Cascade</span>
+          <span class="usage-context">The agent searches across taste zones: ambient/IDM, downtempo electronic, modern classical, psychedelic world-funk. SQL queries check for existing library tracks to avoid duplicates. Every tool call is visible.</span>
+        </figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <div class="essay reveal">
+    <p>The result: 50 tracks queued and organized by genre zone. Not a flat playlist. A structured set with provenance, grouped by the acoustic neighborhoods that emerged from the search. Ambient/IDM, downtempo electronic, modern classical, electronic/dance, warm electronic, psychedelic world-funk. Each zone with specific artists and tracks, all sourced from the conversation.</p>
+  </div>
+
+  <div class="essay-wide">
+    <div class="usage-stack reveal">
+      <figure class="usage-panel usage-panel-full">
+        <div class="usage-media">
+          <img src="imgs/queue.png" alt="50 tracks queued in batches of 10, organized by genre zone with artists and track listings" />
+        </div>
+        <figcaption>
+          <span class="usage-subtitle">Queued Set</span>
+          <span class="usage-context">50 tracks added across five batches, then organized by zone: Ambient/IDM, Downtempo Electronic, Modern Classical, Electronic/Dance, Warm Electronic, Psychedelic World-Funk. Each with specific artists and tracks.</span>
+        </figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+
   <!-- RESULTS -->
   <div class="essay reveal">
     <h3>System</h3>
