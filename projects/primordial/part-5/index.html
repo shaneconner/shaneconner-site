@@ -320,12 +320,89 @@
 
   <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
 
-  <!-- ONGOING -->
+  <!-- CHAPTER IX -->
   <div class="essay reveal">
-    <h3>Still Running</h3>
-    <h2>The final 100,000 ticks</h2>
-    <p>The simulation is past 400,000 ticks. The remaining 100,000 should confirm whether the dampened oscillation has truly converged or whether another surprise is waiting. The ecosystem has settled into a pattern: lean foragers with stomach as the dominant strategy, a persistent minority of armed predators, and co-evolving armor that prevents any single strategy from running away with the population.</p>
-    <p>This page will be updated when the simulation completes.</p>
+    <h3>Chapter IX</h3>
+    <h2>The Extinction of Arms</h2>
+    <p>The third cycle never peaked. It plateaued at 15% claw adoption around tick 427,000, held briefly, and collapsed. By tick 450,000, claws had crashed to 1.9%. Armor surged to 11.5% in response, the same defensive pivot as before, but at one-sixth the amplitude. Then armor collapsed too. By tick 473,000, claws were at 0.3% and armor at 12.2%, but falling.</p>
+    <p>The dampened oscillation didn't stabilize at a low equilibrium. It dampened to zero. Three cycles, each smaller than the last: 96%, 42%, 15%. Then nothing. The predator economy that consumed 70,000 ticks of evolutionary drama simply vanished. The few remaining clawed organisms are new mutations, not evidence of a viable niche. They appear and get selected out within a few thousand ticks.</p>
+    <p>The population-food oscillation is a different story. That one never dampened. Population surged to 327 at tick 473k, food crashed to 94. The fourth food crisis in 200,000 ticks, roughly the same amplitude each time. Pop overshoots 300, food drops below 100, starvation corrects, food recovers. This oscillation has no evolutionary solution because organisms can't evolve to need less food. The density-dependent cycle is permanent.</p>
+    <p>sp_652 holds through it all. 63% at tick 473k, having dominated every strategic era since tick 200k. sp_8182 emerged as the strongest challenger at 15.6%, the most serious competition sp_652 has faced. But no species has broken 20% against the dynasty. Whatever sp_652's neural weights encode, 150 generations of challengers haven't found a better answer.</p>
+  </div>
+
+  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+
+  <!-- CHAPTER X -->
+  <div class="essay reveal">
+    <h3>Chapter X</h3>
+    <h2>Equilibrium</h2>
+    <p>The simulation ends at tick 500,000 with 189 organisms, 211 food items, and a body plan so minimal it's almost a parody of the design space available.</p>
+    <p>Four node types, each at almost exactly 25%: core (22.8%), muscle (22.8%), mouth (23.2%), stomach (23.2%). The minimum viable organism. Everything else has been stripped away. Sensor at 4.2% is the only non-default trait with meaningful presence, and even that is marginal. Claw at 1.1%. Armor at 0.6%. Fat at 0.6%. Bone at 1.3%. Signal: one organism. Memory: extinct.</p>
+    <p>Average body size is 4.4 nodes. Range: 4 to 7. There are no large organisms. No specialists. No predators. No armored tanks. Just lean foragers with a stomach, eating food and reproducing. The ecosystem that produced a 96% predator economy, a 64% armor pivot, and three full Lotka-Volterra cycles ends as the simplest possible world.</p>
+  </div>
+
+  <div class="essay-wide">
+    <div class="viz-container reveal">
+      <p class="viz-title">Final State &mdash; Tick 499,000&ndash;499,100</p>
+      <div data-sim-clip="/data/narrative-p5/primordial-p5-final-state.json"></div>
+      <p class="viz-caption">The final state: 189 organisms, all lean foragers. Bodies average 4.4 nodes. No visible claws, no armor, no predation. The ecosystem stripped everything back to the minimum viable organism: core, muscle, mouth, stomach.</p>
+    </div>
+  </div>
+
+  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+
+  <!-- THE VERDICT -->
+  <div class="essay reveal">
+    <h3>The Verdict</h3>
+    <h2>Two hypotheses, two answers</h2>
+    <p>Part 5 asked two concrete questions. Both got clear answers.</p>
+    <p><strong>Will corpse drops create genuine predator-prey oscillations?</strong> Yes, emphatically. The Lotka-Volterra dynamic that never appeared in Parts 1 through 4 played out across three full cycles between tick 180,000 and tick 450,000. Claw adoption rose to 96%, crashed, rose again to 42%, crashed again, rose to 15%, and finally dampened to zero. The oscillation was real, and its dampening through co-evolution of offense and defense was the central surprise. Each cycle was smaller than the last because the population retained evolutionary memory of both strategies. Defense and offense co-evolved in later cycles instead of lagging a full phase behind. The naive victims of cycle 1, organisms that had never seen a claw, were gone by cycle 2.</p>
+    <p><strong>Will memory nodes earn their metabolic cost when food patches move predictably?</strong> No. Memory appeared sporadically throughout the run but never exceeded 5% adoption and went extinct by tick 450,000. Four brain registers per node wasn't enough computational advantage to justify the energy drain in a world where bodies average 4-5 nodes and every node must justify itself against the metabolic curve. The moving superpatches weren't enough of an advantage when random motion intersects the patches often enough to survive.</p>
+    <p>The deeper finding is about metabolic scaling. The quadratic cost at (n/10)<sup>0.7</sup> is the mechanism that kept Part 5 interesting. It forced organisms to stay small, which forced strategic trade-offs: claws or armor, not both. When every strategic shift costs only one node, it's cheap enough to reverse, which creates oscillation rather than the permanent convergence of Part 4. Part 4's organisms grew to 28 nodes and carried everything. Part 5's organisms stayed at 4-5 nodes and had to choose.</p>
+    <p>sp_652 dominated from tick 200,000 to tick 500,000. A single species, holding 60-75% of the population through every strategic phase: the predator economy, the crash, the armor pivot, two full oscillation cycles, convergence, and final equilibrium. 300,000 ticks of continuous majority control. The dynasty didn't specialize in one strategy. It rode every wave, pivoting from predator to armored herbivore to lean forager as the meta shifted. The neural weights that encode that flexibility are the most successful product of Part 5's evolution, and they're invisible in every chart.</p>
+  </div>
+
+  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+
+  <!-- CHARTS -->
+  <div class="essay-wide">
+    <div class="viz-container reveal">
+      <p class="viz-title">Ecosystem Timeline</p>
+      <div id="ecosystem-timeline" data-timeline-src="/data/primordial-timeline-p5.json" style="width:100%;"></div>
+      <p class="viz-caption">Population (green, left axis) and species count (gold, right axis). The genesis boom, miniaturization plateau, predator economy, and dampened oscillation are all visible.</p>
+    </div>
+  </div>
+
+  <div class="essay-wide">
+    <div class="viz-container reveal">
+      <p class="viz-title">Species Dynamics</p>
+      <div id="species-stream" style="width:100%;"></div>
+      <p class="viz-caption">Streamgraph of species populations over time. sp_652's dynasty dominates the second half of the simulation, holding 60-75% of the population from tick 200k onward.</p>
+    </div>
+  </div>
+
+  <div class="essay-wide">
+    <div class="viz-container reveal">
+      <p class="viz-title">Body Composition Over Time</p>
+      <div id="body-composition" style="width:100%;"></div>
+      <p class="viz-caption">Total node counts by type. The claw spike at tick 221k and the armor response at tick 278k are the two most dramatic morphological shifts. Stomach's steady rise through the first 200k ticks funded the predator economy.</p>
+    </div>
+  </div>
+
+  <div class="essay-wide">
+    <div class="viz-container reveal">
+      <p class="viz-title">Body Composition &mdash; Proportional</p>
+      <div id="body-composition-norm" style="width:100%;"></div>
+      <p class="viz-caption">Each node type as a percentage of total nodes. The oscillation between claw and armor is visible as complementary waves. By tick 450k, both have collapsed and the four default types share the body budget equally.</p>
+    </div>
+  </div>
+
+  <div class="essay-wide">
+    <div class="viz-container reveal">
+      <p class="viz-title">Species Dynamics &mdash; Proportional</p>
+      <div id="species-stream-norm" style="width:100%;"></div>
+      <p class="viz-caption">Each species as a percentage of total population. sp_652's dominance from tick 200k onward is the strongest single-species grip in the project's five-part history.</p>
+    </div>
   </div>
 
   <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
@@ -333,15 +410,15 @@
   <div class="stats-row reveal">
     <div class="stat">
       <div class="stat-value">500k</div>
-      <div class="stat-label">Target Ticks</div>
+      <div class="stat-label">Simulation Ticks</div>
     </div>
     <div class="stat">
-      <div class="stat-value">325</div>
-      <div class="stat-label">Generations (so far)</div>
+      <div class="stat-value">357</div>
+      <div class="stat-label">Generations</div>
     </div>
     <div class="stat">
-      <div class="stat-value">4.9</div>
-      <div class="stat-label">Avg Nodes</div>
+      <div class="stat-value">8,577</div>
+      <div class="stat-label">Species Observed</div>
     </div>
     <div class="stat">
       <div class="stat-value">0</div>
@@ -357,8 +434,6 @@
       <a href="/projects/primordial/part-4/" class="part-nav-link">Part 4: Minds and Signals</a>
     </div>
     <div class="part-nav-item part-nav-next">
-      <span class="part-nav-label">Next &rarr;</span>
-      <span class="part-nav-link" style="opacity:0.4;">In progress</span>
     </div>
   </div>
 

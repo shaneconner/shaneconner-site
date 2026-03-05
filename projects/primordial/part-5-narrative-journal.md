@@ -350,3 +350,114 @@ Both claw and armor rising together from the start. No lag. The ecosystem has fu
 80% through the simulation. The remaining 98k ticks should show whether cycle 3 peaks at all, or whether the oscillation has dampened to a stable mixed equilibrium where 10-15% of the population is armed, 10-15% is armored, and the rest are lean foragers.
 
 ---
+
+## Entry 13 — Tick 426,610 — Steady State
+
+**Snapshot:** pop=200, species=29, gen=322, avg_energy=34.4, max_energy=105.6, avg_nodes=4.4 (range 3–8)
+
+24,000 ticks since Entry 12. The ecosystem has settled.
+
+**Node composition:**
+Stomach 22.4%, Mouth 22.2%, Core 22.2%, Muscle 21.7%, Claw 3.2%, Fat 2.1%, Sensor 1.8%, Armor 0.8%, Bone 0.3%, Memory 0.2%, Signal 0.0%
+
+**Claw at 14.5%** — essentially unchanged from Entry 12's 12.4%. The third cycle plateaued rather than peaking. No dramatic rise, no crash. Just a persistent minority of armed organisms. This confirms the dampened oscillation has converged: ~15% claw adoption is the equilibrium predator density.
+
+**Armor collapsed to 3.5%**, down from 14.3%. The co-evolution pattern from Entry 12 didn't hold. With claws stable at 15% rather than rising, armor's metabolic cost isn't justified. A 15% chance of encountering a predator isn't high enough to make every organism invest in defense.
+
+**Signal went extinct.** From 7.4% adoption (19 organisms) to zero. The late-game signal establishment was a false start. Signal may have been hitchhiking on a few successful lineages rather than conferring independent advantage. When those lineages declined, signal disappeared with them.
+
+**Fat at 8.5%** (17 organisms) — the most meaningful fat presence in the simulation. Fat provides an energy buffer. In a world with 123 food items for 200 organisms, the ability to store energy through lean periods has real survival value. Fat replaced signal as the marginal 5th-node choice.
+
+**Sensor at 7.5%** (15 organisms) — continuing the recovery that started during the oscillation. Sensors are now the third most common non-default trait after stomach and claw. At 200 organisms for 123 food items, directed search outperforms random walk. The sensor collapse of the miniaturization era (1%) appears to be fully reversed.
+
+**Species diversity at 29** — the lowest in the entire simulation. sp_652 at 69% (138/200). The ecosystem is consolidating: fewer species, one dominant lineage, stable strategies. This is what convergence looks like.
+
+**Pop at 200**, down from 258. Food at 123, down from 258. The food crisis pattern repeats on a smaller scale: population overshoots food, starvation corrects it, food recovers, repeat. The oscillation in population and food is a gentler version of the predator-prey oscillation — same density-dependent dynamics, lower amplitude.
+
+85% through. The remaining 73k ticks should be more of the same: lean foragers with stomach, ~15% armed, sp_652 dominant, low diversity. The simulation found its equilibrium.
+
+---
+
+## Entry 14 — Tick 450,404 — Miniature Ripples
+
+**Snapshot:** pop=270, species=34, gen=338, avg_energy=34.5, max_energy=120.0, avg_nodes=4.4 (range 3–9)
+
+24,000 ticks since Entry 13. The oscillation isn't dead — it's just very small.
+
+**Node composition:**
+Stomach 22.3%, Mouth 22.7%, Core 22.6%, Muscle 21.8%, Armor 3.2%, Claw 0.5%, Fat 0.9%, Bone 0.5%, Sensor 0.6%, Signal 0.2%, Memory 0.0%
+
+**Claw crashed to 1.9%** (5/270), down from 14.5% at Entry 13. The third cycle's peak wasn't 15% rising — it was 15% falling. The gentle ripple pattern continues: offense recedes, defense replaces it.
+
+**Armor rose to 11.5%** (31/270), up from 3.5%. The same armor-pivot pattern as cycle 1, but at 1/6 the amplitude. Cycle 1: claws peak at 96%, armor responds at 64%. Cycle 3: claws peak at ~15%, armor responds at ~12%. The ratio is consistent — armor responds to approximately the same degree as claw presence, just at much lower absolute levels.
+
+**Food at 75**, down from 123. Pop at 270, up from 200. Another food crisis building. The population-food oscillation is the one pattern that hasn't dampened — it keeps repeating at roughly the same amplitude (pop overshoots 250-320, food crashes below 100, starvation corrects). This is pure density-dependent dynamics, independent of the predator-prey oscillation.
+
+**sp_652 at 76.3%** (206/270). The strongest grip in the entire simulation. The dynasty strengthens as diversity declines. With 34 species (down from 29 at Entry 13, but fluctuating), sp_652 has no serious challenger.
+
+**Memory extinct.** Definitively gone.
+
+90% through. The final 50k ticks should show the food crisis resolution and confirm whether the miniature armor ripple is the new normal or the last gasp of the oscillation.
+
+---
+
+## Entry 15 — Tick 473,324 — The Last Gasp
+
+**Snapshot:** pop=327, species=41, gen=372, avg_energy=33.3, max_energy=unknown, avg_nodes=4.8 (range 3–unknown)
+
+23,000 ticks since Entry 14. The oscillation's final act.
+
+**Node composition:**
+Stomach 20.9%, Mouth 22.2%, Core 20.6%, Muscle 21.1%, Armor 12.2%, Fat 0.9%, Sensor 0.6%, Bone 0.5%, Signal 0.4%, Claw 0.3%, Memory 0.3%
+
+**Claw extinct in all but name** — 0.3% (5 organisms). Down from the 96% peak at tick 221k. The predator economy that defined Part 5's middle act is completely gone. In 250,000 ticks, claws went from nearly universal to functionally extinct. The dampened oscillation didn't stabilize at a low equilibrium — it dampened to zero.
+
+**Armor holding at 12.2%** (29.7% adoption). Armor persists after claws vanish because armor mass also provides collision resistance and body bulk. It's a dual-purpose trait — defense against the remaining handful of clawed organisms plus passive physical advantage. Armor may become a permanent fixture even without predators to defend against.
+
+**Population surged to 327**, the highest since the early boom. Food at 94 — another density crisis building. The pop-food oscillation continues unabated: this is the fourth food crisis in 200k ticks (~50k period). Unlike the predator-prey oscillation, the food oscillation shows no dampening because there's no co-evolutionary escape. Organisms can't evolve to need less food.
+
+**sp_652 at 63.3%** (207/327). Slightly weaker grip than Entry 14's 76.3%, but that's a population size effect — sp_652's absolute count rose from 206 to 207 while total population grew. The dynasty holds. sp_8182 at 15.6% (51 organisms) is the strongest challenger sp_652 has faced since the early simulation.
+
+**Signal at 1.8%** (6 organisms) — a ghost presence. Memory at 1.2% (4 organisms) — also ghostly. Neither trait can establish. Both keep appearing through mutation and vanishing through selection pressure within a few thousand ticks.
+
+**Species diversity at 41** — recovering from Entry 13's low of 29. More species, but sp_652 + sp_8182 control 79% of the population. Diversity is wide but shallow.
+
+94.7% through. The simulation should complete within the hour. The final state is clear: lean foragers (core + muscle + mouth + stomach) with a minority armor investment, no predation, one dominant dynasty, and a recurring food-population oscillation that will never dampen because it has no evolutionary solution.
+
+---
+
+## Entry 16 — Tick 500,000 — FINAL STATE
+
+**Snapshot:** pop=189, species=25, gen=357, avg_energy=36.9, max_energy=119.5, avg_nodes=4.4 (range 4–7)
+
+**Node composition:**
+Stomach 23.2%, Mouth 23.2%, Core 22.8%, Muscle 22.8%, Sensor 4.2%, Bone 1.3%, Claw 1.1%, Fat 0.6%, Armor 0.6%, Signal 0.1%, Memory 0.0%
+
+**The simulation ends where it began: simplicity.** Four node types at nearly perfect 25% each — core, muscle, mouth, stomach. The minimal viable organism. Everything else has been stripped away by 500,000 ticks of selection pressure.
+
+**Armor collapsed from 12.2% (Entry 15) to 0.6%.** The last vestige of the arms race is gone. Without claws to defend against, armor's metabolic cost makes it pure liability. The dual-purpose hypothesis from Entry 15 was wrong — armor doesn't persist without predators.
+
+**Sensor recovered to 4.2%** (14.3% adoption). The most successful non-default trait at simulation end. In a world with 189 organisms and 211 food items (1.1 per organism), directed search has marginal value. Sensor is the one trait that provides utility independent of other organisms' strategies — it's pure foraging efficiency, not a strategic response.
+
+**Claw at 1.1%** (4.2% adoption). Not quite extinct but irrelevant. These 8 clawed organisms are presumably new mutations that haven't been selected out yet, not evidence of a predator niche.
+
+**Memory: extinct.** Zero organisms. The Part 5 experiment definitively answers whether memory nodes earn their metabolic cost: they don't. Four brain registers per node isn't enough computational advantage to justify the energy drain. Memory appeared sporadically throughout the run but never established beyond single-digit adoption.
+
+**Signal: 1 organism.** Functionally extinct.
+
+**sp_652 at 74.1%** (140/189). The dynasty that defined Part 5. sp_652 held majority control from tick ~200k through tick 500k — 300,000 ticks of dominance. Over 60% of the population for the entire second half of the simulation. No challenger species ever exceeded 16%. sp_652's neural weights encode a foraging strategy so effective that evolution couldn't find a better alternative in 150+ generations of trying.
+
+**25 species** — the lowest diversity in the entire run. The ecosystem consolidated to its minimum: one dominant strategy, a few minor variants, lean bodies, no specialization.
+
+**Final summary across 500k ticks:**
+- Ticks 0–25k: Genesis boom and crash (pop 60→441→130)
+- Ticks 25k–180k: Miniaturization (avg nodes 5→3.7), mouth takeover
+- Ticks 180k–250k: Predator economy (claw rises to 96%, sp_652 dynasty begins)
+- Ticks 250k–280k: Lotka-Volterra crash (claw 96%→2%, armor responds to 64%)
+- Ticks 280k–350k: Dampened oscillation (cycle 2: claw peaks at 42%)
+- Ticks 350k–450k: Convergence (cycle 3 barely registers, traits flatten)
+- Ticks 450k–500k: Equilibrium (four-node forager, no arms race, sp_652 dominant)
+
+The central finding: predator-prey oscillations dampen through co-evolution. Each cycle is smaller than the last because the population retains evolutionary memory of both strategies. The oscillation doesn't stabilize at a low equilibrium — it dampens to zero. Given enough time, the ecosystem converges on the simplest strategy that works.
+
+---
