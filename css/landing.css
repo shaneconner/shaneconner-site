@@ -37,7 +37,7 @@
 
 .landing .location {
   font-size: 0.75rem;
-  color: var(--text-dim);
+  color: var(--green);
   letter-spacing: 0.2em;
   text-transform: uppercase;
   font-weight: 300;
