@@ -59,7 +59,8 @@ function initNavDropdowns() {
         { label: 'Part 3: Bodies That Matter', href: '/projects/primordial/part-3/' },
         { label: 'Part 4: Minds and Signals', href: '/projects/primordial/part-4/' },
         { label: 'Part 5: The Economics of Death', href: '/projects/primordial/part-5/' }
-      ]}
+      ]},
+      { label: 'Noloss: Evolutionary Life', href: '/projects/noloss/' }
     ],
     contact: [
       { label: 'Details', href: '/contact/#contact-details' },
