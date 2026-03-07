@@ -668,7 +668,7 @@
     var data = timelineData;
     if (!data || !data.categories) return;
 
-    var cats = data.categories;
+    var cats = data.categories.filter(function (c) { return c.name.toLowerCase() !== 'other'; });
     var width = container.clientWidth;
     var barH = 28;
     var gap = 6;
@@ -1092,10 +1092,12 @@
       .attr('r', 3.5);
 
     // Legend
-    // Collect unique families from data
+    // Collect unique families from data, exclude "Other"
     var familySet = {};
     points.forEach(function (p) { familySet[p.family] = true; });
-    var legendFamilies = Object.keys(familySet);
+    var legendFamilies = Object.keys(familySet).filter(function (f) {
+      return f.toLowerCase() !== 'other';
+    });
     // Sort by count descending
     legendFamilies.sort(function (a, b) {
       var ca = points.filter(function (p) { return p.family === a; }).length;
@@ -1107,7 +1109,7 @@
       .attr('transform', 'translate(' + (w - 110) + ', 10)');
 
     legend.selectAll('.tsne-legend')
-      .data(legendFamilies.slice(0, 8))
+      .data(legendFamilies.slice(0, 10))
       .enter().append('g')
       .attr('class', 'tsne-legend')
       .attr('transform', function (d, i) { return 'translate(0,' + (i * 18) + ')'; })
@@ -1144,15 +1146,18 @@
     var size = Math.min(width, 600);
     var radius = size / 2;
 
-    var tooltip = makeTooltip(container);
-
     var svg = d3.select(container)
       .append('svg')
       .attr('viewBox', -size / 2 + ' ' + -size / 2 + ' ' + size + ' ' + size)
       .attr('width', size)
       .attr('height', size)
       .style('display', 'block')
-      .style('margin', '0 auto');
+      .style('margin', '0 auto')
+      .style('overflow', 'visible');
+
+    // Tooltip appended after SVG so it renders on top
+    var tooltip = makeTooltip(container);
+    container.style.overflow = 'visible';
 
     var root = d3.hierarchy(data)
       .sum(function (d) { return d.value || 0; })
@@ -1199,7 +1204,10 @@
         tooltip.innerHTML = '<strong>' + d.data.name + '</strong><br/>' +
           d.value + ' tracks (' + pct + '%)';
         tooltip.style.opacity = '1';
-        d3.select(this).attr('fill-opacity', 1);
+        d3.select(this)
+          .attr('fill-opacity', 1)
+          .attr('stroke', C.bright)
+          .attr('stroke-width', 1.5);
       })
       .on('mousemove', function (event) {
         var rect = container.getBoundingClientRect();
@@ -1208,7 +1216,10 @@
       })
       .on('mouseleave', function () {
         tooltip.style.opacity = '0';
-        d3.select(this).attr('fill-opacity', 0.8);
+        d3.select(this)
+          .attr('fill-opacity', 0.8)
+          .attr('stroke', C.bg)
+          .attr('stroke-width', 0.5);
       });
 
     // Labels for segments large enough
