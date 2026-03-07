@@ -89,7 +89,7 @@
     <div class="viz-container reveal">
       <p class="viz-title">Enrichment Pipeline</p>
       <div id="pipeline-viz" style="width:100%;"></div>
-      <p class="viz-caption">Data flows from Spotify through six enrichment sources into the unified SQLite graph. Each source contributes a different dimension of understanding. Animated pulses represent active enrichment.</p>
+      <p class="viz-caption">Data flows from Spotify through six enrichment sources into the unified SQLite graph. Each source contributes a different dimension of understanding. <em>Illustrative visualization.</em></p>
     </div>
   </div>
 
@@ -108,7 +108,7 @@
     <div class="viz-container reveal">
       <p class="viz-title">Genre Co-occurrence Network</p>
       <div id="genre-galaxy-viz" style="width:100%;"></div>
-      <p class="viz-caption">Force-directed layout of genre co-occurrence. Nodes sized by track count, colored by community. Drag to explore, hover for details.</p>
+      <p class="viz-caption">Force-directed layout of genre co-occurrence across 79 genres. Nodes sized by track count, colored by community. Drag to explore, hover for details. <em>Live data from the Resonance database.</em></p>
     </div>
   </div>
 
@@ -128,7 +128,7 @@
     <div class="viz-container reveal">
       <p class="viz-title">Frequency Evolution Over Time</p>
       <div id="frequency-viz" style="width:100%;"></div>
-      <p class="viz-caption">Illustrative tracks with realistic divergence. Choosing tracks early pulls their interval down (/1.382); neglecting tracks pushes it up (&times;1.382). The golden ratio keeps adaptation stable.</p>
+      <p class="viz-caption">Choosing tracks early pulls their interval down (/1.382); neglecting tracks pushes it up (&times;1.382). The golden ratio keeps adaptation stable. <em>Illustrative visualization with simulated data.</em></p>
     </div>
   </div>
 
@@ -150,7 +150,7 @@
     <div class="viz-container reveal">
       <p class="viz-title">Artist Similarity Constellation</p>
       <div id="artist-viz" style="width:100%;"></div>
-      <p class="viz-caption">Top 35 artists by listen count, colored by primary genre. Edges weighted by shared genre overlap. Drag to rearrange, hover for details.</p>
+      <p class="viz-caption">Top 35 artists by listen count, colored by primary genre. Edges weighted by shared genre overlap. Drag to rearrange, hover for details. <em>Live data from the Resonance database.</em></p>
     </div>
   </div>
 
@@ -168,7 +168,7 @@
     <div class="viz-container reveal">
       <p class="viz-title">Listening Timeline by Genre</p>
       <div id="stream-viz" style="width:100%;"></div>
-      <p class="viz-caption">Stacked area chart showing genre distribution over time. Width of each band reflects relative listening volume. Hover for breakdowns.</p>
+      <p class="viz-caption">Stacked area chart showing genre distribution over time. Width of each band reflects relative listening volume. <em>Illustrative visualization with simulated data.</em></p>
     </div>
   </div>
 
@@ -186,7 +186,7 @@
     <div class="viz-container reveal">
       <p class="viz-title">Library Composition by Genre Family</p>
       <div id="timeline-viz" style="width:100%;"></div>
-      <p class="viz-caption">Genre distribution across 932 tracks. Sub-genres normalized into display families. Hover for track counts and percentages.</p>
+      <p class="viz-caption">Genre distribution across 1,332 tracks. Sub-genres normalized into display families. Hover for track counts and percentages. <em>Live data from the Resonance database.</em></p>
     </div>
   </div>
 
@@ -240,7 +240,7 @@
     <div class="viz-container reveal">
       <p class="viz-title">Artist Frequency Distribution</p>
       <div id="freq-dist-viz" style="width:100%;"></div>
-      <p class="viz-caption">Each point is an artist. X-axis: target frequency in days. Y-axis: cycle progress (days since listened / frequency). Points above the dashed line are overdue. Red = overdue, green = on track.</p>
+      <p class="viz-caption">Each point is an artist. X-axis: target frequency in days. Y-axis: cycle progress (days since listened / frequency). Points above the dashed line are overdue. <em>Illustrative visualization with simulated data.</em></p>
     </div>
   </div>
 
@@ -258,7 +258,23 @@
     <div class="viz-container reveal">
       <p class="viz-title">Audio Feature Space (CLAP Embeddings)</p>
       <div id="tsne-viz" style="width:100%;"></div>
-      <p class="viz-caption">t-SNE projection of 649 CLAP audio embeddings. Each point is a track, colored by genre family. Clusters reveal acoustic neighborhoods that transcend genre labels. Hover for track details.</p>
+      <p class="viz-caption">t-SNE projection of 1,169 CLAP audio embeddings. Each point is a track, colored by genre family. Clusters reveal acoustic neighborhoods that transcend genre labels. Hover for track details. <em>Live data from the Resonance database.</em></p>
+    </div>
+  </div>
+
+  <!-- GENRE HIERARCHY SUNBURST -->
+  <div class="essay reveal">
+    <h3>Genre Hierarchy</h3>
+    <h2>A taxonomy built from listening, not from labels</h2>
+    <p>Genres nest inside each other. Electronic contains ambient, techno, house, IDM, and dozens more. Rock branches into post-rock, shoegaze, psychedelic, math rock. Rather than flatten everything into tags, the system builds a hierarchy: 226 genres organized into 14 root families with parent-child relationships at every level.</p>
+    <p>The sunburst shows relative size by track count. Hover for details. The structure emerges from domain knowledge applied to how genres actually relate in practice, not from any single source's taxonomy.</p>
+  </div>
+
+  <div class="essay-wide">
+    <div class="viz-container reveal">
+      <p class="viz-title">Genre Hierarchy Sunburst</p>
+      <div id="sunburst-viz" style="width:100%;"></div>
+      <p class="viz-caption">226 genres organized into 14 root families. Ring depth = hierarchy depth. Arc size = track count. Hover for genre name and percentage.</p>
     </div>
   </div>
 
@@ -440,34 +456,6 @@
     </div>
   </div>
 
-  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
-
-  <!-- RESULTS -->
-  <div class="essay reveal">
-    <h3>System</h3>
-    <h2>What it does</h2>
-    <p>932 tracks. 259 artists. 205 genres. 322 logged listens. Seven sources collapsed into one graph. Frequencies that evolve from behavior. Five discovery strategies with full provenance. An AI layer that can talk to all of it. The system gets sharper every time you press play.</p>
-  </div>
-
-  <div class="stats-row reveal">
-    <div class="stat">
-      <div class="stat-value">932</div>
-      <div class="stat-label">Tracks</div>
-    </div>
-    <div class="stat">
-      <div class="stat-value">259</div>
-      <div class="stat-label">Artists</div>
-    </div>
-    <div class="stat">
-      <div class="stat-value">7</div>
-      <div class="stat-label">Data Sources</div>
-    </div>
-    <div class="stat">
-      <div class="stat-value">1.382</div>
-      <div class="stat-label">Golden Ratio</div>
-    </div>
-  </div>
-
   <!-- TECH STACK -->
   <div class="project-meta">
     <h3>Tech Stack</h3>
@@ -482,7 +470,9 @@
       <span class="project-tag">Discogs</span>
       <span class="project-tag">Genius</span>
       <span class="project-tag">MCP</span>
+      <span class="project-tag">Claude Code</span>
       <span class="project-tag">scikit-learn</span>
+      <span class="project-tag">CLAP / PyTorch</span>
       <span class="project-tag">D3.js</span>
     </div>
     <a href="/projects" class="back-link">&larr; All Projects</a>

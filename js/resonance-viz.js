@@ -19,21 +19,28 @@
 
   var FONT = 'Outfit, sans-serif';
 
-  // Genre community colors
-  var COMMUNITY_COLORS = [
-    '#7a8a2a', // rock / alt — green
-    '#8a3a5a', // post-punk / dark — burgundy
-    '#5a7a8a', // shoegaze / dream — teal
-    '#6a7a9a', // electronic — blue-grey
-    '#8a6a3a', // synth / new wave — amber
-    '#6a3a3a', // metal — dark red
-    '#3a6a5a', // math / prog — teal-green
-    '#7a6a8a', // post-rock / experimental — mauve
-    '#5a6a3a', // jazz — olive
-    '#8a7a5a', // hip-hop — tan
-    '#5a8a5a', // folk — forest
-    '#6a5a7a', // classical — violet
+  // Dynamic color palette — 25 muted earth tones
+  var PALETTE = [
+    '#7a8a2a', '#8a3a5a', '#5a7a8a', '#6a7a9a', '#8a6a3a',
+    '#6a3a3a', '#3a6a5a', '#7a6a8a', '#5a6a3a', '#8a7a5a',
+    '#5a8a5a', '#6a5a7a', '#8a5a3a', '#5a8a7a', '#6a3a5a',
+    '#3a5a8a', '#8a8a3a', '#5a3a6a', '#7a5a5a', '#4a7a6a',
+    '#9a6a4a', '#6a8a5a', '#7a4a6a', '#4a6a7a', '#8a4a4a',
   ];
+
+  // Assign colors dynamically to genre/family names
+  var _colorCache = {};
+  function getColor(name) {
+    if (!name) return C.dim;
+    var key = name.toLowerCase();
+    if (_colorCache[key]) return _colorCache[key];
+    var idx = Object.keys(_colorCache).length % PALETTE.length;
+    _colorCache[key] = PALETTE[idx];
+    return _colorCache[key];
+  }
+
+  // Community group colors (for genre network groups)
+  var COMMUNITY_COLORS = PALETTE;
 
   // ── Data ──────────────────────────────────────────────────────────────────
   var genreData = null;
@@ -277,13 +284,14 @@
     var maxCount = d3.max(data.nodes, function (d) { return d.count; });
     var rScale = d3.scaleSqrt().domain([0, maxCount]).range([4, 28]);
 
-    // Simulation
+    // Simulation — tuned force params
     var simulation = d3.forceSimulation(data.nodes)
       .force('link', d3.forceLink(data.links).id(function (d) { return d.id; })
         .distance(function (d) { return 80 - d.weight * 30; })
         .strength(function (d) { return d.weight * 0.6; }))
-      .force('charge', d3.forceManyBody().strength(-120))
-      .force('center', d3.forceCenter(width / 2, height / 2))
+      .force('charge', d3.forceManyBody().strength(-90))
+      .force('x', d3.forceX(width / 2).strength(0.04))
+      .force('y', d3.forceY(height / 2).strength(0.04))
       .force('collision', d3.forceCollide().radius(function (d) { return rScale(d.count) + 4; }));
 
     // Links
@@ -551,24 +559,6 @@
       .attr('height', height)
       .style('display', 'block');
 
-    // Genre-to-color mapping
-    var genreColorMap = {
-      'ambient': '#5a7a8a',
-      'idm': '#6a7a9a',
-      'vaporwave': '#7a6a8a',
-      'drone': '#5a5a5a',
-      'minimalism': '#8a6a3a',
-      'downtempo': '#8a7a5a',
-      'electronic': '#6a7a9a',
-      'experimental': '#7a6a8a',
-      'french house': '#8a3a5a',
-      'soundtrack': '#7a8a2a',
-      'plunderphonics': '#6a3a5a',
-      'chillwave': '#5a8a7a',
-      'dub techno': '#3a6a5a',
-      'unknown': '#4a4a3a',
-    };
-
     var maxListens = d3.max(data.nodes, function (d) { return d.listens; });
     var rScale = d3.scaleSqrt().domain([0, maxListens]).range([5, 24]);
 
@@ -576,8 +566,9 @@
       .force('link', d3.forceLink(data.links).id(function (d) { return d.id; })
         .distance(function (d) { return 100 - d.weight * 40; })
         .strength(function (d) { return d.weight * 0.5; }))
-      .force('charge', d3.forceManyBody().strength(-150))
-      .force('center', d3.forceCenter(width / 2, height / 2))
+      .force('charge', d3.forceManyBody().strength(-170))
+      .force('x', d3.forceX(width / 2).strength(0.04))
+      .force('y', d3.forceY(height / 2).strength(0.04))
       .force('collision', d3.forceCollide().radius(function (d) { return rScale(d.listens) + 4; }));
 
     var link = svg.append('g')
@@ -608,9 +599,9 @@
 
     node.append('circle')
       .attr('r', function (d) { return rScale(d.listens); })
-      .attr('fill', function (d) { return genreColorMap[d.genre] || C.dim; })
+      .attr('fill', function (d) { return getColor(d.genre); })
       .attr('fill-opacity', 0.7)
-      .attr('stroke', function (d) { return genreColorMap[d.genre] || C.dim; })
+      .attr('stroke', function (d) { return getColor(d.genre); })
       .attr('stroke-opacity', 1)
       .attr('stroke-width', 1.5);
 
@@ -636,7 +627,7 @@
         return (l.source.id === d.id || l.target.id === d.id) ? 0.8 : 0.08;
       }).attr('stroke', function (l) {
         return (l.source.id === d.id || l.target.id === d.id)
-          ? (genreColorMap[d.genre] || C.dim) : C.borderL;
+          ? getColor(d.genre) : C.borderL;
       });
     })
     .on('mousemove', function (event) {
@@ -688,19 +679,6 @@
 
     var tooltip = makeTooltip(container);
 
-    var compositionColors = {
-      'Soundtrack': '#7a8a2a',
-      'Electronic': '#6a7a9a',
-      'Ambient': '#5a7a8a',
-      'Vaporwave': '#7a6a8a',
-      'IDM': '#6a7a9a',
-      'Minimalism': '#8a6a3a',
-      'Drone': '#5a5a5a',
-      'Experimental': '#8a3a5a',
-      'Downtempo': '#8a7a5a',
-      'Other': '#4a4a3a',
-    };
-
     var svg = d3.select(container)
       .append('svg')
       .attr('viewBox', '0 0 ' + width + ' ' + height)
@@ -723,7 +701,7 @@
       .attr('y', function (d, i) { return i * (barH + gap); })
       .attr('width', 0)
       .attr('height', barH)
-      .attr('fill', function (d) { return compositionColors[d.name] || C.dim; })
+      .attr('fill', function (d) { return getColor(d.name); })
       .attr('fill-opacity', 0.75)
       .attr('rx', 2)
       .on('mouseenter', function (event, d) {
@@ -1060,23 +1038,6 @@
 
     var tooltip = makeTooltip(container);
 
-    var familyColors = {
-      'Ambient': '#5a7a8a',
-      'Electronic': '#6a7a9a',
-      'Soundtrack': '#7a8a2a',
-      'Vaporwave': '#7a6a8a',
-      'Rock': '#8a3a5a',
-      'Jazz': '#5a6a3a',
-      'Classical': '#6a5a7a',
-      'Experimental': '#8a6a3a',
-      'Hip Hop': '#8a7a5a',
-      'Pop': '#5a8a5a',
-      'R&B/Soul': '#6a3a3a',
-      'Folk/World': '#3a6a5a',
-      'Synthwave': '#8a5a3a',
-      'Other': '#555550',
-    };
-
     var xExtent = d3.extent(points, function (d) { return d.x; });
     var yExtent = d3.extent(points, function (d) { return d.y; });
     var xPad = (xExtent[1] - xExtent[0]) * 0.05;
@@ -1107,9 +1068,9 @@
       .attr('cx', function (d) { return xScale(d.x); })
       .attr('cy', function (d) { return yScale(d.y); })
       .attr('r', 0)
-      .attr('fill', function (d) { return familyColors[d.family] || C.dim; })
+      .attr('fill', function (d) { return getColor(d.family); })
       .attr('fill-opacity', 0.65)
-      .attr('stroke', function (d) { return familyColors[d.family] || C.dim; })
+      .attr('stroke', function (d) { return getColor(d.family); })
       .attr('stroke-opacity', 0.3)
       .attr('stroke-width', 1)
       .on('mouseenter', function (event, d) {
@@ -1131,9 +1092,10 @@
       .attr('r', 3.5);
 
     // Legend
-    var legendFamilies = Object.keys(familyColors).filter(function (f) {
-      return points.some(function (p) { return p.family === f; });
-    });
+    // Collect unique families from data
+    var familySet = {};
+    points.forEach(function (p) { familySet[p.family] = true; });
+    var legendFamilies = Object.keys(familySet);
     // Sort by count descending
     legendFamilies.sort(function (a, b) {
       var ca = points.filter(function (p) { return p.family === a; }).length;
@@ -1152,12 +1114,147 @@
       .each(function (d) {
         d3.select(this).append('circle')
           .attr('r', 4).attr('cx', 0).attr('cy', 0)
-          .attr('fill', familyColors[d]).attr('fill-opacity', 0.8);
+          .attr('fill', getColor(d)).attr('fill-opacity', 0.8);
         d3.select(this).append('text')
           .attr('x', 10).attr('y', 4)
           .attr('fill', C.dim).attr('font-size', 10).attr('font-family', FONT)
           .text(d);
       });
+  }
+
+  // ════════════════════════════════════════════════════════════════════════════
+  //  GENRE SUNBURST
+  // ════════════════════════════════════════════════════════════════════════════
+
+  var hierarchyData = null;
+
+  function loadHierarchyData() {
+    return loadJSON('/data/resonance-hierarchy.json', function (d) { hierarchyData = d; });
+  }
+
+  function renderSunburst(containerId) {
+    var container = document.getElementById(containerId);
+    if (!container) return;
+    container.innerHTML = '';
+
+    var data = hierarchyData;
+    if (!data) return;
+
+    var width = container.clientWidth;
+    var size = Math.min(width, 600);
+    var radius = size / 2;
+
+    var tooltip = makeTooltip(container);
+
+    var svg = d3.select(container)
+      .append('svg')
+      .attr('viewBox', -size / 2 + ' ' + -size / 2 + ' ' + size + ' ' + size)
+      .attr('width', size)
+      .attr('height', size)
+      .style('display', 'block')
+      .style('margin', '0 auto');
+
+    var root = d3.hierarchy(data)
+      .sum(function (d) { return d.value || 0; })
+      .sort(function (a, b) { return b.value - a.value; });
+
+    var partition = d3.partition()
+      .size([2 * Math.PI, radius]);
+    partition(root);
+
+    var arc = d3.arc()
+      .startAngle(function (d) { return d.x0; })
+      .endAngle(function (d) { return d.x1; })
+      .padAngle(0.002)
+      .padRadius(radius / 2)
+      .innerRadius(function (d) { return d.y0; })
+      .outerRadius(function (d) { return d.y1 - 1; });
+
+    // Color by top-level ancestor
+    function getAncestorName(d) {
+      var node = d;
+      while (node.depth > 1) node = node.parent;
+      return node.data.name;
+    }
+
+    var paths = svg.selectAll('path')
+      .data(root.descendants().filter(function (d) { return d.depth > 0; }))
+      .enter().append('path')
+      .attr('d', arc)
+      .attr('fill', function (d) {
+        var base = getColor(getAncestorName(d));
+        // Lighten deeper levels
+        var c = d3.color(base);
+        if (d.depth === 2) c = c.brighter(0.3);
+        if (d.depth >= 3) c = c.brighter(0.6);
+        return c;
+      })
+      .attr('fill-opacity', 0.8)
+      .attr('stroke', C.bg)
+      .attr('stroke-width', 0.5)
+      .style('cursor', 'pointer')
+      .on('mouseenter', function (event, d) {
+        var totalTracks = root.value;
+        var pct = ((d.value / totalTracks) * 100).toFixed(1);
+        tooltip.innerHTML = '<strong>' + d.data.name + '</strong><br/>' +
+          d.value + ' tracks (' + pct + '%)';
+        tooltip.style.opacity = '1';
+        d3.select(this).attr('fill-opacity', 1);
+      })
+      .on('mousemove', function (event) {
+        var rect = container.getBoundingClientRect();
+        tooltip.style.left = (event.clientX - rect.left + 12) + 'px';
+        tooltip.style.top = (event.clientY - rect.top - 28) + 'px';
+      })
+      .on('mouseleave', function () {
+        tooltip.style.opacity = '0';
+        d3.select(this).attr('fill-opacity', 0.8);
+      });
+
+    // Labels for segments large enough
+    svg.selectAll('.sunburst-label')
+      .data(root.descendants().filter(function (d) {
+        return d.depth > 0 && d.depth <= 2 && (d.x1 - d.x0) > 0.08;
+      }))
+      .enter().append('text')
+      .attr('class', 'sunburst-label')
+      .attr('transform', function (d) {
+        var angle = (d.x0 + d.x1) / 2;
+        var r = (d.y0 + d.y1) / 2;
+        var deg = angle * 180 / Math.PI - 90;
+        var flip = deg > 90;
+        if (flip) deg -= 180;
+        return 'rotate(' + (angle * 180 / Math.PI - 90) + ') translate(' + r + ',0) rotate(' + (flip ? 180 : 0) + ')';
+      })
+      .attr('text-anchor', 'middle')
+      .attr('dominant-baseline', 'middle')
+      .attr('fill', C.bright)
+      .attr('font-family', FONT)
+      .attr('font-size', function (d) { return d.depth === 1 ? 10 : 8; })
+      .attr('font-weight', 300)
+      .attr('pointer-events', 'none')
+      .text(function (d) {
+        var name = d.data.name;
+        return name.length > 12 ? name.slice(0, 11) + '\u2026' : name;
+      });
+
+    // Center label
+    svg.append('text')
+      .attr('text-anchor', 'middle')
+      .attr('dy', '-0.3em')
+      .attr('fill', C.text)
+      .attr('font-family', FONT)
+      .attr('font-size', 14)
+      .attr('font-weight', 400)
+      .text('Genre');
+    svg.append('text')
+      .attr('text-anchor', 'middle')
+      .attr('dy', '1em')
+      .attr('fill', C.dim)
+      .attr('font-family', FONT)
+      .attr('font-size', 11)
+      .attr('font-weight', 300)
+      .text('Hierarchy');
   }
 
   // ════════════════════════════════════════════════════════════════════════════
@@ -1173,11 +1270,12 @@
     'timeline-viz':     function () { renderListeningTimeline('timeline-viz'); },
     'freq-dist-viz':    function () { renderFrequencyDistribution('freq-dist-viz'); },
     'tsne-viz':         function () { renderTSNE('tsne-viz'); },
+    'sunburst-viz':     function () { renderSunburst('sunburst-viz'); },
   };
 
   function initViz() {
     // Load data then set up observers
-    Promise.all([loadGenreData(), loadArtistData(), loadTimelineData(), loadFrequencyData(), loadTSNEData()])
+    Promise.all([loadGenreData(), loadArtistData(), loadTimelineData(), loadFrequencyData(), loadTSNEData(), loadHierarchyData()])
       .then(function () {
         var observer = new IntersectionObserver(function (entries) {
           entries.forEach(function (entry) {
