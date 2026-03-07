@@ -104,7 +104,7 @@ nav.scrolled { border-bottom-color: var(--border); }
   top: 100%;
   left: 50%;
   transform: translate(-50%, 6px);
-  min-width: 15.5rem;
+  width: max-content;
   list-style: none;
   padding: 0.45rem;
   margin: 0;
@@ -153,7 +153,7 @@ nav.scrolled { border-bottom-color: var(--border); }
 .nav-dropdown a {
   display: block;
   width: 100%;
-  padding: 0.5rem 0.6rem;
+  padding: 0.5rem 0.9rem;
   border: 1px solid transparent;
   color: var(--text-dim);
   text-decoration: none;
@@ -162,7 +162,6 @@ nav.scrolled { border-bottom-color: var(--border); }
   text-transform: uppercase;
   line-height: 1.4;
   white-space: nowrap;
-  text-align: center;
   transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
 }
 
@@ -196,7 +195,7 @@ nav.scrolled { border-bottom-color: var(--border); }
   position: absolute;
   right: 100%;
   top: -0.45rem;
-  min-width: 13rem;
+  width: max-content;
   list-style: none;
   padding: 0.45rem;
   margin: 0;
@@ -222,7 +221,7 @@ nav.scrolled { border-bottom-color: var(--border); }
 .nav-submenu a {
   display: block;
   width: 100%;
-  padding: 0.5rem 0.6rem;
+  padding: 0.5rem 0.9rem;
   border: 1px solid transparent;
   color: var(--text-dim);
   text-decoration: none;
@@ -231,7 +230,6 @@ nav.scrolled { border-bottom-color: var(--border); }
   text-transform: uppercase;
   line-height: 1.4;
   white-space: nowrap;
-  text-align: center;
   transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
 }
 
@@ -318,7 +316,7 @@ footer {
 
   .nav-dropdown {
     top: 100%;
-    min-width: 12.2rem;
+    width: max-content;
     padding: 0.38rem;
     opacity: 0;
     visibility: hidden;
