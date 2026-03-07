@@ -1143,129 +1143,209 @@
     if (!data) return;
 
     var width = container.clientWidth;
-    var size = Math.min(width, 600);
+    var size = Math.min(width, 700);
     var radius = size / 2;
+
+    // Root-genre color palettes (depth-graded)
+    var rootPalettes = {
+      'electronic': ['#3a7a8a','#4a9aaa','#5ab4c4','#6acdd8'],
+      'rock':       ['#8a6a3a','#aa8a4a','#c4a45a','#d8be6a'],
+      'hip hop':    ['#8a3a6a','#9a4a8a','#b45aa4','#c86abe'],
+      'jazz':       ['#6b8f3a','#8aaf4a','#a4c75a','#bdd96a'],
+      'classical':  ['#3a5a8a','#4a7aaa','#5a94c4','#6aaed8'],
+      'folk':       ['#7a8a2a','#9aaa3a','#b5c24a','#c8d45a'],
+      'soundtrack': ['#8a3a3a','#aa4a4a','#c45a5a','#d86a6a'],
+      'soul':       ['#aa7a3a','#c49a4a','#d8b45a','#e8c86a'],
+      'pop':        ['#8a5a8a','#aa7aaa','#c494c4','#d8aed8'],
+      'reggae':     ['#3a8a5a','#4aaa7a','#5ac494','#6ad8ae'],
+      'experimental':['#7a7a3a','#9a9a4a','#b4b45a','#c8c86a'],
+      'world':      ['#5a7a6a','#7a9a8a','#94b4a4','#aec8be'],
+    };
+    var fallbackPalette = ['#2e3218','#4a5520','#7a8a2a','#9aaa3a'];
+
+    function getSunburstColor(d) {
+      var node = d;
+      while (node.depth > 1 && node.parent) node = node.parent;
+      var catName = node.data ? node.data.name.toLowerCase() : '';
+      var palette = rootPalettes[catName] || fallbackPalette;
+      var idx = Math.min(d.depth - 1, palette.length - 1);
+      return palette[Math.max(0, idx)];
+    }
+
+    // Tooltip
+    var tooltip = makeTooltip(container);
+    container.style.overflow = 'visible';
 
     var svg = d3.select(container)
       .append('svg')
-      .attr('viewBox', -size / 2 + ' ' + -size / 2 + ' ' + size + ' ' + size)
+      .attr('viewBox', '0 0 ' + size + ' ' + size)
       .attr('width', size)
       .attr('height', size)
       .style('display', 'block')
-      .style('margin', '0 auto')
-      .style('overflow', 'visible');
+      .style('margin', '0 auto');
 
-    // Tooltip appended after SVG so it renders on top
-    var tooltip = makeTooltip(container);
-    container.style.overflow = 'visible';
+    var g = svg.append('g')
+      .attr('transform', 'translate(' + radius + ',' + radius + ')');
 
     var root = d3.hierarchy(data)
       .sum(function (d) { return d.value || 0; })
       .sort(function (a, b) { return b.value - a.value; });
 
-    var partition = d3.partition()
-      .size([2 * Math.PI, radius]);
+    var partition = d3.partition().size([2 * Math.PI, radius]);
     partition(root);
 
-    var arc = d3.arc()
-      .startAngle(function (d) { return d.x0; })
-      .endAngle(function (d) { return d.x1; })
-      .padAngle(0.002)
-      .padRadius(radius / 2)
-      .innerRadius(function (d) { return d.y0; })
-      .outerRadius(function (d) { return d.y1 - 1; });
+    // Store initial layout for animation
+    root.each(function (d) {
+      d.current = { x0: d.x0, x1: d.x1, y0: d.y0, y1: d.y1 };
+    });
 
-    // Color by top-level ancestor
-    function getAncestorName(d) {
-      var node = d;
-      while (node.depth > 1) node = node.parent;
-      return node.data.name;
+    var arc = d3.arc()
+      .startAngle(function (d) { return d.current.x0; })
+      .endAngle(function (d) { return d.current.x1; })
+      .padAngle(function (d) { return Math.min((d.current.x1 - d.current.x0) / 2, 0.005); })
+      .padRadius(radius / 2)
+      .innerRadius(function (d) { return d.current.y0; })
+      .outerRadius(function (d) { return Math.max(d.current.y0, d.current.y1 - 1); });
+
+    function arcVisible(d) {
+      return d.y1 > 0 && d.y0 < radius && d.x1 > d.x0 + 0.001;
     }
 
-    var paths = svg.selectAll('path')
-      .data(root.descendants().filter(function (d) { return d.depth > 0; }))
-      .enter().append('path')
-      .attr('d', arc)
-      .attr('fill', function (d) {
-        var base = getColor(getAncestorName(d));
-        // Lighten deeper levels
-        var c = d3.color(base);
-        if (d.depth === 2) c = c.brighter(0.3);
-        if (d.depth >= 3) c = c.brighter(0.6);
-        return c;
-      })
-      .attr('fill-opacity', 0.8)
-      .attr('stroke', C.bg)
-      .attr('stroke-width', 0.5)
+    function labelVisible(d) {
+      var band = d.y1 - d.y0;
+      return d.y1 > 0 && d.y0 > band * 0.5 && d.y0 < radius
+        && (d.x1 - d.x0) > 0.04 && band > 10;
+    }
+
+    function labelTransform(d) {
+      var x = (d.x0 + d.x1) / 2 * 180 / Math.PI;
+      var y = (d.y0 + d.y1) / 2;
+      return 'rotate(' + (x - 90) + ') translate(' + y + ',0) rotate(' + (x < 180 ? 0 : 180) + ')';
+    }
+
+    function truncateLabel(name, arcW, bandH) {
+      var px = Math.min(arcW, bandH || arcW);
+      var maxC = Math.floor(px * 0.14);
+      if (maxC < 3) return '';
+      return name.length <= maxC ? name : name.substring(0, maxC - 1) + '\u2026';
+    }
+
+    function getArcWidth(d) { return (d.x1 - d.x0) * ((d.y0 + d.y1) / 2); }
+    function getBandH(d) { return d.y1 - d.y0; }
+
+    var currentRoot = root;
+
+    // Center label (updates on click)
+    var centerText = g.append('text')
+      .attr('text-anchor', 'middle')
+      .attr('dy', '0.35em')
+      .attr('fill', C.text)
+      .attr('font-family', FONT)
+      .attr('font-size', 14)
+      .attr('font-weight', 300)
+      .style('pointer-events', 'none')
+      .text('Music');
+
+    var allDesc = root.descendants().filter(function (d) { return d.depth; });
+
+    // Arcs
+    var paths = g.selectAll('path.sb-arc')
+      .data(allDesc).join('path')
+      .attr('class', 'sb-arc')
+      .attr('fill', function (d) { return getSunburstColor(d); })
+      .attr('fill-opacity', function (d) { return arcVisible(d.current) ? (d.children ? 0.85 : 0.65) : 0; })
+      .attr('d', function (d) { return arc(d); })
       .style('cursor', 'pointer')
-      .on('mouseenter', function (event, d) {
-        var totalTracks = root.value;
-        var pct = ((d.value / totalTracks) * 100).toFixed(1);
-        tooltip.innerHTML = '<strong>' + d.data.name + '</strong><br/>' +
-          d.value + ' tracks (' + pct + '%)';
+      .on('mouseover', function (event, d) {
+        d3.select(this).attr('fill-opacity', 1);
+        var childCount = d.children ? d.children.length : 0;
+        var label = d.data.name;
+        if (childCount > 0) label += ' \u2014 ' + childCount + ' sub-genres';
+        else label += ' \u2014 ' + d.value + ' tracks';
+        tooltip.textContent = label;
         tooltip.style.opacity = '1';
-        d3.select(this)
-          .attr('fill-opacity', 1)
-          .attr('stroke', C.bright)
-          .attr('stroke-width', 1.5);
       })
       .on('mousemove', function (event) {
         var rect = container.getBoundingClientRect();
         tooltip.style.left = (event.clientX - rect.left + 12) + 'px';
         tooltip.style.top = (event.clientY - rect.top - 28) + 'px';
       })
-      .on('mouseleave', function () {
+      .on('mouseout', function (event, d) {
+        d3.select(this).attr('fill-opacity', arcVisible(d.current) ? (d.children ? 0.85 : 0.65) : 0);
         tooltip.style.opacity = '0';
-        d3.select(this)
-          .attr('fill-opacity', 0.8)
-          .attr('stroke', C.bg)
-          .attr('stroke-width', 0.5);
-      });
-
-    // Labels for segments large enough
-    svg.selectAll('.sunburst-label')
-      .data(root.descendants().filter(function (d) {
-        return d.depth > 0 && d.depth <= 2 && (d.x1 - d.x0) > 0.08;
-      }))
-      .enter().append('text')
-      .attr('class', 'sunburst-label')
-      .attr('transform', function (d) {
-        var angle = (d.x0 + d.x1) / 2;
-        var r = (d.y0 + d.y1) / 2;
-        var deg = angle * 180 / Math.PI - 90;
-        var flip = deg > 90;
-        if (flip) deg -= 180;
-        return 'rotate(' + (angle * 180 / Math.PI - 90) + ') translate(' + r + ',0) rotate(' + (flip ? 180 : 0) + ')';
       })
-      .attr('text-anchor', 'middle')
-      .attr('dominant-baseline', 'middle')
-      .attr('fill', C.bright)
-      .attr('font-family', FONT)
-      .attr('font-size', function (d) { return d.depth === 1 ? 10 : 8; })
-      .attr('font-weight', 300)
-      .attr('pointer-events', 'none')
-      .text(function (d) {
-        var name = d.data.name;
-        return name.length > 12 ? name.slice(0, 11) + '\u2026' : name;
+      .on('click', function (event, d) {
+        if (d.children) clicked(d);
       });
 
-    // Center label
-    svg.append('text')
+    // Labels
+    var labels = g.selectAll('text.sb-label')
+      .data(allDesc).join('text')
+      .attr('class', 'sb-label')
+      .attr('dy', '0.35em')
       .attr('text-anchor', 'middle')
-      .attr('dy', '-0.3em')
-      .attr('fill', C.text)
+      .attr('fill', function (d) { return d.depth <= 1 ? C.bright : '#1a1c14'; })
       .attr('font-family', FONT)
-      .attr('font-size', 14)
+      .attr('font-size', 10)
       .attr('font-weight', 400)
-      .text('Genre');
-    svg.append('text')
-      .attr('text-anchor', 'middle')
-      .attr('dy', '1em')
-      .attr('fill', C.dim)
-      .attr('font-family', FONT)
-      .attr('font-size', 11)
-      .attr('font-weight', 300)
-      .text('Hierarchy');
+      .style('pointer-events', 'none')
+      .attr('opacity', function (d) { return labelVisible(d.current) ? 1 : 0; })
+      .attr('transform', function (d) { return labelTransform(d.current); })
+      .text(function (d) { return truncateLabel(d.data.name, getArcWidth(d.current), getBandH(d.current)); });
+
+    // Invisible center circle — click to zoom out
+    g.append('circle')
+      .attr('r', root.y1)
+      .attr('fill', 'none')
+      .attr('pointer-events', 'all')
+      .style('cursor', 'pointer')
+      .on('click', function () {
+        if (currentRoot.parent) clicked(currentRoot.parent);
+        else clicked(root);
+      });
+
+    function clicked(p) {
+      currentRoot = p;
+      centerText.text(p.data.name);
+
+      root.each(function (d) {
+        d.target = {
+          x0: Math.max(0, Math.min(1, (d.x0 - p.x0) / (p.x1 - p.x0))) * 2 * Math.PI,
+          x1: Math.max(0, Math.min(1, (d.x1 - p.x0) / (p.x1 - p.x0))) * 2 * Math.PI,
+          y0: Math.max(0, d.y0 - p.y0),
+          y1: Math.max(0, d.y1 - p.y0),
+        };
+      });
+
+      var t = g.transition().duration(800);
+
+      paths.transition(t)
+        .tween('data', function (d) {
+          var i = d3.interpolate(d.current, d.target);
+          return function (tt) { d.current = i(tt); };
+        })
+        .filter(function (d) {
+          return +this.getAttribute('fill-opacity') > 0 || arcVisible(d.target);
+        })
+        .attrTween('d', function (d) { return function () { return arc(d); }; })
+        .attr('fill-opacity', function (d) {
+          return arcVisible(d.target) ? (d.children ? 0.85 : 0.65) : 0;
+        });
+
+      labels.transition(t)
+        .tween('data-label', function (d) {
+          var i = d3.interpolate(d.current, d.target);
+          return function (tt) { d.current = i(tt); };
+        })
+        .attrTween('transform', function (d) { return function () { return labelTransform(d.current); }; })
+        .attr('opacity', function (d) { return labelVisible(d.target) ? 1 : 0; })
+        .tween('text', function (d) {
+          var self = this;
+          return function () {
+            self.textContent = truncateLabel(d.data.name, getArcWidth(d.current), getBandH(d.current));
+          };
+        });
+    }
   }
 
   // ════════════════════════════════════════════════════════════════════════════
