@@ -6,6 +6,7 @@
 <meta name="robots" content="noindex,nofollow">
 <title>Quorum — Trading Dashboard</title>
 <script src="/quorum/api-adapter.js"></script>
+<script src="/quorum/staleness.js" defer></script>
 <style>html{visibility:hidden;background:#090b09}html.ready{visibility:visible}</style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500&family=Outfit:wght@200;300;400;500&display=swap" rel="stylesheet">
@@ -524,7 +525,7 @@ tr:hover td { background: var(--bg-elevated); }
 ::-webkit-scrollbar-thumb:hover { background: var(--text-dim); }
 </style>
 </head>
-<body>
+<body data-staleness-keys="session,accounts,predictions,trades_30d,portfolio_history_90d,news,journal,rl_signal,prediction_history/current_30d">
 
 <nav class="nav">
   <a href="/quorum/" class="nav-brand">Quorum</a>
