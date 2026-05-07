@@ -45,10 +45,10 @@ export async function onRequestGet({ request, env, params }) {
     status: 200,
     headers: {
       "content-type": "application/json; charset=utf-8",
-      // Short edge cache; snapshot writer uploads on its own cadence and the
-      // dashboard cadence is bounded by what the writer produces, not by
-      // browser caching.
-      "cache-control": "private, max-age=30",
+      // Always pull fresh from R2 — the snapshot writer's cadence is the
+      // freshness boundary, not the browser. R2 reads from a Worker are
+      // sub-100ms and dashboard correctness > a few ms of latency.
+      "cache-control": "no-store",
       "x-r2-key": r2Key,
       "x-r2-uploaded": obj.uploaded ? obj.uploaded.toISOString() : "",
     },
