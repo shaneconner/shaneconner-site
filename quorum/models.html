@@ -1,0 +1,3629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<title>Quorum — Model Performance</title>
+<script src="/quorum/api-adapter.js"></script>
+<style>html{visibility:hidden;background:#090b09}html.ready{visibility:visible}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500&family=Outfit:wght@200;300;400;500&display=swap" rel="stylesheet">
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<style>
+/* === VARIABLES (matched to shaneconner.com) === */
+:root {
+  --bg: #090b09;
+  --bg-elevated: #0c0d09;
+  --bg-card: #131409;
+  --text: #d4cfc3;
+  --text-dim: #7a7868;
+  --text-bright: #ede8db;
+  --cream: #e2dbc8;
+  --green: #7a8a2a;
+  --green-bright: #9aaa3a;
+  --green-dim: #2e3218;
+  --olive: #6b6a3a;
+  --tan: #b49a6e;
+  --border: #22231a;
+  --border-light: #33341f;
+  --red: #c4506a;
+  --red-dim: #a24458;
+  --red-bright: #d4687e;
+  --red-bg: rgba(196,80,106,0.12);
+  --green-bg: rgba(122,138,42,0.10);
+  --amber-bg: rgba(180,154,110,0.10);
+  --serif: 'Playfair Display', Georgia, serif;
+  --sans: 'Outfit', system-ui, sans-serif;
+}
+
+/* === RESET & BASE === */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { font-size: 18px; scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-weight: 300;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+::selection { background: var(--green); color: var(--text-bright); }
+
+/* === NAV === */
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  padding: 0.8rem 3rem;
+  border-bottom: 1px solid var(--border);
+}
+.nav-brand {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: 1.5rem;
+  color: var(--text-bright);
+  text-decoration: none;
+  letter-spacing: -0.01em;
+}
+.nav-links {
+  display: flex;
+  gap: 0.2rem;
+}
+.nav-links a {
+  font-family: var(--sans);
+  font-size: 0.68rem;
+  font-weight: 300;
+  color: var(--text-dim);
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  padding: 0.35rem 0.8rem;
+  border-radius: 2px;
+  transition: color 0.15s, background 0.15s;
+}
+.nav-links a:hover { color: var(--text); background: rgba(255,255,255,0.03); }
+.nav-links a.active { color: var(--green-bright); background: var(--green-bg); border: 1px solid var(--green-dim); }
+
+/* === LAYOUT === */
+.dashboard {
+  max-width: 1800px;
+  margin: 0 auto;
+  padding: 2rem 3rem 4rem;
+}
+@media (max-width: 768px) { .dashboard { padding: 1.5rem; } }
+
+/* === HEADER === */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+.header h1 {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: clamp(1.8rem, 3vw, 2.6rem);
+  color: var(--text-bright);
+  letter-spacing: -0.01em;
+}
+.header-meta {
+  text-align: right;
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  letter-spacing: 0.04em;
+}
+
+/* === SECTION (open — no box, just label + content) === */
+.section {
+  margin-bottom: 2rem;
+}
+.section-label {
+  font-size: 0.62rem;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.25em;
+  color: var(--green);
+  margin-bottom: 1rem;
+}
+.section-subtitle {
+  font-size: 0.92rem;
+  color: var(--text-dim);
+  margin: -0.4rem 0 1.2rem 0;
+  font-style: italic;
+  max-width: 80ch;
+  line-height: 1.55;
+}
+.divider-major {
+  margin: 3.5rem 0 0 0;
+  border-top: 1px solid var(--border);
+  padding-top: 2.5rem;
+  position: relative;
+}
+.divider-major-label {
+  position: absolute;
+  top: -0.6rem;
+  left: 0;
+  background: var(--bg);
+  padding-right: 1rem;
+  font-size: 0.6rem;
+  color: var(--olive);
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+}
+
+/* === CONTROLS (borderless, flows naturally) === */
+.controls-row {
+  display: flex;
+  gap: 1.8rem;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+.control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.control-label {
+  font-size: 0.55rem;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-dim);
+}
+select {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 0.72rem;
+  font-weight: 300;
+  padding: 0.3rem 0.5rem;
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+select:hover { border-color: var(--border-light); }
+select:focus { border-color: var(--olive); }
+
+/* === CLICKABLE MODEL ROW STATES === */
+#summary-table tbody tr,
+table.intraday-perf tbody tr,
+#pit-summary-table tbody tr,
+#strategy-summary tbody tr { cursor: pointer; transition: background 0.12s; }
+#summary-table tbody tr:hover,
+table.intraday-perf tbody tr:hover,
+#pit-summary-table tbody tr:hover,
+#strategy-summary tbody tr:hover { background: rgba(255,255,255,0.02); }
+#summary-table tbody tr.row-highlight,
+table.intraday-perf tbody tr.row-highlight,
+#pit-summary-table tbody tr.row-highlight,
+#strategy-summary tbody tr.row-highlight { background: rgba(122,138,42,0.08); }
+#summary-table tbody tr.row-highlight td,
+table.intraday-perf tbody tr.row-highlight td,
+#pit-summary-table tbody tr.row-highlight td,
+#strategy-summary tbody tr.row-highlight td { font-weight: 500; }
+#summary-table tbody tr.row-hidden,
+table.intraday-perf tbody tr.row-hidden,
+#pit-summary-table tbody tr.row-hidden,
+#strategy-summary tbody tr.row-hidden { opacity: 0.3; }
+
+/* === INTRADAY MINI CONTROLS === */
+.ctrl-mini {
+  background: var(--bg-card);
+  color: var(--text);
+  border: 1px solid var(--border-light);
+  font-family: var(--sans);
+  font-size: 0.6rem;
+  font-weight: 300;
+  padding: 2px 6px;
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+  text-transform: none;
+  letter-spacing: 0;
+}
+.ctrl-mini:hover { border-color: var(--olive); }
+.ctrl-mini:focus { border-color: var(--olive); }
+.quick-picks { display: inline-flex; gap: 2px; }
+.quick-picks .qp {
+  background: transparent;
+  border: 1px solid var(--border-light);
+  color: var(--text-dim);
+  font-family: var(--sans);
+  font-size: 0.55rem;
+  font-weight: 400;
+  padding: 2px 7px;
+  border-radius: 2px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+.quick-picks .qp:hover { color: var(--text); border-color: var(--olive); }
+.quick-picks .qp.active {
+  background: var(--green-bg);
+  border-color: var(--green-dim);
+  color: var(--green-bright);
+}
+.toolbar-sep {
+  width: 1px; height: 14px;
+  background: var(--border-light);
+  margin: 0 4px;
+}
+
+/* === CUSTOM CALENDAR RANGE PICKER === */
+.cal-popup {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: 4px;
+  padding: 10px 12px;
+  font-family: var(--sans);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+  min-width: 260px;
+}
+.cal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 8px; margin-bottom: 8px;
+}
+.cal-title {
+  font-size: 0.75rem; color: var(--text); font-weight: 400;
+  letter-spacing: 0.04em;
+}
+.cal-nav {
+  background: transparent; border: 1px solid var(--border-light);
+  color: var(--text-dim); padding: 2px 8px; border-radius: 2px;
+  cursor: pointer; font-size: 0.75rem; font-family: var(--sans);
+}
+.cal-nav:hover { color: var(--text); border-color: var(--olive); }
+.cal-grid {
+  display: grid; grid-template-columns: repeat(7, 1fr);
+  gap: 2px; font-size: 0.66rem;
+}
+.cal-dow {
+  text-align: center; color: var(--text-dim);
+  letter-spacing: 0.08em; padding: 4px 0; font-size: 0.55rem;
+  text-transform: uppercase;
+}
+.cal-day {
+  text-align: center; padding: 5px 0; cursor: pointer;
+  border: 1px solid transparent; border-radius: 2px;
+  font-variant-numeric: tabular-nums; color: var(--text);
+  user-select: none;
+}
+.cal-day.out { color: var(--border-light); cursor: default; }
+.cal-day.non-trading {
+  color: var(--text-dim); background: rgba(255,255,255,0.02);
+  cursor: not-allowed; opacity: 0.4;
+}
+.cal-day.trading:hover { background: rgba(122,138,42,0.18); border-color: var(--olive); }
+.cal-day.range-start, .cal-day.range-end {
+  background: var(--green-bright); color: var(--bg); font-weight: 500;
+}
+.cal-day.in-range {
+  background: var(--green-bg); color: var(--text-bright);
+}
+.cal-footer {
+  margin-top: 8px; padding-top: 8px;
+  border-top: 1px solid var(--border-light);
+  display: flex; gap: 6px; flex-wrap: wrap; align-items: center;
+}
+.cal-preset {
+  background: transparent; color: var(--text-dim);
+  border: 1px solid var(--border-light); border-radius: 2px;
+  padding: 2px 8px; font-size: 0.6rem; font-family: var(--sans);
+  cursor: pointer;
+}
+.cal-preset:hover { color: var(--text); border-color: var(--olive); }
+.cal-hint { font-size: 0.58rem; color: var(--text-dim); margin-left: auto; font-style: italic; }
+
+/* === CHART === */
+.chart-container { width: 100%; position: relative; }
+.chart-container svg { width: 100%; display: block; }
+.axis text { fill: var(--text-dim); font-family: var(--sans); font-size: 10px; }
+.axis line, .axis path { stroke: var(--border); }
+.grid-line { stroke: var(--border); stroke-dasharray: 2,3; }
+
+/* === TOOLTIP (matches main dashboard) === */
+.tooltip {
+  position: fixed;
+  pointer-events: none;
+  background: rgba(19, 20, 9, 0.95);
+  border: 1px solid var(--border-light);
+  padding: 0.6rem 0.8rem;
+  font-size: 0.72rem;
+  color: var(--text);
+  line-height: 1.5;
+  z-index: 1000;
+  max-width: 550px;
+  backdrop-filter: blur(8px);
+  display: none;
+}
+.tooltip-title {
+  font-weight: 400;
+  color: var(--text-bright);
+  margin-bottom: 0.3rem;
+}
+.tooltip-row { display: flex; justify-content: space-between; gap: 1rem; }
+.tooltip-label { color: var(--text-dim); }
+.tooltip-value { color: var(--cream); font-variant-numeric: tabular-nums; }
+
+/* === TABLE === */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+}
+th {
+  text-align: left;
+  font-size: 0.58rem;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-dim);
+  padding: 0.5rem 0.6rem;
+  border-bottom: 1px solid var(--border);
+}
+td {
+  padding: 0.45rem 0.6rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+}
+tr:hover td { background: var(--bg-elevated); }
+.positive { color: var(--green-bright); }
+.negative { color: var(--red); }
+
+/* === LOADING / ERROR === */
+.loading { color: var(--text-dim); font-size: 0.76rem; padding: 2rem; text-align: center; }
+
+/* === FADE IN === */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.fade-in { animation: fadeUp 0.7s ease forwards; opacity: 0; }
+.fade-in:nth-child(1) { animation-delay: 0s; }
+.fade-in:nth-child(2) { animation-delay: 0.1s; }
+.fade-in:nth-child(3) { animation-delay: 0.15s; }
+.fade-in:nth-child(4) { animation-delay: 0.2s; }
+.fade-in:nth-child(5) { animation-delay: 0.25s; }
+.fade-in:nth-child(6) { animation-delay: 0.3s; }
+
+/* === REFRESH INDICATOR === */
+.refresh-indicator {
+  font-size: 0.55rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+.refresh-dot {
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--green);
+  margin-right: 0.3rem;
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+/* === SCROLLBAR === */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-dim); }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="/" class="nav-brand">Quorum</a>
+  <div class="nav-links">
+    <a href="/">Portfolio</a>
+    <a href="/models" class="active">Models</a>
+    <a href="/pipeline">Pipeline</a>
+    <a href="/diagnostics">Diagnostics</a>
+    <a href="/themes">Themes</a>
+  </div>
+</nav>
+
+<div class="dashboard">
+  <!-- HEADER -->
+  <div class="header fade-in">
+    <h1>Model Performance</h1>
+    <div class="header-meta">
+      <div id="status-line"></div>
+      <div class="refresh-indicator"><span class="refresh-dot"></span><span id="refresh-label">loading</span></div>
+    </div>
+  </div>
+
+  <!-- INTRADAY IC (per prediction run) -->
+  <div class="section fade-in">
+    <div class="section-label" style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+      <span>Intraday IC (Per Prediction Run)</span>
+      <div class="intraday-toolbar" style="display:inline-flex;gap:6px;align-items:center;flex-wrap:wrap;position:relative;">
+        <span style="color:var(--text-dim);font-size:0.55rem;text-transform:uppercase;letter-spacing:0.12em;">Dates</span>
+        <button id="intraday-date-button" class="ctrl-mini" style="padding:3px 10px;min-width:180px;text-align:left;cursor:pointer;">pick range…</button>
+        <span class="toolbar-sep"></span>
+        <span style="color:var(--text-dim);font-size:0.55rem;text-transform:uppercase;letter-spacing:0.12em;">Window</span>
+        <select id="intraday-time-from" class="ctrl-mini"></select>
+        <span style="color:var(--text-dim);font-size:0.7rem;">→</span>
+        <select id="intraday-time-to" class="ctrl-mini"></select>
+        <span class="toolbar-sep"></span>
+        <span style="color:var(--text-dim);font-size:0.55rem;text-transform:uppercase;letter-spacing:0.12em;">Exit</span>
+        <select id="intraday-horizon-select" class="ctrl-mini">
+          <option value="window_end" selected>Window End</option>
+          <option value="1">1-day fwd</option>
+          <option value="3">3-day fwd</option>
+          <option value="5">5-day fwd</option>
+          <option value="10">10-day fwd</option>
+          <option value="20">20-day fwd</option>
+        </select>
+        <span class="toolbar-sep"></span>
+        <span style="color:var(--text-dim);font-size:0.55rem;text-transform:uppercase;letter-spacing:0.12em;">Top/Bot</span>
+        <select id="intraday-spread-n-select" class="ctrl-mini spread-n-select">
+          <option value="10">10</option>
+          <option value="25" selected>25</option>
+          <option value="50">50</option>
+        </select>
+        <span id="intraday-summary-badge" style="color:var(--tan);font-size:0.55rem;text-transform:uppercase;letter-spacing:0.12em;margin-left:4px;"></span>
+        <div id="intraday-calendar" style="display:none;position:absolute;top:calc(100% + 6px);left:0;z-index:50;"></div>
+      </div>
+    </div>
+    <div class="chart-container" id="intraday-ic-chart" style="min-height:290px;">
+      <div class="loading">Loading...</div>
+    </div>
+    <div id="intraday-perf-table" style="overflow-x:auto;margin-top:4px;">
+      <div class="loading">Loading...</div>
+    </div>
+    <div class="chart-container" id="intraday-spread-chart" style="min-height:290px;margin-top:14px;">
+      <div class="loading">Loading spread…</div>
+    </div>
+    <div id="intraday-spread-table" style="overflow-x:auto;margin-top:4px;">
+      <div class="loading">Loading spread…</div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- MODEL IC — three independent sub-sections, each with its own     -->
+  <!-- Exit + Lookback controls. Dispatch: Latest Close → pit-latest    -->
+  <!-- endpoint; numeric → model-ic endpoint (see fetchICData below).   -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+
+  <!-- PIT IC LINE CHART + controls + summary -->
+  <div class="section fade-in">
+    <div class="section-label" style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+      <span id="pit-chart-label">Model IC</span>
+      <span class="chart-controls" data-chart="pit"></span>
+      <span id="pit-as-of-badge" style="font-size:0.6rem;color:var(--tan);font-style:italic;"></span>
+    </div>
+    <div class="section-subtitle" id="pit-chart-subtitle"></div>
+    <div class="chart-container" id="pit-ic-chart" style="min-height:300px;">
+      <div class="loading">Loading IC data...</div>
+    </div>
+    <div id="pit-summary-table" style="margin-top:1rem;">
+      <div class="loading">Loading summary…</div>
+    </div>
+    <div class="chart-container" id="pit-spread-chart" style="min-height:300px;margin-top:14px;">
+      <div class="loading">Loading spread…</div>
+    </div>
+    <div id="pit-spread-table" style="margin-top:1rem;">
+      <div class="loading">Loading spread summary…</div>
+    </div>
+  </div>
+
+  <!-- IC HEATMAP -->
+  <div class="section fade-in">
+    <div class="section-label" style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+      <span id="heatmap-label">IC Grid (Model × Date)</span>
+      <span class="chart-controls" data-chart="heat"></span>
+      <span id="heat-as-of-badge" style="font-size:0.6rem;color:var(--tan);font-style:italic;"></span>
+    </div>
+    <div class="section-subtitle" id="heatmap-subtitle"></div>
+    <div class="chart-container" id="ic-heatmap" style="min-height:300px;">
+      <div class="loading">Loading heatmap...</div>
+    </div>
+    <div class="chart-container" id="spread-heatmap" style="min-height:300px;margin-top:14px;">
+      <div class="loading">Loading spread heatmap…</div>
+    </div>
+  </div>
+
+  <!-- ENSEMBLE STRATEGY COMPARISON -->
+  <div class="section fade-in">
+    <div class="section-label" style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+      <span id="strategy-label">Ensemble Strategy Backtest</span>
+      <span class="chart-controls" data-chart="strat"></span>
+      <span id="strat-as-of-badge" style="font-size:0.6rem;color:var(--tan);font-style:italic;"></span>
+    </div>
+    <div class="section-subtitle" id="strategy-subtitle">
+      What if the ensemble used different combiners? All walk-forward (no lookahead).
+      "Dynamic best" picks the trailing-best single model each day. Use the Exit dropdown
+      to compare strategies evaluated against different return definitions
+      (e.g., <b>Latest Close</b> matches the production weighting signal; <b>20-day fwd</b>
+      aligns with the models' training horizon).
+    </div>
+    <div class="chart-container" id="strategy-chart" style="min-height:300px;">
+      <div class="loading">Loading strategies...</div>
+    </div>
+    <div id="strategy-summary" style="margin-top: 1rem;"></div>
+  </div>
+
+</div>
+
+<!-- Tooltip (shared, position:fixed) -->
+<div class="tooltip" id="ic-tooltip"></div>
+<div class="tooltip" id="chart-tooltip"></div>
+
+<script>
+// ════════════════════════════════════════════════════════════════════
+// SHARED MODEL PALETTE — consistent colors across every visual on this
+// page. Uses the Batlow colormap (Crameri et al.) which is perceptually
+// uniform and colorblind-safe. Range truncated to [0.12, 0.72] to skip
+// both the near-black lower end (blends into #090b09 background) and
+// the near-white upper end (blends into the ensemble cream highlight).
+//
+// Models are registered in a fixed natural-numeric alphabetical order,
+// but their palette positions are shuffled via a prime stride so that
+// alphabetically-adjacent names (especially the 5 temporal_matrix_*
+// variants) land at distant Batlow tones instead of a single pale band.
+// Each model still gets the SAME color everywhere on the page.
+// ════════════════════════════════════════════════════════════════════
+window.QUORUM_PALETTE = (function() {
+  var BATLOW = [
+    [0.005, 0.098, 0.349],
+    [0.043, 0.216, 0.435],
+    [0.100, 0.325, 0.463],
+    [0.208, 0.419, 0.455],
+    [0.325, 0.494, 0.408],
+    [0.451, 0.553, 0.341],
+    [0.584, 0.608, 0.302],
+    [0.737, 0.667, 0.373],
+    [0.886, 0.737, 0.502],
+    [0.976, 0.835, 0.671],
+    [0.976, 0.965, 0.757]
+  ];
+  function hex2(x){ var v=Math.max(0,Math.min(255,Math.round(x*255))); return (v<16?'0':'')+v.toString(16); }
+  function batlow(t) {
+    t = Math.max(0, Math.min(1, t));
+    var n = BATLOW.length - 1, s = t*n, i = Math.floor(s);
+    if (i >= n) return '#'+hex2(BATLOW[n][0])+hex2(BATLOW[n][1])+hex2(BATLOW[n][2]);
+    var f = s - i, c0 = BATLOW[i], c1 = BATLOW[i+1];
+    return '#' + hex2(c0[0]+(c1[0]-c0[0])*f)
+               + hex2(c0[1]+(c1[1]-c0[1])*f)
+               + hex2(c0[2]+(c1[2]-c0[2])*f);
+  }
+
+  // Canonical ordering: alphabetical with natural-numeric sort so
+  // temporal_matrix variants appear in ascending-day order.
+  // Range truncated: avoid the very pale upper end (t > ~0.72) where
+  // colors collapse into indistinguishable near-white tones, and the very
+  // dark lower end (t < ~0.12) which disappears into the #090b09 bg.
+  // Ensemble's reserved cream #e2dbc8 sits well above HIGH so the thickest
+  // line is always visually distinct.
+  var LOW = 0.12, HIGH = 0.72;
+
+  // Palette is fully dynamic — no hardcoded model list. Any model name the
+  // server returns gets a deterministic color based on its name hash, so
+  // new models (v9 architecture, experiments, whatever) automatically drop
+  // into the palette without a code change. Same-named models always get
+  // the same color across renders. Adjacent-alphabetical names don't
+  // cluster because the hash decorrelates lexical proximity.
+  var PALETTE = { ensemble: '#e2dbc8' };
+
+  // djb2 string hash + MurmurHash3 finalizer. The raw djb2 preserves
+  // prefix similarity, so temporal_matrix_1d / _5d / _10d would land at
+  // adjacent colors. The bit-mix pass decorrelates them — fp prefix-
+  // similar strings now scatter across the full [LOW, HIGH] range.
+  function hashColor(name) {
+    var h = 5381;
+    for (var i = 0; i < name.length; i++) h = ((h << 5) + h + name.charCodeAt(i)) | 0;
+    h = Math.imul(h ^ (h >>> 16), 0x85ebca6b);
+    h = Math.imul(h ^ (h >>> 13), 0xc2b2ae35);
+    h = h ^ (h >>> 16);
+    var t = LOW + (Math.abs(h) % 10007) / 10007 * (HIGH - LOW);
+    return batlow(t);
+  }
+
+  function mc(name) {
+    if (name == null) return '#7a7868';
+    var key = ('' + name).toLowerCase();
+    if (PALETTE[key]) return PALETTE[key];
+    PALETTE[key] = hashColor(key);
+    return PALETTE[key];
+  }
+
+  PALETTE.mc = mc;
+  PALETTE.batlow = batlow;
+  return PALETTE;
+})();
+window.mc = window.QUORUM_PALETTE.mc;
+
+// NOTE: we intentionally do NOT flip html.ready here. Every sibling tab
+// (pipeline/diagnostics/index) defers this until after their first
+// renderAll() completes — otherwise the page reveals while "Loading…"
+// placeholders are still showing and flashes partially-rendered charts
+// as each async fetch returns. The intraday IIFE (primary content) calls
+// `markReady()` below after its first successful render; a 2-second
+// fallback timer reveals the page regardless if nothing has rendered.
+window._modelsPageReady = false;
+window.markReady = function() {
+  if (window._modelsPageReady) return;
+  window._modelsPageReady = true;
+  document.documentElement.classList.add('ready');
+  var label = document.getElementById('refresh-label');
+  if (label) label.textContent = 'loaded';
+};
+setTimeout(window.markReady, 2000);  // safety net
+
+// The former Daily IC @ Close section was removed — its fixed-horizon
+// behavior is now reachable via the PIT section's Exit dropdown ("1-day fwd",
+// "5-day fwd", etc.), which dispatches to /api/model-ic under the hood.
+
+
+// ════════════════════════════════════════════════════════════════════
+// INTRADAY PER-RUN IC — today's prediction runs evaluated against
+// rest-of-day returns. Shows how each model performs throughout the
+// trading day with per-run granularity.
+// ════════════════════════════════════════════════════════════════════
+(function() {
+  'use strict';
+
+  var C = {
+    bg: '#090b09', dim: '#7a7868', bright: '#ede8db', cream: '#e2dbc8',
+    green: '#7a8a2a', greenBr: '#9aaa3a', olive: '#6b6a3a', tan: '#b49a6e',
+    border: '#22231a', borderLight: '#33341f', red: '#c4506a', redBr: '#d4687e',
+  };
+  var mc = window.QUORUM_PALETTE.mc;
+
+  // ─────────────────────────────────────────────────────────────────
+  // State
+  //   runs        — flat list of all per-run IC rows across all fetched
+  //                 dates, each with {date, created_at, ic, n_tickers, model_ics}
+  //   modelNames  — union of model keys seen across all dates (sorted)
+  //   modelStates — per-model 3-state display: 'normal' | 'highlighted' | 'hidden'
+  //   dateRange   — current {from, to} selection (YYYY-MM-DD)
+  // ─────────────────────────────────────────────────────────────────
+  var intradayState = {
+    runs: [],
+    modelNames: [],
+    // Per-model display state: 'normal' | 'highlighted' | 'hidden'
+    modelStates: {},
+    dateRange: { from: null, to: null },
+  };
+
+  function cycleIntradayModelState(m) {
+    var cur = intradayState.modelStates[m] || 'normal';
+    if (cur === 'normal') intradayState.modelStates[m] = 'highlighted';
+    else if (cur === 'highlighted') intradayState.modelStates[m] = 'hidden';
+    else intradayState.modelStates[m] = 'normal';
+  }
+
+  // DOM handles
+  var dateButton   = document.getElementById('intraday-date-button');
+  var calendar     = document.getElementById('intraday-calendar');
+  var timeFrom     = document.getElementById('intraday-time-from');
+  var timeTo       = document.getElementById('intraday-time-to');
+  var horizonSel   = document.getElementById('intraday-horizon-select');
+  var spreadNSel   = document.getElementById('intraday-spread-n-select');
+  var summaryBadge = document.getElementById('intraday-summary-badge');
+  // Date range is held on a plain object (not DOM inputs) so nothing else
+  // breaks when we swap the ISO-input controls for a custom calendar.
+  var dateRangeModel = { from: null, to: null };
+  // Shim: existing code reads dateFrom.value / dateTo.value; keep that contract.
+  var dateFrom = { get value() { return dateRangeModel.from || ''; }, set value(v) { dateRangeModel.from = v || null; } };
+  var dateTo   = { get value() { return dateRangeModel.to   || ''; }, set value(v) { dateRangeModel.to   = v || null; } };
+
+  // ─────────────────────────────────────────────────────────────────
+  // Helpers — date/time formatting
+  // ─────────────────────────────────────────────────────────────────
+  function pad(n) { return n < 10 ? '0' + n : '' + n; }
+  function todayISO() {
+    var d = new Date();
+    return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate());
+  }
+  function addDays(iso, delta) {
+    var p = iso.split('-');
+    var d = new Date(parseInt(p[0],10), parseInt(p[1],10)-1, parseInt(p[2],10));
+    d.setDate(d.getDate() + delta);
+    return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate());
+  }
+  function diffDays(fromISO, toISO) {
+    var a = new Date(fromISO + 'T00:00:00');
+    var b = new Date(toISO + 'T00:00:00');
+    return Math.round((b - a) / 86400000) + 1;
+  }
+  function enumerateDates(fromISO, toISO) {
+    var from = fromISO, to = toISO;
+    if (from > to) { var t = from; from = to; to = t; }
+    var dates = [], cur = from;
+    while (cur <= to) { dates.push(cur); cur = addDays(cur, 1); }
+    // Safety cap
+    return dates.slice(0, 60);
+  }
+
+  function currentDefaultWindowEndMinute() {
+    var nowParts = new Date().toLocaleString('en-US', {
+      timeZone: 'America/Chicago', hour12: false, hour: '2-digit', minute: '2-digit'
+    }).replace(/[^\d:]/g, '').split(':');
+    var nowH = parseInt(nowParts[0], 10); if (nowH === 24) nowH = 0;
+    var nowM = parseInt(nowParts[1], 10);
+    var nowMin = nowH * 60 + nowM;
+    // Use the next 15-min cutoff. The backend uses the latest quote snapshot
+    // at or before this cutoff, so a run that finished between buckets is
+    // visible immediately instead of waiting for the next quarter-hour.
+    nowMin = Math.ceil(nowMin / 15) * 15;
+    if (nowMin > 19 * 60) nowMin = 19 * 60;
+    if (nowMin < 3  * 60) nowMin = 15 * 60;   // pre-3am session → default to 15:00
+    return nowMin;
+  }
+
+  // Populate the Window dropdowns once (03:00 → 19:00 CT in 15-min steps).
+  // Covers pre-market (03:00 CT = 04:00 ET) through after-hours (19:00 CT = 20:00 ET).
+  function populateTimeSelects() {
+    var times = [];
+    for (var h = 3; h <= 19; h++) {
+      for (var m = 0; m < 60; m += 15) times.push(pad(h) + ':' + pad(m));
+    }
+    times.forEach(function(t) {
+      var label = (function() {
+        var p = t.split(':'), hh = parseInt(p[0],10);
+        var ampm = hh >= 12 ? 'PM' : 'AM';
+        var h12 = hh % 12; if (h12 === 0) h12 = 12;
+        return h12 + ':' + p[1] + ' ' + ampm;
+      })();
+      var o1 = document.createElement('option'); o1.value = t; o1.textContent = label;
+      var o2 = document.createElement('option'); o2.value = t; o2.textContent = label;
+      timeFrom.appendChild(o1); timeTo.appendChild(o2);
+    });
+    // Defaults: 03:00 CT start; end = next 15-min cutoff, capped to 19:00.
+    timeFrom.value = '03:00';
+    var nowMin = currentDefaultWindowEndMinute();
+    timeTo.value = pad(Math.floor(nowMin / 60)) + ':' + pad(nowMin % 60);
+  }
+  populateTimeSelects();
+
+  // Defaults: today only (both range endpoints set to today's ISO).
+  // calState + updateDateButtonLabel are defined in the calendar block below;
+  // initialization there reads dateRangeModel so setting via the shim is fine.
+  dateFrom.value = todayISO();
+  dateTo.value   = todayISO();
+
+  // CT time-of-day parsing for a timestamp. X-axis is Central Time.
+  function ctMinutes(iso) {
+    var d = new Date(iso);
+    var parts = d.toLocaleString('en-US', {
+      timeZone: 'America/Chicago', hour12: false, hour: '2-digit', minute: '2-digit'
+    });
+    // Chrome returns "13:24"; some locales return "24:00" for midnight so guard.
+    var sp = parts.replace(/[^\d:]/g, '').split(':');
+    var h = parseInt(sp[0], 10); if (h === 24) h = 0;
+    return h * 60 + parseInt(sp[1], 10);
+  }
+  function hhmmToMinutes(hhmm) {
+    var p = hhmm.split(':');
+    return parseInt(p[0], 10) * 60 + parseInt(p[1], 10);
+  }
+  function minutesToLabel(m) {
+    var h = Math.floor(m / 60), mm = m % 60;
+    var ampm = h >= 12 ? 'PM' : 'AM';
+    var h12 = h % 12; if (h12 === 0) h12 = 12;
+    return h12 + ':' + pad(mm) + ' ' + ampm;
+  }
+
+  // ─────────────────────────────────────────────────────────────────
+  // Calendar popup — custom range picker with trading-day awareness.
+  // Non-trading days (weekends + NYSE holidays + any date with no OHLCV
+  // rows) are greyed out and unclickable, making "day" unambiguous.
+  // ─────────────────────────────────────────────────────────────────
+  var calState = {
+    viewMonth: null,          // Date pointing at the first day of the displayed month
+    rangeStart: dateFrom.value || null,
+    rangeEnd:   dateTo.value   || null,
+    tradingDays: {},          // {iso: true/false} cache, fetched on demand per month
+    pendingStart: null,
+  };
+  var DOW = ['Mo','Tu','We','Th','Fr','Sa','Su'];
+
+  function isoOf(d) {
+    return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate());
+  }
+
+  function fetchTradingDays(fromISO, toISO) {
+    return fetch('/api/trading-days?from=' + fromISO + '&to=' + toISO)
+      .then(function(r){ return r.json(); })
+      .then(function(data) {
+        (data.days || []).forEach(function(d) { calState.tradingDays[d.date] = d.is_trading; });
+      })
+      .catch(function(){ /* fail open — all days treated as unknown */ });
+  }
+
+  function updateDateButtonLabel() {
+    if (dateRangeModel.from && dateRangeModel.to) {
+      dateButton.textContent = (dateRangeModel.from === dateRangeModel.to)
+        ? dateRangeModel.from
+        : dateRangeModel.from + '  →  ' + dateRangeModel.to;
+    } else {
+      dateButton.textContent = 'pick range…';
+    }
+  }
+
+  function renderCalendar() {
+    if (!calState.viewMonth) return;
+    var m = calState.viewMonth;
+    var firstDow = (m.getDay() + 6) % 7;  // Mon=0
+    var daysInMonth = new Date(m.getFullYear(), m.getMonth()+1, 0).getDate();
+    var monthName = m.toLocaleString('en-US', { month: 'long', year: 'numeric' });
+
+    var html = '<div class="cal-popup"><div class="cal-header">' +
+      '<button class="cal-nav" data-nav="-1">‹</button>' +
+      '<span class="cal-title">' + monthName + '</span>' +
+      '<button class="cal-nav" data-nav="1">›</button>' +
+      '</div><div class="cal-grid">';
+    DOW.forEach(function(d){ html += '<div class="cal-dow">' + d + '</div>'; });
+    // Blank leading cells
+    for (var i = 0; i < firstDow; i++) html += '<div class="cal-day out"></div>';
+    for (var d = 1; d <= daysInMonth; d++) {
+      var date = new Date(m.getFullYear(), m.getMonth(), d);
+      var iso = isoOf(date);
+      var isTrading = calState.tradingDays[iso];
+      var cls = 'cal-day ' + (isTrading === false ? 'non-trading' : 'trading');
+      // Active range decoration — use pendingStart while user is mid-range-select
+      var startISO = calState.pendingStart || calState.rangeStart;
+      var endISO = calState.pendingStart ? null : calState.rangeEnd;
+      if (iso === startISO) cls += ' range-start';
+      if (iso === endISO)   cls += ' range-end';
+      if (startISO && endISO && iso > startISO && iso < endISO) cls += ' in-range';
+      html += '<div class="' + cls + '" data-iso="' + iso + '">' + d + '</div>';
+    }
+    html += '</div><div class="cal-footer">';
+    [['1d',1],['5d',5],['10d',10],['20d',20],['60d',60]].forEach(function(p){
+      html += '<button class="cal-preset" data-preset="' + p[1] + '">' + p[0] + '</button>';
+    });
+    var hint = calState.pendingStart ? 'pick end date' : 'click a date to start';
+    html += '<span class="cal-hint">' + hint + '</span></div></div>';
+
+    calendar.innerHTML = html;
+    wireCalendarHandlers();
+  }
+
+  function wireCalendarHandlers() {
+    // IMPORTANT: every handler must call e.stopPropagation() — the handlers
+    // replace calendar.innerHTML, which detaches the click target from the
+    // DOM before the click event finishes bubbling. When the event reaches
+    // the document-level outside-click listener, contains(e.target) returns
+    // false (target is orphaned), triggering a spurious closeCalendar() that
+    // dismisses the popup after every single click.
+    calendar.querySelectorAll('.cal-nav').forEach(function(btn) {
+      btn.onclick = function(e) {
+        e.stopPropagation();
+        var delta = parseInt(btn.getAttribute('data-nav'), 10);
+        var m = calState.viewMonth;
+        calState.viewMonth = new Date(m.getFullYear(), m.getMonth() + delta, 1);
+        var first = isoOf(calState.viewMonth);
+        var lastD = new Date(calState.viewMonth.getFullYear(), calState.viewMonth.getMonth()+1, 0);
+        fetchTradingDays(first, isoOf(lastD)).then(renderCalendar);
+        renderCalendar();
+      };
+    });
+    calendar.querySelectorAll('.cal-day.trading').forEach(function(el) {
+      el.onclick = function(e) {
+        e.stopPropagation();
+        var iso = el.getAttribute('data-iso');
+        if (!calState.pendingStart) {
+          // First click → start of range
+          calState.pendingStart = iso;
+          renderCalendar();
+        } else {
+          // Second click → commit range (order-agnostic)
+          var start = calState.pendingStart;
+          var end = iso;
+          if (end < start) { var tmp = start; start = end; end = tmp; }
+          calState.rangeStart = start;
+          calState.rangeEnd = end;
+          calState.pendingStart = null;
+          dateRangeModel.from = start;
+          dateRangeModel.to = end;
+          // Auto-adjust anchor time: past dates get end-of-after-hours
+          // (19:00 CT) so the chart covers the full concluded session;
+          // today keeps whatever the user has currently selected.
+          timeTo.value = defaultTimeToFor(end);
+          updateDateButtonLabel();
+          closeCalendar();
+          loadIntraday();
+        }
+      };
+    });
+    calendar.querySelectorAll('.cal-preset').forEach(function(btn) {
+      btn.onclick = function(e) {
+        e.stopPropagation();
+        var days = parseInt(btn.getAttribute('data-preset'), 10);
+        var today = todayISO();
+        // Walk back (days+5) calendar days so we have enough trading-day
+        // candidates after weekend/holiday filtering.
+        var approx = addDays(today, -(days * 2 + 5));
+        fetchTradingDays(approx, today).then(function() {
+          var tds = Object.keys(calState.tradingDays)
+            .filter(function(k){ return calState.tradingDays[k] && k <= today; })
+            .sort();
+          // toISO = latest trading day (not calendar today), so presets land
+          // on actual data instead of an empty Saturday/Sunday.
+          var toISO = tds.length ? tds[tds.length - 1] : today;
+          var fromISO = tds.length >= days ? tds[tds.length - days] : tds[0] || toISO;
+          calState.rangeStart = fromISO;
+          calState.rangeEnd = toISO;
+          calState.pendingStart = null;
+          dateRangeModel.from = fromISO;
+          dateRangeModel.to = toISO;
+          timeTo.value = defaultTimeToFor(toISO);
+          updateDateButtonLabel();
+          closeCalendar();
+          loadIntraday();
+        });
+      };
+    });
+  }
+
+  function openCalendar() {
+    // Seed viewMonth to the current `to` (or today) so the range is visible.
+    var seed = dateRangeModel.to || todayISO();
+    var p = seed.split('-');
+    calState.viewMonth = new Date(parseInt(p[0],10), parseInt(p[1],10)-1, 1);
+    calState.pendingStart = null;
+    // Prefetch a 3-month window centered on viewMonth
+    var back = new Date(calState.viewMonth.getFullYear(), calState.viewMonth.getMonth()-1, 1);
+    var fwd = new Date(calState.viewMonth.getFullYear(), calState.viewMonth.getMonth()+2, 0);
+    fetchTradingDays(isoOf(back), isoOf(fwd)).then(renderCalendar);
+    renderCalendar();
+    calendar.style.display = 'block';
+  }
+
+  function closeCalendar() { calendar.style.display = 'none'; }
+
+  dateButton.addEventListener('click', function(e) {
+    e.stopPropagation();
+    if (calendar.style.display === 'block') closeCalendar();
+    else openCalendar();
+  });
+  document.addEventListener('click', function(e) {
+    if (calendar.style.display === 'block' && !calendar.contains(e.target) && e.target !== dateButton) {
+      closeCalendar();
+    }
+  });
+
+  // timeFrom just re-filters; timeTo changes the window-end price anchor, so refetch.
+  timeFrom.addEventListener('change', function() { renderAll(); });
+  timeTo.addEventListener('change',   function() { loadIntraday(); });
+  // Exit selector: swaps the anchor price source entirely (window_end price
+  // vs N-day-fwd close). Always requires a refetch.
+  horizonSel.addEventListener('change', function() { loadIntraday(); });
+  // Spread-N selector: backend computes spread for exactly one N per request,
+  // so a change requires a refetch to repopulate spread fields.
+  if (spreadNSel) spreadNSel.addEventListener('change', function() { loadIntraday(); });
+
+  // Label the button with the current default range (set earlier in the
+  // IIFE via dateFrom/dateTo shims) before any render.
+  updateDateButtonLabel();
+
+  // ─────────────────────────────────────────────────────────────────
+  // Fetch — batch one request per date in parallel.
+  //   window_end = anchor time (CT) for PIT IC. The latest usable price
+  //   snapshot at or before this time becomes the "final" price against which
+  //   every earlier run's IC is computed. minimal=1 skips correlations/top-movers/timelines
+  //   since the chart only needs per_run_ic.
+  // ─────────────────────────────────────────────────────────────────
+  function loadIntraday() {
+    var dates = enumerateDates(dateFrom.value, dateTo.value);
+    intradayState.dateRange = { from: dateFrom.value, to: dateTo.value };
+
+    var chartContainer = document.getElementById('intraday-ic-chart');
+    chartContainer.innerHTML = '<div class="loading">Loading ' + dates.length +
+      ' date' + (dates.length === 1 ? '' : 's') + '…</div>';
+
+    // Guard against stale responses when the user changes time/date quickly
+    var reqId = (intradayState._reqId || 0) + 1;
+    intradayState._reqId = reqId;
+
+    // Mode dispatch: 'window_end' uses the same-day price snapshot anchor.
+    // Numeric horizon swaps the anchor to close[date + N td].
+    var horizonVal = horizonSel.value || 'window_end';
+    intradayState.horizon = horizonVal;
+    var spreadN = spreadNSel ? (spreadNSel.value || '25') : '25';
+    intradayState.spreadN = parseInt(spreadN, 10);
+    var qsParts = ['minimal=1', 'horizon=' + encodeURIComponent(horizonVal),
+                   'spread_n=' + encodeURIComponent(spreadN)];
+    if (horizonVal === 'window_end') qsParts.push('window_end=' + encodeURIComponent(timeTo.value));
+
+    var promises = dates.map(function(d) {
+      return fetch('/api/prediction-diagnostics?date=' + d + '&' + qsParts.join('&'))
+        .then(function(r) { return r.json(); })
+        .catch(function() { return null; });
+    });
+
+    Promise.all(promises).then(function(results) {
+      if (intradayState._reqId !== reqId) return;  // superseded by a newer fetch
+      var runs = [];
+      var modelNames = new Set();
+      results.forEach(function(r, i) {
+        if (!r || r.error || !r.per_run_ic) return;
+        (r.model_names || []).forEach(function(m) { modelNames.add(m); });
+        r.per_run_ic.forEach(function(run) {
+          // The anchor run is the segment endpoint (window_end). Its self-IC
+          // and self-spread are mathematically undefined because every
+          // ticker's forward return is 0. Keep the row for the vertical
+          // marker, but do not plot it as a real zero-valued observation.
+          var isAnchor = !!run.is_anchor;
+          var modelICs = run.model_ics || {};
+          var modelSpreads = run.model_spreads || {};
+          if (isAnchor) {
+            modelICs = {};
+            modelSpreads = {};
+          }
+          if (run.ic == null && run.spread == null && !isAnchor && !run.price_snapshot_static && !run.diagnostic_only) return;
+          runs.push({
+            date: dates[i],
+            created_at: run.created_at,
+            ic: isAnchor ? null : run.ic,
+            n_tickers: isAnchor ? 0 : run.n_tickers,
+            model_ics: modelICs,
+            spread: isAnchor ? null : run.spread,
+            model_spreads: modelSpreads,
+            low_sample: isAnchor ? false : !!run.low_sample,
+            price_snapshot_static: !!run.price_snapshot_static,
+            price_snapshot_changed: run.price_snapshot_changed,
+            max_abs_return: run.max_abs_return,
+            diagnostic_only: !!run.diagnostic_only || (!isAnchor && run.ic == null && run.spread == null),
+            is_anchor: isAnchor
+          });
+        });
+      });
+
+      intradayState.runs = runs;
+      intradayState.modelNames = Array.from(modelNames).sort();
+
+      // Preserve per-model display state across reloads; default new models to 'normal'.
+      // States: 'normal' | 'highlighted' | 'hidden'
+      var prev = intradayState.modelStates;
+      var hasPrev = Object.keys(prev).length > 0;
+      var next = {};
+      next.ensemble = hasPrev ? (prev.ensemble || 'normal') : 'normal';
+      intradayState.modelNames.forEach(function(m) {
+        next[m] = hasPrev ? (m in prev ? prev[m] : 'normal') : 'normal';
+      });
+      intradayState.modelStates = next;
+
+      renderAll();
+      updateBadge(dates.length, runs);
+    });
+  }
+
+  function updateBadge(nDates, runs) {
+    if (!summaryBadge) return;
+    var nRuns = (runs || []).filter(function(r) {
+      return !r.is_anchor && !r.is_left_edge && !r.diagnostic_only;
+    }).length;
+    var scoredRuns = (runs || []).filter(function(r) {
+      return !r.is_anchor && !r.diagnostic_only && (hasICSignal(r) || hasSpreadSignal(r));
+    }).length;
+    if (nDates > 1) {
+      summaryBadge.textContent = nDates + ' dates · ' + scoredRuns + ' scored / ' + nRuns + ' runs';
+    } else {
+      summaryBadge.textContent = scoredRuns + ' scored / ' + nRuns + ' runs';
+    }
+  }
+
+  function renderAll() {
+    renderIntradayPerfTable();
+    renderIntradayICChart();
+    renderIntradaySpreadTable();
+    renderIntradaySpreadChart();
+    // First successful render flips html.ready — matches the
+    // pipeline/diagnostics/index pattern so the page only reveals when
+    // real content is on screen, never during the "Loading…" phase.
+    if (window.markReady) window.markReady();
+  }
+
+  // ─────────────────────────────────────────────────────────────────
+  // Derived data
+  // ─────────────────────────────────────────────────────────────────
+  function filteredRuns() {
+    var tFrom = hhmmToMinutes(timeFrom.value);
+    var tTo   = hhmmToMinutes(timeTo.value);
+    if (tFrom > tTo) { var tmp = tFrom; tFrom = tTo; tTo = tmp; }
+    return intradayState.runs.filter(function(r) {
+      var m = ctMinutes(r.created_at);
+      return m >= tFrom && m <= tTo;
+    });
+  }
+
+  function mapHasValue(obj) {
+    return Object.keys(obj || {}).some(function(k) { return obj[k] != null; });
+  }
+
+  function hasICSignal(r) {
+    return r.ic != null || mapHasValue(r.model_ics);
+  }
+
+  function hasSpreadSignal(r) {
+    return r.spread != null || mapHasValue(r.model_spreads);
+  }
+
+  function noSignalMessage(kind, runs) {
+    var staticRows = (runs || []).filter(function(r) { return r.price_snapshot_static; });
+    if (staticRows.length) {
+      return 'No ' + kind + ' signal for this date/window. The selected runs and window-end price anchor used the same price snapshot, so every forward return is zero and rank signal is undefined. Move the window end after the next price refresh.';
+    }
+    return 'No ' + kind + ' signal for this date/window. The selected rows do not have enough comparable price movement to compute a signal.';
+  }
+
+  // Bucket runs by 10-minute CT time-of-day so multi-date series
+  // average the same wall-clock times across dates.
+  var BUCKET_MIN = 10;
+  function bucketRuns(runs) {
+    var buckets = {};
+    runs.forEach(function(r) {
+      var m = ctMinutes(r.created_at);
+      var b = Math.floor(m / BUCKET_MIN) * BUCKET_MIN;
+      if (!buckets[b]) buckets[b] = {
+        ensICs: [], modelICs: {},
+        ensSp: [], modelSp: {}, lowSample: [],
+        n_tickers: [], dates: {}
+      };
+      if (r.ic != null) buckets[b].ensICs.push(r.ic);
+      if (r.spread != null) buckets[b].ensSp.push(r.spread);
+      if (r.low_sample) buckets[b].lowSample.push(true);
+      buckets[b].n_tickers.push(r.n_tickers);
+      buckets[b].dates[r.date] = 1;
+      Object.keys(r.model_ics).forEach(function(mn) {
+        if (r.model_ics[mn] == null) return;
+        if (!buckets[b].modelICs[mn]) buckets[b].modelICs[mn] = [];
+        buckets[b].modelICs[mn].push(r.model_ics[mn]);
+      });
+      Object.keys(r.model_spreads || {}).forEach(function(mn) {
+        var sv = r.model_spreads[mn];
+        if (sv == null) return;
+        if (!buckets[b].modelSp[mn]) buckets[b].modelSp[mn] = [];
+        buckets[b].modelSp[mn].push(sv);
+      });
+    });
+    function avg(arr) { return arr.length ? arr.reduce(function(a,b){return a+b;}, 0) / arr.length : null; }
+    var keys = Object.keys(buckets).map(Number).sort(function(a,b){return a-b;});
+    return keys.map(function(minute) {
+      var b = buckets[minute];
+      var modelMeans = {};
+      Object.keys(b.modelICs).forEach(function(mn) { modelMeans[mn] = avg(b.modelICs[mn]); });
+      var modelSpMeans = {};
+      Object.keys(b.modelSp).forEach(function(mn) { modelSpMeans[mn] = avg(b.modelSp[mn]); });
+      return {
+        minute: minute,
+        ic: avg(b.ensICs),
+        model_ics: modelMeans,
+        spread: b.ensSp.length ? avg(b.ensSp) : null,
+        model_spreads: modelSpMeans,
+        low_sample: b.lowSample.length > 0,
+        n_tickers: Math.round(avg(b.n_tickers) || 0),
+        n_runs: b.ensICs.length,
+        n_dates: Object.keys(b.dates).length
+      };
+    });
+  }
+
+  function sessionOf(m) {
+    // CT session boundaries: market open 8:30 CT (510), close 15:00 CT (900)
+    if (m < 510) return 'pre';
+    if (m < 900) return 'market';
+    return 'post';
+  }
+
+  // ─────────────────────────────────────────────────────────────────
+  // Table (re-renders from whatever time window is currently set)
+  // ─────────────────────────────────────────────────────────────────
+  function renderIntradayPerfTable() {
+    var container = document.getElementById('intraday-perf-table');
+    if (!container) return;
+    // Exclude synthetic/non-comparable points:
+    //  - anchor run (self-comparison is undefined)
+    //  - left-edge run (falls outside the window; shown only for line continuity)
+    var runs = filteredRuns().filter(function(r){ return !r.is_anchor && !r.is_left_edge && !r.diagnostic_only; });
+    if (runs.length === 0) {
+      container.innerHTML = '<div class="loading">No runs in this window</div>';
+      return;
+    }
+    var models = intradayState.modelNames;
+
+    function mean(arr) { return arr.length ? arr.reduce(function(a,b){return a+b;}, 0) / arr.length : null; }
+    function twMean(arr) {
+      if (!arr.length) return null;
+      var tw = 0, ws = 0;
+      arr.forEach(function(v, i) { var w = i + 1; ws += v * w; tw += w; });
+      return ws / tw;
+    }
+    function trailMean(arr) { return arr.length ? mean(arr.slice(-5)) : null; }
+
+    var sessions = runs.map(function(r) { return sessionOf(ctMinutes(r.created_at)); });
+
+    function buildRow(name, getVal, color) {
+      var all=[], pre=[], mkt=[], post=[];
+      runs.forEach(function(r, i) {
+        var v = getVal(r);
+        if (v == null) return;
+        all.push(v);
+        if (sessions[i] === 'pre') pre.push(v);
+        else if (sessions[i] === 'market') mkt.push(v);
+        else post.push(v);
+      });
+      return {
+        name: name, color: color, n: all.length,
+        mean: mean(all), pre: mean(pre), market: mean(mkt), post: mean(post),
+        trailing: trailMean(all), tw: twMean(all)
+      };
+    }
+
+    var rows = [];
+    models.forEach(function(m) {
+      rows.push(buildRow(m, function(r){return r.model_ics ? r.model_ics[m] : null;}, mc(m)));
+    });
+    rows.sort(function(a, b) { return (b.mean || -999) - (a.mean || -999); });
+    var ensRow = buildRow('ensemble', function(r){return r.ic;}, C.bright);
+
+    function fmt(v) {
+      if (v == null) return '<span style="color:' + C.dim + '">—</span>';
+      var cls = v >= 0 ? 'positive' : 'negative';
+      return '<span class="' + cls + '">' + (v >= 0 ? '+' : '') + v.toFixed(4) + '</span>';
+    }
+
+    function rowClsFor(m) {
+      var s = intradayState.modelStates[m] || 'normal';
+      if (s === 'highlighted') return 'row-highlight';
+      if (s === 'hidden') return 'row-hidden';
+      return '';
+    }
+
+    var html = '<table style="font-size:0.65rem;" class="intraday-perf"><thead><tr>';
+    html += '<th style="text-align:left;font-size:0.5rem;padding:0.35rem 0.5rem;">Model</th>';
+    ['Mean','Pre-Mkt','Market','Post-Mkt','Trail 5','Time-Wtd','Runs'].forEach(function(h){
+      html += '<th style="text-align:right;font-size:0.5rem;padding:0.35rem 0.5rem;">' + h + '</th>';
+    });
+    html += '</tr></thead><tbody>';
+    rows.forEach(function(r) {
+      html += '<tr data-model="' + r.name + '" class="' + rowClsFor(r.name) + '">' +
+        '<td style="text-align:left;padding:0.3rem 0.5rem;color:' + r.color + ';">' + r.name.toUpperCase() + '</td>';
+      [r.mean, r.pre, r.market, r.post, r.trailing, r.tw].forEach(function(v) {
+        html += '<td style="text-align:right;padding:0.3rem 0.5rem;font-variant-numeric:tabular-nums;">' + fmt(v) + '</td>';
+      });
+      html += '<td style="text-align:right;padding:0.3rem 0.5rem;color:' + C.dim + ';">' + r.n + '</td></tr>';
+    });
+    html += '<tr data-model="ensemble" class="' + rowClsFor('ensemble') + '" style="border-top:1px solid ' + C.borderLight + ';font-weight:500;">';
+    html += '<td style="text-align:left;padding:0.3rem 0.5rem;color:' + C.bright + ';">ENSEMBLE</td>';
+    [ensRow.mean, ensRow.pre, ensRow.market, ensRow.post, ensRow.trailing, ensRow.tw].forEach(function(v) {
+      html += '<td style="text-align:right;padding:0.3rem 0.5rem;font-variant-numeric:tabular-nums;">' + fmt(v) + '</td>';
+    });
+    html += '<td style="text-align:right;padding:0.3rem 0.5rem;color:' + C.dim + ';">' + ensRow.n + '</td></tr>';
+    html += '</tbody></table>';
+    container.innerHTML = html;
+
+    container.querySelectorAll('tr[data-model]').forEach(function(tr) {
+      tr.style.cursor = 'pointer';
+      tr.addEventListener('click', function() {
+        var m = tr.getAttribute('data-model');
+        cycleIntradayModelState(m);
+        renderIntradayPerfTable();
+        renderIntradayICChart();
+        renderIntradaySpreadTable();
+        renderIntradaySpreadChart();
+      });
+    });
+  }
+
+  // ─────────────────────────────────────────────────────────────────
+  // Chart
+  //   X axis is CT minute-of-day so a single-date chart and a multi-date
+  //   averaged chart share the same axis semantics and align visually.
+  //   The start/end time dropdowns set the axis domain directly.
+  // ─────────────────────────────────────────────────────────────────
+  function renderIntradayICChart() {
+    var container = document.getElementById('intraday-ic-chart');
+    container.innerHTML = '';
+    var runs = filteredRuns();
+    var models = intradayState.modelNames;
+    var multi = intradayState.dateRange.from !== intradayState.dateRange.to;
+
+    if (runs.length === 0) {
+      container.innerHTML = '<div class="loading">No runs in this time window</div>';
+      return;
+    }
+
+    // If the only run we have is the anchor, we have no real IC data.
+    // Typically happens on non-trading days when prices don't refresh, so
+    // every run's snapshot matches the anchor's and IC is undefined.
+    var nonAnchorRuns = runs.filter(function(r) { return !r.is_anchor && !r.is_left_edge; });
+    if (nonAnchorRuns.length === 0 || !nonAnchorRuns.some(hasICSignal)) {
+      container.innerHTML = '<div class="loading" style="font-style:italic;">' +
+        noSignalMessage('IC', nonAnchorRuns) + '</div>';
+      return;
+    }
+
+    // Build series (aligned to minute-of-day)
+    var series;
+    if (multi) {
+      series = bucketRuns(runs);
+    } else {
+      series = runs.map(function(r) {
+        return {
+          minute: ctMinutes(r.created_at),
+          created_at: r.created_at,
+          ic: r.ic,
+          model_ics: r.model_ics,
+          n_tickers: r.n_tickers,
+          is_anchor: !!r.is_anchor,
+          is_left_edge: !!r.is_left_edge
+        };
+      });
+    }
+    if (series.length === 0) { container.innerHTML = '<div class="loading">No data</div>'; return; }
+
+    // Sort series by minute so synthetic edge points get positioned correctly
+    series.sort(function(a, b) { return a.minute - b.minute; });
+
+    var margin = { top: 15, right: 25, bottom: 40, left: 60 };
+    var rect = container.getBoundingClientRect();
+    var width = rect.width - margin.left - margin.right;
+    var height = 260 - margin.top - margin.bottom;
+
+    var svg = d3.select(container).append('svg')
+      .attr('width',  width + margin.left + margin.right)
+      .attr('height', height + margin.top + margin.bottom);
+    var g = svg.append('g').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+    // X axis — CT minute-of-day with the window as hard limits
+    var xMin = hhmmToMinutes(timeFrom.value);
+    var xMax = hhmmToMinutes(timeTo.value);
+    if (xMin >= xMax) { xMin -= 30; xMax += 30; }
+    var x = d3.scaleLinear().domain([xMin, xMax]).range([0, width]);
+
+    // Clip drawn paths to the chart area so they never overlap the y-axis
+    // labels when a line segment has a point off-domain (edge run before
+    // window_start, etc.)
+    var clipId = 'intraday-clip-' + Math.floor(Math.random() * 1e9);
+    svg.append('defs').append('clipPath').attr('id', clipId)
+      .append('rect').attr('x', 0).attr('y', 0)
+      .attr('width', width).attr('height', height);
+    var plot = g.append('g').attr('clip-path', 'url(#' + clipId + ')');
+
+    // Y extent over visible series (skip 'hidden' models)
+    function visState(m) { return intradayState.modelStates[m] || 'normal'; }
+    function isVisible(m) { return visState(m) !== 'hidden'; }
+    var anyHighlightedIntra = ['ensemble'].concat(models).some(function(m) { return visState(m) === 'highlighted'; });
+
+    var yMin = Infinity, yMax = -Infinity;
+    series.forEach(function(d) {
+      if (isVisible('ensemble') && d.ic != null) {
+        yMin = Math.min(yMin, d.ic); yMax = Math.max(yMax, d.ic);
+      }
+      models.forEach(function(mn) {
+        if (isVisible(mn) && d.model_ics[mn] != null) {
+          yMin = Math.min(yMin, d.model_ics[mn]);
+          yMax = Math.max(yMax, d.model_ics[mn]);
+        }
+      });
+    });
+    if (!isFinite(yMin)) { yMin = -0.05; yMax = 0.1; }
+    var yPad = Math.max(0.02, (yMax - yMin) * 0.15);
+    var y = d3.scaleLinear().domain([yMin - yPad, yMax + yPad]).range([height, 0]);
+
+    // Shade the regular-trading-hours band (8:30 → 15:00 CT) for context
+    var mktStart = 8 * 60 + 30, mktEnd = 15 * 60;
+    var shadeStart = Math.max(xMin, mktStart);
+    var shadeEnd   = Math.min(xMax, mktEnd);
+    if (shadeStart < shadeEnd) {
+      g.append('rect')
+        .attr('x', x(shadeStart)).attr('y', 0)
+        .attr('width', x(shadeEnd) - x(shadeStart)).attr('height', height)
+        .attr('fill', C.bright).attr('fill-opacity', 0.025)
+        .attr('pointer-events', 'none');
+    }
+
+    // Horizontal grid
+    g.selectAll('.grid-h').data(y.ticks(5)).enter()
+      .append('line').attr('x1', 0).attr('x2', width)
+      .attr('y1', function(d){return y(d);}).attr('y2', function(d){return y(d);})
+      .attr('stroke', C.border).attr('stroke-width', 0.5);
+
+    if (yMin < 0 && yMax > 0) {
+      g.append('line').attr('x1', 0).attr('x2', width).attr('y1', y(0)).attr('y2', y(0))
+        .attr('stroke', C.olive).attr('stroke-width', 1).attr('stroke-dasharray', '4,3');
+    }
+
+    // Market-open / close reference lines
+    [mktStart, mktEnd].forEach(function(m) {
+      if (m >= xMin && m <= xMax) {
+        g.append('line').attr('x1', x(m)).attr('x2', x(m))
+          .attr('y1', 0).attr('y2', height)
+          .attr('stroke', C.olive).attr('stroke-width', 0.75)
+          .attr('stroke-dasharray', '2,3').attr('stroke-opacity', 0.6);
+      }
+    });
+
+    // X ticks — every 30 min, snapped to the nearest half-hour
+    var ticks = [];
+    var startTick = Math.ceil(xMin / 30) * 30;
+    for (var t = startTick; t <= xMax; t += 30) ticks.push(t);
+    // Avoid over-crowding: cap to ~8 labels
+    if (ticks.length > 10) {
+      var stride = Math.ceil(ticks.length / 8);
+      ticks = ticks.filter(function(_, i) { return i % stride === 0; });
+    }
+    g.append('g').attr('class', 'axis').attr('transform', 'translate(0,' + height + ')')
+      .call(d3.axisBottom(x).tickValues(ticks).tickFormat(minutesToLabel).tickSize(3))
+      .selectAll('text').attr('font-size', '10px');
+
+    g.append('g').attr('class', 'axis')
+      .call(d3.axisLeft(y).ticks(5).tickFormat(d3.format('.4f')).tickSize(3))
+      .selectAll('text').attr('font-size', '10px');
+
+    g.append('text').attr('transform', 'rotate(-90)')
+      .attr('y', -48).attr('x', -height / 2)
+      .attr('text-anchor', 'middle').attr('fill', C.dim).attr('font-size', '10px')
+      .text('Rank IC');
+
+    var line = d3.line().defined(function(d){return d.v != null;})
+      .x(function(d){return x(d.minute);})
+      .y(function(d){return y(d.v);})
+      .curve(d3.curveMonotoneX);
+
+    // Per-model lines — drawn inside the clipped plot group so they get
+    // cleanly cut off at the y-axis spine (x=0) and right edge.
+    //
+    // Pre-filter null values so d3.line().defined() doesn't create path
+    // breaks when a model is missing data for some buckets (common in
+    // multi-date averaging where not every day has every model).
+    models.forEach(function(mn) {
+      if (!isVisible(mn)) return;
+      var st = visState(mn);
+      var highlighted = st === 'highlighted';
+      var dimmed = anyHighlightedIntra && !highlighted;
+      var data = series
+        .filter(function(d) { return d.model_ics && d.model_ics[mn] != null; })
+        .map(function(d) { return { minute: d.minute, v: d.model_ics[mn] }; });
+      if (data.length === 0) return;
+      plot.append('path').datum(data).attr('fill', 'none').attr('stroke', mc(mn))
+        .attr('stroke-width', highlighted ? 2.6 : 1.6)
+        .attr('stroke-opacity', dimmed ? 0.2 : (highlighted ? 1 : (multi ? 0.85 : 0.7)))
+        .attr('d', line);
+    });
+
+    // Ensemble on top
+    if (isVisible('ensemble')) {
+      var ensState = visState('ensemble');
+      var ensHi = ensState === 'highlighted';
+      var ensDim = anyHighlightedIntra && !ensHi;
+      var ensData = series
+        .filter(function(d) { return d.ic != null; })
+        .map(function(d) { return { minute: d.minute, v: d.ic }; });
+      if (ensData.length > 0) {
+        plot.append('path').datum(ensData).attr('fill', 'none').attr('stroke', mc('ensemble'))
+          .attr('stroke-width', ensHi ? 3.5 : 2.5)
+          .attr('stroke-opacity', ensDim ? 0.3 : 1)
+          .attr('d', line);
+      }
+    }
+
+    // Anchor marker — vertical dashed line at the window_end price snapshot,
+    // labeled "anchor". Self-IC is undefined exactly at the anchor, so it is not
+    // plotted as a zero-valued point.
+    var anchorPt = series.find(function(d) { return d.is_anchor; });
+    if (anchorPt && !multi) {
+      var ax = x(anchorPt.minute);
+      g.append('line')
+        .attr('x1', ax).attr('x2', ax).attr('y1', 0).attr('y2', height)
+        .attr('stroke', C.tan).attr('stroke-width', 1)
+        .attr('stroke-dasharray', '3,3').attr('stroke-opacity', 0.6)
+        .attr('pointer-events', 'none');
+      g.append('circle')
+        .attr('cx', ax).attr('cy', y(0)).attr('r', 3.5)
+        .attr('fill', C.tan).attr('stroke', C.bg).attr('stroke-width', 1.2)
+        .attr('pointer-events', 'none');
+      g.append('text')
+        .attr('x', ax).attr('y', -4)
+        .attr('text-anchor', 'end').attr('font-size', '9px')
+        .attr('fill', C.tan).attr('font-family', 'Outfit, system-ui, sans-serif')
+        .attr('letter-spacing', '0.08em').attr('text-transform', 'uppercase')
+        .attr('pointer-events', 'none')
+        .text('anchor');
+    }
+
+    // Hover interaction + drag-to-zoom
+    //   click-drag → sets timeFrom/timeTo to the selected window (snapped to 15-min ticks)
+    //   dblclick   → resets to the default full-day window and the default anchor
+    var tooltip = document.getElementById('chart-tooltip');
+    var vline = g.append('line').attr('y1', 0).attr('y2', height)
+      .attr('stroke', C.borderLight).attr('stroke-width', 1).style('display', 'none');
+    var brushRect = g.append('rect').attr('y', 0).attr('height', height)
+      .attr('fill', C.bright).attr('fill-opacity', 0.12)
+      .attr('stroke', C.bright).attr('stroke-opacity', 0.6).attr('stroke-width', 1)
+      .style('display', 'none').attr('pointer-events', 'none');
+    var overlay = g.append('rect').attr('width', width).attr('height', height)
+      .attr('fill', 'none').attr('pointer-events', 'all')
+      .style('cursor', 'crosshair');
+
+    var dragStart = null;
+    function snapMinuteTo15(m) {
+      var snapped = Math.round(m / 15) * 15;
+      // Clamp to dropdown-available range (03:00 – 19:00 CT)
+      if (snapped < 3  * 60) snapped = 3  * 60;
+      if (snapped > 19 * 60) snapped = 19 * 60;
+      return snapped;
+    }
+    function pxToMinute(px) {
+      return x.invert(Math.max(0, Math.min(width, px)));
+    }
+
+    overlay.on('mousedown', function(event) {
+      if (event.button !== 0) return;
+      dragStart = d3.pointer(event)[0];
+      brushRect.attr('x', dragStart).attr('width', 0).style('display', null);
+      if (tooltip) tooltip.style.display = 'none';
+      vline.style('display', 'none');
+      event.preventDefault();
+    });
+
+    overlay.on('mousemove', function(event) {
+      var mx = d3.pointer(event)[0];
+
+      // Drag-in-progress: grow/redraw the brush rect, suppress tooltip
+      if (dragStart !== null) {
+        var lo = Math.min(dragStart, mx), hi = Math.max(dragStart, mx);
+        brushRect.attr('x', lo).attr('width', hi - lo);
+        return;
+      }
+
+      var minDist = Infinity, snap = null;
+      series.forEach(function(d) {
+        if (d.is_left_edge) return;  // outside the window — don't snap to it
+        var dist = Math.abs(x(d.minute) - mx);
+        if (dist < minDist) { minDist = dist; snap = d; }
+      });
+      if (!snap || !tooltip) return;
+      vline.attr('x1', x(snap.minute)).attr('x2', x(snap.minute)).style('display', null);
+
+      var timeLabel;
+      if (multi) {
+        timeLabel = minutesToLabel(snap.minute) + ' CT';
+      } else {
+        var dd = new Date(snap.created_at);
+        timeLabel = dd.toLocaleString('en-US', { timeZone: 'America/Chicago', hour: 'numeric', minute: '2-digit', hour12: true }) + ' CT';
+      }
+      var suffix = '';
+      if (snap.is_anchor) suffix = ' · anchor (self-IC undefined)';
+      else if (multi && snap.n_dates) suffix = ' · avg of ' + snap.n_runs + ' runs across ' + snap.n_dates + ' date' + (snap.n_dates === 1 ? '' : 's');
+      else if (snap.n_tickers) suffix = ' · ' + snap.n_tickers + ' tickers';
+
+      var html = '<div style="font-weight:500;margin-bottom:4px;">' + timeLabel +
+        '<span style="color:' + C.dim + ';font-weight:300;">' + suffix + '</span></div>';
+
+      var entries = [];
+      if (snap.ic != null) entries.push({ name: 'ensemble', v: snap.ic, color: mc('ensemble') });
+      models.forEach(function(mn) {
+        if (snap.model_ics[mn] != null) entries.push({ name: mn, v: snap.model_ics[mn], color: mc(mn) });
+      });
+      entries.sort(function(a, b) { return b.v - a.v; });
+      entries.forEach(function(e) {
+        var cls = e.v >= 0 ? 'positive' : 'negative';
+        html += '<div class="tooltip-row"><span class="tooltip-label" style="color:' + e.color + '">' + e.name + '</span>' +
+          '<span class="tooltip-value ' + cls + '">' + (e.v >= 0 ? '+' : '') + e.v.toFixed(4) + '</span></div>';
+      });
+      tooltip.innerHTML = html;
+      tooltip.style.display = 'block';
+      tooltip.style.left = (event.clientX + 16) + 'px';
+      tooltip.style.top  = (event.clientY - 10) + 'px';
+    }).on('mouseleave', function() {
+      vline.style('display', 'none');
+      if (tooltip) tooltip.style.display = 'none';
+      // If a drag is in progress and the cursor leaves, cancel it.
+      if (dragStart !== null) { dragStart = null; brushRect.style('display', 'none'); }
+    });
+
+    function formatHHMM(min) {
+      return pad(Math.floor(min / 60)) + ':' + pad(min % 60);
+    }
+    function commitBrush(x0, x1) {
+      brushRect.style('display', 'none');
+      var m0 = snapMinuteTo15(pxToMinute(Math.min(x0, x1)));
+      var m1 = snapMinuteTo15(pxToMinute(Math.max(x0, x1)));
+      if (Math.abs(m1 - m0) < 15) return false;  // ignore tiny drags / clicks
+      if (m0 === m1) return false;
+      timeFrom.value = formatHHMM(m0);
+      timeTo.value   = formatHHMM(m1);
+      loadIntraday();                            // m1 is the new IC anchor
+      return true;
+    }
+
+    overlay.on('mouseup', function(event) {
+      if (dragStart === null) return;
+      var mx = d3.pointer(event)[0];
+      var start = dragStart;
+      dragStart = null;
+      commitBrush(start, mx);
+    });
+
+    overlay.on('dblclick', function() {
+      // Reset window to the page defaults: 03:00 → min(now CT, 19:00)
+      dragStart = null;
+      brushRect.style('display', 'none');
+      timeFrom.value = '03:00';
+      timeTo.value   = formatHHMM(currentDefaultWindowEndMinute());
+      loadIntraday();
+    });
+  }
+
+  // ─────────────────────────────────────────────────────────────────
+  // SPREAD — mirror of IC chart/table, showing top-N minus bot-N
+  // mean forward-return in percentage points.
+  // ─────────────────────────────────────────────────────────────────
+  function renderIntradaySpreadTable() {
+    var container = document.getElementById('intraday-spread-table');
+    if (!container) return;
+    var runs = filteredRuns().filter(function(r){ return !r.is_anchor && !r.is_left_edge && !r.diagnostic_only; });
+    if (runs.length === 0) {
+      container.innerHTML = '<div class="loading">No runs in this window</div>';
+      return;
+    }
+    var models = intradayState.modelNames;
+
+    function mean(arr) { return arr.length ? arr.reduce(function(a,b){return a+b;}, 0) / arr.length : null; }
+    function twMean(arr) {
+      if (!arr.length) return null;
+      var tw = 0, ws = 0;
+      arr.forEach(function(v, i) { var w = i + 1; ws += v * w; tw += w; });
+      return ws / tw;
+    }
+    function trailMean(arr) { return arr.length ? mean(arr.slice(-5)) : null; }
+
+    var sessions = runs.map(function(r) { return sessionOf(ctMinutes(r.created_at)); });
+
+    function buildRow(name, getVal, color) {
+      var all=[], pre=[], mkt=[], post=[];
+      var anyLow = false;
+      runs.forEach(function(r, i) {
+        var v = getVal(r);
+        if (v == null) { if (r.low_sample) anyLow = true; return; }
+        if (r.low_sample) anyLow = true;
+        all.push(v);
+        if (sessions[i] === 'pre') pre.push(v);
+        else if (sessions[i] === 'market') mkt.push(v);
+        else post.push(v);
+      });
+      return {
+        name: name, color: color, n: all.length, low: anyLow,
+        mean: mean(all), pre: mean(pre), market: mean(mkt), post: mean(post),
+        trailing: trailMean(all), tw: twMean(all)
+      };
+    }
+
+    var rows = [];
+    models.forEach(function(m) {
+      rows.push(buildRow(m, function(r){return r.model_spreads ? r.model_spreads[m] : null;}, mc(m)));
+    });
+    rows.sort(function(a, b) { return (b.mean == null ? -1e9 : b.mean) - (a.mean == null ? -1e9 : a.mean); });
+    var ensRow = buildRow('ensemble', function(r){return r.spread;}, C.bright);
+
+    function fmtPP(v, lowTooltip) {
+      if (v == null) return '<span style="color:' + C.dim + '">—</span>';
+      var cls = v >= 0 ? 'positive' : 'negative';
+      var star = lowTooltip ? '<span title="n &lt; 2*N for either top or bot bucket">*</span>' : '';
+      return '<span class="' + cls + '">' + (v >= 0 ? '+' : '') + v.toFixed(2) + ' pp' + star + '</span>';
+    }
+
+    function rowClsFor(m) {
+      var s = intradayState.modelStates[m] || 'normal';
+      if (s === 'highlighted') return 'row-highlight';
+      if (s === 'hidden') return 'row-hidden';
+      return '';
+    }
+
+    var html = '<table style="font-size:0.65rem;" class="intraday-perf"><thead><tr>';
+    html += '<th style="text-align:left;font-size:0.5rem;padding:0.35rem 0.5rem;">Model</th>';
+    ['Mean','Pre-Mkt','Market','Post-Mkt','Trail 5','Time-Wtd','Runs'].forEach(function(h){
+      html += '<th style="text-align:right;font-size:0.5rem;padding:0.35rem 0.5rem;">' + h + '</th>';
+    });
+    html += '</tr></thead><tbody>';
+    rows.forEach(function(r) {
+      html += '<tr data-model="' + r.name + '" class="' + rowClsFor(r.name) + '">' +
+        '<td style="text-align:left;padding:0.3rem 0.5rem;color:' + r.color + ';">' + r.name.toUpperCase() + '</td>';
+      [r.mean, r.pre, r.market, r.post, r.trailing, r.tw].forEach(function(v) {
+        html += '<td style="text-align:right;padding:0.3rem 0.5rem;font-variant-numeric:tabular-nums;">' + fmtPP(v, r.low) + '</td>';
+      });
+      html += '<td style="text-align:right;padding:0.3rem 0.5rem;color:' + C.dim + ';">' + r.n + '</td></tr>';
+    });
+    html += '<tr data-model="ensemble" class="' + rowClsFor('ensemble') + '" style="border-top:1px solid ' + C.borderLight + ';font-weight:500;">';
+    html += '<td style="text-align:left;padding:0.3rem 0.5rem;color:' + C.bright + ';">ENSEMBLE</td>';
+    [ensRow.mean, ensRow.pre, ensRow.market, ensRow.post, ensRow.trailing, ensRow.tw].forEach(function(v) {
+      html += '<td style="text-align:right;padding:0.3rem 0.5rem;font-variant-numeric:tabular-nums;">' + fmtPP(v, ensRow.low) + '</td>';
+    });
+    html += '<td style="text-align:right;padding:0.3rem 0.5rem;color:' + C.dim + ';">' + ensRow.n + '</td></tr>';
+    html += '</tbody></table>';
+    html += '<div style="font-size:0.55rem;color:' + C.dim + ';margin:4px 0 0 0.5rem;font-style:italic;">' +
+      'Top ' + (intradayState.spreadN || 25) + ' − bot ' + (intradayState.spreadN || 25) +
+      ' mean forward-return spread, percentage points. * = low sample (n &lt; 2&times;N).</div>';
+    container.innerHTML = html;
+
+    container.querySelectorAll('tr[data-model]').forEach(function(tr) {
+      tr.style.cursor = 'pointer';
+      tr.addEventListener('click', function() {
+        var m = tr.getAttribute('data-model');
+        cycleIntradayModelState(m);
+        renderIntradayPerfTable();
+        renderIntradayICChart();
+        renderIntradaySpreadTable();
+        renderIntradaySpreadChart();
+      });
+    });
+  }
+
+  function renderIntradaySpreadChart() {
+    var container = document.getElementById('intraday-spread-chart');
+    if (!container) return;
+    container.innerHTML = '';
+    var runs = filteredRuns();
+    var models = intradayState.modelNames;
+    var multi = intradayState.dateRange.from !== intradayState.dateRange.to;
+    if (runs.length === 0) {
+      container.innerHTML = '<div class="loading">No runs in this time window</div>';
+      return;
+    }
+    var nonAnchor = runs.filter(function(r) { return !r.is_anchor && !r.is_left_edge; });
+    if (nonAnchor.length === 0 || !nonAnchor.some(hasSpreadSignal)) {
+      container.innerHTML = '<div class="loading" style="font-style:italic;">' +
+        noSignalMessage('spread', nonAnchor) + '</div>';
+      return;
+    }
+
+    var series;
+    if (multi) {
+      series = bucketRuns(runs);
+    } else {
+      series = runs.map(function(r) {
+        return {
+          minute: ctMinutes(r.created_at),
+          created_at: r.created_at,
+          spread: r.spread,
+          model_spreads: r.model_spreads || {},
+          low_sample: !!r.low_sample,
+          n_tickers: r.n_tickers,
+          is_anchor: !!r.is_anchor,
+          is_left_edge: !!r.is_left_edge
+        };
+      });
+    }
+    if (series.length === 0) { container.innerHTML = '<div class="loading">No data</div>'; return; }
+
+    series.sort(function(a, b) { return a.minute - b.minute; });
+
+    var margin = { top: 15, right: 25, bottom: 40, left: 64 };
+    var rect = container.getBoundingClientRect();
+    var width = rect.width - margin.left - margin.right;
+    var height = 260 - margin.top - margin.bottom;
+
+    var svg = d3.select(container).append('svg')
+      .attr('width',  width + margin.left + margin.right)
+      .attr('height', height + margin.top + margin.bottom);
+    var g = svg.append('g').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+    var xMin = hhmmToMinutes(timeFrom.value);
+    var xMax = hhmmToMinutes(timeTo.value);
+    if (xMin >= xMax) { xMin -= 30; xMax += 30; }
+    var x = d3.scaleLinear().domain([xMin, xMax]).range([0, width]);
+
+    var clipId = 'intraday-spread-clip-' + Math.floor(Math.random() * 1e9);
+    svg.append('defs').append('clipPath').attr('id', clipId)
+      .append('rect').attr('x', 0).attr('y', 0)
+      .attr('width', width).attr('height', height);
+    var plot = g.append('g').attr('clip-path', 'url(#' + clipId + ')');
+
+    function visState(m) { return intradayState.modelStates[m] || 'normal'; }
+    function isVisible(m) { return visState(m) !== 'hidden'; }
+    var anyHi = ['ensemble'].concat(models).some(function(m) { return visState(m) === 'highlighted'; });
+
+    var yMin = Infinity, yMax = -Infinity;
+    series.forEach(function(d) {
+      if (isVisible('ensemble') && d.spread != null) {
+        yMin = Math.min(yMin, d.spread); yMax = Math.max(yMax, d.spread);
+      }
+      models.forEach(function(mn) {
+        if (isVisible(mn) && d.model_spreads && d.model_spreads[mn] != null) {
+          yMin = Math.min(yMin, d.model_spreads[mn]);
+          yMax = Math.max(yMax, d.model_spreads[mn]);
+        }
+      });
+    });
+    if (!isFinite(yMin)) { yMin = -1; yMax = 1; }
+    var yPad = Math.max(0.3, (yMax - yMin) * 0.15);
+    var y = d3.scaleLinear().domain([yMin - yPad, yMax + yPad]).range([height, 0]);
+
+    // Shade regular-hours band — mirrors IC chart
+    var mktStart = 8 * 60 + 30, mktEnd = 15 * 60;
+    var shadeStart = Math.max(xMin, mktStart);
+    var shadeEnd   = Math.min(xMax, mktEnd);
+    if (shadeStart < shadeEnd) {
+      g.append('rect')
+        .attr('x', x(shadeStart)).attr('y', 0)
+        .attr('width', x(shadeEnd) - x(shadeStart)).attr('height', height)
+        .attr('fill', C.bright).attr('fill-opacity', 0.025)
+        .attr('pointer-events', 'none');
+    }
+
+    g.selectAll('.grid-h').data(y.ticks(5)).enter()
+      .append('line').attr('x1', 0).attr('x2', width)
+      .attr('y1', function(d){return y(d);}).attr('y2', function(d){return y(d);})
+      .attr('stroke', C.border).attr('stroke-width', 0.5);
+
+    if (yMin < 0 && yMax > 0) {
+      g.append('line').attr('x1', 0).attr('x2', width).attr('y1', y(0)).attr('y2', y(0))
+        .attr('stroke', C.olive).attr('stroke-width', 1).attr('stroke-dasharray', '4,3');
+    }
+
+    [mktStart, mktEnd].forEach(function(m) {
+      if (m >= xMin && m <= xMax) {
+        g.append('line').attr('x1', x(m)).attr('x2', x(m))
+          .attr('y1', 0).attr('y2', height)
+          .attr('stroke', C.olive).attr('stroke-width', 0.75)
+          .attr('stroke-dasharray', '2,3').attr('stroke-opacity', 0.6);
+      }
+    });
+
+    var ticks = [];
+    var startTick = Math.ceil(xMin / 30) * 30;
+    for (var t = startTick; t <= xMax; t += 30) ticks.push(t);
+    if (ticks.length > 10) {
+      var stride = Math.ceil(ticks.length / 8);
+      ticks = ticks.filter(function(_, i) { return i % stride === 0; });
+    }
+    g.append('g').attr('class', 'axis').attr('transform', 'translate(0,' + height + ')')
+      .call(d3.axisBottom(x).tickValues(ticks).tickFormat(minutesToLabel).tickSize(3))
+      .selectAll('text').attr('font-size', '10px');
+    g.append('g').attr('class', 'axis')
+      .call(d3.axisLeft(y).ticks(5).tickFormat(function(d){return d.toFixed(1)+' pp';}).tickSize(3))
+      .selectAll('text').attr('font-size', '10px');
+    g.append('text').attr('transform', 'rotate(-90)')
+      .attr('y', -52).attr('x', -height / 2)
+      .attr('text-anchor', 'middle').attr('fill', C.dim).attr('font-size', '10px')
+      .text('% spread (pp)');
+
+    var line = d3.line().defined(function(d){return d.v != null;})
+      .x(function(d){return x(d.minute);})
+      .y(function(d){return y(d.v);})
+      .curve(d3.curveMonotoneX);
+
+    models.forEach(function(mn) {
+      if (!isVisible(mn)) return;
+      var st = visState(mn);
+      var highlighted = st === 'highlighted';
+      var dimmed = anyHi && !highlighted;
+      var data = series
+        .filter(function(d) { return d.model_spreads && d.model_spreads[mn] != null; })
+        .map(function(d) { return { minute: d.minute, v: d.model_spreads[mn] }; });
+      if (data.length === 0) return;
+      plot.append('path').datum(data).attr('fill', 'none').attr('stroke', mc(mn))
+        .attr('stroke-width', highlighted ? 2.6 : 1.6)
+        .attr('stroke-opacity', dimmed ? 0.2 : (highlighted ? 1 : (multi ? 0.85 : 0.7)))
+        .attr('d', line);
+    });
+
+    if (isVisible('ensemble')) {
+      var ensState = visState('ensemble');
+      var ensHi = ensState === 'highlighted';
+      var ensDim = anyHi && !ensHi;
+      var ensData = series
+        .filter(function(d) { return d.spread != null; })
+        .map(function(d) { return { minute: d.minute, v: d.spread }; });
+      if (ensData.length > 0) {
+        plot.append('path').datum(ensData).attr('fill', 'none').attr('stroke', mc('ensemble'))
+          .attr('stroke-width', ensHi ? 3.5 : 2.5)
+          .attr('stroke-opacity', ensDim ? 0.3 : 1)
+          .attr('d', line);
+      }
+    }
+
+    // Anchor marker
+    var anchorPt = series.find(function(d) { return d.is_anchor; });
+    if (anchorPt && !multi) {
+      var ax = x(anchorPt.minute);
+      g.append('line')
+        .attr('x1', ax).attr('x2', ax).attr('y1', 0).attr('y2', height)
+        .attr('stroke', C.tan).attr('stroke-width', 1)
+        .attr('stroke-dasharray', '3,3').attr('stroke-opacity', 0.6)
+        .attr('pointer-events', 'none');
+      g.append('circle')
+        .attr('cx', ax).attr('cy', y(0)).attr('r', 3.5)
+        .attr('fill', C.tan).attr('stroke', C.bg).attr('stroke-width', 1.2)
+        .attr('pointer-events', 'none');
+      g.append('text')
+        .attr('x', ax).attr('y', -4)
+        .attr('text-anchor', 'end').attr('font-size', '9px')
+        .attr('fill', C.tan).attr('font-family', 'Outfit, system-ui, sans-serif')
+        .attr('letter-spacing', '0.08em').attr('text-transform', 'uppercase')
+        .attr('pointer-events', 'none')
+        .text('anchor');
+    }
+
+    // Hover tooltip — mirrors IC chart's behavior (no brush here).
+    var tooltip = document.getElementById('chart-tooltip');
+    var vline = g.append('line').attr('y1', 0).attr('y2', height)
+      .attr('stroke', C.borderLight).attr('stroke-width', 1).style('display', 'none');
+    var overlay = g.append('rect').attr('width', width).attr('height', height)
+      .attr('fill', 'none').attr('pointer-events', 'all')
+      .style('cursor', 'crosshair');
+
+    overlay.on('mousemove', function(event) {
+      var mx = d3.pointer(event)[0];
+      var minDist = Infinity, snap = null;
+      series.forEach(function(d) {
+        if (d.is_left_edge) return;
+        var dist = Math.abs(x(d.minute) - mx);
+        if (dist < minDist) { minDist = dist; snap = d; }
+      });
+      if (!snap || !tooltip) return;
+      vline.attr('x1', x(snap.minute)).attr('x2', x(snap.minute)).style('display', null);
+
+      var timeLabel;
+      if (multi) {
+        timeLabel = minutesToLabel(snap.minute) + ' CT';
+      } else {
+        var dd = new Date(snap.created_at);
+        timeLabel = dd.toLocaleString('en-US', { timeZone: 'America/Chicago', hour: 'numeric', minute: '2-digit', hour12: true }) + ' CT';
+      }
+      var suffix = '';
+      if (snap.is_anchor) suffix = ' · anchor (spread undefined)';
+      else if (multi && snap.n_dates) suffix = ' · avg of ' + snap.n_runs + ' runs across ' + snap.n_dates + ' date' + (snap.n_dates === 1 ? '' : 's');
+      else if (snap.n_tickers) suffix = ' · ' + snap.n_tickers + ' tickers';
+      if (snap.low_sample) suffix += ' · <span title="n &lt; 2*N">low sample</span>';
+
+      var html = '<div style="font-weight:500;margin-bottom:4px;">' + timeLabel +
+        '<span style="color:' + C.dim + ';font-weight:300;">' + suffix + '</span></div>';
+
+      var entries = [];
+      if (snap.spread != null) entries.push({ name: 'ensemble', v: snap.spread, color: mc('ensemble') });
+      models.forEach(function(mn) {
+        if (snap.model_spreads && snap.model_spreads[mn] != null) {
+          entries.push({ name: mn, v: snap.model_spreads[mn], color: mc(mn) });
+        }
+      });
+      entries.sort(function(a, b) { return b.v - a.v; });
+      entries.forEach(function(e) {
+        var cls = e.v >= 0 ? 'positive' : 'negative';
+        html += '<div class="tooltip-row"><span class="tooltip-label" style="color:' + e.color + '">' + e.name + '</span>' +
+          '<span class="tooltip-value ' + cls + '">' + (e.v >= 0 ? '+' : '') + e.v.toFixed(2) + ' pp</span></div>';
+      });
+      tooltip.innerHTML = html;
+      tooltip.style.display = 'block';
+      tooltip.style.left = (event.clientX + 16) + 'px';
+      tooltip.style.top  = (event.clientY - 10) + 'px';
+    }).on('mouseleave', function() {
+      vline.style('display', 'none');
+      if (tooltip) tooltip.style.display = 'none';
+    });
+  }
+
+  // Re-render on resize
+  var _resizeT;
+  window.addEventListener('resize', function() {
+    clearTimeout(_resizeT);
+    _resizeT = setTimeout(function() {
+      if (intradayState.runs.length) { renderIntradayICChart(); renderIntradaySpreadChart(); }
+    }, 250);
+  });
+
+  // Pick a sensible default window_end given the selected dateTo value:
+  //   today  → current CT time (capped to [3:00, 19:00], current behavior)
+  //   past   → 19:00 CT (end of after-hours trading) so we get the full
+  //            session's IC curve instead of getting cut off at "now" on
+  //            a day that's already concluded.
+  function defaultTimeToFor(dateToISO) {
+    if (dateToISO === todayISO()) return timeTo.value;  // already set to now
+    return '19:00';
+  }
+
+  // Default to the latest trading day ≤ today — otherwise on weekends and
+  // holidays the chart lands on a day with static prices (no refresh on
+  // non-trading days) and every run's IC comes back null.
+  (function pickDefaultDateThenLoad() {
+    var today = todayISO();
+    var weekAgo = addDays(today, -7);
+    fetch('/api/trading-days?from=' + weekAgo + '&to=' + today)
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        var td = (data.days || []).filter(function(d) { return d.is_trading; });
+        var pick = td.length ? td[td.length - 1].date : today;
+        dateFrom.value = pick;
+        dateTo.value   = pick;
+        calState.rangeStart = pick;
+        calState.rangeEnd   = pick;
+        timeTo.value = defaultTimeToFor(pick);
+        updateDateButtonLabel();
+      })
+      .catch(function() { /* fall back to today defaults already set above */ })
+      .then(function() { loadIntraday(); });
+  })();
+})();
+
+// ════════════════════════════════════════════════════════════════════
+// PIT-TO-LATEST ANALYSIS — separate IIFE for new charts
+// ════════════════════════════════════════════════════════════════════
+(function() {
+  'use strict';
+
+  var C = {
+    bg: '#090b09', bgCard: '#131409',
+    text: '#d4cfc3', dim: '#7a7868', bright: '#ede8db', cream: '#e2dbc8',
+    green: '#7a8a2a', greenBr: '#9aaa3a', greenDim: '#2e3218',
+    olive: '#6b6a3a', tan: '#b49a6e',
+    border: '#22231a', borderLight: '#33341f',
+    red: '#c4506a', redBr: '#d4687e',
+  };
+
+  // Strategy colors — Batlow colormap (perceptually uniform, colorblind-safe).
+  // Production stays as a neutral gray baseline; the rest are evenly spaced
+  // along Batlow so they read as a coherent family rather than arbitrary hues.
+  var _bat = window.QUORUM_PALETTE.batlow;
+  var STRATEGY_COLORS = {
+    production:           '#7a7868',    // neutral gray — baseline
+    drop_neg_walkfwd:     _bat(0.12),   // deep indigo
+    ic_weighted_walkfwd:  _bat(0.32),   // teal
+    ic_squared_walkfwd:   _bat(0.52),   // olive
+    top3_walkfwd:         _bat(0.72),   // warm tan
+    best_single_dynamic:  _bat(0.92),   // pale wheat
+  };
+  var STRATEGY_LABELS = {
+    production:           'Production (current)',
+    drop_neg_walkfwd:     'Drop negative-IC models',
+    ic_weighted_walkfwd:  'IC-weighted',
+    ic_squared_walkfwd:   'IC²-weighted (winner-take-more)',
+    top3_walkfwd:         'Top 3 by trailing IC',
+    best_single_dynamic:  'Dynamic best single model',
+  };
+
+  // Colors per model — shared palette from window.QUORUM_PALETTE
+  var MODEL_COLORS = window.QUORUM_PALETTE;
+  var mc = window.QUORUM_PALETTE.mc;
+  var MONTH_FMT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+  function modelICDateParts(value) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})(?:T(\d{2}):(\d{2}))?/.exec(value || '');
+    if (!m) return null;
+    return {
+      year: m[1],
+      month: parseInt(m[2], 10),
+      day: parseInt(m[3], 10),
+      hour: m[4] == null ? null : parseInt(m[4], 10),
+      minute: m[5] == null ? null : parseInt(m[5], 10)
+    };
+  }
+
+  function modelICDateTick(value) {
+    var p = modelICDateParts(value);
+    if (!p) return value || '';
+    var label = MONTH_FMT[p.month - 1] + ' ' + p.day;
+    if (p.hour == null) return label;
+    var h12 = p.hour % 12; if (h12 === 0) h12 = 12;
+    return label + ' ' + h12 + ':' + (p.minute < 10 ? '0' : '') + p.minute;
+  }
+
+  function modelICDateFull(value) {
+    var p = modelICDateParts(value);
+    if (!p) return value || '';
+    var label = MONTH_FMT[p.month - 1] + ' ' + p.day + ', ' + p.year;
+    if (p.hour == null) return label;
+    var ampm = p.hour >= 12 ? 'PM' : 'AM';
+    var h12 = p.hour % 12; if (h12 === 0) h12 = 12;
+    return label + ' ' + h12 + ':' + (p.minute < 10 ? '0' : '') + p.minute + ' ' + ampm + ' CT';
+  }
+
+  function modelICPointUnit(data) {
+    return (data && data.point_unit) || 'points';
+  }
+
+  function modelICPointUnitLabel(data, capitalized) {
+    var unit = modelICPointUnit(data);
+    var label = unit === 'runs' ? 'runs' : unit === 'days' ? 'days' : 'points';
+    return capitalized ? label.charAt(0).toUpperCase() + label.slice(1) : label;
+  }
+
+  function summaryPointCount(s) {
+    if (!s) return 0;
+    if (s.n_points != null) return s.n_points;
+    return s.n_dates || 0;
+  }
+
+  function summaryPositivePoints(s) {
+    if (!s) return 0;
+    if (s.positive_points != null) return s.positive_points;
+    return s.positive_days || 0;
+  }
+
+  function summaryNegativePoints(s) {
+    if (!s) return 0;
+    if (s.negative_points != null) return s.negative_points;
+    return s.negative_days || 0;
+  }
+
+  function summaryBestPoint(s) {
+    if (!s) return '—';
+    return s.best_point || s.best_date || '—';
+  }
+
+  // Each chart has its own Exit + Lookback controls and its own state.
+  //   data        - last fetched + adapted response
+  //   exit        - 'latest' or numeric string horizon (Exit dropdown)
+  //   lookback    - numeric string (Lookback dropdown)
+  //   modelStates - per-model 3-state display ('normal'|'highlighted'|'hidden')
+  //   zoomRange   - drag-to-zoom date window {from, to} or null
+  //   stratStates - only used by the strategy chart (per-strategy 3-state)
+  //   stratZoom   - only used by the strategy chart
+  //
+  var chartStates = {
+    pit:   { data: null, exit: 'latest', lookback: '20', spreadN: '25', modelStates: {}, zoomRange: null },
+    heat:  { data: null, exit: 'latest', lookback: '30', spreadN: '25', modelStates: {}, zoomRange: null },
+    strat: { data: null, exit: 'latest', lookback: '30', modelStates: {}, zoomRange: null, stratStates: {}, stratZoom: null },
+  };
+
+  // Default chart config — which defaults each sub-section uses
+  var CHART_DEFAULTS = {
+    pit:   { exit: 'latest', lookback: '20', spreadN: '25' },
+    heat:  { exit: 'latest', lookback: '30', spreadN: '25' },
+    strat: { exit: 'latest', lookback: '30' },  // matches production recompute_ensemble_weights.py
+  };
+
+  // Exit / Lookback dropdown option lists — identical across charts
+  var EXIT_OPTIONS = [
+    ['latest', 'Latest Close'],
+    ['1', '1-day fwd'], ['3', '3-day fwd'], ['5', '5-day fwd'],
+    ['10', '10-day fwd'], ['15', '15-day fwd'], ['20', '20-day fwd'],
+    ['25', '25-day fwd'], ['30', '30-day fwd'], ['40', '40-day fwd'],
+    ['50', '50-day fwd'], ['60', '60-day fwd'],
+  ];
+  var LOOKBACK_OPTIONS = ['1','3','5','10','15','20','25','30','40','50','60'];
+  var SPREAD_N_OPTIONS = ['10','25','50'];
+
+  // Click handlers on the PIT summary table (and the PIT chart's per-model
+  // visibility) must always target the PIT chart's state regardless of
+  // what pitState was aliased to at render time — otherwise an async
+  // click after the heatmap re-rendered would mutate the wrong state.
+  function cyclePITModelState(m) {
+    var states = chartStates.pit.modelStates;
+    var cur = states[m] || 'normal';
+    if (cur === 'normal') states[m] = 'highlighted';
+    else if (cur === 'highlighted') states[m] = 'hidden';
+    else states[m] = 'normal';
+  }
+  function pitVis(m) { return chartStates.pit.modelStates[m] || 'normal'; }
+
+  // Build and mount the Exit + Lookback dropdowns for one chart section.
+  // Called once per section at init time.
+  function mountChartControls(chart) {
+    var host = document.querySelector('.chart-controls[data-chart="' + chart + '"]');
+    if (!host) return;
+    var defaults = CHART_DEFAULTS[chart];
+    var exitOptsHTML = EXIT_OPTIONS.map(function(o) {
+      var sel = (o[0] === defaults.exit) ? ' selected' : '';
+      return '<option value="' + o[0] + '"' + sel + '>' + o[1] + '</option>';
+    }).join('');
+    var lookbackOptsHTML = LOOKBACK_OPTIONS.map(function(d) {
+      var sel = (d === defaults.lookback) ? ' selected' : '';
+      var label = d === '1' ? '1 day' : d + ' days';
+      return '<option value="' + d + '"' + sel + '>' + label + '</option>';
+    }).join('');
+    var selStyle = 'font-family:var(--sans);font-size:0.6rem;background:var(--bg-card);color:var(--text);border:1px solid var(--border-light);padding:2px 8px;border-radius:3px;text-transform:none;letter-spacing:0;';
+    var labelStyle = 'display:inline-flex;align-items:center;gap:6px;font-size:0.55rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.12em;margin-right:12px;';
+    var innerHTML =
+      '<span style="' + labelStyle + '">Exit' +
+        '<select data-role="exit" style="' + selStyle + '">' + exitOptsHTML + '</select>' +
+      '</span>' +
+      '<span style="' + labelStyle + '">Lookback' +
+        '<select data-role="lookback" style="' + selStyle + '">' + lookbackOptsHTML + '</select>' +
+      '</span>';
+    if (defaults.spreadN !== undefined) {
+      var nOptsHTML = SPREAD_N_OPTIONS.map(function(o) {
+        var sel = (o === defaults.spreadN) ? ' selected' : '';
+        return '<option value="' + o + '"' + sel + '>' + o + '</option>';
+      }).join('');
+      innerHTML +=
+        '<span style="' + labelStyle + '">Top/Bot' +
+          '<select data-role="spread-n" class="spread-n-select" style="' + selStyle + '">' + nOptsHTML + '</select>' +
+        '</span>';
+    }
+    host.innerHTML = innerHTML;
+    host.querySelector('[data-role="exit"]').addEventListener('change', function(e) {
+      chartStates[chart].exit = e.target.value;
+      loadChart(chart);
+    });
+    host.querySelector('[data-role="lookback"]').addEventListener('change', function(e) {
+      chartStates[chart].lookback = e.target.value;
+      loadChart(chart);
+    });
+    var nSel = host.querySelector('[data-role="spread-n"]');
+    if (nSel) {
+      nSel.addEventListener('change', function(e) {
+        chartStates[chart].spreadN = e.target.value;
+        loadChart(chart);
+      });
+    }
+  }
+  mountChartControls('pit');
+  mountChartControls('heat');
+  mountChartControls('strat');
+
+  // Shared fetch helper — unified on /api/model-ic-pit-latest which now
+  // accepts a horizon param ('latest' or integer). Server returns
+  // strategy backtests for either mode, so a single code path works for
+  // all three charts. Returns Promise<data | {error}>.
+  function fetchICData(exit, lookback, spreadN) {
+    var url = '/api/model-ic-pit-latest?days=' + lookback + '&horizon=' + encodeURIComponent(exit);
+    if (spreadN) url += '&spread_n=' + encodeURIComponent(spreadN);
+    return fetch(url).then(function(r) { return r.json(); });
+  }
+
+  function loadChart(chart) {
+    var state = chartStates[chart];
+    return fetchICData(state.exit, state.lookback, state.spreadN).then(function(data) {
+      if (!data || data.error) {
+        var msg = data ? data.error : 'Failed to load';
+        showChartError(chart, msg);
+        return;
+      }
+      state.data = data;
+      renderChart(chart);
+    }).catch(function(err) {
+      console.error('loadChart ' + chart + ' failed', err);
+    });
+  }
+
+  function showChartError(chart, msg) {
+    var ids = {
+      pit:   ['pit-ic-chart', 'pit-summary-table', 'pit-spread-chart', 'pit-spread-table'],
+      heat:  ['ic-heatmap', 'spread-heatmap'],
+      strat: ['strategy-chart', 'strategy-summary'],
+    };
+    (ids[chart] || []).forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) el.innerHTML = '<div class="loading">' + msg + '</div>';
+    });
+  }
+
+  function renderChart(chart) {
+    updateChartCopy(chart);
+    if (chart === 'pit')   { renderPITChart(); renderPITSummary();
+                             renderPITSpreadChart(); renderPITSpreadSummary(); }
+    if (chart === 'heat')  { renderHeatmap(); renderSpreadHeatmap(); }
+    if (chart === 'strat') { renderStrategyChart(); }
+    // First successful render on any PIT sub-chart flips html.ready as
+    // a backup path if the intraday section fails or is slow.
+    if (window.markReady) window.markReady();
+  }
+
+  // Keep each chart's badge, subtitle, and section label in sync with its
+  // own exit-rule mode.
+  function updateChartCopy(chart) {
+    var state = chartStates[chart];
+    var data = state.data;
+    if (!data) return;
+    var mode = data.mode || 'latest';
+
+    // As-of badge per chart
+    var badgeId = { pit: 'pit-as-of-badge', heat: 'heat-as-of-badge', strat: 'strat-as-of-badge' }[chart];
+    var badge = document.getElementById(badgeId);
+    if (badge) {
+      badge.textContent = (mode === 'latest' && data.latest_close_date)
+        ? '· anchor date ' + data.latest_close_date
+        : (mode === 'fixed' ? '· fixed ' + data.horizon + '-day fwd' : '');
+    }
+
+    if (chart === 'pit') {
+      var subtitle = document.getElementById('pit-chart-subtitle');
+      if (subtitle) {
+        subtitle.innerHTML = (mode === 'latest')
+          ? 'Rank-IC of one selected prediction run per date vs <code>(anchor_price / price_at_prediction) - 1</code>. Values shift as the latest usable price anchor refreshes.'
+          : 'Rank-IC of EOD scores vs <code>close<sub>t+' + data.horizon + '</sub> / close<sub>t</sub> − 1</code>. Fixed forward window — stable once each date\'s window closes.';
+      }
+    }
+    if (chart === 'heat') {
+      var heatSub = document.getElementById('heatmap-subtitle');
+      if (heatSub) {
+        heatSub.innerHTML = (mode === 'latest')
+          ? 'Each cell = rank-IC for one (model, prediction date) pair. Green = positive, red = negative. Shifts when the latest usable price anchor refreshes.'
+          : 'Each cell = rank-IC(scores, close<sub>t+' + data.horizon + '</sub> / close<sub>t</sub> − 1). Fixed ' + data.horizon + '-trading-day forward. Stable once each window closes.';
+      }
+    }
+  }
+
+  // ════════════════════════════════════════════════════════════════
+  // CHART 1: PIT IC LINE CHART
+  // ════════════════════════════════════════════════════════════════
+  function renderPITChart() {
+    // Bind to the PIT chart's own state so async drag-zoom handlers
+    // fire against the right state even if another chart re-rendered.
+    var pitOwn = chartStates.pit;
+    var container = document.getElementById('pit-ic-chart');
+    container.innerHTML = '';
+    var data = pitOwn.data;
+    if (!data || !data.series) { container.innerHTML = '<div class="loading">No data</div>'; return; }
+
+    var series = data.series;
+    var summary = data.summary || {};
+
+    // Show all models, ensemble first, rest sorted by mean IC
+    var modelsRanked = Object.keys(summary).filter(function(m){return m!=='ensemble';})
+      .sort(function(a,b){return (summary[b].mean_ic||0)-(summary[a].mean_ic||0);});
+    var allModels = ['ensemble'].concat(modelsRanked);
+    allModels = allModels.filter(function(m){return series[m] && series[m].length>0;});
+
+    // Visible = not hidden via row-click toggle
+    var displayed = allModels.filter(function(m){ return pitVis(m) !== 'hidden'; });
+    var anyHighlighted = allModels.some(function(m){ return pitVis(m) === 'highlighted'; });
+
+    if (displayed.length === 0) {
+      container.innerHTML = '<div class="loading">All models hidden — click a summary row to show</div>';
+      return;
+    }
+
+    var allDates = new Set();
+    displayed.forEach(function(m){
+      series[m].forEach(function(d){allDates.add(d.date);});
+    });
+    var dates = Array.from(allDates).sort();
+    if (pitOwn.zoomRange) {
+      var zr = pitOwn.zoomRange;
+      dates = dates.filter(function(d){ return d >= zr.from && d <= zr.to; });
+    }
+    if (dates.length===0) {
+      container.innerHTML='<div class="loading">'+(pitOwn.zoomRange?'No '+modelICPointUnitLabel(data, false)+' in zoom window — double-click to reset':'No data points')+'</div>';
+      return;
+    }
+
+    var margin = {top:20, right:30, bottom:40, left:72};
+    var rect = container.getBoundingClientRect();
+    var width = rect.width - margin.left - margin.right;
+    var chartH = 300;
+    var height = chartH - margin.top - margin.bottom;
+
+    var svg = d3.select(container).append('svg')
+      .attr('width', width+margin.left+margin.right)
+      .attr('height', chartH);
+    var g = svg.append('g').attr('transform','translate('+margin.left+','+margin.top+')');
+
+    var x = d3.scalePoint().domain(dates).range([0,width]).padding(0.3);
+    var allICs = [];
+    displayed.forEach(function(m){series[m].forEach(function(d){allICs.push(d.ic);});});
+    var yExtent = d3.extent(allICs);
+    var yPad = Math.max(0.02, (yExtent[1]-yExtent[0])*0.15);
+    var y = d3.scaleLinear().domain([yExtent[0]-yPad, yExtent[1]+yPad]).range([height,0]);
+
+    g.selectAll('.grid-line-h').data(y.ticks(5)).enter()
+      .append('line').attr('class','grid-line')
+      .attr('x1',0).attr('x2',width)
+      .attr('y1',function(d){return y(d);}).attr('y2',function(d){return y(d);});
+
+    if (yExtent[0]<0 && yExtent[1]>0) {
+      g.append('line').attr('x1',0).attr('x2',width).attr('y1',y(0)).attr('y2',y(0))
+        .attr('stroke',C.olive).attr('stroke-width',1.2).attr('stroke-dasharray','4,3');
+    }
+
+    var maxTicks = Math.max(1, Math.floor(width/85));
+    var tickStep = Math.max(1, Math.ceil(dates.length/maxTicks));
+    var tickVals = dates.filter(function(_,i){return i%tickStep===0;});
+    g.append('g').attr('class','axis').attr('transform','translate(0,'+height+')')
+      .call(d3.axisBottom(x).tickValues(tickVals).tickFormat(function(d){
+        return modelICDateTick(d);
+      }))
+      .selectAll('text').attr('font-size','12px');
+    g.append('g').attr('class','axis').call(d3.axisLeft(y).ticks(5).tickFormat(d3.format('.3f')))
+      .selectAll('text').attr('font-size','12px');
+    g.append('text').attr('transform','rotate(-90)')
+      .attr('y',-56).attr('x',-height/2)
+      .attr('text-anchor','middle').attr('fill',C.dim).attr('font-size','12px')
+      .attr('font-family','Outfit, system-ui, sans-serif').text('Rank IC');
+
+    var line = d3.line().x(function(d){return x(d.date);}).y(function(d){return y(d.ic);}).curve(d3.curveMonotoneX);
+
+    // Build point → {model: ic} lookup for tooltips
+    var dateModelMap = {};
+    displayed.forEach(function(model) {
+      series[model].forEach(function(d) {
+        if (!dateModelMap[d.date]) dateModelMap[d.date] = {};
+        dateModelMap[d.date][model] = d.ic;
+      });
+    });
+
+    // Compute per-model trailing mean up to each date
+    var trailingByModel = {};
+    displayed.forEach(function(model) {
+      var running = [];
+      trailingByModel[model] = {};
+      series[model].forEach(function(d) {
+        running.push(d.ic);
+        trailingByModel[model][d.date] = running.reduce(function(a,b){return a+b;},0) / running.length;
+      });
+    });
+
+    displayed.forEach(function(model){
+      var sd = series[model];
+      var color = mc(model);
+      var isEns = model==='ensemble';
+      var isHi = pitVis(model) === 'highlighted';
+      var dimmed = anyHighlighted && !isHi;
+      var baseWidth = isEns ? 3.5 : 1.8;
+      var width = isHi ? (isEns ? 4.5 : 2.8) : baseWidth;
+      var baseOpacity = isEns ? 1 : 0.75;
+      var opacity = dimmed ? 0.22 : (isHi ? 1 : baseOpacity);
+      g.append('path').datum(sd)
+        .attr('fill','none').attr('stroke',color)
+        .attr('stroke-width', width).attr('stroke-opacity', opacity)
+        .attr('d', line);
+    });
+
+    // Overlay: vertical cursor line + drag-to-zoom (same UX as intraday chart)
+    var tooltip = document.getElementById('chart-tooltip');
+    var brushRect = g.append('rect').attr('y', 0).attr('height', height)
+      .attr('fill', C.bright).attr('fill-opacity', 0.12)
+      .attr('stroke', C.bright).attr('stroke-opacity', 0.6).attr('stroke-width', 1)
+      .style('display', 'none').attr('pointer-events', 'none');
+    var vline = g.append('line').attr('y1', 0).attr('y2', height)
+      .attr('stroke', C.borderLight).attr('stroke-width', 1).style('display', 'none');
+    var overlay = g.append('rect').attr('width', width).attr('height', height)
+      .attr('fill', 'none').attr('pointer-events', 'all').style('cursor', 'crosshair');
+
+    function nearestDateIdxPIT(px) {
+      var minDist = Infinity, idx = 0;
+      dates.forEach(function(d, i) {
+        var dist = Math.abs(x(d) - px);
+        if (dist < minDist) { minDist = dist; idx = i; }
+      });
+      return idx;
+    }
+
+    var dragStart = null;
+    overlay.on('mousedown', function(event) {
+      if (event.button !== 0) return;
+      dragStart = d3.pointer(event)[0];
+      brushRect.attr('x', dragStart).attr('width', 0).style('display', null);
+      if (tooltip) tooltip.style.display = 'none';
+      vline.style('display', 'none');
+      event.preventDefault();
+    });
+    overlay.on('mouseup', function(event) {
+      if (dragStart === null) return;
+      var mx = d3.pointer(event)[0];
+      var start = dragStart;
+      dragStart = null;
+      brushRect.style('display', 'none');
+      var i0 = nearestDateIdxPIT(Math.min(start, mx));
+      var i1 = nearestDateIdxPIT(Math.max(start, mx));
+      if (i1 - i0 < 1) return;
+      pitOwn.zoomRange = { from: dates[i0], to: dates[i1] };
+      renderPITChart();
+    });
+    overlay.on('dblclick', function() {
+      dragStart = null;
+      brushRect.style('display', 'none');
+      if (pitOwn.zoomRange) { pitOwn.zoomRange = null; renderPITChart(); }
+    });
+    overlay.on('mousemove', function(event) {
+      var mx = d3.pointer(event)[0];
+      if (dragStart !== null) {
+        var lo = Math.min(dragStart, mx), hi = Math.max(dragStart, mx);
+        brushRect.attr('x', lo).attr('width', hi - lo);
+        return;
+      }
+      var idx = nearestDateIdxPIT(mx);
+      var snapDate = dates[idx];
+      vline.attr('x1', x(snapDate)).attr('x2', x(snapDate)).style('display', null);
+      if (!tooltip) return;
+      var html = '<div style="font-weight:500;margin-bottom:4px;">' + modelICDateFull(snapDate) + '</div>';
+      var dayData = dateModelMap[snapDate] || {};
+      var entries = displayed.filter(function(m){return dayData[m]!=null;}).map(function(m){
+        return {
+          name: m,
+          ic: dayData[m],
+          trailing: trailingByModel[m] ? trailingByModel[m][snapDate] : null,
+          overall: summary[m] ? summary[m].mean_ic : null,
+          color: mc(m)
+        };
+      }).sort(function(a,b){
+        if (a.name==='ensemble') return -1;
+        if (b.name==='ensemble') return 1;
+        return b.ic-a.ic;
+      });
+      var pointHdr = modelICPointUnit(data) === 'runs' ? 'Run' : 'Day';
+      html += '<div style="display:flex;gap:8px;font-size:0.55rem;color:'+C.dim+';margin-bottom:3px;"><span style="flex:1;">Model</span><span style="width:52px;text-align:right;">'+pointHdr+'</span><span style="width:52px;text-align:right;">Trailing</span><span style="width:52px;text-align:right;">Overall</span></div>';
+      entries.forEach(function(e) {
+        var isBold = e.name === 'ensemble' ? 'font-weight:500;' : '';
+        var cls = e.ic>=0 ? 'positive' : 'negative';
+        var trailStr = e.trailing!=null ? ((e.trailing>=0?'+':'')+e.trailing.toFixed(4)) : '—';
+        var overStr = e.overall!=null ? ((e.overall>=0?'+':'')+e.overall.toFixed(4)) : '—';
+        var trailCls = e.trailing>=0 ? 'positive' : 'negative';
+        var overCls = e.overall>=0 ? 'positive' : 'negative';
+        html += '<div style="display:flex;gap:8px;font-size:0.65rem;'+isBold+'">' +
+          '<span style="flex:1;color:'+e.color+';">'+(e.name==='ensemble'?'<b>'+e.name+'</b>':e.name)+'</span>' +
+          '<span class="'+cls+'" style="width:52px;text-align:right;">'+(e.ic>=0?'+':'')+e.ic.toFixed(4)+'</span>' +
+          '<span class="'+trailCls+'" style="width:52px;text-align:right;">'+trailStr+'</span>' +
+          '<span class="'+overCls+'" style="width:52px;text-align:right;">'+overStr+'</span></div>';
+      });
+      tooltip.innerHTML = html;
+      tooltip.style.display = 'block';
+      tooltip.style.left = (event.clientX + 16) + 'px';
+      tooltip.style.top = (event.clientY - 10) + 'px';
+    });
+    overlay.on('mouseleave', function() {
+      if (tooltip) tooltip.style.display = 'none';
+      vline.style('display', 'none');
+      if (dragStart !== null) { dragStart = null; brushRect.style('display', 'none'); }
+    });
+  }
+
+  // ════════════════════════════════════════════════════════════════
+  // CHART 2: IC HEATMAP (model × date)
+  // ════════════════════════════════════════════════════════════════
+  function renderHeatmap() {
+    var heatOwn = chartStates.heat;
+    var container = document.getElementById('ic-heatmap');
+    container.innerHTML = '';
+    var data = heatOwn.data;
+    if (!data || !data.series || !data.summary) { return; }
+
+    var series = data.series;
+    var summary = data.summary;
+
+    // Sort models by mean IC desc
+    var models = Object.keys(summary).sort(function(a,b){
+      return (summary[b].mean_ic||0) - (summary[a].mean_ic||0);
+    });
+
+    // Collect all dates
+    var dateSet = new Set();
+    models.forEach(function(m){series[m].forEach(function(d){dateSet.add(d.date);});});
+    var dates = Array.from(dateSet).sort();
+    if (models.length===0 || dates.length===0) {
+      container.innerHTML = '<div class="loading">No data</div>'; return;
+    }
+
+    var margin = {top:25, right:30, bottom:110, left:230};
+    var rect = container.getBoundingClientRect();
+    var width = rect.width - margin.left - margin.right;
+    var cellH = 32;
+    var height = models.length * cellH;
+
+    var svg = d3.select(container).append('svg')
+      .attr('width', width+margin.left+margin.right)
+      .attr('height', height+margin.top+margin.bottom);
+    var g = svg.append('g').attr('transform','translate('+margin.left+','+margin.top+')');
+
+    var x = d3.scaleBand().domain(dates).range([0,width]).padding(0.05);
+    var y = d3.scaleBand().domain(models).range([0,height]).padding(0.1);
+
+    // Diverging color scale: red -> grey -> green
+    var maxAbs = 0;
+    models.forEach(function(m){series[m].forEach(function(d){maxAbs=Math.max(maxAbs,Math.abs(d.ic));});});
+    if (maxAbs===0) maxAbs = 0.1;
+
+    var color = d3.scaleLinear()
+      .domain([-maxAbs, 0, maxAbs])
+      .range([C.red, '#22231a', C.greenBr])
+      .clamp(true);
+
+    // Build (model, date) lookup
+    var icLookup = {};
+    models.forEach(function(m){
+      icLookup[m] = {};
+      series[m].forEach(function(d){icLookup[m][d.date]=d.ic;});
+    });
+
+    // Cells
+    models.forEach(function(model){
+      dates.forEach(function(date){
+        var ic = icLookup[model][date];
+        if (ic === undefined) {
+          // Empty cell
+          g.append('rect')
+            .attr('x',x(date)).attr('y',y(model))
+            .attr('width',x.bandwidth()).attr('height',y.bandwidth())
+            .attr('fill',C.bgCard).attr('stroke',C.border).attr('stroke-width',0.5);
+          return;
+        }
+        g.append('rect')
+          .attr('x',x(date)).attr('y',y(model))
+          .attr('width',x.bandwidth()).attr('height',y.bandwidth())
+          .attr('fill',color(ic))
+          .attr('stroke',C.bg).attr('stroke-width',0.5)
+          .style('cursor','pointer')
+          .on('mouseover',function(e){
+            var tt = document.getElementById('ic-tooltip');
+            tt.innerHTML = '<div class="tooltip-title">'+model+' · '+date+'</div>'+
+              '<div class="tooltip-row"><span class="tooltip-label">IC</span>'+
+              '<span class="tooltip-value '+(ic>=0?'positive':'negative')+'">'+
+              (ic>=0?'+':'')+ic.toFixed(4)+'</span></div>';
+            tt.style.display='block';
+            tt.style.left=(e.pageX+16)+'px'; tt.style.top=(e.pageY-10)+'px';
+          })
+          .on('mouseleave',function(){document.getElementById('ic-tooltip').style.display='none';});
+        // Text overlay if cell is wide enough
+        if (x.bandwidth() > 45) {
+          g.append('text')
+            .attr('x',x(date)+x.bandwidth()/2).attr('y',y(model)+y.bandwidth()/2+4)
+            .attr('text-anchor','middle').attr('font-size','12px')
+            .attr('font-weight','400')
+            .attr('font-family','Outfit, system-ui, sans-serif')
+            .attr('fill', Math.abs(ic) > maxAbs*0.5 ? C.bg : C.text)
+            .attr('pointer-events','none')
+            .style('font-variant-numeric','tabular-nums')
+            .text((ic>=0?'+':'')+ic.toFixed(2));
+        }
+      });
+    });
+
+    // Y axis labels (model names) + mean IC marker — colored by shared palette
+    models.forEach(function(model){
+      // Color swatch matches the palette used elsewhere on this page
+      g.append('rect')
+        .attr('x',-8).attr('y',y(model)+y.bandwidth()/2-8)
+        .attr('width',4).attr('height',14)
+        .attr('fill', mc(model)).attr('rx',1);
+      g.append('text')
+        .attr('x',-14).attr('y',y(model)+y.bandwidth()/2-1)
+        .attr('text-anchor','end').attr('font-size','13px')
+        .attr('font-family','Outfit, system-ui, sans-serif')
+        .attr('fill', mc(model))
+        .attr('font-weight', model==='ensemble' ? 500 : 400)
+        .text(model);
+      var meanIC = summary[model].mean_ic;
+      g.append('text')
+        .attr('x',-10).attr('y',y(model)+y.bandwidth()/2+13)
+        .attr('text-anchor','end').attr('font-size','11px')
+        .attr('font-family','Outfit, system-ui, sans-serif')
+        .attr('fill', meanIC>=0 ? C.greenBr : C.red)
+        .style('font-variant-numeric','tabular-nums')
+        .text((meanIC>=0?'+':'')+meanIC.toFixed(4));
+    });
+
+    // X axis (dates) - bottom
+    var maxXTicks = Math.max(1, Math.floor(width/65));
+    var xStep = Math.max(1, Math.ceil(dates.length/maxXTicks));
+    dates.forEach(function(d,i){
+      if (i%xStep!==0) return;
+      var label = modelICDateTick(d);
+      g.append('text')
+        .attr('x',x(d)+x.bandwidth()/2).attr('y',height+22)
+        .attr('text-anchor','middle').attr('font-size','12px')
+        .attr('font-family','Outfit, system-ui, sans-serif')
+        .attr('fill',C.dim).text(label);
+    });
+
+    // Color scale legend
+    var lg = svg.append('g').attr('transform','translate('+(margin.left)+','+(height+margin.top+52)+')');
+    var lgWidth = 240;
+    var lgHeight = 11;
+    var defs = svg.append('defs');
+    var grad = defs.append('linearGradient').attr('id','heatmap-grad');
+    grad.append('stop').attr('offset','0%').attr('stop-color',C.red);
+    grad.append('stop').attr('offset','50%').attr('stop-color','#22231a');
+    grad.append('stop').attr('offset','100%').attr('stop-color',C.greenBr);
+    lg.append('rect').attr('width',lgWidth).attr('height',lgHeight).attr('fill','url(#heatmap-grad)');
+    lg.append('text').attr('x',0).attr('y',lgHeight+15).attr('font-size','11px')
+      .attr('font-family','Outfit, system-ui, sans-serif').attr('fill',C.dim)
+      .style('font-variant-numeric','tabular-nums')
+      .text((-maxAbs).toFixed(3));
+    lg.append('text').attr('x',lgWidth/2).attr('y',lgHeight+15).attr('text-anchor','middle')
+      .attr('font-size','11px').attr('font-family','Outfit, system-ui, sans-serif').attr('fill',C.dim).text('0');
+    lg.append('text').attr('x',lgWidth).attr('y',lgHeight+15).attr('text-anchor','end')
+      .attr('font-size','11px').attr('font-family','Outfit, system-ui, sans-serif').attr('fill',C.dim)
+      .style('font-variant-numeric','tabular-nums')
+      .text((maxAbs>=0?'+':'')+maxAbs.toFixed(3));
+    lg.append('text').attr('x',lgWidth+12).attr('y',lgHeight+1).attr('font-size','11px')
+      .attr('font-family','Outfit, system-ui, sans-serif').attr('fill',C.dim)
+      .text('Rank IC');
+
+    // Methodology footnote — formula depends on exit-rule mode.
+    var line1, line2;
+    if (data.mode === 'fixed') {
+      line1 = 'Cell = rank-IC(scores, close[t+' + data.horizon + '] / close[t] − 1). ' +
+              'Fixed ' + data.horizon + '-trading-day forward horizon.';
+      line2 = 'Values are stable once the forward window closes — they do not drift intraday.';
+    } else {
+      var asOfStr = data.latest_close_date
+        ? 'Anchor date: ' + data.latest_close_date
+        : 'Anchor: latest usable prediction run';
+      line1 = 'Cell = rank-IC(scores, return from price_at_prediction to anchor price). ' + asOfStr + '.';
+      line2 = 'Values shift intraday as the latest usable price anchor changes — consistent across every chart in this section.';
+    }
+    var methLg = svg.append('g')
+      .attr('transform','translate('+margin.left+','+(height+margin.top+52+lgHeight+38)+')');
+    methLg.append('text').attr('x', 0).attr('y', 0)
+      .attr('font-size','10px').attr('font-family','Outfit, system-ui, sans-serif')
+      .attr('fill', C.dim).attr('font-style','italic').text(line1);
+    methLg.append('text').attr('x', 0).attr('y', 14)
+      .attr('font-size','10px').attr('font-family','Outfit, system-ui, sans-serif')
+      .attr('fill', C.dim).attr('font-style','italic').text(line2);
+  }
+
+  // ════════════════════════════════════════════════════════════════
+  // CHART 3: ENSEMBLE STRATEGY COMPARISON
+  // ════════════════════════════════════════════════════════════════
+  function renderStrategyChart() {
+    // Strategy chart always operates on its own chart state — not the
+    // aliased pitState — so async click/zoom handlers fire against the
+    // right state even after other charts re-render.
+    var stratOwn = chartStates.strat;
+    var container = document.getElementById('strategy-chart');
+    container.innerHTML = '';
+    var sumDiv = document.getElementById('strategy-summary');
+    if (sumDiv) sumDiv.innerHTML = '';
+    var data = stratOwn.data;
+    if (!data || !data.strategies) { return; }
+
+    var strategies = data.strategies;
+    var summary = data.strategy_summary || {};
+    var names = Object.keys(strategies).filter(function(n){return strategies[n].length>0;});
+
+    // 3-state visibility helpers — read from the strategy chart's own state
+    function stratVis(n) { return stratOwn.stratStates[n] || 'normal'; }
+    var anyStratHi = names.some(function(n){ return stratVis(n) === 'highlighted'; });
+    var visibleNames = names.filter(function(n){ return stratVis(n) !== 'hidden'; });
+
+    if (visibleNames.length === 0) {
+      container.innerHTML = '<div class="loading">All strategies hidden — click a summary row to show</div>';
+      return;
+    }
+
+    var allDates = new Set();
+    visibleNames.forEach(function(n){strategies[n].forEach(function(d){allDates.add(d.date);});});
+    var dates = Array.from(allDates).sort();
+    if (stratOwn.stratZoom) {
+      var szr = stratOwn.stratZoom;
+      dates = dates.filter(function(d){ return d >= szr.from && d <= szr.to; });
+    }
+    if (dates.length===0) {
+      container.innerHTML='<div class="loading">'+(stratOwn.stratZoom?'No '+modelICPointUnitLabel(data, false)+' in zoom window — double-click to reset':'No data')+'</div>';
+      return;
+    }
+
+    var margin = {top:20, right:30, bottom:30, left:72};
+    var rect = container.getBoundingClientRect();
+    var width = rect.width - margin.left - margin.right;
+    var chartH = 360;
+    var height = chartH - margin.top - margin.bottom;
+
+    var svg = d3.select(container).append('svg')
+      .attr('width', width+margin.left+margin.right)
+      .attr('height', chartH);
+    var g = svg.append('g').attr('transform','translate('+margin.left+','+margin.top+')');
+
+    var x = d3.scalePoint().domain(dates).range([0,width]).padding(0.3);
+    var allICs = [];
+    visibleNames.forEach(function(n){strategies[n].forEach(function(d){
+      if (dates.indexOf(d.date) >= 0) allICs.push(d.ic);
+    });});
+    var yExtent = d3.extent(allICs);
+    var yPad = Math.max(0.02, (yExtent[1]-yExtent[0])*0.15);
+    var y = d3.scaleLinear().domain([yExtent[0]-yPad, yExtent[1]+yPad]).range([height,0]);
+
+    g.selectAll('.grid-line-h').data(y.ticks(5)).enter()
+      .append('line').attr('class','grid-line')
+      .attr('x1',0).attr('x2',width)
+      .attr('y1',function(d){return y(d);}).attr('y2',function(d){return y(d);});
+
+    if (yExtent[0]<0 && yExtent[1]>0) {
+      g.append('line').attr('x1',0).attr('x2',width).attr('y1',y(0)).attr('y2',y(0))
+        .attr('stroke',C.olive).attr('stroke-width',1.2).attr('stroke-dasharray','4,3');
+    }
+
+    var maxTicks = Math.max(1, Math.floor(width/85));
+    var tickStep = Math.max(1, Math.ceil(dates.length/maxTicks));
+    var tickVals = dates.filter(function(_,i){return i%tickStep===0;});
+    g.append('g').attr('class','axis').attr('transform','translate(0,'+height+')')
+      .call(d3.axisBottom(x).tickValues(tickVals).tickFormat(function(d){
+        return modelICDateTick(d);
+      }))
+      .selectAll('text').attr('font-size','12px');
+    g.append('g').attr('class','axis').call(d3.axisLeft(y).ticks(5).tickFormat(d3.format('.3f')))
+      .selectAll('text').attr('font-size','12px');
+    g.append('text').attr('transform','rotate(-90)')
+      .attr('y',-56).attr('x',-height/2)
+      .attr('text-anchor','middle').attr('fill',C.dim).attr('font-size','12px')
+      .attr('font-family','Outfit, system-ui, sans-serif').text('Rank IC');
+
+    var line = d3.line().x(function(d){return x(d.date);}).y(function(d){return y(d.ic);}).curve(d3.curveMonotoneX);
+
+    // Order: production first (baseline), then by mean IC asc so the best is on top
+    var ordered = names.slice().sort(function(a,b){
+      if (a==='production') return -1;
+      if (b==='production') return 1;
+      return (summary[a]?summary[a].mean_ic:0) - (summary[b]?summary[b].mean_ic:0);
+    });
+    var displayedStrats = ordered.filter(function(n){ return stratVis(n) !== 'hidden'; });
+
+    // Build date → {strategy: ic} lookup for tooltips
+    var dateMap = {};
+    names.forEach(function(n) {
+      strategies[n].forEach(function(d) {
+        if (!dateMap[d.date]) dateMap[d.date] = {};
+        dateMap[d.date][n] = d;
+      });
+    });
+
+    displayedStrats.forEach(function(name){
+      var sd = strategies[name];
+      var color = STRATEGY_COLORS[name] || C.dim;
+      var isProd = name==='production';
+      var isBest = name==='best_single_dynamic';
+      var isHi = stratVis(name) === 'highlighted';
+      var dimmed = anyStratHi && !isHi;
+      var baseWidth = isProd||isBest ? 2.8 : 2.0;
+      var strokeWidth = isHi ? (isProd||isBest ? 4.0 : 3.2) : baseWidth;
+      var strokeOpacity = dimmed ? 0.2 : (isHi ? 1 : 0.9);
+      g.append('path').datum(sd)
+        .attr('fill','none').attr('stroke',color)
+        .attr('stroke-width', strokeWidth)
+        .attr('stroke-opacity', strokeOpacity)
+        .attr('stroke-dasharray', isBest ? '6,3' : null)
+        .attr('d', line);
+    });
+
+    // Overlay: vertical cursor line + drag-to-zoom
+    var tooltip = document.getElementById('chart-tooltip');
+    var brushRect = g.append('rect').attr('y', 0).attr('height', height)
+      .attr('fill', C.bright).attr('fill-opacity', 0.12)
+      .attr('stroke', C.bright).attr('stroke-opacity', 0.6).attr('stroke-width', 1)
+      .style('display', 'none').attr('pointer-events', 'none');
+    var vline = g.append('line').attr('y1', 0).attr('y2', height)
+      .attr('stroke', C.borderLight).attr('stroke-width', 1).style('display', 'none');
+    var overlay = g.append('rect').attr('width', width).attr('height', height)
+      .attr('fill', 'none').attr('pointer-events', 'all').style('cursor', 'crosshair');
+
+    function nearestDateIdxStrat(px) {
+      var minDist = Infinity, idx = 0;
+      dates.forEach(function(d, i) {
+        var dist = Math.abs(x(d) - px);
+        if (dist < minDist) { minDist = dist; idx = i; }
+      });
+      return idx;
+    }
+
+    var dragStart = null;
+    overlay.on('mousedown', function(event) {
+      if (event.button !== 0) return;
+      dragStart = d3.pointer(event)[0];
+      brushRect.attr('x', dragStart).attr('width', 0).style('display', null);
+      if (tooltip) tooltip.style.display = 'none';
+      vline.style('display', 'none');
+      event.preventDefault();
+    });
+    overlay.on('mouseup', function(event) {
+      if (dragStart === null) return;
+      var mx = d3.pointer(event)[0];
+      var start = dragStart;
+      dragStart = null;
+      brushRect.style('display', 'none');
+      var i0 = nearestDateIdxStrat(Math.min(start, mx));
+      var i1 = nearestDateIdxStrat(Math.max(start, mx));
+      if (i1 - i0 < 1) return;
+      stratOwn.stratZoom = { from: dates[i0], to: dates[i1] };
+      renderStrategyChart();
+    });
+    overlay.on('dblclick', function() {
+      dragStart = null;
+      brushRect.style('display', 'none');
+      if (stratOwn.stratZoom) { stratOwn.stratZoom = null; renderStrategyChart(); }
+    });
+    overlay.on('mousemove', function(event) {
+      var mx = d3.pointer(event)[0];
+      if (dragStart !== null) {
+        var lo = Math.min(dragStart, mx), hi = Math.max(dragStart, mx);
+        brushRect.attr('x', lo).attr('width', hi - lo);
+        return;
+      }
+      var idx = nearestDateIdxStrat(mx);
+      var snapDate = dates[idx];
+      vline.attr('x1', x(snapDate)).attr('x2', x(snapDate)).style('display', null);
+      if (!tooltip) return;
+      var html = '<div style="font-weight:500;margin-bottom:4px;">' + modelICDateFull(snapDate) + '</div>';
+      var dayData = dateMap[snapDate] || {};
+      var entries = displayedStrats.filter(function(n){return dayData[n];}).map(function(n){
+        return {name:n, ic: dayData[n].ic, model: dayData[n].model};
+      }).sort(function(a,b){return b.ic-a.ic;});
+      entries.forEach(function(e){
+        var cls = e.ic>=0 ? 'positive' : 'negative';
+        var label = STRATEGY_LABELS[e.name] || e.name;
+        if (e.name==='best_single_dynamic' && e.model) label += ' (' + e.model + ')';
+        html += '<div style="display:flex;justify-content:space-between;gap:12px;font-size:0.7rem;">' +
+          '<span style="color:' + (STRATEGY_COLORS[e.name]||C.dim) + ';">' + label + '</span>' +
+          '<span class="' + cls + '">' + (e.ic>=0?'+':'') + e.ic.toFixed(4) + '</span></div>';
+      });
+      tooltip.innerHTML = html;
+      tooltip.style.display = 'block';
+      tooltip.style.left = (event.clientX + 16) + 'px';
+      tooltip.style.top = (event.clientY - 10) + 'px';
+    });
+    overlay.on('mouseleave', function() {
+      if (tooltip) tooltip.style.display = 'none';
+      vline.style('display', 'none');
+      if (dragStart !== null) { dragStart = null; brushRect.style('display', 'none'); }
+    });
+
+    // Strategy summary table below — bigger fonts
+    var sumDiv = document.getElementById('strategy-summary');
+    var html = '<table style="width:auto; font-size:0.95rem;">';
+    html += '<thead><tr><th></th><th style="padding-right:1.5rem;">Strategy</th><th style="text-align:right;padding-left:1.5rem;">Mean IC</th><th style="text-align:right;padding-left:1.5rem;">vs production</th><th style="text-align:right;padding-left:1.5rem;">'+modelICPointUnitLabel(data, true)+'</th></tr></thead><tbody>';
+    var prodIC = summary.production ? summary.production.mean_ic : null;
+
+    // Find hindsight-best single model from PIT summary
+    var pitSummary = data.summary || {};
+    var hindsightBest = null, hindsightIC = -Infinity;
+    Object.keys(pitSummary).forEach(function(m) {
+      if (m === 'ensemble') return;
+      if (pitSummary[m].mean_ic > hindsightIC) { hindsightIC = pitSummary[m].mean_ic; hindsightBest = m; }
+    });
+
+    // Count which models the dynamic strategy picked
+    var bestPicks = {};
+    (strategies.best_single_dynamic || []).forEach(function(d) {
+      if (d.model) bestPicks[d.model] = (bestPicks[d.model] || 0) + 1;
+    });
+
+    ordered.forEach(function(name){
+      var s = summary[name];
+      if (!s) return;
+      var color = STRATEGY_COLORS[name] || C.dim;
+      var cls = s.mean_ic>=0 ? 'positive' : 'negative';
+      var lift = '';
+      if (prodIC !== null && name !== 'production' && Math.abs(prodIC) > 1e-6) {
+        var liftPct = ((s.mean_ic - prodIC) / Math.abs(prodIC)) * 100;
+        var liftCls = liftPct>0 ? 'positive' : 'negative';
+        lift = '<span class="'+liftCls+'">'+(liftPct>=0?'+':'')+liftPct.toFixed(0)+'%</span>';
+      } else if (name === 'production') {
+        lift = '<span style="color:'+C.dim+';">baseline</span>';
+      }
+      // Build detail for dynamic best
+      var detail = '';
+      if (name === 'best_single_dynamic' && Object.keys(bestPicks).length > 0) {
+        var picks = Object.keys(bestPicks).sort(function(a,b){return bestPicks[b]-bestPicks[a];})
+          .map(function(m){return m+'×'+bestPicks[m];}).join(', ');
+        detail = '<div style="font-size:0.7rem;color:'+C.dim+';margin-top:2px;">Picked: '+picks+'</div>';
+        if (hindsightBest) {
+          detail += '<div style="font-size:0.7rem;color:'+C.dim+';">Hindsight best: '+hindsightBest+' ('+(hindsightIC>=0?'+':'')+hindsightIC.toFixed(4)+')</div>';
+        }
+      }
+      var stState = stratVis(name);
+      var stRowCls = stState === 'highlighted' ? 'row-highlight'
+                  : stState === 'hidden' ? 'row-hidden' : '';
+      html += '<tr data-strategy="'+name+'" class="'+stRowCls+'">'+
+        '<td style="padding:0.45rem 0;"><span style="display:inline-block;width:18px;height:3px;background:'+color+';vertical-align:middle;"></span></td>'+
+        '<td style="padding:0.45rem 1.5rem 0.45rem 0;">'+STRATEGY_LABELS[name]+detail+'</td>'+
+        '<td class="'+cls+'" style="padding:0.45rem 0;text-align:right;padding-left:1.5rem;font-variant-numeric:tabular-nums;">'+(s.mean_ic>=0?'+':'')+s.mean_ic.toFixed(4)+'</td>'+
+        '<td style="padding:0.45rem 0;text-align:right;padding-left:1.5rem;font-variant-numeric:tabular-nums;">'+lift+'</td>'+
+        '<td style="padding:0.45rem 0;text-align:right;padding-left:1.5rem;font-variant-numeric:tabular-nums;color:'+C.dim+';">'+summaryPointCount(s)+'</td>'+
+        '</tr>';
+    });
+    html += '</tbody></table>';
+    html += '<div style="margin-top:0.3rem;font-size:0.75rem;color:'+C.dim+';font-style:italic;">Click a row to cycle: normal → highlight → hidden.</div>';
+    sumDiv.innerHTML = html;
+
+    sumDiv.querySelectorAll('tr[data-strategy]').forEach(function(tr) {
+      tr.addEventListener('click', function() {
+        var nm = tr.getAttribute('data-strategy');
+        var cur = stratOwn.stratStates[nm] || 'normal';
+        if (cur === 'normal') stratOwn.stratStates[nm] = 'highlighted';
+        else if (cur === 'highlighted') stratOwn.stratStates[nm] = 'hidden';
+        else stratOwn.stratStates[nm] = 'normal';
+        renderStrategyChart();
+      });
+    });
+  }
+
+  // ════════════════════════════════════════════════════════════════
+  // PIT SUMMARY TABLE — with consistency metrics
+  // ════════════════════════════════════════════════════════════════
+  function renderPITSummary() {
+    var pitOwn = chartStates.pit;
+    var el = document.getElementById('pit-summary-table');
+    var data = pitOwn.data;
+    if (!data || !data.summary) { el.innerHTML='<div class="loading">No data</div>'; return; }
+
+    var summary = data.summary;
+    var weights = data.current_weights || {};
+    var models = Object.keys(summary).sort(function(a,b){
+      return (summary[b].mean_ic||0)-(summary[a].mean_ic||0);
+    });
+
+    // Wider, taller cells with larger fonts
+    var html = '<table style="font-size:0.95rem;">';
+    html += '<thead><tr>'+
+      '<th style="padding:0.5rem 0.75rem;">Model</th>'+
+      '<th style="padding:0.5rem 0.75rem;">Mean IC</th>'+
+      '<th style="padding:0.5rem 0.75rem;">Median</th>'+
+      '<th style="padding:0.5rem 0.75rem;">Stdev</th>'+
+      '<th style="padding:0.5rem 0.75rem;">Pos / Neg '+modelICPointUnitLabel(data, false)+'</th>'+
+      '<th style="padding:0.5rem 0.75rem;">Min / Max IC</th>'+
+      '<th style="padding:0.5rem 0.75rem;">IC Range</th>'+
+      '<th style="padding:0.5rem 0.75rem;">Weight</th>'+
+      '</tr></thead><tbody>';
+
+    // IC Range bar — one shared scale across all models so bar lengths
+    // are visually comparable row-to-row.
+    var maxRange = 0;
+    models.forEach(function(m) {
+      var s = summary[m];
+      if (s && s.min_ic != null && s.max_ic != null) {
+        maxRange = Math.max(maxRange, s.max_ic - s.min_ic);
+      }
+    });
+    if (maxRange === 0) maxRange = 1;
+
+    models.forEach(function(model){
+      var s = summary[model];
+      var color = mc(model);
+      var cls = s.mean_ic>0 ? 'positive' : s.mean_ic<0 ? 'negative' : '';
+      var nPoints = summaryPointCount(s);
+      var positivePoints = summaryPositivePoints(s);
+      var negativePoints = summaryNegativePoints(s);
+      var consistent = nPoints>0 ? Math.round(100 * positivePoints / nPoints) : 0;
+      var consistentCls = consistent>=80 ? 'positive' : consistent<=20 ? 'negative' : '';
+      var w = weights[model];
+      var wStr = '—';
+      if (w !== undefined && w !== null) {
+        // Visual weight bar (max bar at 1.5)
+        var pct = Math.min(100, (w / 1.5) * 100);
+        var barColor = w >= 1.0 ? C.greenBr : w >= 0.5 ? C.tan : C.dim;
+        wStr = '<div style="display:flex;align-items:center;gap:0.5rem;">'+
+          '<span style="font-variant-numeric:tabular-nums;min-width:2.6em;">'+w.toFixed(2)+'</span>'+
+          '<div style="width:60px;height:6px;background:'+C.border+';border-radius:1px;">'+
+          '<div style="width:'+pct+'%;height:6px;background:'+barColor+';border-radius:1px;"></div>'+
+          '</div></div>';
+      } else if (model === 'ensemble') {
+        wStr = '<span style="color:'+C.dim+';">(output)</span>';
+      }
+
+      var nameWt = model==='ensemble' ? 500 : 400;
+      var pitModeState = pitVis(model);
+      var pitRowCls = pitModeState === 'highlighted' ? 'row-highlight'
+                   : pitModeState === 'hidden' ? 'row-hidden' : '';
+      // IC Range visual bar — shows spread from min to max, with a zero
+      // tick if the range straddles 0.
+      var range = (s.max_ic != null && s.min_ic != null) ? (s.max_ic - s.min_ic) : 0;
+      var barWidth = range > 0 ? Math.max(30, Math.min(160, (range / maxRange) * 160)) : 30;
+      var zeroPct = (s.min_ic < 0 && s.max_ic > 0 && range > 0)
+        ? ((-s.min_ic) / range * 100).toFixed(1)
+        : (s.mean_ic >= 0 ? 0 : 100);
+      var rangeBar =
+        '<div style="width:'+barWidth+'px;height:5px;background:'+C.border+';position:relative;border-radius:1px;">'+
+          '<div style="position:absolute;left:'+zeroPct+'%;top:0;width:1px;height:5px;background:'+C.olive+';"></div>'+
+        '</div>';
+
+      var medianStr = (s.median_ic != null) ? ((s.median_ic>=0?'+':'')+s.median_ic.toFixed(4)) : '—';
+      var stdevStr  = (s.stdev != null) ? s.stdev.toFixed(4) : '—';
+
+      html += '<tr data-model="'+model+'" class="'+pitRowCls+'" style="line-height:1.7;">'+
+        '<td style="padding:0.5rem 0.75rem;color:'+color+';font-weight:'+nameWt+';">'+
+        '<span style="display:inline-block;width:9px;height:9px;background:'+color+';border-radius:1px;margin-right:8px;vertical-align:middle;"></span>'+
+        (model==='ensemble' ? '<b>'+model+'</b>' : model)+'</td>'+
+        '<td class="'+cls+'" style="padding:0.5rem 0.75rem;font-variant-numeric:tabular-nums;">'+(s.mean_ic>=0?'+':'')+s.mean_ic.toFixed(4)+'</td>'+
+        '<td style="padding:0.5rem 0.75rem;font-variant-numeric:tabular-nums;">'+medianStr+'</td>'+
+        '<td style="padding:0.5rem 0.75rem;font-variant-numeric:tabular-nums;">'+stdevStr+'</td>'+
+        '<td class="'+consistentCls+'" style="padding:0.5rem 0.75rem;font-variant-numeric:tabular-nums;">'+positivePoints+' / '+negativePoints+' <span style="color:'+C.dim+';">('+consistent+'%+)</span></td>'+
+        '<td style="padding:0.5rem 0.75rem;font-variant-numeric:tabular-nums;"><span class="negative">'+s.min_ic.toFixed(3)+'</span> / <span class="positive">'+(s.max_ic>=0?'+':'')+s.max_ic.toFixed(3)+'</span></td>'+
+        '<td style="padding:0.5rem 0.75rem;">'+rangeBar+'</td>'+
+        '<td style="padding:0.5rem 0.75rem;">'+wStr+'</td>'+
+        '</tr>';
+    });
+    html += '</tbody></table>';
+
+    // Footer with metadata
+    if (data.weights_meta) {
+      var m = data.weights_meta;
+      html += '<div style="margin-top:1rem;font-size:0.85rem;color:'+C.dim+';font-style:italic;">'+
+        'Ensemble weights v'+(m.version||'?')+
+        ' &middot; last reviewed '+(m.last_reviewed||'?')+
+        ' &middot; next review '+(m.next_review||'?')+
+        ' &middot; <code>scripts/recompute_ensemble_weights.py</code> updates from this same data.'+
+        '</div>';
+    }
+    html += '<div style="margin-top:0.3rem;font-size:0.75rem;color:'+C.dim+';font-style:italic;">'+
+      'Click a row to cycle: normal → highlight → hidden.</div>';
+    el.innerHTML = html;
+
+    el.querySelectorAll('tr[data-model]').forEach(function(tr) {
+      tr.addEventListener('click', function() {
+        var mm = tr.getAttribute('data-model');
+        cyclePITModelState(mm);
+        renderPITChart();
+        renderPITSummary();
+        renderPITSpreadChart();
+        renderPITSpreadSummary();
+      });
+    });
+  }
+
+  // ════════════════════════════════════════════════════════════════
+  // PIT SPREAD CHART (mirrors renderPITChart — y is percentage points)
+  // ════════════════════════════════════════════════════════════════
+  function renderPITSpreadChart() {
+    var pitOwn = chartStates.pit;
+    var container = document.getElementById('pit-spread-chart');
+    if (!container) return;
+    container.innerHTML = '';
+    var data = pitOwn.data;
+    if (!data || !data.spread_series) {
+      container.innerHTML = '<div class="loading">No spread data</div>';
+      return;
+    }
+    var series = data.spread_series;
+    var icSummary = data.summary || {};
+    var sprSummary = data.spread_summary || {};
+
+    var modelsRanked = Object.keys(icSummary).filter(function(m){return m!=='ensemble';})
+      .sort(function(a,b){return (icSummary[b].mean_ic||0)-(icSummary[a].mean_ic||0);});
+    var allModels = ['ensemble'].concat(modelsRanked);
+    allModels = allModels.filter(function(m){return series[m] && series[m].length>0;});
+    var displayed = allModels.filter(function(m){ return pitVis(m) !== 'hidden'; });
+    var anyHighlighted = allModels.some(function(m){ return pitVis(m) === 'highlighted'; });
+
+    if (displayed.length === 0) {
+      container.innerHTML = '<div class="loading">All models hidden — click a summary row to show</div>';
+      return;
+    }
+
+    var allDates = new Set();
+    displayed.forEach(function(m){
+      series[m].forEach(function(d){ if (d.spread != null) allDates.add(d.date); });
+    });
+    var dates = Array.from(allDates).sort();
+    if (pitOwn.zoomRange) {
+      var zr = pitOwn.zoomRange;
+      dates = dates.filter(function(d){ return d >= zr.from && d <= zr.to; });
+    }
+    if (dates.length===0) {
+      container.innerHTML='<div class="loading">'+(pitOwn.zoomRange?'No '+modelICPointUnitLabel(data, false)+' in zoom window — double-click to reset':'No spread data points')+'</div>';
+      return;
+    }
+
+    var margin = {top:20, right:30, bottom:40, left:72};
+    var rect = container.getBoundingClientRect();
+    var width = rect.width - margin.left - margin.right;
+    var chartH = 300;
+    var height = chartH - margin.top - margin.bottom;
+
+    var svg = d3.select(container).append('svg')
+      .attr('width', width+margin.left+margin.right)
+      .attr('height', chartH);
+    var g = svg.append('g').attr('transform','translate('+margin.left+','+margin.top+')');
+
+    var x = d3.scalePoint().domain(dates).range([0,width]).padding(0.3);
+    var allVals = [];
+    displayed.forEach(function(m){
+      series[m].forEach(function(d){ if (d.spread != null) allVals.push(d.spread); });
+    });
+    var yExtent = d3.extent(allVals);
+    if (yExtent[0] == null) { yExtent = [-1, 1]; }
+    var yPad = Math.max(0.5, (yExtent[1]-yExtent[0])*0.15);
+    var y = d3.scaleLinear().domain([yExtent[0]-yPad, yExtent[1]+yPad]).range([height,0]);
+
+    g.selectAll('.grid-line-h').data(y.ticks(5)).enter()
+      .append('line').attr('class','grid-line')
+      .attr('x1',0).attr('x2',width)
+      .attr('y1',function(d){return y(d);}).attr('y2',function(d){return y(d);});
+
+    if (yExtent[0]<0 && yExtent[1]>0) {
+      g.append('line').attr('x1',0).attr('x2',width).attr('y1',y(0)).attr('y2',y(0))
+        .attr('stroke',C.olive).attr('stroke-width',1.2).attr('stroke-dasharray','4,3');
+    }
+
+    var maxTicks = Math.max(1, Math.floor(width/85));
+    var tickStep = Math.max(1, Math.ceil(dates.length/maxTicks));
+    var tickVals = dates.filter(function(_,i){return i%tickStep===0;});
+    g.append('g').attr('class','axis').attr('transform','translate(0,'+height+')')
+      .call(d3.axisBottom(x).tickValues(tickVals).tickFormat(function(d){
+        return modelICDateTick(d);
+      }))
+      .selectAll('text').attr('font-size','12px');
+    g.append('g').attr('class','axis').call(d3.axisLeft(y).ticks(5).tickFormat(function(d){return d.toFixed(1)+' pp';}))
+      .selectAll('text').attr('font-size','12px');
+    g.append('text').attr('transform','rotate(-90)')
+      .attr('y',-56).attr('x',-height/2)
+      .attr('text-anchor','middle').attr('fill',C.dim).attr('font-size','12px')
+      .attr('font-family','Outfit, system-ui, sans-serif').text('% spread (pp)');
+
+    var line = d3.line()
+      .defined(function(d){return d.spread != null;})
+      .x(function(d){return x(d.date);}).y(function(d){return y(d.spread);})
+      .curve(d3.curveMonotoneX);
+
+    var dateModelMap = {};
+    displayed.forEach(function(model) {
+      series[model].forEach(function(d) {
+        if (!dateModelMap[d.date]) dateModelMap[d.date] = {};
+        dateModelMap[d.date][model] = d;
+      });
+    });
+
+    displayed.forEach(function(model){
+      var sd = series[model].filter(function(d){return d.spread != null;});
+      var color = mc(model);
+      var isEns = model==='ensemble';
+      var isHi = pitVis(model) === 'highlighted';
+      var dimmed = anyHighlighted && !isHi;
+      var baseWidth = isEns ? 3.5 : 1.8;
+      var widthV = isHi ? (isEns ? 4.5 : 2.8) : baseWidth;
+      var baseOpacity = isEns ? 1 : 0.75;
+      var opacity = dimmed ? 0.22 : (isHi ? 1 : baseOpacity);
+      g.append('path').datum(sd)
+        .attr('fill','none').attr('stroke',color)
+        .attr('stroke-width', widthV).attr('stroke-opacity', opacity)
+        .attr('d', line);
+    });
+
+    // Tooltip overlay (no drag-zoom — shared zoom is controlled from the IC chart).
+    var tooltip = document.getElementById('chart-tooltip');
+    var vline = g.append('line').attr('y1', 0).attr('y2', height)
+      .attr('stroke', C.borderLight).attr('stroke-width', 1).style('display', 'none');
+    var overlay = g.append('rect').attr('width', width).attr('height', height)
+      .attr('fill', 'none').attr('pointer-events', 'all').style('cursor', 'crosshair');
+
+    function nearestDateIdxSp(px) {
+      var minDist = Infinity, idx = 0;
+      dates.forEach(function(d, i) {
+        var dist = Math.abs(x(d) - px);
+        if (dist < minDist) { minDist = dist; idx = i; }
+      });
+      return idx;
+    }
+
+    overlay.on('mousemove', function(event) {
+      var mx = d3.pointer(event)[0];
+      var idx = nearestDateIdxSp(mx);
+      var snapDate = dates[idx];
+      vline.attr('x1', x(snapDate)).attr('x2', x(snapDate)).style('display', null);
+      if (!tooltip) return;
+      var html = '<div style="font-weight:500;margin-bottom:4px;">' + modelICDateFull(snapDate) + '</div>';
+      var dayData = dateModelMap[snapDate] || {};
+      var entries = displayed.filter(function(m){return dayData[m] && dayData[m].spread != null;}).map(function(m){
+        return { name: m, v: dayData[m].spread, low: !!dayData[m].low_sample, color: mc(m) };
+      }).sort(function(a,b){
+        if (a.name==='ensemble') return -1;
+        if (b.name==='ensemble') return 1;
+        return b.v-a.v;
+      });
+      entries.forEach(function(e) {
+        var isBold = e.name === 'ensemble' ? 'font-weight:500;' : '';
+        var cls = e.v>=0 ? 'positive' : 'negative';
+        var star = e.low ? '<span title="n &lt; 2*N">*</span>' : '';
+        html += '<div style="display:flex;gap:8px;font-size:0.65rem;'+isBold+'">' +
+          '<span style="flex:1;color:'+e.color+';">'+(e.name==='ensemble'?'<b>'+e.name+'</b>':e.name)+'</span>' +
+          '<span class="'+cls+'" style="width:72px;text-align:right;">'+(e.v>=0?'+':'')+e.v.toFixed(2)+' pp'+star+'</span></div>';
+      });
+      tooltip.innerHTML = html;
+      tooltip.style.display = 'block';
+      tooltip.style.left = (event.clientX + 16) + 'px';
+      tooltip.style.top = (event.clientY - 10) + 'px';
+    });
+    overlay.on('mouseleave', function() {
+      if (tooltip) tooltip.style.display = 'none';
+      vline.style('display', 'none');
+    });
+  }
+
+  // ════════════════════════════════════════════════════════════════
+  // PIT SPREAD SUMMARY TABLE — mirrors renderPITSummary (pp units)
+  // ════════════════════════════════════════════════════════════════
+  function renderPITSpreadSummary() {
+    var pitOwn = chartStates.pit;
+    var el = document.getElementById('pit-spread-table');
+    if (!el) return;
+    var data = pitOwn.data;
+    if (!data || !data.spread_summary) { el.innerHTML='<div class="loading">No spread data</div>'; return; }
+    var summary = data.spread_summary;
+    var models = Object.keys(summary).sort(function(a,b){
+      return (summary[b].mean_spread||0)-(summary[a].mean_spread||0);
+    });
+
+    var html = '<table style="font-size:0.95rem;">';
+    html += '<thead><tr>'+
+      '<th style="padding:0.5rem 0.75rem;">Model</th>'+
+      '<th style="padding:0.5rem 0.75rem;">Mean Spread</th>'+
+      '<th style="padding:0.5rem 0.75rem;">Median</th>'+
+      '<th style="padding:0.5rem 0.75rem;">Stdev</th>'+
+      '<th style="padding:0.5rem 0.75rem;">Pos / Neg '+modelICPointUnitLabel(data, false)+'</th>'+
+      '<th style="padding:0.5rem 0.75rem;">Min / Max</th>'+
+      '<th style="padding:0.5rem 0.75rem;">Spread Range</th>'+
+      '<th style="padding:0.5rem 0.75rem;">Best '+(modelICPointUnit(data)==='runs'?'Run':'Date')+'</th>'+
+      '</tr></thead><tbody>';
+
+    var maxRange = 0;
+    models.forEach(function(m) {
+      var s = summary[m];
+      if (s && s.min_spread != null && s.max_spread != null) {
+        maxRange = Math.max(maxRange, s.max_spread - s.min_spread);
+      }
+    });
+    if (maxRange === 0) maxRange = 1;
+
+    function fmtPP(v) {
+      if (v == null) return '—';
+      return (v>=0?'+':'')+v.toFixed(2)+' pp';
+    }
+
+    models.forEach(function(model){
+      var s = summary[model];
+      var color = mc(model);
+      var cls = s.mean_spread>0 ? 'positive' : s.mean_spread<0 ? 'negative' : '';
+      var nPoints = summaryPointCount(s);
+      var positivePoints = summaryPositivePoints(s);
+      var negativePoints = summaryNegativePoints(s);
+      var consistent = nPoints>0 ? Math.round(100 * positivePoints / nPoints) : 0;
+      var consistentCls = consistent>=80 ? 'positive' : consistent<=20 ? 'negative' : '';
+      var nameWt = model==='ensemble' ? 500 : 400;
+      var pitModeState = pitVis(model);
+      var pitRowCls = pitModeState === 'highlighted' ? 'row-highlight'
+                   : pitModeState === 'hidden' ? 'row-hidden' : '';
+      var range = (s.max_spread != null && s.min_spread != null) ? (s.max_spread - s.min_spread) : 0;
+      var barWidth = range > 0 ? Math.max(30, Math.min(160, (range / maxRange) * 160)) : 30;
+      var zeroPct = (s.min_spread < 0 && s.max_spread > 0 && range > 0)
+        ? ((-s.min_spread) / range * 100).toFixed(1)
+        : (s.mean_spread >= 0 ? 0 : 100);
+      var rangeBar =
+        '<div style="width:'+barWidth+'px;height:5px;background:'+C.border+';position:relative;border-radius:1px;">'+
+          '<div style="position:absolute;left:'+zeroPct+'%;top:0;width:1px;height:5px;background:'+C.olive+';"></div>'+
+        '</div>';
+
+      var medianStr = (s.median_spread != null) ? fmtPP(s.median_spread) : '—';
+      var stdevStr  = (s.stdev != null) ? s.stdev.toFixed(2)+' pp' : '—';
+
+      html += '<tr data-model="'+model+'" class="'+pitRowCls+'" style="line-height:1.7;">'+
+        '<td style="padding:0.5rem 0.75rem;color:'+color+';font-weight:'+nameWt+';">'+
+        '<span style="display:inline-block;width:9px;height:9px;background:'+color+';border-radius:1px;margin-right:8px;vertical-align:middle;"></span>'+
+        (model==='ensemble' ? '<b>'+model+'</b>' : model)+'</td>'+
+        '<td class="'+cls+'" style="padding:0.5rem 0.75rem;font-variant-numeric:tabular-nums;">'+fmtPP(s.mean_spread)+'</td>'+
+        '<td style="padding:0.5rem 0.75rem;font-variant-numeric:tabular-nums;">'+medianStr+'</td>'+
+        '<td style="padding:0.5rem 0.75rem;font-variant-numeric:tabular-nums;">'+stdevStr+'</td>'+
+        '<td class="'+consistentCls+'" style="padding:0.5rem 0.75rem;font-variant-numeric:tabular-nums;">'+positivePoints+' / '+negativePoints+' <span style="color:'+C.dim+';">('+consistent+'%+)</span></td>'+
+        '<td style="padding:0.5rem 0.75rem;font-variant-numeric:tabular-nums;"><span class="negative">'+s.min_spread.toFixed(2)+'</span> / <span class="positive">'+(s.max_spread>=0?'+':'')+s.max_spread.toFixed(2)+'</span></td>'+
+        '<td style="padding:0.5rem 0.75rem;">'+rangeBar+'</td>'+
+        '<td style="padding:0.5rem 0.75rem;color:'+C.dim+';font-size:0.8rem;">'+modelICDateFull(summaryBestPoint(s))+'</td>'+
+        '</tr>';
+    });
+    html += '</tbody></table>';
+    html += '<div style="margin-top:0.3rem;font-size:0.75rem;color:'+C.dim+';font-style:italic;">'+
+      'Top '+(data.spread_n || 25)+' − bot '+(data.spread_n || 25)+' mean forward-return spread (pp). '+
+      'Click a row to cycle: normal → highlight → hidden.</div>';
+    el.innerHTML = html;
+
+    el.querySelectorAll('tr[data-model]').forEach(function(tr) {
+      tr.addEventListener('click', function() {
+        var mm = tr.getAttribute('data-model');
+        cyclePITModelState(mm);
+        renderPITChart();
+        renderPITSummary();
+        renderPITSpreadChart();
+        renderPITSpreadSummary();
+      });
+    });
+  }
+
+  // ════════════════════════════════════════════════════════════════
+  // SPREAD HEATMAP (mirror of renderHeatmap; diverging green/red at ±5pp)
+  // ════════════════════════════════════════════════════════════════
+  function renderSpreadHeatmap() {
+    var heatOwn = chartStates.heat;
+    var container = document.getElementById('spread-heatmap');
+    if (!container) return;
+    container.innerHTML = '';
+    var data = heatOwn.data;
+    if (!data || !data.spread_series || !data.spread_summary) { return; }
+
+    var series = data.spread_series;
+    var summary = data.spread_summary;
+
+    var models = Object.keys(summary).sort(function(a,b){
+      return (summary[b].mean_spread||0) - (summary[a].mean_spread||0);
+    });
+
+    var dateSet = new Set();
+    models.forEach(function(m){series[m].forEach(function(d){dateSet.add(d.date);});});
+    var dates = Array.from(dateSet).sort();
+    if (models.length===0 || dates.length===0) {
+      container.innerHTML = '<div class="loading">No spread data</div>'; return;
+    }
+
+    var margin = {top:25, right:30, bottom:110, left:230};
+    var rect = container.getBoundingClientRect();
+    var width = rect.width - margin.left - margin.right;
+    var cellH = 32;
+    var height = models.length * cellH;
+
+    var svg = d3.select(container).append('svg')
+      .attr('width', width+margin.left+margin.right)
+      .attr('height', height+margin.top+margin.bottom);
+    var g = svg.append('g').attr('transform','translate('+margin.left+','+margin.top+')');
+
+    var x = d3.scaleBand().domain(dates).range([0,width]).padding(0.05);
+    var y = d3.scaleBand().domain(models).range([0,height]).padding(0.1);
+
+    // Diverging green(+)/grey(0)/red(-). Saturation is data-driven —
+    // matches the IC heatmap pattern so spreads don't pin at a hardcoded
+    // ±5pp when the real range is wider (e.g. −25 pp to +15 pp).
+    var maxAbs = 0;
+    models.forEach(function(m){series[m].forEach(function(d){
+      if (d.spread != null) maxAbs = Math.max(maxAbs, Math.abs(d.spread));
+    });});
+    if (maxAbs === 0) maxAbs = 1;
+    var SAT = maxAbs;
+    var color = d3.scaleLinear()
+      .domain([-SAT, 0, SAT])
+      .range([C.red, '#22231a', C.greenBr])
+      .clamp(true);
+
+    var lookup = {};
+    var lowLookup = {};
+    models.forEach(function(m){
+      lookup[m] = {}; lowLookup[m] = {};
+      series[m].forEach(function(d){
+        if (d.spread != null) lookup[m][d.date]=d.spread;
+        lowLookup[m][d.date] = !!d.low_sample;
+      });
+    });
+
+    // Stripe pattern for low-sample cells
+    var defs = svg.append('defs');
+    var pat = defs.append('pattern').attr('id','low-sample-stripes')
+      .attr('width',6).attr('height',6)
+      .attr('patternUnits','userSpaceOnUse')
+      .attr('patternTransform','rotate(45)');
+    pat.append('rect').attr('width',2).attr('height',6).attr('fill','rgba(255,255,255,0.22)');
+
+    models.forEach(function(model){
+      dates.forEach(function(date){
+        var sp = lookup[model][date];
+        var low = lowLookup[model][date];
+        if (sp === undefined) {
+          g.append('rect').attr('class','ic-cell null')
+            .attr('x',x(date)).attr('y',y(model))
+            .attr('width',x.bandwidth()).attr('height',y.bandwidth())
+            .attr('fill',C.bgCard).attr('stroke',C.border).attr('stroke-width',0.5);
+          return;
+        }
+        g.append('rect')
+          .attr('x',x(date)).attr('y',y(model))
+          .attr('width',x.bandwidth()).attr('height',y.bandwidth())
+          .attr('fill',color(sp))
+          .attr('stroke',C.bg).attr('stroke-width',0.5)
+          .style('cursor','pointer')
+          .on('mouseover',function(e){
+            var tt = document.getElementById('ic-tooltip');
+            tt.innerHTML = '<div class="tooltip-title">'+model+' · '+date+'</div>'+
+              '<div class="tooltip-row"><span class="tooltip-label">Spread</span>'+
+              '<span class="tooltip-value '+(sp>=0?'positive':'negative')+'">'+
+              (sp>=0?'+':'')+sp.toFixed(2)+' pp'+(low?' *':'')+'</span></div>'+
+              (low ? '<div style="font-size:0.7rem;color:'+C.dim+';font-style:italic;">low sample (n &lt; 2×N)</div>' : '');
+            tt.style.display='block';
+            tt.style.left=(e.pageX+16)+'px'; tt.style.top=(e.pageY-10)+'px';
+          })
+          .on('mouseleave',function(){document.getElementById('ic-tooltip').style.display='none';});
+        if (low) {
+          g.append('rect')
+            .attr('x',x(date)).attr('y',y(model))
+            .attr('width',x.bandwidth()).attr('height',y.bandwidth())
+            .attr('fill','url(#low-sample-stripes)')
+            .attr('pointer-events','none');
+        }
+        if (x.bandwidth() > 45) {
+          g.append('text')
+            .attr('x',x(date)+x.bandwidth()/2).attr('y',y(model)+y.bandwidth()/2+4)
+            .attr('text-anchor','middle').attr('font-size','12px')
+            .attr('font-weight','400')
+            .attr('font-family','Outfit, system-ui, sans-serif')
+            .attr('fill', Math.abs(sp) > SAT*0.5 ? C.bg : C.text)
+            .attr('pointer-events','none')
+            .style('font-variant-numeric','tabular-nums')
+            .text((sp>=0?'+':'')+sp.toFixed(1));
+        }
+      });
+    });
+
+    models.forEach(function(model){
+      g.append('rect')
+        .attr('x',-8).attr('y',y(model)+y.bandwidth()/2-8)
+        .attr('width',4).attr('height',14)
+        .attr('fill', mc(model)).attr('rx',1);
+      g.append('text')
+        .attr('x',-14).attr('y',y(model)+y.bandwidth()/2-1)
+        .attr('text-anchor','end').attr('font-size','13px')
+        .attr('font-family','Outfit, system-ui, sans-serif')
+        .attr('fill', mc(model))
+        .attr('font-weight', model==='ensemble' ? 500 : 400)
+        .text(model);
+      var ms = summary[model].mean_spread;
+      g.append('text')
+        .attr('x',-10).attr('y',y(model)+y.bandwidth()/2+13)
+        .attr('text-anchor','end').attr('font-size','11px')
+        .attr('font-family','Outfit, system-ui, sans-serif')
+        .attr('fill', ms>=0 ? C.greenBr : C.red)
+        .style('font-variant-numeric','tabular-nums')
+        .text((ms>=0?'+':'')+ms.toFixed(2)+' pp');
+    });
+
+    var maxXTicks = Math.max(1, Math.floor(width/65));
+    var xStep = Math.max(1, Math.ceil(dates.length/maxXTicks));
+    dates.forEach(function(d,i){
+      if (i%xStep!==0) return;
+      var label = modelICDateTick(d);
+      g.append('text')
+        .attr('x',x(d)+x.bandwidth()/2).attr('y',height+22)
+        .attr('text-anchor','middle').attr('font-size','12px')
+        .attr('font-family','Outfit, system-ui, sans-serif')
+        .attr('fill',C.dim).text(label);
+    });
+
+    var lg = svg.append('g').attr('transform','translate('+(margin.left)+','+(height+margin.top+52)+')');
+    var lgWidth = 240;
+    var lgHeight = 11;
+    var grad = defs.append('linearGradient').attr('id','spread-heatmap-grad');
+    grad.append('stop').attr('offset','0%').attr('stop-color',C.red);
+    grad.append('stop').attr('offset','50%').attr('stop-color','#22231a');
+    grad.append('stop').attr('offset','100%').attr('stop-color',C.greenBr);
+    lg.append('rect').attr('width',lgWidth).attr('height',lgHeight).attr('fill','url(#spread-heatmap-grad)');
+    lg.append('text').attr('x',0).attr('y',lgHeight+15).attr('font-size','11px')
+      .attr('font-family','Outfit, system-ui, sans-serif').attr('fill',C.dim)
+      .style('font-variant-numeric','tabular-nums')
+      .text('−'+SAT.toFixed(0)+' pp');
+    lg.append('text').attr('x',lgWidth/2).attr('y',lgHeight+15).attr('text-anchor','middle')
+      .attr('font-size','11px').attr('font-family','Outfit, system-ui, sans-serif').attr('fill',C.dim).text('0');
+    lg.append('text').attr('x',lgWidth).attr('y',lgHeight+15).attr('text-anchor','end')
+      .attr('font-size','11px').attr('font-family','Outfit, system-ui, sans-serif').attr('fill',C.dim)
+      .style('font-variant-numeric','tabular-nums')
+      .text('+'+SAT.toFixed(0)+' pp');
+    lg.append('text').attr('x',lgWidth+12).attr('y',lgHeight+1).attr('font-size','11px')
+      .attr('font-family','Outfit, system-ui, sans-serif').attr('fill',C.dim)
+      .text('Spread (top '+(data.spread_n||25)+' − bot '+(data.spread_n||25)+')');
+
+    var methLg = svg.append('g')
+      .attr('transform','translate('+margin.left+','+(height+margin.top+52+lgHeight+38)+')');
+    var line1 = (data.mode === 'fixed')
+      ? 'Cell = mean fwd-return of top '+(data.spread_n||25)+' minus bot '+(data.spread_n||25)+
+        ' by model score, close[t+'+data.horizon+'] / close[t] − 1. Fixed '+data.horizon+'-trading-day forward.'
+      : 'Cell = mean fwd-return of top '+(data.spread_n||25)+' minus bot '+(data.spread_n||25)+
+        ' by model score, price_at_prediction to anchor price. Values shift intraday with the latest usable price anchor.';
+    var line2 = 'Hatched cells: low sample (n < 2×N for either bucket). Color saturates at ±'+SAT.toFixed(0)+' pp.';
+    methLg.append('text').attr('x', 0).attr('y', 0)
+      .attr('font-size','10px').attr('font-family','Outfit, system-ui, sans-serif')
+      .attr('fill', C.dim).attr('font-style','italic').text(line1);
+    methLg.append('text').attr('x', 0).attr('y', 14)
+      .attr('font-size','10px').attr('font-family','Outfit, system-ui, sans-serif')
+      .attr('fill', C.dim).attr('font-style','italic').text(line2);
+  }
+
+  // Resize handler — re-render any chart that has data loaded
+  var resizeT;
+  window.addEventListener('resize', function() {
+    clearTimeout(resizeT);
+    resizeT = setTimeout(function() {
+      ['pit', 'heat', 'strat'].forEach(function(c) {
+        if (chartStates[c].data) renderChart(c);
+      });
+    }, 250);
+  });
+
+  // Initial fetch for all three charts (in parallel)
+  loadChart('pit');
+  loadChart('heat');
+  loadChart('strat');
+})();
+
+</script>
+</body>
+</html>

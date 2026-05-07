@@ -1,0 +1,1540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<title>Quorum — Theme Taxonomy</title>
+<script src="/quorum/api-adapter.js"></script>
+<style>html{visibility:hidden;background:#090b09}html.ready{visibility:visible}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500&family=Outfit:wght@200;300;400;500&display=swap" rel="stylesheet">
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<style>
+:root {
+  --bg: #090b09;
+  --bg-elevated: #0c0d09;
+  --bg-card: #131409;
+  --text: #d4cfc3;
+  --text-dim: #7a7868;
+  --text-bright: #ede8db;
+  --cream: #e2dbc8;
+  --green: #7a8a2a;
+  --green-bright: #9aaa3a;
+  --green-dim: #2e3218;
+  --olive: #6b6a3a;
+  --tan: #b49a6e;
+  --border: #22231a;
+  --border-light: #33341f;
+  --red: #c4506a;
+  --red-dim: #a24458;
+  --red-bright: #d4687e;
+  --red-bg: rgba(196,80,106,0.12);
+  --green-bg: rgba(122,138,42,0.10);
+  --amber-bg: rgba(180,154,110,0.10);
+  --serif: 'Playfair Display', Georgia, serif;
+  --sans: 'Outfit', system-ui, sans-serif;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { font-size: 18px; scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-weight: 300;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+::selection { background: var(--green); color: var(--text-bright); }
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  padding: 0.8rem 3rem;
+  border-bottom: 1px solid var(--border);
+}
+.nav-brand {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: 1.5rem;
+  color: var(--text-bright);
+  text-decoration: none;
+  letter-spacing: -0.01em;
+}
+.nav-links { display: flex; gap: 0.2rem; }
+.nav-links a {
+  font-family: var(--sans);
+  font-size: 0.68rem;
+  font-weight: 300;
+  color: var(--text-dim);
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  padding: 0.35rem 0.8rem;
+  border-radius: 2px;
+  transition: color 0.15s, background 0.15s;
+}
+.nav-links a:hover { color: var(--text); background: rgba(255,255,255,0.03); }
+.nav-links a.active { color: var(--green-bright); background: var(--green-bg); border: 1px solid var(--green-dim); }
+
+.dashboard {
+  max-width: 1800px;
+  margin: 0 auto;
+  padding: 2rem 3rem 4rem;
+}
+@media (max-width: 768px) { .dashboard { padding: 1.5rem; } }
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+.header h1 {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: clamp(1.8rem, 3vw, 2.6rem);
+  color: var(--text-bright);
+  letter-spacing: -0.01em;
+}
+.header-meta { text-align: right; font-size: 0.72rem; color: var(--text-dim); letter-spacing: 0.04em; }
+
+.stat-strip { display: flex; gap: 0.6rem; margin-bottom: 2rem; }
+.stat {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  padding: 0.7rem 1.2rem;
+  text-align: center;
+  flex: 1;
+}
+.stat-value {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: 1.3rem;
+  color: var(--text-bright);
+  font-variant-numeric: tabular-nums;
+}
+.stat-label {
+  font-size: 0.55rem;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--text-dim);
+  margin-top: 0.15rem;
+}
+
+.section { margin-bottom: 3rem; }
+.section-label {
+  font-size: 0.62rem;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.25em;
+  color: var(--green);
+  margin-bottom: 1rem;
+}
+.section-title {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: 1.4rem;
+  color: var(--text-bright);
+  margin-bottom: 0.4rem;
+}
+.section-sub {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  margin-bottom: 1.5rem;
+  max-width: 700px;
+}
+
+/* === SUNBURST + DETAIL LAYOUT === */
+.sunburst-card,
+.detail-card,
+.heatmap-card,
+.history-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  padding: 1.5rem;
+  border-radius: 2px;
+}
+.sunburst-card {
+  padding: 1rem;
+  margin: 0 0 1.5rem;
+  /* Box fills the container width and squares its height to match. The page
+     will be tall on wide monitors — that's intentional. */
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#sunburst-viz {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#sunburst-viz svg { display: block; max-width: 100%; max-height: 100%; }
+
+.sunburst-arc {
+  cursor: pointer;
+  transition: fill-opacity 0.15s;
+}
+.sunburst-label {
+  pointer-events: none;
+  user-select: none;
+}
+
+/* === DETAIL PANEL (full-width, below sunburst) === */
+.detail-card {
+  min-height: 200px;
+}
+.detail-empty {
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  font-style: italic;
+  text-align: center;
+  padding: 2rem 1rem;
+}
+
+/* Nav row: back/forward + breadcrumbs */
+.detail-nav-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.8rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px dashed var(--border);
+  flex-wrap: wrap;
+}
+.detail-nav-btns {
+  display: flex;
+  gap: 0.25rem;
+}
+.detail-nav-btn {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 14px;
+  border-radius: 2px;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+  user-select: none;
+}
+.detail-nav-btn:hover:not(.disabled) {
+  color: var(--text-bright);
+  border-color: var(--olive);
+  background: var(--bg-elevated);
+}
+.detail-nav-btn.disabled {
+  color: #3a3a2a;
+  cursor: not-allowed;
+  background: transparent;
+}
+.detail-breadcrumbs {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  letter-spacing: 0.04em;
+  flex: 1;
+  min-width: 0;
+}
+.detail-breadcrumbs a {
+  color: var(--green-bright);
+  text-decoration: none;
+  cursor: pointer;
+  padding: 0.1rem 0.3rem;
+  border-radius: 2px;
+  transition: color 0.15s, background 0.15s;
+}
+.detail-breadcrumbs a:hover {
+  color: var(--text-bright);
+  background: rgba(154,170,58,0.08);
+}
+.detail-breadcrumbs .crumb-current {
+  color: var(--cream);
+  padding: 0.1rem 0.3rem;
+}
+.detail-breadcrumbs .crumb-sep {
+  color: #44443a;
+  margin: 0 0.1rem;
+}
+.detail-breadcrumbs .crumb-root {
+  color: var(--olive);
+  font-style: italic;
+}
+.detail-breadcrumbs a.crumb-home {
+  color: var(--olive);
+  font-style: italic;
+}
+.detail-breadcrumbs a.crumb-home:hover {
+  color: var(--green-bright);
+  font-style: normal;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 2rem;
+}
+@media (max-width: 900px) {
+  .detail-grid { grid-template-columns: 1fr; }
+}
+.detail-header {
+  margin-bottom: 1rem;
+}
+.detail-name {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: 1.7rem;
+  color: var(--text-bright);
+  margin-bottom: 0.2rem;
+}
+.detail-slug {
+  display: inline-block;
+  font-family: var(--sans);
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  text-transform: lowercase;
+  letter-spacing: 0.08em;
+  background: var(--bg);
+  padding: 0.15rem 0.5rem;
+  border-radius: 2px;
+  border: 1px solid var(--border);
+}
+.detail-desc {
+  font-size: 0.82rem;
+  color: var(--text);
+  line-height: 1.6;
+  margin-bottom: 1.2rem;
+  padding: 0.8rem 1rem;
+  background: var(--bg);
+  border-left: 2px solid var(--green-dim);
+  border-radius: 2px;
+}
+.detail-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.7rem;
+  margin-bottom: 1rem;
+}
+@media (max-width: 700px) {
+  .detail-stats { grid-template-columns: 1fr 1fr; }
+}
+.detail-stat {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  padding: 0.7rem 0.9rem;
+  border-radius: 2px;
+}
+.detail-stat-label {
+  font-size: 0.55rem;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-dim);
+}
+.detail-stat-value {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: 1.2rem;
+  color: var(--cream);
+  font-variant-numeric: tabular-nums;
+  margin-top: 0.15rem;
+}
+.detail-children-label {
+  font-size: 0.55rem;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-dim);
+  margin-bottom: 0.5rem;
+}
+.detail-children-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  max-height: 380px;
+  overflow-y: auto;
+  padding-right: 0.3rem;
+}
+.detail-children-list::-webkit-scrollbar { width: 6px; }
+.detail-children-list::-webkit-scrollbar-track { background: var(--bg); }
+.detail-children-list::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 3px; }
+.detail-child-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.4rem 0.7rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  font-size: 0.74rem;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+.detail-child-row:hover {
+  border-color: var(--olive);
+  background: var(--bg-elevated);
+}
+.detail-child-name { color: var(--text); }
+.detail-child-count { color: var(--text-dim); font-variant-numeric: tabular-nums; font-size: 0.7rem; }
+.detail-hint {
+  font-size: 0.6rem;
+  color: var(--text-dim);
+  font-style: italic;
+  text-align: right;
+  margin-top: 0.4rem;
+  letter-spacing: 0.04em;
+}
+
+/* === HEATMAP === */
+.heatmap-card { padding: 1.5rem; }
+.heatmap-controls {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+.heatmap-breadcrumb {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  letter-spacing: 0.05em;
+}
+.heatmap-breadcrumb a {
+  color: var(--green-bright);
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+.heatmap-breadcrumb a:hover { color: var(--text-bright); }
+.heatmap-breadcrumb .sep { margin: 0 0.5rem; color: var(--text-dim); }
+#heatmap-viz svg { width: 100%; display: block; }
+.heatmap-row-label {
+  fill: var(--text-bright);
+  font-family: var(--sans);
+  font-size: 13px;
+  cursor: pointer;
+}
+.heatmap-row-label:hover { fill: var(--cream); }
+.heatmap-row-sub {
+  fill: var(--text-dim);
+  font-family: var(--sans);
+  font-size: 11px;
+}
+.heatmap-axis text {
+  fill: var(--text-dim);
+  font-family: var(--sans);
+  font-size: 11px;
+}
+.heatmap-axis line, .heatmap-axis path { stroke: var(--border); }
+.heatmap-cell { cursor: pointer; }
+.heatmap-x-title {
+  font-size: 12px;
+  fill: var(--text-dim);
+  font-family: var(--sans);
+}
+.heatmap-legend-label {
+  font-size: 11px;
+  fill: var(--text-dim);
+  font-family: var(--sans);
+}
+.heatmap-loading {
+  text-align: center;
+  padding: 3rem;
+  color: var(--text-dim);
+  font-size: 0.78rem;
+  font-style: italic;
+}
+
+/* === HISTORY === */
+.history-card { padding: 1.5rem; }
+.history-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  letter-spacing: 0.05em;
+  margin-bottom: 0.6rem;
+}
+.history-scroll {
+  max-height: 360px;     /* ~10 rows visible */
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+}
+.history-scroll::-webkit-scrollbar { width: 8px; }
+.history-scroll::-webkit-scrollbar-track { background: var(--bg); }
+.history-scroll::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 4px; }
+.history-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.74rem;
+  font-variant-numeric: tabular-nums;
+}
+.history-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  text-align: left;
+  font-size: 0.55rem;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-dim);
+  padding: 0.6rem 0.7rem;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border-light);
+  box-shadow: 0 1px 0 var(--border-light);
+}
+.history-table td {
+  padding: 0.5rem 0.7rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+  vertical-align: top;
+}
+.history-table tbody tr:last-child td { border-bottom: none; }
+.history-table tbody tr:hover td { background: var(--bg-elevated); }
+.history-action {
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--green-bright);
+  white-space: nowrap;
+}
+.history-action.create { color: var(--cream); }
+.history-action.update { color: var(--green-bright); }
+.history-action.merge { color: var(--tan); }
+.history-action.deactivate { color: var(--red); }
+.history-action.move { color: var(--olive); }
+.history-action.rename { color: var(--green-bright); }
+.history-slug {
+  color: var(--text-bright);
+  font-family: var(--sans);
+  font-weight: 400;
+  white-space: nowrap;
+}
+.history-reason { color: var(--text-dim); font-size: 0.72rem; }
+.history-time { color: var(--text-dim); white-space: nowrap; font-size: 0.7rem; }
+
+/* === TOOLTIP === */
+.theme-tooltip {
+  position: fixed;
+  pointer-events: none;
+  background: rgba(19, 20, 9, 0.95);
+  border: 1px solid var(--border-light);
+  padding: 0.5rem 0.7rem;
+  font-size: 0.7rem;
+  color: var(--text);
+  line-height: 1.5;
+  z-index: 1000;
+  max-width: 380px;
+  backdrop-filter: blur(8px);
+  display: none;
+  border-radius: 2px;
+}
+.theme-tooltip-title {
+  font-weight: 400;
+  color: var(--text-bright);
+  margin-bottom: 0.2rem;
+}
+.theme-tooltip-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  font-variant-numeric: tabular-nums;
+}
+.theme-tooltip-label { color: var(--text-dim); }
+
+/* === LOADING === */
+.loading { color: var(--text-dim); font-size: 0.76rem; padding: 2rem; text-align: center; }
+
+/* === FADE IN === */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.fade-in { animation: fadeUp 0.7s ease forwards; opacity: 0; }
+.fade-in:nth-child(1) { animation-delay: 0s; }
+.fade-in:nth-child(2) { animation-delay: 0.1s; }
+.fade-in:nth-child(3) { animation-delay: 0.15s; }
+.fade-in:nth-child(4) { animation-delay: 0.2s; }
+.fade-in:nth-child(5) { animation-delay: 0.25s; }
+
+.refresh-indicator { font-size: 0.55rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.1em; }
+.refresh-dot { display: inline-block; width: 5px; height: 5px; border-radius: 50%; background: var(--green); margin-right: 0.3rem; animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="/" class="nav-brand">Quorum</a>
+  <div class="nav-links">
+    <a href="/">Portfolio</a>
+    <a href="/models">Models</a>
+    <a href="/pipeline">Pipeline</a>
+    <a href="/diagnostics">Diagnostics</a>
+    <a href="/themes" class="active">Themes</a>
+  </div>
+</nav>
+
+<div class="dashboard">
+  <div class="header fade-in">
+    <h1>Theme Taxonomy</h1>
+    <div class="header-meta">
+      <div><span class="refresh-dot"></span><span class="refresh-indicator" id="refresh-status">loading</span></div>
+      <div id="last-refresh" style="margin-top:0.2rem"></div>
+    </div>
+  </div>
+
+  <div class="section fade-in">
+    <div class="section-label">Hierarchy</div>
+    <div class="section-title">Sunburst</div>
+    <div class="section-sub">
+      <strong>Single click</strong> a segment to view its details below. <strong>Double click</strong> to zoom in. Click the center to zoom back out. Inner ring is the active roots; outer rings show subtypes. Segment area is proportional to tag count in the subtree.
+    </div>
+    <div class="sunburst-card">
+      <div id="sunburst-viz"><div class="loading">Loading taxonomy…</div></div>
+    </div>
+    <div class="detail-card">
+      <div id="detail-panel">
+        <div class="detail-empty">Loading…</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section fade-in">
+    <div class="section-label">Coverage profile</div>
+    <div class="section-title">Span position heatmap</div>
+    <div class="section-sub">
+      For each theme (rows), each column shows the average number of spans overlapping that 5% slice of an article's text (normalized to 0&ndash;100%). Click a row to drill into its children. Click "↑ back" to drill up.
+    </div>
+    <div class="heatmap-card">
+      <div class="heatmap-controls">
+        <div class="heatmap-breadcrumb" id="heatmap-breadcrumb"></div>
+      </div>
+      <div id="heatmap-viz"><div class="heatmap-loading">Loading span density…</div></div>
+    </div>
+  </div>
+
+  <div class="section fade-in">
+    <div class="section-label">Audit</div>
+    <div class="section-title">Recent taxonomy changes</div>
+    <div class="section-sub">
+      Last 100 entries from <code>theme_history</code>. Scroll within the table to see older changes — header stays pinned.
+    </div>
+    <div class="history-card">
+      <div class="history-meta" id="history-meta">—</div>
+      <div class="history-scroll" id="history-panel"><div class="loading">Loading history…</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="theme-tooltip" id="tooltip"></div>
+
+<script>
+'use strict';
+document.documentElement.classList.add('ready');
+
+var API = '';
+function fetchJSON(url) {
+  return fetch(API + url).then(function(r) { return r.json(); }).catch(function() { return null; });
+}
+
+function fmtNum(n) {
+  if (n === null || n === undefined) return '—';
+  if (n >= 1e6) return (n/1e6).toFixed(1) + 'M';
+  if (n >= 1e3) return (n/1e3).toFixed(1) + 'K';
+  return n.toLocaleString();
+}
+
+var C = {
+  bg: '#090b09',
+  bgCard: '#131409',
+  text: '#d4cfc3',
+  textDim: '#7a7868',
+  bright: '#ede8db',
+  green: '#7a8a2a',
+  greenBright: '#9aaa3a',
+  greenDim: '#2e3218',
+  olive: '#6b6a3a',
+  tan: '#b49a6e',
+  border: '#22231a',
+  red: '#c4506a',
+};
+
+// ─── Color palette ───────────────────────────────────────────────────
+//
+// We sample N evenly-spaced points from a continuous d3 interpolator (one per
+// root). This adapts automatically as roots are added/removed and avoids any
+// hardcoded slug→color mapping.
+//
+// Available choices (any d3.interpolate*):
+//   d3.interpolateViridis    — purple → blue → green → yellow (default)
+//   d3.interpolateInferno    — black → purple → red → yellow
+//   d3.interpolatePlasma     — purple → red → orange → yellow
+//   d3.interpolateMagma      — black → purple → pink → cream
+//   d3.interpolateCividis    — colorblind-friendly blue → yellow
+//   d3.interpolateTurbo      — blue → cyan → green → yellow → red (max distinct hues)
+//   d3.interpolateCubehelixDefault — perceptually uniform spiral
+//   d3.interpolateWarm / interpolateCool
+//   d3.interpolateRainbow    — full hue spectrum
+// Or use a discrete scheme:
+//   d3.scaleOrdinal(d3.schemeTableau10)  — qualitative, 10 distinct
+//   d3.scaleOrdinal(d3.schemeCategory10) — classic
+var COLORMAP = d3.interpolateViridis;
+// Trim the very-dark and very-light ends to keep contrast against the dark bg
+var COLORMAP_TRIM = [0.12, 0.92];
+
+// ─── Heatmap colormap ────────────────────────────────────────────────
+//
+// Sequential colormap for the span-position heatmap. The default uses the
+// project's own palette (dark olive → olive → bright green → cream) so it
+// feels native to the dashboard. Easy alternates:
+//
+//   d3.interpolateGreens       — single-hue green (light bg friendly; on dark
+//                                bg, low values may fade in)
+//   d3.interpolateViridis      — same as sunburst (cohesion option)
+//   d3.interpolateInferno      — black → purple → red → yellow
+//   d3.interpolateMagma        — black → purple → pink → cream
+//   d3.interpolateYlGnBu       — yellow → green → blue (the previous default)
+//   d3.interpolateCubehelixDefault — perceptually uniform spiral
+//
+// To use a different one, replace HEATMAP_COLORMAP below with the d3 fn.
+var HEATMAP_COLORMAP = (function() {
+  var scale = d3.scaleLinear()
+    .domain([0, 0.20, 0.50, 0.80, 1.0])
+    .range(['#1c1d12', '#383b1c', '#6b6a3a', '#9aaa3a', '#e2dbc8'])
+    .interpolate(d3.interpolateRgb);
+  return function(t) { return scale(Math.max(0, Math.min(1, t))); };
+})();
+
+var ROOT_COLOR_CACHE = {};   // slug → base color (recomputed per render)
+
+function buildRootColors(roots) {
+  ROOT_COLOR_CACHE = {};
+  var n = roots.length;
+  roots.forEach(function(r, i) {
+    var t = n > 1
+      ? COLORMAP_TRIM[0] + (COLORMAP_TRIM[1] - COLORMAP_TRIM[0]) * (i / (n - 1))
+      : 0.5;
+    ROOT_COLOR_CACHE[r.slug || r.data.slug] = COLORMAP(t);
+  });
+}
+
+function colorForNode(d) {
+  // Walk up to find the root, then use root color (lighter for deeper levels)
+  var node = d;
+  while (node.depth > 1) node = node.parent;
+  var rootSlug = node.data.slug;
+  var base = ROOT_COLOR_CACHE[rootSlug] || COLORMAP(0.5);
+  var lighten = Math.min(0.55, (d.depth - 1) * 0.13);
+  return d3.color(base).brighter(lighten).formatHex();
+}
+
+// ─── State ───────────────────────────────────────────────────────────
+var TREE = null;
+var TOOLTIP = document.getElementById('tooltip');
+
+function showTooltip(html, ev) {
+  TOOLTIP.innerHTML = html;
+  TOOLTIP.style.display = 'block';
+  TOOLTIP.style.left = (ev.clientX + 14) + 'px';
+  TOOLTIP.style.top = (ev.clientY - 10) + 'px';
+}
+function moveTooltip(ev) {
+  TOOLTIP.style.left = (ev.clientX + 14) + 'px';
+  TOOLTIP.style.top = (ev.clientY - 10) + 'px';
+}
+function hideTooltip() { TOOLTIP.style.display = 'none'; }
+
+// ─── Sunburst (cadence pattern) ──────────────────────────────────────
+function renderSunburst(treeData) {
+  var container = document.getElementById('sunburst-viz');
+  container.innerHTML = '';
+
+  // Build color cache from this tree's roots (children of the synthetic root)
+  buildRootColors(treeData.children || []);
+
+  // The sunburst card is squared via CSS aspect-ratio, so the container's
+  // clientWidth and clientHeight are equal. Use the smaller in case the
+  // browser hasn't fully laid out yet.
+  var rect = container.getBoundingClientRect();
+  var width = Math.floor(Math.min(rect.width || 0, rect.height || 0));
+  if (!width || width < 400) width = 600;
+  var height = width;
+  var radius = width / 2;
+
+  var svg = d3.select(container)
+    .append('svg')
+    .attr('viewBox', '0 0 ' + width + ' ' + height)
+    .attr('width', width)
+    .attr('height', height)
+    .style('display', 'block')
+    .style('font-family', 'Outfit, sans-serif');
+
+  var g = svg.append('g')
+    .attr('transform', 'translate(' + width/2 + ',' + height/2 + ')');
+
+  var root = d3.hierarchy(treeData)
+    .sum(function(d) {
+      // Every node contributes its own direct tags. For leaves this is their
+      // full count; for parents this shows their direct-tagged portion as a
+      // slice alongside their children. This way adding children to a heavy
+      // parent doesn't make its 59K direct tags vanish from the viz.
+      return Math.max(d.tags || 0, d.children && d.children.length ? 0 : 1);
+    })
+    .sort(function(a, b) { return b.value - a.value; });
+
+  var partition = d3.partition().size([2*Math.PI, radius]);
+  partition(root);
+
+  // Re-index nodes for the detail panel (so child-row navigation uses the
+  // same node objects as the sunburst click handlers)
+  indexNodes(root);
+
+  root.each(function(d) {
+    d.current = { x0: d.x0, x1: d.x1, y0: d.y0, y1: d.y1 };
+  });
+
+  var arc = d3.arc()
+    .startAngle(function(d) { return d.current.x0; })
+    .endAngle(function(d) { return d.current.x1; })
+    .padAngle(function(d) { return Math.min((d.current.x1 - d.current.x0)/2, 0.005); })
+    .padRadius(radius/2)
+    .innerRadius(function(d) { return d.current.y0; })
+    .outerRadius(function(d) { return Math.max(d.current.y0, d.current.y1 - 1); });
+
+  function arcVisible(d) {
+    return d.y1 > 0 && d.y0 < radius && d.x1 > d.x0 + 0.001;
+  }
+
+  function labelVisible(d) {
+    var bandThickness = d.y1 - d.y0;
+    return d.y1 > 0 && d.y0 > bandThickness * 0.3 && d.y0 < radius
+      && (d.x1 - d.x0) > 0.04 && bandThickness > 16;
+  }
+
+  function labelTransform(d) {
+    var x = (d.x0 + d.x1) / 2 * 180 / Math.PI;
+    var y = (d.y0 + d.y1) / 2;
+    return 'rotate(' + (x - 90) + ') translate(' + y + ',0) rotate(' + (x < 180 ? 0 : 180) + ')';
+  }
+
+  function truncateLabel(name, arcWidth, bandHeight) {
+    var availablePx = Math.min(arcWidth, bandHeight || arcWidth);
+    // Calibrated for ~14px font: average char width is ~7px on the chosen font
+    var charsPerPx = 0.13;
+    var maxChars = Math.floor(availablePx * charsPerPx);
+    if (maxChars < 3) return '';
+    if (name.length <= maxChars) return name;
+    return name.substring(0, maxChars - 1) + '\u2026';
+  }
+
+  function getArcWidth(d) {
+    var angle = d.x1 - d.x0;
+    var midR = (d.y0 + d.y1) / 2;
+    return angle * midR;
+  }
+  function getBandHeight(d) { return d.y1 - d.y0; }
+
+  var currentRoot = root;
+
+  // Center label — scales with sunburst size
+  var centerFontSize = Math.max(14, Math.min(28, Math.round(width / 36)));
+  var centerText = g.append('text')
+    .attr('text-anchor', 'middle')
+    .attr('dy', '0.35em')
+    .attr('fill', C.bright)
+    .style('font-family', 'Playfair Display, serif')
+    .style('font-size', centerFontSize + 'px')
+    .style('pointer-events', 'none')
+    .text('root themes');
+
+  var allDescendants = root.descendants().filter(function(d) { return d.depth; });
+
+  // Click vs dblclick — single click shows details (debounced), dblclick zooms in.
+  // The standard pattern is to delay the single-click action so a dblclick can
+  // cancel it. 250ms is short enough to feel responsive.
+  var clickTimer = null;
+
+  var paths = g.selectAll('path.sunburst-arc')
+    .data(allDescendants)
+    .join('path')
+    .attr('class', 'sunburst-arc')
+    .attr('fill', function(d) { return colorForNode(d); })
+    .attr('fill-opacity', function(d) {
+      return arcVisible(d.current) ? (d.children ? 0.85 : 0.65) : 0;
+    })
+    .attr('stroke', C.bg)
+    .attr('stroke-width', 0.5)
+    .attr('stroke-opacity', function(d) {
+      // Critical: hide stroke for invisible arcs, otherwise the stroke line
+      // still draws as a thin radial sliver even when fill-opacity is 0
+      return arcVisible(d.current) ? 1 : 0;
+    })
+    .attr('d', function(d) { return arc(d); })
+    .on('mouseover', function(event, d) {
+      d3.select(this).attr('fill-opacity', 1);
+      var pathParts = d.ancestors().reverse().slice(1).map(function(a){return a.data.display_name||a.data.slug;}).join(' \u203a ');
+      var html = '<div class="theme-tooltip-title">' + (d.data.display_name || d.data.slug) + '</div>' +
+                 '<div class="theme-tooltip-row"><span class="theme-tooltip-label">subtree tags</span><span>' + fmtNum(d.data.subtree_tags) + '</span></div>' +
+                 '<div class="theme-tooltip-row"><span class="theme-tooltip-label">direct tags</span><span>' + fmtNum(d.data.tags) + '</span></div>' +
+                 (d.children ? '<div class="theme-tooltip-row"><span class="theme-tooltip-label">children</span><span>' + d.children.length + '</span></div>' : '') +
+                 '<div style="color:#7a7868;font-size:0.65rem;margin-top:0.3rem">' + pathParts + '</div>' +
+                 '<div style="color:#7a7868;font-size:0.6rem;margin-top:0.2rem;font-style:italic">click: details \u00b7 dbl-click: zoom</div>';
+      showTooltip(html, event);
+    })
+    .on('mousemove', moveTooltip)
+    .on('mouseout', function(event, d) {
+      d3.select(this).attr('fill-opacity', arcVisible(d.current) ? (d.children ? 0.85 : 0.65) : 0);
+      hideTooltip();
+    })
+    .on('click', function(event, d) {
+      // Single click → show details (after 220ms in case dblclick is coming)
+      if (clickTimer !== null) {
+        clearTimeout(clickTimer);
+        clickTimer = null;
+        // This is the second click of a dblclick — d3 still fires .click on each
+        // press, so do the dblclick action here.
+        if (d.children) clicked(d);
+        return;
+      }
+      clickTimer = setTimeout(function() {
+        clickTimer = null;
+        updateDetail(d);
+      }, 220);
+    })
+    .on('dblclick', function(event, d) {
+      // dblclick fires AFTER both clicks, so the click handler may have already
+      // fired the dblclick action. This is a safety net.
+      if (clickTimer !== null) {
+        clearTimeout(clickTimer);
+        clickTimer = null;
+      }
+      if (d.children) clicked(d);
+    });
+
+  var labels = g.selectAll('text.sunburst-label')
+    .data(allDescendants)
+    .join('text')
+    .attr('class', 'sunburst-label')
+    .attr('dy', '0.35em')
+    .attr('text-anchor', 'middle')
+    .attr('fill', function(d) { return d.depth <= 1 ? '#e0ddd0' : '#1a1c14'; })
+    .style('font-family', 'Outfit, sans-serif')
+    .style('font-size', '14px')
+    .style('pointer-events', 'none')   // critical: don't intercept clicks on the underlying arcs
+    .attr('opacity', function(d) { return labelVisible(d.current) ? 1 : 0; })
+    .attr('transform', function(d) { return labelTransform(d.current); })
+    .text(function(d) { return truncateLabel(d.data.display_name || d.data.slug, getArcWidth(d.current), getBandHeight(d.current)); });
+
+  // Click center to zoom out
+  g.append('circle')
+    .attr('r', root.y1)
+    .attr('fill', 'none')
+    .attr('pointer-events', 'all')
+    .style('cursor', 'pointer')
+    .on('click', function() {
+      if (currentRoot.parent) clicked(currentRoot.parent);
+      else clicked(root);
+    });
+
+  function clicked(p) {
+    currentRoot = p;
+    centerText.text(p === root ? 'root themes' : (p.data.display_name || p.data.slug));
+
+    root.each(function(d) {
+      d.target = {
+        x0: Math.max(0, Math.min(1, (d.x0 - p.x0) / (p.x1 - p.x0))) * 2 * Math.PI,
+        x1: Math.max(0, Math.min(1, (d.x1 - p.x0) / (p.x1 - p.x0))) * 2 * Math.PI,
+        y0: Math.max(0, d.y0 - p.y0),
+        y1: Math.max(0, d.y1 - p.y0),
+      };
+    });
+
+    var t = g.transition().duration(750);
+
+    paths.transition(t)
+      .tween('data', function(d) {
+        var i = d3.interpolate(d.current, d.target);
+        return function(tt) { d.current = i(tt); };
+      })
+      .filter(function(d) {
+        return this.getAttribute('fill-opacity') > 0 || arcVisible(d.target);
+      })
+      .attrTween('d', function(d) { return function() { return arc(d); }; })
+      .attr('fill-opacity', function(d) { return arcVisible(d.target) ? (d.children ? 0.85 : 0.65) : 0; })
+      .attr('stroke-opacity', function(d) { return arcVisible(d.target) ? 1 : 0; });
+
+    labels.transition(t)
+      .tween('data-label', function(d) {
+        var i = d3.interpolate(d.current, d.target);
+        return function(tt) { d.current = i(tt); };
+      })
+      .attrTween('transform', function(d) { return function() { return labelTransform(d.current); }; })
+      .attr('opacity', function(d) { return labelVisible(d.target) ? 1 : 0; })
+      .tween('text', function(d) {
+        var self = this;
+        return function() {
+          self.textContent = truncateLabel(d.data.display_name || d.data.slug, getArcWidth(d.current), getBandHeight(d.current));
+        };
+      });
+  }
+}
+
+// ─── Detail panel (full-width, below sunburst) ───────────────────────
+// Map of node slug → d3 node, for breadcrumb / child-row navigation
+var NODE_BY_SLUG = {};
+function indexNodes(root) {
+  NODE_BY_SLUG = {};
+  root.descendants().forEach(function(d) {
+    if (d.data && d.data.slug) NODE_BY_SLUG[d.data.slug] = d;
+  });
+}
+
+// ─── Navigation history stack ────────────────────────────────────────
+// Each entry is a slug string. The special slug "_root" represents the
+// "all themes" home view (the aggregate stat dashboard). NAV_IDX points to
+// the currently-displayed entry. Going to a new slug truncates anything
+// after NAV_IDX (standard browser-history semantics).
+var NAV_HISTORY = ['_root'];
+var NAV_IDX = 0;
+var HOME_SLUG = '_root';
+
+function navigateToSlug(slug, opts) {
+  opts = opts || {};
+  // Validate: home is always valid; other slugs must exist in the tree
+  if (slug !== HOME_SLUG && !NODE_BY_SLUG[slug]) return;
+
+  if (!opts.fromHistory) {
+    if (NAV_HISTORY[NAV_IDX] !== slug) {
+      NAV_HISTORY = NAV_HISTORY.slice(0, NAV_IDX + 1);
+      NAV_HISTORY.push(slug);
+      NAV_IDX = NAV_HISTORY.length - 1;
+    }
+  }
+
+  if (slug === HOME_SLUG) {
+    renderHomeDetail();
+  } else {
+    renderDetail(NODE_BY_SLUG[slug]);
+  }
+}
+
+function navigateBack() {
+  if (NAV_IDX > 0) {
+    NAV_IDX--;
+    navigateToSlug(NAV_HISTORY[NAV_IDX], { fromHistory: true });
+  }
+}
+function navigateForward() {
+  if (NAV_IDX < NAV_HISTORY.length - 1) {
+    NAV_IDX++;
+    navigateToSlug(NAV_HISTORY[NAV_IDX], { fromHistory: true });
+  }
+}
+
+// ─── Home detail (the "all themes" aggregate view) ───────────────────
+function renderHomeDetail() {
+  var panel = document.getElementById('detail-panel');
+  if (!TREE) {
+    panel.innerHTML = '<div class="detail-empty">Loading…</div>';
+    return;
+  }
+  var t = TREE.totals || {};
+  var totalTags = TREE.subtree_tags || 0;
+
+  var canBack = NAV_IDX > 0;
+  var canForward = NAV_IDX < NAV_HISTORY.length - 1;
+
+  var html = '';
+
+  // Nav row: back/forward + breadcrumb (just "all themes" as current)
+  html += '<div class="detail-nav-row">';
+  html += '<div class="detail-nav-btns">';
+  html += '<div class="detail-nav-btn ' + (canBack ? '' : 'disabled') + '" data-nav="back" title="Back">\u2190</div>';
+  html += '<div class="detail-nav-btn ' + (canForward ? '' : 'disabled') + '" data-nav="forward" title="Forward">\u2192</div>';
+  html += '</div>';
+  html += '<div class="detail-breadcrumbs"><span class="crumb-current">root themes</span></div>';
+  html += '</div>';
+
+  // Header
+  html += '<div class="detail-header">';
+  html += '<div class="detail-name">Root Themes</div>';
+  html += '<span class="detail-slug">_root</span>';
+  html += '</div>';
+
+  // Description / hint
+  html += '<div class="detail-desc" style="border-left-color:var(--olive)">';
+  html += 'The taxonomy root. Click any sunburst segment above to drill into a theme — single click for details, double-click to zoom in. ';
+  html += 'The hierarchy is split into ' + (t.roots || 0) + ' specialist roots designed to support per-root model fine-tuning.';
+  html += '</div>';
+
+  // Big stat grid
+  html += '<div class="detail-stats" style="grid-template-columns: repeat(5, 1fr)">';
+  html += '<div class="detail-stat"><div class="detail-stat-label">Active roots</div><div class="detail-stat-value">' + fmtNum(t.roots) + '</div></div>';
+  html += '<div class="detail-stat"><div class="detail-stat-label">Active themes</div><div class="detail-stat-value">' + fmtNum(t.themes) + '</div></div>';
+  html += '<div class="detail-stat"><div class="detail-stat-label">Leaf themes</div><div class="detail-stat-value">' + fmtNum(t.leaves) + '</div></div>';
+  html += '<div class="detail-stat"><div class="detail-stat-label">Total tags</div><div class="detail-stat-value">' + fmtNum(totalTags) + '</div></div>';
+  html += '<div class="detail-stat"><div class="detail-stat-label">Tagged articles</div><div class="detail-stat-value">' + fmtNum(t.tagged_articles) + '</div></div>';
+  html += '</div>';
+
+  // List of roots as clickable rows (mirror of detail-children-list)
+  var rootChildren = (TREE.children || []).slice().sort(function(a,b){return (b.subtree_tags||0)-(a.subtree_tags||0);});
+  if (rootChildren.length > 0) {
+    html += '<div style="margin-top:1.5rem">';
+    html += '<div class="detail-children-label">' + rootChildren.length + ' active roots &mdash; click to view</div>';
+    html += '<div class="detail-children-list" style="max-height:none">';
+    rootChildren.forEach(function(c) {
+      html += '<div class="detail-child-row" data-slug="' + escapeHtml(c.slug) + '">';
+      html += '<span class="detail-child-name">' + escapeHtml(c.display_name || c.slug) + '</span>';
+      html += '<span class="detail-child-count">' + fmtNum(c.subtree_tags) + '</span>';
+      html += '</div>';
+    });
+    html += '</div>';
+    html += '</div>';
+  }
+
+  panel.innerHTML = html;
+
+  // Wire clicks
+  panel.querySelectorAll('.detail-child-row').forEach(function(row) {
+    row.addEventListener('click', function() {
+      navigateToSlug(row.getAttribute('data-slug'));
+    });
+  });
+  panel.querySelectorAll('.detail-nav-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      if (btn.classList.contains('disabled')) return;
+      var dir = btn.getAttribute('data-nav');
+      if (dir === 'back') navigateBack();
+      else if (dir === 'forward') navigateForward();
+    });
+  });
+}
+
+function renderDetail(d) {
+  var panel = document.getElementById('detail-panel');
+  if (!d || d.depth === 0) {
+    panel.innerHTML = '<div class="detail-empty">Click a segment above to see theme details.</div>';
+    return;
+  }
+  var data = d.data;
+  var ancestors = d.ancestors().reverse(); // [synthetic_root, ..., d]
+  var children = (d.children || []).slice().sort(function(a,b){return (b.data.subtree_tags||0) - (a.data.subtree_tags||0);});
+
+  // Build breadcrumbs HTML — "root themes" links to home, every ancestor
+  // (except the current node) is clickable. The current node is plain text.
+  var crumbsHtml = '<a data-slug="' + HOME_SLUG + '" class="crumb-home">root themes</a>';
+  for (var i = 1; i < ancestors.length; i++) {
+    var a = ancestors[i];
+    crumbsHtml += '<span class="crumb-sep">\u203a</span>';
+    var label = escapeHtml(a.data.display_name || a.data.slug);
+    if (i === ancestors.length - 1) {
+      crumbsHtml += '<span class="crumb-current">' + label + '</span>';
+    } else {
+      crumbsHtml += '<a data-slug="' + escapeHtml(a.data.slug) + '">' + label + '</a>';
+    }
+  }
+
+  var canBack = NAV_IDX > 0;
+  var canForward = NAV_IDX < NAV_HISTORY.length - 1;
+
+  var html = '';
+
+  // Nav row: back/forward + breadcrumbs
+  html += '<div class="detail-nav-row">';
+  html += '<div class="detail-nav-btns">';
+  html += '<div class="detail-nav-btn ' + (canBack ? '' : 'disabled') + '" data-nav="back" title="Back">\u2190</div>';
+  html += '<div class="detail-nav-btn ' + (canForward ? '' : 'disabled') + '" data-nav="forward" title="Forward">\u2192</div>';
+  html += '</div>';
+  html += '<div class="detail-breadcrumbs">' + crumbsHtml + '</div>';
+  html += '</div>';
+
+  // Two-column grid: left = header + desc + stats, right = children list
+  html += '<div class="detail-grid">';
+
+  // Left column
+  html += '<div>';
+  html += '<div class="detail-header">';
+  html += '<div class="detail-name">' + escapeHtml(data.display_name || data.slug) + '</div>';
+  html += '<span class="detail-slug">' + escapeHtml(data.slug) + '</span>';
+  html += '</div>';
+  if (data.description) {
+    html += '<div class="detail-desc">' + escapeHtml(data.description) + '</div>';
+  } else {
+    html += '<div class="detail-desc" style="color:#7a7868;font-style:italic">(no description)</div>';
+  }
+  html += '<div class="detail-stats">';
+  html += '<div class="detail-stat"><div class="detail-stat-label">Subtree tags</div><div class="detail-stat-value">' + fmtNum(data.subtree_tags) + '</div></div>';
+  html += '<div class="detail-stat"><div class="detail-stat-label">Direct tags</div><div class="detail-stat-value">' + fmtNum(data.tags) + '</div></div>';
+  html += '<div class="detail-stat"><div class="detail-stat-label">Direct articles</div><div class="detail-stat-value">' + fmtNum(data.articles) + '</div></div>';
+  html += '<div class="detail-stat"><div class="detail-stat-label">Depth</div><div class="detail-stat-value">' + d.depth + '</div></div>';
+  html += '</div>';
+  html += '</div>';
+
+  // Right column — children list (or message if leaf)
+  html += '<div>';
+  if (children.length > 0) {
+    html += '<div class="detail-children-label">' + children.length + ' children &mdash; click to view</div>';
+    html += '<div class="detail-children-list">';
+    children.forEach(function(c) {
+      html += '<div class="detail-child-row" data-slug="' + escapeHtml(c.data.slug) + '">';
+      html += '<span class="detail-child-name">' + escapeHtml(c.data.display_name || c.data.slug) + '</span>';
+      html += '<span class="detail-child-count">' + fmtNum(c.data.subtree_tags) + '</span>';
+      html += '</div>';
+    });
+    html += '</div>';
+    html += '<div class="detail-hint">double-click on the sunburst above to zoom in</div>';
+  } else {
+    html += '<div class="detail-children-label">leaf node</div>';
+    html += '<div class="detail-empty" style="padding:1.5rem 1rem;font-size:0.78rem">no children &mdash; this is a terminal theme</div>';
+  }
+  html += '</div>';
+
+  html += '</div>'; // .detail-grid
+  panel.innerHTML = html;
+
+  // Wire up clicks
+  panel.querySelectorAll('.detail-child-row').forEach(function(row) {
+    row.addEventListener('click', function() {
+      navigateToSlug(row.getAttribute('data-slug'));
+    });
+  });
+  panel.querySelectorAll('.detail-breadcrumbs a').forEach(function(a) {
+    a.addEventListener('click', function() {
+      navigateToSlug(a.getAttribute('data-slug'));
+    });
+  });
+  panel.querySelectorAll('.detail-nav-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      if (btn.classList.contains('disabled')) return;
+      var dir = btn.getAttribute('data-nav');
+      if (dir === 'back') navigateBack();
+      else if (dir === 'forward') navigateForward();
+    });
+  });
+}
+
+// Backwards-compat alias for the existing arc-click handlers
+function updateDetail(d) {
+  if (!d || d.depth === 0 || !d.data || !d.data.slug) return;
+  navigateToSlug(d.data.slug);
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, function(c) {
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+  });
+}
+
+// ─── Heatmap ─────────────────────────────────────────────────────────
+var HEATMAP_STACK = ['_root']; // breadcrumb stack of parent slugs
+
+function renderHeatmap(parentSlug) {
+  var container = document.getElementById('heatmap-viz');
+  container.innerHTML = '<div class="heatmap-loading">Computing span density for ' + parentSlug + '… (cached after first load)</div>';
+
+  fetchJSON('/api/theme-heatmap?parent=' + encodeURIComponent(parentSlug)).then(function(data) {
+    container.innerHTML = '';
+    if (!data || data.error) {
+      container.innerHTML = '<div class="heatmap-loading">Error: ' + (data && data.error || 'unknown') + '</div>';
+      return;
+    }
+    if (!data.rows || data.rows.length === 0) {
+      container.innerHTML = '<div class="heatmap-loading">No spans for any descendant of ' + parentSlug + '</div>';
+      return;
+    }
+
+    var rows = data.rows;
+    var nBuckets = data.buckets || 20;
+
+    // Layout — adaptive row height (taller for fewer rows so cells trend square)
+    var marginLeft = 260;
+    var marginRight = 40;
+    var marginTop = 60;       // room for the legend above the plot
+    var marginBottom = 50;    // room for x-axis + axis title
+    var rowHeight;
+    if (rows.length <= 10)      rowHeight = 56;
+    else if (rows.length <= 18) rowHeight = 44;
+    else if (rows.length <= 30) rowHeight = 36;
+    else                        rowHeight = 28;
+
+    var W = container.clientWidth;
+    var plotW = W - marginLeft - marginRight;
+    var H = marginTop + rows.length * rowHeight + marginBottom;
+
+	    var svg = d3.select(container).append('svg')
+	      .attr('viewBox', '0 0 ' + W + ' ' + H)
+	      .attr('width', W)
+	      .attr('height', H);
+
+	    if (data.partition_date || data.normalization) {
+	      var note = 'extractor partition ' + (data.partition_date || 'latest');
+	      if (data.normalization === 'max_extracted_span_end') {
+	        note += ' · normalized by extracted span extent';
+	      }
+	      svg.append('text')
+	        .attr('class', 'heatmap-legend-label')
+	        .attr('x', marginLeft)
+	        .attr('y', 20)
+	        .text(note);
+	    }
+
+    // Compute global max for color scale
+    var maxVal = 0;
+    rows.forEach(function(r) {
+      r.values.forEach(function(v) { if (v > maxVal) maxVal = v; });
+    });
+    if (maxVal === 0) maxVal = 1;
+    function cellColor(v) {
+      return v > 0 ? HEATMAP_COLORMAP(v / maxVal) : '#15170d';
+    }
+
+    var xScale = d3.scaleLinear().domain([0, nBuckets]).range([0, plotW]);
+    var cellW = plotW / nBuckets;
+
+    // Hover-able row groups
+    rows.forEach(function(r, i) {
+      var y = marginTop + i * rowHeight;
+      var rowG = svg.append('g')
+        .attr('transform', 'translate(0,' + y + ')')
+        .style('cursor', 'pointer')
+        .on('click', function() {
+          // Drill into this row's children if any
+          if (r.subtree_tags > 0) {
+            HEATMAP_STACK.push(r.slug);
+            renderBreadcrumb();
+            renderHeatmap(r.slug);
+          }
+        })
+        .on('mouseover', function(ev) {
+          var html = '<div class="theme-tooltip-title">' + (r.display_name || r.slug) + '</div>' +
+                     '<div class="theme-tooltip-row"><span class="theme-tooltip-label">subtree tags</span><span>' + fmtNum(r.subtree_tags) + '</span></div>' +
+                     '<div class="theme-tooltip-row"><span class="theme-tooltip-label">articles w/spans</span><span>' + fmtNum(r.articles) + '</span></div>' +
+                     '<div style="color:#7a7868;font-size:0.65rem;margin-top:0.3rem;font-style:italic">click to drill in</div>';
+          showTooltip(html, ev);
+        })
+        .on('mousemove', moveTooltip)
+        .on('mouseout', hideTooltip);
+
+      // Row label (theme display name) — left of cells
+      rowG.append('text')
+        .attr('class', 'heatmap-row-label')
+        .attr('x', marginLeft - 12)
+        .attr('y', rowHeight/2 - 3)
+        .attr('dy', '0.35em')
+        .attr('text-anchor', 'end')
+        .text(truncateText(r.display_name || r.slug, 32));
+
+      // Subtitle: tag count + article count
+      rowG.append('text')
+        .attr('class', 'heatmap-row-sub')
+        .attr('x', marginLeft - 12)
+        .attr('y', rowHeight/2 + 12)
+        .attr('text-anchor', 'end')
+        .text(fmtNum(r.subtree_tags) + ' tags \u00b7 ' + fmtNum(r.articles) + ' arts');
+
+      // Cells
+      r.values.forEach(function(v, j) {
+        rowG.append('rect')
+          .attr('class', 'heatmap-cell')
+          .attr('x', marginLeft + j * cellW)
+          .attr('y', 3)
+          .attr('width', cellW - 1)
+          .attr('height', rowHeight - 6)
+          .attr('fill', cellColor(v))
+          .attr('stroke', '#0c0d09')
+          .attr('stroke-width', 0.5);
+      });
+    });
+
+    // X-axis (article position %)
+    var xAxis = d3.axisBottom(xScale)
+      .ticks(11)
+      .tickFormat(function(d) { return Math.round(d * 5) + '%'; });
+    svg.append('g')
+      .attr('class', 'heatmap-axis')
+      .attr('transform', 'translate(' + marginLeft + ',' + (marginTop + rows.length*rowHeight + 4) + ')')
+      .call(xAxis);
+
+    svg.append('text')
+      .attr('class', 'heatmap-x-title')
+      .attr('x', marginLeft + plotW/2)
+      .attr('y', H - 8)
+      .attr('text-anchor', 'middle')
+      .text('Position in article (% of normalized text length)');
+
+    // ─── Color legend (top-right, big enough to read) ─────────────────
+    var legendW = 240;
+    var legendH = 14;
+    var legendX = W - marginRight - legendW;
+    var legendY = marginTop - 36;
+
+    var legendG = svg.append('g')
+      .attr('transform', 'translate(' + legendX + ',' + legendY + ')');
+
+    var gradId = 'heatmap-grad-' + parentSlug.replace(/[^a-z0-9_]/gi, '_');
+    var grad = svg.append('defs').append('linearGradient')
+      .attr('id', gradId)
+      .attr('x1', '0%').attr('x2', '100%');
+    var nStops = 16;
+    for (var s = 0; s <= nStops; s++) {
+      grad.append('stop')
+        .attr('offset', (s / nStops * 100) + '%')
+        .attr('stop-color', HEATMAP_COLORMAP(s / nStops));
+    }
+
+    legendG.append('text')
+      .attr('class', 'heatmap-legend-label')
+      .attr('y', -4)
+      .text('avg spans per article overlapping each position');
+
+    legendG.append('rect')
+      .attr('width', legendW)
+      .attr('height', legendH)
+      .attr('fill', 'url(#' + gradId + ')')
+      .attr('stroke', '#22231a')
+      .attr('stroke-width', 0.5);
+
+    legendG.append('text')
+      .attr('class', 'heatmap-legend-label')
+      .attr('x', 0)
+      .attr('y', legendH + 13)
+      .text('0');
+    legendG.append('text')
+      .attr('class', 'heatmap-legend-label')
+      .attr('x', legendW / 2)
+      .attr('y', legendH + 13)
+      .attr('text-anchor', 'middle')
+      .text((maxVal / 2).toFixed(2));
+    legendG.append('text')
+      .attr('class', 'heatmap-legend-label')
+      .attr('x', legendW)
+      .attr('y', legendH + 13)
+      .attr('text-anchor', 'end')
+      .text(maxVal.toFixed(2));
+  });
+}
+
+function truncateText(s, n) {
+  if (s.length <= n) return s;
+  return s.substring(0, n - 1) + '\u2026';
+}
+
+function renderBreadcrumb() {
+  var bc = document.getElementById('heatmap-breadcrumb');
+  var html = '';
+  HEATMAP_STACK.forEach(function(slug, i) {
+    var label = slug === '_root' ? 'all roots' : slug;
+    if (i < HEATMAP_STACK.length - 1) {
+      html += '<a data-idx="' + i + '">' + label + '</a><span class="sep">\u203a</span>';
+    } else {
+      html += '<span style="color:#ede8db">' + label + '</span>';
+    }
+  });
+  if (HEATMAP_STACK.length > 1) {
+    html = '<a data-back>\u2191 back</a><span class="sep">\u00b7</span>' + html;
+  }
+  bc.innerHTML = html;
+  bc.querySelectorAll('a').forEach(function(a) {
+    a.addEventListener('click', function() {
+      if (a.hasAttribute('data-back')) {
+        HEATMAP_STACK.pop();
+      } else {
+        var idx = parseInt(a.getAttribute('data-idx'));
+        HEATMAP_STACK = HEATMAP_STACK.slice(0, idx + 1);
+      }
+      renderBreadcrumb();
+      renderHeatmap(HEATMAP_STACK[HEATMAP_STACK.length - 1]);
+    });
+  });
+}
+
+// ─── History panel (scrollable, sticky header) ───────────────────────
+function renderHistory(entries) {
+  var panel = document.getElementById('history-panel');
+  var meta = document.getElementById('history-meta');
+  if (!entries || entries.length === 0) {
+    panel.innerHTML = '<div class="loading">No history entries</div>';
+    if (meta) meta.textContent = '0 entries';
+    return;
+  }
+  if (meta) meta.textContent = entries.length + ' entries (newest first)';
+  var html = '<table class="history-table"><thead><tr>';
+  html += '<th style="width:11%">When</th><th style="width:13%">Action</th><th style="width:18%">Theme</th><th>Reason</th>';
+  html += '</tr></thead><tbody>';
+  entries.forEach(function(e) {
+    var actionClass = (e.action || '').toLowerCase().split('_')[0];
+    var when = e.created_at ? new Date(e.created_at).toLocaleString(undefined, {month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'}) : '—';
+    html += '<tr>';
+    html += '<td class="history-time">' + when + '</td>';
+    html += '<td><span class="history-action ' + actionClass + '">' + (e.action || '') + '</span></td>';
+    html += '<td class="history-slug">' + escapeHtml(e.theme_slug || '') + '</td>';
+    html += '<td class="history-reason">' + escapeHtml(e.reason || '') + '</td>';
+    html += '</tr>';
+  });
+  html += '</tbody></table>';
+  panel.innerHTML = html;
+}
+
+// ─── Init ────────────────────────────────────────────────────────────
+function init() {
+  Promise.all([
+    fetchJSON('/api/themes'),
+    fetchJSON('/api/theme-history?limit=100'),
+  ]).then(function(results) {
+    var tree = results[0];
+    var history = results[1];
+
+    if (!tree || tree.error) {
+      document.getElementById('refresh-status').textContent = 'error: ' + (tree && tree.error || 'unknown');
+      document.getElementById('sunburst-viz').innerHTML = '<div class="loading">Failed to load themes</div>';
+      return;
+    }
+
+    TREE = tree;
+
+    document.getElementById('refresh-status').textContent = 'live';
+    document.getElementById('last-refresh').textContent = new Date().toLocaleTimeString();
+
+    renderSunburst(tree);   // builds NODE_BY_SLUG via indexNodes
+    renderHomeDetail();      // initial detail panel state = home
+    renderBreadcrumb();      // heatmap breadcrumb
+    renderHeatmap('_root');
+
+    if (history && history.entries) renderHistory(history.entries);
+  });
+}
+
+// Re-render sunburst on resize (debounced)
+var resizeTimer;
+window.addEventListener('resize', function() {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(function() {
+    if (TREE) renderSunburst(TREE);
+  }, 250);
+});
+
+init();
+</script>
+
+</body>
+</html>

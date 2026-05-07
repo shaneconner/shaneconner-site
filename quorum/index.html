@@ -1,0 +1,2825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<title>Quorum — Trading Dashboard</title>
+<script src="/quorum/api-adapter.js"></script>
+<style>html{visibility:hidden;background:#090b09}html.ready{visibility:visible}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500&family=Outfit:wght@200;300;400;500&display=swap" rel="stylesheet">
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<style>
+/* === VARIABLES (matched to shaneconner.com) === */
+:root {
+  --bg: #090b09;
+  --bg-elevated: #0c0d09;
+  --bg-card: #131409;
+  --text: #d4cfc3;
+  --text-dim: #7a7868;
+  --text-bright: #ede8db;
+  --cream: #e2dbc8;
+  --green: #7a8a2a;
+  --green-bright: #9aaa3a;
+  --green-dim: #2e3218;
+  --olive: #6b6a3a;
+  --tan: #b49a6e;
+  --border: #22231a;
+  --border-light: #33341f;
+  --red: #c4506a;
+  --red-dim: #a24458;
+  --red-bright: #d4687e;
+  --red-bg: rgba(196,80,106,0.12);
+  --green-bg: rgba(122,138,42,0.10);
+  --amber-bg: rgba(180,154,110,0.10);
+  --serif: 'Playfair Display', Georgia, serif;
+  --sans: 'Outfit', system-ui, sans-serif;
+}
+
+/* === RESET & BASE === */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { font-size: 18px; scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-weight: 300;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+::selection { background: var(--green); color: var(--text-bright); }
+
+/* === LAYOUT === */
+.dashboard {
+  max-width: 1800px;
+  margin: 0 auto;
+  padding: 2rem 3rem 4rem;
+}
+@media (max-width: 768px) { .dashboard { padding: 1.5rem; } }
+
+/* === NAV === */
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  padding: 0.8rem 3rem;
+  border-bottom: 1px solid var(--border);
+}
+.nav-brand {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: 1.5rem;
+  color: var(--text-bright);
+  text-decoration: none;
+  letter-spacing: -0.01em;
+}
+.nav-links {
+  display: flex;
+  gap: 0.2rem;
+}
+.nav-links a {
+  font-family: var(--sans);
+  font-size: 0.68rem;
+  font-weight: 300;
+  color: var(--text-dim);
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  padding: 0.35rem 0.8rem;
+  border-radius: 2px;
+  transition: color 0.15s, background 0.15s;
+}
+.nav-links a:hover { color: var(--text); background: rgba(255,255,255,0.03); }
+.nav-links a.active { color: var(--green-bright); background: var(--green-bg); border: 1px solid var(--green-dim); }
+
+/* === HEADER === */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+.header h1 {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: clamp(1.8rem, 3vw, 2.6rem);
+  color: var(--text-bright);
+  letter-spacing: -0.01em;
+}
+.header-meta {
+  text-align: right;
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  letter-spacing: 0.04em;
+}
+.session-badge {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 2px;
+  font-size: 0.62rem;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  margin-bottom: 0.3rem;
+}
+.session-badge.market-hours { background: var(--green-bg); color: var(--green-bright); border: 1px solid var(--green-dim); }
+.session-badge.pre-market { background: var(--amber-bg); color: var(--tan); border: 1px solid rgba(180,154,110,0.2); }
+.session-badge.after-hours { background: var(--amber-bg); color: var(--tan); border: 1px solid rgba(180,154,110,0.2); }
+.session-badge.closed { background: var(--red-bg); color: var(--red); border: 1px solid rgba(139,41,66,0.2); }
+
+/* === GRID === */
+.grid { display: grid; gap: 1.2rem; margin-bottom: 1.5rem; }
+.grid-2 { grid-template-columns: 1fr 1fr; }
+.grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+.grid-2-1 { grid-template-columns: 2fr 1fr; }
+.grid-1-2 { grid-template-columns: 1fr 2fr; }
+@media (max-width: 900px) {
+  .grid-2, .grid-3, .grid-2-1, .grid-1-2 { grid-template-columns: 1fr; }
+}
+
+/* === CARDS === */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  padding: 1.5rem;
+  transition: border-color 0.3s ease;
+}
+.card:hover { border-color: var(--border-light); }
+.card-label {
+  font-size: 0.62rem;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.25em;
+  color: var(--green);
+  margin-bottom: 1rem;
+}
+.card-title {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: 1.1rem;
+  color: var(--text-bright);
+  margin-bottom: 0.8rem;
+}
+
+/* === STAT CARDS === */
+.stat-strip { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+.stat {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  padding: 1rem 1.2rem;
+  text-align: center;
+}
+.stat-value {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: clamp(1.4rem, 2.5vw, 1.8rem);
+  color: var(--text-bright);
+  font-variant-numeric: tabular-nums;
+}
+.stat-value.positive { color: var(--green-bright); }
+.stat-value.negative { color: var(--red); }
+.stat-label {
+  font-size: 0.58rem;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--text-dim);
+  margin-top: 0.3rem;
+}
+
+/* === ACCOUNT SECTION === */
+.account-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.8rem;
+}
+.account-name {
+  font-size: 0.68rem;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--tan);
+}
+.account-value {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: 1.6rem;
+  color: var(--text-bright);
+  font-variant-numeric: tabular-nums;
+}
+
+/* === TREEMAP === */
+.treemap-container { width: 100%; min-height: 260px; }
+.treemap-cell {
+  stroke: var(--bg);
+  stroke-width: 2;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.treemap-cell:hover { opacity: 0.85; }
+.treemap-label {
+  font-family: var(--sans);
+  font-size: 0.65rem;
+  font-weight: 400;
+  fill: var(--text-bright);
+  pointer-events: none;
+}
+.treemap-sublabel {
+  font-family: var(--sans);
+  font-size: 0.52rem;
+  font-weight: 300;
+  fill: var(--text);
+  pointer-events: none;
+}
+
+/* === TABLES === */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+}
+th {
+  text-align: left;
+  font-size: 0.58rem;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-dim);
+  padding: 0.5rem 0.6rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-card);
+}
+td {
+  padding: 0.45rem 0.6rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+}
+tr:hover td { background: var(--bg-elevated); }
+.text-right { text-align: right; }
+.text-center { text-align: center; }
+.positive { color: var(--green-bright); }
+.negative { color: var(--red); }
+
+/* === SIGNAL BADGES === */
+.signal {
+  display: inline-block;
+  padding: 0.15rem 0.45rem;
+  font-size: 0.55rem;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border-radius: 2px;
+}
+/* Percentile-based signals — raw (no position) */
+.signal-strong_buy { background: var(--green-bg); color: var(--green-bright); border: 1px solid var(--green-dim); }
+.signal-buy { background: rgba(120,140,80,0.12); color: var(--green-bright); border: 1px solid rgba(120,140,80,0.2); }
+.signal-neutral { background: rgba(180,154,110,0.06); color: var(--text-dim); border: 1px solid var(--border); }
+.signal-weak { background: rgba(196,80,106,0.06); color: var(--text-dim); border: 1px solid var(--border); }
+.signal-sell { background: var(--red-bg); color: var(--red-bright); border: 1px solid rgba(196,80,106,0.25); }
+.signal-strong_sell { background: rgba(196,80,106,0.15); color: var(--red-bright); border: 1px solid rgba(196,80,106,0.3); }
+/* Position-relative signals */
+.signal-strong_hold { background: var(--green-bg); color: var(--green-bright); border: 1px solid var(--green-dim); }
+.signal-hold { background: rgba(120,140,80,0.12); color: var(--green-bright); border: 1px solid rgba(120,140,80,0.2); }
+.signal-watch { background: var(--amber-bg); color: var(--tan); border: 1px solid rgba(180,154,110,0.2); }
+.signal-exit { background: var(--red-bg); color: var(--red-bright); border: 1px solid rgba(196,80,106,0.25); }
+.signal-no_model { background: transparent; color: var(--text-dim); border: 1px solid var(--border); }
+
+/* === CHARTS === */
+.chart-container { width: 100%; position: relative; }
+.chart-container svg { width: 100%; display: block; }
+.axis text { fill: var(--text-dim); font-family: var(--sans); font-size: 10px; }
+.axis line, .axis path { stroke: var(--border); }
+.grid-line { stroke: var(--border); stroke-dasharray: 2,3; }
+
+/* === TOOLTIP === */
+.tooltip {
+  position: fixed;
+  pointer-events: none;
+  background: rgba(19, 20, 9, 0.95);
+  border: 1px solid var(--border-light);
+  padding: 0.6rem 0.8rem;
+  font-size: 0.72rem;
+  color: var(--text);
+  line-height: 1.5;
+  z-index: 1000;
+  max-width: 550px;
+  max-height: 80vh;
+  backdrop-filter: blur(8px);
+}
+.tooltip-title {
+  font-weight: 400;
+  color: var(--text-bright);
+  margin-bottom: 0.3rem;
+}
+.tooltip-row { display: flex; justify-content: space-between; gap: 1rem; }
+.tooltip-label { color: var(--text-dim); }
+.tooltip-value { color: var(--cream); font-variant-numeric: tabular-nums; }
+
+/* === HISTOGRAM === */
+.hist-bar { fill: var(--green-dim); transition: fill 0.2s; }
+.hist-bar:hover { fill: var(--green); }
+.hist-marker { stroke: var(--tan); stroke-width: 2; stroke-dasharray: 4,3; }
+
+/* === SPARKLINE === */
+.sparkline-path { fill: none; stroke: var(--tan); stroke-width: 1.5; }
+.sparkline-area { fill: rgba(180,154,110,0.08); }
+
+/* === NEWS PANEL === */
+.news-item {
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.78rem;
+}
+.news-item:last-child { border-bottom: none; }
+.news-headline { color: var(--text); line-height: 1.4; }
+.news-meta {
+  font-size: 0.6rem;
+  color: var(--text-dim);
+  margin-top: 0.2rem;
+}
+.news-alert { border-left: 2px solid var(--red); padding-left: 0.6rem; }
+.news-keyword {
+  display: inline-block;
+  background: var(--red-bg);
+  color: var(--red);
+  font-size: 0.52rem;
+  padding: 0.1rem 0.3rem;
+  border-radius: 2px;
+  margin-right: 0.3rem;
+}
+
+/* === JOURNAL PANEL === */
+.journal-entry {
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.76rem;
+  line-height: 1.5;
+}
+.journal-entry:last-child { border-bottom: none; }
+.journal-depth {
+  font-size: 0.52rem;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--olive);
+  margin-bottom: 0.2rem;
+}
+.journal-content { color: var(--text); }
+.journal-date { font-size: 0.6rem; color: var(--text-dim); }
+
+/* === HEATMAP === */
+.heatmap-cell { stroke: var(--bg); stroke-width: 1; }
+.heatmap-label {
+  font-family: var(--sans);
+  font-size: 0.6rem;
+  fill: var(--text-dim);
+}
+
+/* === TRADE TIMELINE === */
+.trade-item {
+  display: flex;
+  gap: 0.8rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.76rem;
+  align-items: baseline;
+}
+.trade-item:last-child { border-bottom: none; }
+.trade-side {
+  font-size: 0.55rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  min-width: 2.8rem;
+}
+.trade-side.buy { color: var(--green-bright); }
+.trade-side.sell { color: var(--red); }
+.trade-symbol { color: var(--text-bright); font-weight: 400; min-width: 3.5rem; }
+.trade-detail { color: var(--text-dim); flex: 1; }
+.trade-time { color: var(--text-dim); font-size: 0.6rem; }
+
+/* === PNL BARS === */
+.pnl-bar-positive { fill: var(--green); }
+.pnl-bar-negative { fill: var(--red-dim); opacity: 0.85; }
+.pnl-label {
+  font-family: var(--sans);
+  font-size: 0.62rem;
+  fill: var(--text);
+}
+.pnl-value {
+  font-family: var(--sans);
+  font-size: 0.6rem;
+  font-variant-numeric: tabular-nums;
+}
+
+/* === ACTIONS === */
+.action-item {
+  padding: 0.45rem 0;
+  font-size: 0.76rem;
+  color: var(--text);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+.action-item:last-child { border-bottom: none; }
+.action-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--green);
+  flex-shrink: 0;
+  margin-top: 0.4rem;
+}
+
+/* === STREAMCHART === */
+.stream-area { opacity: 0.7; transition: opacity 0.2s; }
+.stream-area:hover { opacity: 0.9; }
+
+/* === SUNBURST === */
+.sunburst-arc { stroke: var(--bg); stroke-width: 1.5; cursor: pointer; transition: opacity 0.2s; }
+.sunburst-arc:hover { opacity: 0.8; }
+.sunburst-label { font-family: var(--sans); font-size: 0.58rem; fill: var(--text-bright); pointer-events: none; }
+
+/* === SECTION SPACING === */
+.section { margin-bottom: 2rem; }
+.section-label {
+  font-size: 0.62rem;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.25em;
+  color: var(--green);
+  margin-bottom: 1rem;
+}
+
+/* === SECTION ROW (labeled row with two account columns) === */
+.section-row {
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  margin-bottom: 1rem;
+  padding: 1rem 1.2rem 1.2rem;
+}
+.section-row:hover { border-color: var(--border-light); }
+.section-row-label {
+  font-size: 0.6rem;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: var(--green);
+  margin-bottom: 0.8rem;
+}
+.section-row-cell {
+  min-height: 60px;
+}
+.section-row .grid { gap: 1.5rem; }
+
+/* === LOADING / ERROR === */
+.loading { color: var(--text-dim); font-size: 0.76rem; padding: 2rem; text-align: center; }
+.error { color: var(--red); font-size: 0.76rem; padding: 1rem; }
+
+/* === FADE IN === */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.fade-in { animation: fadeUp 0.7s ease forwards; opacity: 0; }
+.fade-in:nth-child(1) { animation-delay: 0s; }
+.fade-in:nth-child(2) { animation-delay: 0.1s; }
+.fade-in:nth-child(3) { animation-delay: 0.15s; }
+.fade-in:nth-child(4) { animation-delay: 0.2s; }
+.fade-in:nth-child(5) { animation-delay: 0.25s; }
+.fade-in:nth-child(6) { animation-delay: 0.3s; }
+
+/* === AUTO-REFRESH INDICATOR === */
+.refresh-indicator {
+  font-size: 0.55rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+.refresh-dot {
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--green);
+  margin-right: 0.3rem;
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+/* === SCROLLBAR === */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-dim); }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="/" class="nav-brand">Quorum</a>
+  <div class="nav-links">
+    <a href="/" class="active">Portfolio</a>
+    <a href="/models">Models</a>
+    <a href="/pipeline">Pipeline</a>
+    <a href="/diagnostics">Diagnostics</a>
+    <a href="/themes">Themes</a>
+  </div>
+</nav>
+
+<div class="dashboard">
+  <!-- HEADER -->
+  <div class="header fade-in">
+    <h1>Quorum</h1>
+    <div class="header-meta">
+      <div id="session-badge"></div>
+      <div id="timestamp"></div>
+      <div class="refresh-indicator"><span class="refresh-dot"></span><span id="refresh-label">loading</span></div>
+    </div>
+  </div>
+
+  <!-- ═══ ACCOUNT COLUMNS ═══ -->
+
+  <!-- Column headers + stats inline -->
+  <div class="grid grid-3 fade-in" style="margin-bottom:0;">
+    <div class="account-header" style="padding: 0.8rem 0;">
+      <span class="account-name">Alpaca: Brokerage</span>
+      <span class="account-value" id="live-value">—</span>
+    </div>
+    <div class="account-header" style="padding: 0.8rem 0;">
+      <span class="account-name">Schwab: Roth IRA</span>
+      <span class="account-value" id="schwab-roth-value">—</span>
+    </div>
+    <div class="account-header" style="padding: 0.8rem 0;">
+      <span class="account-name">Schwab: Traditional IRA</span>
+      <span class="account-value" id="schwab-trad-value">—</span>
+    </div>
+  </div>
+  <div class="grid grid-3 fade-in" style="margin-bottom: 0.8rem;">
+    <div id="stat-strip-live" style="display:flex;gap:0.6rem;"></div>
+    <div id="stat-strip-schwab-roth" style="display:flex;gap:0.6rem;"></div>
+    <div id="stat-strip-schwab-trad" style="display:flex;gap:0.6rem;"></div>
+  </div>
+
+  <!-- Portfolio -->
+  <div class="section-row fade-in">
+    <div class="section-row-label">Portfolio</div>
+    <div class="grid grid-3">
+      <div class="section-row-cell"><div class="treemap-container" id="treemap-live"></div></div>
+      <div class="section-row-cell"><div class="treemap-container" id="treemap-schwab-roth"></div></div>
+      <div class="section-row-cell"><div class="treemap-container" id="treemap-schwab-trad"></div></div>
+    </div>
+  </div>
+
+  <!-- Model Predictions -->
+  <div class="section-row fade-in">
+    <div class="section-row-label">Model Predictions</div>
+    <div class="grid grid-3">
+      <div class="section-row-cell"><div class="chart-container" id="histogram-live"></div></div>
+      <div class="section-row-cell"><div class="chart-container" id="histogram-schwab-roth"></div></div>
+      <div class="section-row-cell"><div class="chart-container" id="histogram-schwab-trad"></div></div>
+    </div>
+  </div>
+
+  <!-- RL Signal -->
+  <div class="section-row fade-in">
+    <div class="section-row-label">RL Model Signal</div>
+    <div id="rl-signal-panel" style="padding: 0.5rem 1rem;"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;padding:0 1rem 0.5rem;">
+      <div>
+        <div style="font-size:0.55rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.12em;margin-bottom:0.3rem;">Recommended Positions (Long / Short)</div>
+        <div class="chart-container" id="rl-chart-positions"></div>
+      </div>
+      <div>
+        <div style="font-size:0.55rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.12em;margin-bottom:0.3rem;">Recommended Stop-Loss %</div>
+        <div class="chart-container" id="rl-chart-stoploss"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Position P&L -->
+  <div class="section-row fade-in">
+    <div class="section-row-label" id="pnl-row-label">Position P&L</div>
+    <div class="grid grid-3">
+      <div class="section-row-cell"><div class="chart-container" id="pnl-bars-live"></div></div>
+      <div class="section-row-cell"><div class="chart-container" id="pnl-bars-schwab-roth"></div></div>
+      <div class="section-row-cell"><div class="chart-container" id="pnl-bars-schwab-trad"></div></div>
+    </div>
+  </div>
+
+  <!-- Recent Trades -->
+  <div class="section-row fade-in">
+    <div class="section-row-label">Recent Trades</div>
+    <div class="grid grid-3">
+      <div class="section-row-cell"><div id="trade-log-live" style="max-height: 300px; overflow-y: auto;"></div></div>
+      <div class="section-row-cell"><div id="trade-log-schwab-roth" style="max-height: 300px; overflow-y: auto;"></div></div>
+      <div class="section-row-cell"><div id="trade-log-schwab-trad" style="max-height: 300px; overflow-y: auto;"></div></div>
+    </div>
+  </div>
+
+  <!-- Account Value -->
+  <div class="section-row fade-in">
+    <div class="section-row-label">Account Value</div>
+    <div class="grid grid-3">
+      <div class="section-row-cell"><div class="chart-container" id="value-chart-live"></div></div>
+      <div class="section-row-cell"><div class="chart-container" id="value-chart-schwab-roth"></div></div>
+      <div class="section-row-cell"><div class="chart-container" id="value-chart-schwab-trad"></div></div>
+    </div>
+  </div>
+
+  <!-- Model Rank History -->
+  <div class="section-row fade-in">
+    <div class="section-row-label">Model Rank History</div>
+    <div class="grid grid-3">
+      <div class="section-row-cell"><div class="chart-container" id="rank-heatmap-live"></div></div>
+      <div class="section-row-cell"><div class="chart-container" id="rank-heatmap-schwab-roth"></div></div>
+      <div class="section-row-cell"><div class="chart-container" id="rank-heatmap-schwab-trad"></div></div>
+    </div>
+  </div>
+
+  <!-- ═══ MODEL SECTION ═══ -->
+
+  <!-- Top & Bottom Predictions -->
+  <div class="grid grid-2 section fade-in">
+    <div class="card">
+      <div class="card-label">Top Predictions</div>
+      <div id="predictions-top" style="max-height: 400px; overflow-y: auto;"></div>
+    </div>
+    <div class="card">
+      <div class="card-label">Bottom Predictions</div>
+      <div id="predictions-bottom" style="max-height: 400px; overflow-y: auto;"></div>
+    </div>
+  </div>
+
+  <!-- ═══ NEWS + JOURNAL ═══ -->
+  <div class="grid grid-2 section fade-in">
+    <div class="card">
+      <div class="card-label">News</div>
+      <div id="news-panel" style="max-height: 360px; overflow-y: auto;"></div>
+    </div>
+    <div class="card">
+      <div class="card-label">Journal</div>
+      <div id="journal-panel" style="max-height: 360px; overflow-y: auto;"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- TOOLTIP -->
+<div class="tooltip" id="tooltip" style="display:none;"></div>
+
+<script>
+(function() {
+  'use strict';
+
+  // ════════════════════════════════════════════════════════════════
+  // CONSTANTS
+  // ════════════════════════════════════════════════════════════════
+  var C = {
+    bg:      '#090b09',
+    card:    '#131409',
+    text:    '#d4cfc3',
+    dim:     '#7a7868',
+    bright:  '#ede8db',
+    green:   '#7a8a2a',
+    greenBr: '#9aaa3a',
+    greenDim:'#2e3218',
+    tan:     '#b49a6e',
+    border:  '#22231a',
+    borderL: '#33341f',
+    red:     '#c4506a',
+    redDim:  '#a24458',
+    redBr:   '#d4687e',
+    olive:   '#6b6a3a',
+    // Account indicator colors (warm/earthy, no pos/neg connotation)
+    acctLive: '#b49a6e',   // tan — brokerage (matches site palette)
+    acctRoth: '#e2dbc8',   // cream — roth
+    acctTrad: '#8a9a3a',   // chartreuse — trad
+  };
+
+  var SIGNAL_COLORS = {
+    strong_long:  C.greenBr,
+    hold:         C.tan,
+    watch:        C.dim,
+    exit:         C.redDim,
+    strong_short: C.red,
+    no_model:     '#444',
+  };
+
+  var API = '';  // same origin
+
+  // State
+  var state = {
+    accounts: null,
+    predictions: null,
+    trades: null,
+    portfolioHistory: null,
+    news: null,
+    journal: null,
+    oil: null,
+    predHistory: null,
+    predPerformance: null,
+    session: null,
+  };
+
+  // ════════════════════════════════════════════════════════════════
+  // UTILITY
+  // ════════════════════════════════════════════════════════════════
+  function fmt$(v) {
+    if (v == null) return '—';
+    if (Math.abs(v) >= 1e6) return '$' + (v/1e6).toFixed(2) + 'M';
+    if (Math.abs(v) >= 1e4) return '$' + (v/1e3).toFixed(1) + 'K';
+    if (Math.abs(v) >= 1e3) return '$' + (v/1e3).toFixed(2) + 'K';
+    return '$' + v.toFixed(2);
+  }
+  function fmtPct(v) { return v == null ? '—' : (v >= 0 ? '+' : '') + (v * 100).toFixed(1) + '%'; }
+  function fmtNum(v, d) { return v == null ? '—' : v.toFixed(d || 0); }
+  // Percentile-based signal classification
+  // positionSide: 'long', 'short', or null (no position)
+  function classifySignal(rank, total, positionSide) {
+    total = total || (state.predictions || {}).total || 3200;
+    if (rank == null) return 'no_model';
+    var pct = rank / total;  // 0 = best, 1 = worst
+
+    // Raw signal based on rank percentile
+    var raw;
+    if (pct <= 0.03) raw = 'strong_buy';
+    else if (pct <= 0.15) raw = 'buy';
+    else if (pct <= 0.50) raw = 'neutral';
+    else if (pct <= 0.85) raw = 'weak';
+    else if (pct <= 0.97) raw = 'sell';
+    else raw = 'strong_sell';
+
+    // If holding, evaluate signal relative to position direction
+    if (positionSide === 'short') {
+      // For shorts: bottom-ranked = good (strong_sell → strong_hold for us)
+      var shortMap = {
+        'strong_sell': 'strong_hold', 'sell': 'hold', 'weak': 'watch',
+        'neutral': 'exit', 'buy': 'exit', 'strong_buy': 'exit'
+      };
+      return shortMap[raw] || raw;
+    }
+    if (positionSide === 'long') {
+      var longMap = {
+        'strong_buy': 'strong_hold', 'buy': 'hold', 'neutral': 'watch',
+        'weak': 'exit', 'sell': 'exit', 'strong_sell': 'exit'
+      };
+      return longMap[raw] || raw;
+    }
+    return raw;
+  }
+  function signalBadge(signal) {
+    return '<span class="signal signal-' + signal + '">' + signal.replace(/_/g, ' ') + '</span>';
+  }
+  function rankDetail(rank, score, total) {
+    if (!rank) return '—';
+    total = total || (state.predictions || {}).total || 3100;
+    var pct = rank / total;
+    var pctLabel;
+    if (pct <= 0.5) {
+      pctLabel = 'top ' + (pct * 100).toFixed(1) + '%';
+    } else {
+      pctLabel = 'bottom ' + ((1 - pct) * 100).toFixed(1) + '%';
+    }
+    var out = '#' + rank + ' / ' + total + ' (' + pctLabel + ')';
+    if (score != null) out += ' · score ' + score.toFixed(3);
+    return out;
+  }
+
+  // Shared fundamentals formatting helpers
+  function fmtMktCap(v) {
+    if (v == null) return null;
+    if (v >= 1e12) return '$' + (v/1e12).toFixed(1) + 'T';
+    if (v >= 1e9)  return '$' + (v/1e9).toFixed(1) + 'B';
+    if (v >= 1e6)  return '$' + (v/1e6).toFixed(1) + 'M';
+    return '$' + v.toFixed(0);
+  }
+  function buildFundamentalsHtml(d, sep) {
+    // d: object with market_cap, trailing_pe, forward_pe, beta, dividend_yield,
+    //    return_1w, return_1m, return_3m, return_6m, return_12m
+    var hasFund = d.market_cap != null || d.trailing_pe != null || d.beta != null;
+    var hasRets = d.return_1w != null || d.return_1m != null || d.return_3m != null;
+    if (!hasFund && !hasRets) return '';
+    var html = sep;
+    if (fmtMktCap(d.market_cap))
+      html += '<div class="tooltip-row"><span class="tooltip-label">Mkt Cap</span><span class="tooltip-value">' + fmtMktCap(d.market_cap) + '</span></div>';
+    if (d.trailing_pe != null || d.forward_pe != null)
+      html += '<div class="tooltip-row"><span class="tooltip-label">P/E (trail/fwd)</span><span class="tooltip-value">' +
+        (d.trailing_pe != null ? d.trailing_pe.toFixed(1) : '—') + ' / ' +
+        (d.forward_pe != null ? d.forward_pe.toFixed(1) : '—') + '</span></div>';
+    if (d.beta != null)
+      html += '<div class="tooltip-row"><span class="tooltip-label">Beta</span><span class="tooltip-value">' + d.beta.toFixed(2) + '</span></div>';
+    if (d.dividend_yield != null && d.dividend_yield > 0)
+      html += '<div class="tooltip-row"><span class="tooltip-label">Div Yield</span><span class="tooltip-value">' + d.dividend_yield.toFixed(2) + '%</span></div>';
+    if (hasRets) {
+      var pairs = [['1W', d.return_1w], ['1M', d.return_1m], ['3M', d.return_3m], ['6M', d.return_6m], ['12M', d.return_12m]];
+      var retHtml = pairs.filter(function(p) { return p[1] != null; }).map(function(p) {
+        var sign = p[1] >= 0 ? '+' : '';
+        var col = p[1] >= 0 ? C.greenBr : '#e05c5c';
+        return '<span style="color:' + C.dim + '">' + p[0] + '</span> <span style="color:' + col + '">' + sign + (p[1]*100).toFixed(1) + '%</span>';
+      }).join('&nbsp;&nbsp;');
+      html += '<div style="padding:2px 0;font-size:11px;">' + retHtml + '</div>';
+    }
+    return html;
+  }
+
+  function tradingDaysHeld(entryDateStr) {
+    var parts = entryDateStr.split('-');
+    var entry = new Date(+parts[0], +parts[1]-1, +parts[2]);
+    var today = new Date(); today.setHours(0,0,0,0);
+    var count = 0;
+    var d = new Date(entry);
+    while (d < today) {
+      d.setDate(d.getDate() + 1);
+      var dow = d.getDay();
+      if (dow !== 0 && dow !== 6) count++;
+    }
+    return count;
+  }
+
+  var tooltip = document.getElementById('tooltip');
+  function showTooltip(evt, html) {
+    tooltip.innerHTML = html;
+    tooltip.style.display = 'block';
+    var tw = tooltip.offsetWidth, th = tooltip.offsetHeight;
+    var x = evt.clientX + 12, y = evt.clientY - 8;
+    if (x + tw + 8 > window.innerWidth) x = evt.clientX - tw - 12;
+    if (x < 4) x = 4;
+    if (y + th + 8 > window.innerHeight) y = window.innerHeight - th - 8;
+    if (y < 4) y = 4;
+    tooltip.style.left = x + 'px';
+    tooltip.style.top = y + 'px';
+  }
+  function hideTooltip() { tooltip.style.display = 'none'; }
+
+  // ════════════════════════════════════════════════════════════════
+  // SHARED TICKER TOOLTIP — used by treemaps, histograms, heatmaps
+  // ════════════════════════════════════════════════════════════════
+  /**
+   * Build a standardized tooltip for a held position.
+   *
+   * @param {object} p - Position object with symbol, qty, current_price,
+   *   prev_close, avg_entry, pnl, pnl_pct, day_pnl, value, weight,
+   *   sector, name, model_rank, model_score, entry_date.
+   * @param {object} opts - Optional overrides:
+   *   rank/score: use these instead of p.model_rank/p.model_score
+   *   side: override short/long detection
+   */
+  function buildTickerTooltip(p, opts) {
+    opts = opts || {};
+    var isShort = (opts.side === 'short') || p.qty < 0;
+    var posSide = isShort ? 'short' : 'long';
+    var sideLabel = isShort
+      ? '<span style="color:' + C.redBr + '">SHORT</span>'
+      : '<span style="color:' + C.greenBr + '">LONG</span>';
+    var sep = '<div style="margin:4px 0 2px;border-top:1px solid ' + C.border + ';padding-top:4px;font-size:0.6rem;color:' + C.dim + '">';
+
+    // Stock movement (always from the stock's perspective)
+    var stockDayPct = p.prev_close && p.current_price
+      ? ((p.current_price - p.prev_close) / p.prev_close * 100) : null;
+    var stockTotalPct = p.avg_entry && p.current_price
+      ? ((p.current_price - p.avg_entry) / p.avg_entry * 100) : null;
+    var stockDayStr = stockDayPct != null ? (stockDayPct >= 0 ? '+' : '') + stockDayPct.toFixed(2) + '%' : '—';
+    var stockTotalStr = stockTotalPct != null ? (stockTotalPct >= 0 ? '+' : '') + stockTotalPct.toFixed(2) + '%' : '—';
+    var stockDayCls = stockDayPct != null ? (stockDayPct >= 0 ? 'positive' : 'negative') : '';
+    var stockTotalCls = stockTotalPct != null ? (stockTotalPct >= 0 ? 'positive' : 'negative') : '';
+
+    // Position P&L (from our perspective — inverted for shorts)
+    var dayPnl = p.day_pnl != null ? p.day_pnl : null;
+    var dayPnlPct = p.prev_close && p.qty
+      ? (dayPnl / (p.prev_close * Math.abs(p.qty)) * 100) : null;
+    var dayPnlPctStr = dayPnlPct != null
+      ? ' (' + (dayPnlPct >= 0 ? '+' : '') + dayPnlPct.toFixed(2) + '%)' : '';
+    // pnl_pct is already position-relative from the API (negated for shorts)
+    var pnlPctStr = p.pnl_pct != null
+      ? (p.pnl_pct >= 0 ? '+' : '') + p.pnl_pct.toFixed(1) + '%' : '—';
+
+    // Model signal
+    var modelRank = opts.rank != null ? opts.rank : p.model_rank;
+    var modelScore = opts.score != null ? opts.score : p.model_score;
+    var signal = classifySignal(modelRank, null, posSide);
+
+    var html = '<div class="tooltip-title">' + p.symbol +
+      (p.name ? ' — ' + escapeHtml(p.name) : '') + ' ' + sideLabel + '</div>' +
+      '<div class="tooltip-row"><span class="tooltip-label">Sector</span><span class="tooltip-value">' + (p.sector || 'Other') + '</span></div>' +
+      sep + 'Stock Movement</div>' +
+      '<div class="tooltip-row"><span class="tooltip-label">Day</span><span class="tooltip-value ' + stockDayCls + '">' + stockDayStr +
+        (p.prev_close ? ' (' + fmt$(p.prev_close) + ' → ' + fmt$(p.current_price) + ')' : '') + '</span></div>' +
+      '<div class="tooltip-row"><span class="tooltip-label">Since Entry</span><span class="tooltip-value ' + stockTotalCls + '">' +
+        stockTotalStr + ' (' + fmt$(p.avg_entry) + ' → ' + fmt$(p.current_price) + ')</span></div>' +
+      sep + 'Position' + (isShort ? ' (short)' : '') + '</div>' +
+      (dayPnl != null ? '<div class="tooltip-row"><span class="tooltip-label">Day P&L</span><span class="tooltip-value ' +
+        (dayPnl >= 0 ? 'positive' : 'negative') + '">' + fmt$(dayPnl) + dayPnlPctStr + '</span></div>' : '') +
+      '<div class="tooltip-row"><span class="tooltip-label">Total P&L</span><span class="tooltip-value ' +
+        (p.pnl >= 0 ? 'positive' : 'negative') + '">' + fmt$(p.pnl) + ' (' + pnlPctStr + ')</span></div>' +
+      '<div class="tooltip-row"><span class="tooltip-label">Qty</span><span class="tooltip-value">' +
+        fmtNum(Math.abs(p.qty), 2) + ' × ' + fmt$(p.avg_entry) + '</span></div>' +
+      '<div class="tooltip-row"><span class="tooltip-label">Value</span><span class="tooltip-value">' +
+        fmt$(Math.abs(p.value)) + ' (' + fmtPct(Math.abs(p.weight)) + ')</span></div>' +
+      sep + 'Model</div>' +
+      '<div class="tooltip-row"><span class="tooltip-label">Rank</span><span class="tooltip-value">' + signalBadge(signal) + '</span></div>' +
+      '<div class="tooltip-row"><span class="tooltip-label"></span><span class="tooltip-value" style="font-size:0.6rem;color:' + C.dim + ';">' +
+        rankDetail(modelRank, modelScore) + '</span></div>' +
+      (p.entry_date ? '<div class="tooltip-row"><span class="tooltip-label">Entered</span><span class="tooltip-value">' + p.entry_date + ' (' + tradingDaysHeld(p.entry_date) + 'd)' + '</span></div>' : '');
+
+    html += buildFundamentalsHtml(p, sep + 'Fundamentals</div>');
+
+    return html;
+  }
+
+  // ════════════════════════════════════════════════════════════════
+  // DATA FETCHING
+  // ════════════════════════════════════════════════════════════════
+  function fetchJSON(url) {
+    return fetch(API + url).then(function(r) { return r.json(); }).catch(function() { return null; });
+  }
+
+  function loadAll() {
+    return Promise.all([
+      fetchJSON('/api/session'),
+      fetchJSON('/api/accounts'),
+      fetchJSON('/api/predictions'),
+      fetchJSON('/api/trades?days=30'),
+      fetchJSON('/api/portfolio-history?days=90'),
+      fetchJSON('/api/news'),
+      fetchJSON('/api/journal'),
+    ]).then(function(results) {
+      state.session = results[0];
+      state.accounts = results[1];
+      state.predictions = results[2];
+      state.trades = results[3];
+      state.portfolioHistory = results[4];
+      state.news = results[5];
+      state.journal = results[6];
+
+      // Fetch secondary data in parallel
+      var secondaryFetches = [];
+
+      var held = getHeldSymbols();
+      if (held.length > 0) {
+        secondaryFetches.push(
+          fetchJSON('/api/prediction-history?tickers=' + held.join(',') + '&days=30')
+            .then(function(ph) { state.predHistory = ph; })
+        );
+      }
+
+      secondaryFetches.push(
+        fetchJSON('/api/rl-signal')
+          .then(function(rl) { state.rlSignal = rl; })
+      );
+
+      return Promise.all(secondaryFetches);
+    });
+  }
+
+  function getHeldSymbols() {
+    var syms = new Set();
+    if (state.accounts) {
+      ['alpaca_live', 'schwab_roth', 'schwab_trad'].forEach(function(acct) {
+        var a = state.accounts[acct];
+        if (a && a.positions) {
+          a.positions.forEach(function(p) { syms.add(p.symbol); });
+        }
+      });
+    }
+    return Array.from(syms);
+  }
+
+  // ════════════════════════════════════════════════════════════════
+  // RENDER: Session Header
+  // ════════════════════════════════════════════════════════════════
+  function renderHeader() {
+    var s = state.session || {};
+    var badge = document.getElementById('session-badge');
+    var ts = document.getElementById('timestamp');
+    if (badge) badge.innerHTML = '<span class="session-badge ' + (s.session || 'closed') + '">' + (s.session || 'closed').replace('-', ' ') + '</span>';
+    if (ts) ts.textContent = (s.timestamp_ct || '') + ' (' + (s.timestamp_et || '') + ')';
+    var rl = document.getElementById('refresh-label');
+    if (rl) rl.textContent = 'auto-refresh ' + (s.session === 'market-hours' ? '60s' : '5m');
+  }
+
+  // ════════════════════════════════════════════════════════════════
+  // RENDER: Stat Strip
+  // ════════════════════════════════════════════════════════════════
+  function renderStatStrip() {
+    function renderMiniStats(containerId, acctKey) {
+      var el = document.getElementById(containerId);
+      if (!el) return;
+      var a = (state.accounts || {})[acctKey];
+      if (!a || a.error) { el.innerHTML = ''; return; }
+
+      // Use last trading day P&L when market is closed (weekends/holidays)
+      var dayPnl, dayLabel;
+      if (a.market_closed && a.last_day_pnl != null) {
+        dayPnl = a.last_day_pnl;
+        dayLabel = (a.last_day_pnl_label || 'LAST') + ' P&L';
+      } else {
+        dayPnl = a.day_pnl || 0;
+        dayLabel = 'DAY P&L';
+      }
+      var dayPnlPct = a.value ? dayPnl / a.value : 0;
+      var dayPctStr = (dayPnlPct >= 0 ? '+' : '') + (dayPnlPct * 100).toFixed(2) + '%';
+      var dayDollarStr = fmt$(dayPnl);
+
+      var positions = a.positions || [];
+      var longs = positions.filter(function(p) { return p.qty > 0; }).length;
+      var shorts = positions.filter(function(p) { return p.qty < 0; }).length;
+
+      var cashPct = a.deployable_cash_pct != null ? a.deployable_cash_pct : a.cash_pct;
+      var cashDollar = a.deployable_cash != null ? a.deployable_cash : a.cash;
+      var cashPctStr = fmtPct(cashPct);
+      var cashDollarStr = fmt$(cashDollar);
+
+      var stats = [
+        { line1: dayPctStr, line2: dayDollarStr, label: dayLabel, cls: dayPnl >= 0 ? 'positive' : 'negative' },
+        { line1: cashPctStr, line2: cashDollarStr, label: 'Undeployed', cls: cashPct < 0.05 ? 'negative' : '' },
+        { line1: '<span style="color:#9aaa3a">' + longs + 'L</span>' + (shorts > 0 ? ' / <span style="color:#d4687e">' + shorts + 'S</span>' : ''), line2: '', label: 'Positions', cls: '' },
+      ];
+
+      el.innerHTML = stats.map(function(s) {
+        return '<div class="stat" style="flex:1;padding:0.5rem 0.6rem;">' +
+          '<div class="stat-value ' + s.cls + '" style="font-size:1.15rem;line-height:1.2;">' + s.line1 + '</div>' +
+          (s.line2 ? '<div class="stat-value ' + s.cls + '" style="font-size:0.75rem;opacity:0.8;">' + s.line2 + '</div>' : '') +
+          '<div class="stat-label">' + s.label + '</div></div>';
+      }).join('');
+    }
+
+    renderMiniStats('stat-strip-live', 'alpaca_live');
+    renderMiniStats('stat-strip-schwab-roth', 'schwab_roth');
+    renderMiniStats('stat-strip-schwab-trad', 'schwab_trad');
+  }
+
+  // ════════════════════════════════════════════════════════════════
+  // RENDER: Portfolio Treemap
+  // ════════════════════════════════════════════════════════════════
+  // P&L % color scale: smooth diverging — red ← neutral → green
+  // Neutral zone around 0% so tiny moves don't scream color
+  var pnlColorScale = d3.scaleDiverging()
+    .domain([-10, 0, 10])  // saturate at ±10%
+    .interpolator(function(t) {
+      // t: 0 = -10%, 0.5 = 0%, 1 = +10%
+      if (t < 0.35) return d3.interpolateRgb('#8b4458', '#6b3a44')(t / 0.35);       // deep red → muted red
+      if (t < 0.45) return d3.interpolateRgb('#6b3a44', '#3a3528')((t - 0.35) / 0.1); // muted red → neutral
+      if (t < 0.55) return '#3a3528';                                                  // neutral zone
+      if (t < 0.65) return d3.interpolateRgb('#3a3528', '#4a5a20')((t - 0.55) / 0.1); // neutral → muted green
+      return d3.interpolateRgb('#4a5a20', C.greenBr)((t - 0.65) / 0.35);              // muted green → bright green
+    });
+
+  function pnlColor(pnlPct) {
+    if (pnlPct == null) return '#3a3528';
+    return pnlColorScale(Math.max(-10, Math.min(10, pnlPct)));
+  }
+
+  function renderTreemap(containerId, positions, accountValue) {
+    var container = document.getElementById(containerId);
+    if (!container) return;
+    container.innerHTML = '';
+    if (!positions || positions.length === 0) {
+      container.innerHTML = '<div class="loading">No positions</div>';
+      return;
+    }
+
+    var width = container.clientWidth;
+    var height = Math.max(250, positions.length * 20);
+
+    // Group positions by sector
+    var bySector = {};
+    positions.forEach(function(p) {
+      var sector = p.sector || 'Other';
+      if (!bySector[sector]) bySector[sector] = [];
+      bySector[sector].push(p);
+    });
+
+    // Build hierarchical data: root > sector > ticker
+    // Floor small positions to 2% of max so they're still visible
+    var maxVal = d3.max(positions, function(p) { return Math.abs(p.value); }) || 1;
+    var minVal = maxVal * 0.02;
+    var data = {
+      name: 'root',
+      children: Object.keys(bySector).map(function(sector) {
+        return {
+          name: sector,
+          children: bySector[sector].map(function(p) {
+            return { name: p.symbol, value: Math.max(minVal, Math.abs(p.value)), data: p };
+          })
+        };
+      })
+    };
+
+    var root = d3.hierarchy(data).sum(function(d) { return d.value; })
+      .sort(function(a, b) { return b.value - a.value; });
+
+    d3.treemap()
+      .size([width, height])
+      .paddingOuter(3)
+      .paddingTop(16)  // room for sector label
+      .paddingInner(2)
+      .round(true)(root);
+
+    var svg = d3.select(container).append('svg')
+      .attr('width', width).attr('height', height);
+
+    // Define diagonal hatch pattern for short positions
+    var defs = svg.append('defs');
+    var patternId = 'hatch-' + containerId;
+    defs.append('pattern')
+      .attr('id', patternId)
+      .attr('patternUnits', 'userSpaceOnUse')
+      .attr('width', 6).attr('height', 6)
+      .append('path')
+        .attr('d', 'M0,6 L6,0')
+        .attr('stroke', 'rgba(255,255,255,0.15)')
+        .attr('stroke-width', 1);
+
+    // Sector group backgrounds
+    var sectorGroups = svg.selectAll('.sector-group')
+      .data(root.children || []).enter().append('g');
+
+    sectorGroups.append('rect')
+      .attr('x', function(d) { return d.x0; })
+      .attr('y', function(d) { return d.y0; })
+      .attr('width', function(d) { return d.x1 - d.x0; })
+      .attr('height', function(d) { return d.y1 - d.y0; })
+      .attr('fill', 'none')
+      .attr('stroke', C.border)
+      .attr('stroke-width', 1);
+
+    // Sector labels
+    sectorGroups.each(function(d) {
+      var w = d.x1 - d.x0;
+      if (w > 50) {
+        d3.select(this).append('text')
+          .attr('x', d.x0 + 4).attr('y', d.y0 + 11)
+          .attr('fill', C.dim)
+          .attr('font-family', 'Outfit').attr('font-size', '8px')
+          .attr('font-weight', '400').attr('letter-spacing', '0.12em')
+          .attr('text-transform', 'uppercase')
+          .text(d.data.name.length > w / 5.5 ? d.data.name.slice(0, Math.floor(w / 6)) + '…' : d.data.name);
+      }
+    });
+
+    // Ticker cells (leaves)
+    var cells = svg.selectAll('.leaf').data(root.leaves()).enter().append('g')
+      .attr('transform', function(d) { return 'translate(' + d.x0 + ',' + d.y0 + ')'; });
+
+    // Background fill
+    cells.append('rect')
+      .attr('class', 'treemap-cell')
+      .attr('width', function(d) { return Math.max(0, d.x1 - d.x0); })
+      .attr('height', function(d) { return Math.max(0, d.y1 - d.y0); })
+      .attr('fill', function(d) {
+        var p = d.data.data;
+        // pnl_pct is position-relative from the API (negative for losing shorts)
+        var colorPct = p.pnl_pct || 0;
+        return pnlColor(colorPct);
+      })
+      .attr('opacity', 0.8);
+
+    // Hatch overlay for short positions
+    cells.filter(function(d) { return d.data.data.qty < 0; })
+      .append('rect')
+      .attr('width', function(d) { return Math.max(0, d.x1 - d.x0); })
+      .attr('height', function(d) { return Math.max(0, d.y1 - d.y0); })
+      .attr('fill', 'url(#' + patternId + ')')
+      .attr('pointer-events', 'none');
+
+    // Dashed border for short positions
+    cells.filter(function(d) { return d.data.data.qty < 0; })
+      .append('rect')
+      .attr('width', function(d) { return Math.max(0, d.x1 - d.x0); })
+      .attr('height', function(d) { return Math.max(0, d.y1 - d.y0); })
+      .attr('fill', 'none')
+      .attr('stroke', C.redBr)
+      .attr('stroke-width', 1.5)
+      .attr('stroke-dasharray', '4,3')
+      .attr('pointer-events', 'none');
+
+    // Hover on all cells (attach to the group, not just the rect)
+    cells
+      .style('cursor', 'pointer')
+      .on('mousemove', function(evt, d) {
+        showTooltip(evt, buildTickerTooltip(d.data.data));
+      })
+      .on('mouseleave', hideTooltip);
+
+    // Ticker labels
+    cells.each(function(d) {
+      var w = d.x1 - d.x0, h = d.y1 - d.y0;
+      var p = d.data.data;
+      var isShort = p.qty < 0;
+      if (w > 32 && h > 18) {
+        d3.select(this).append('text').attr('class', 'treemap-label')
+          .attr('x', 4).attr('y', 13)
+          .text(p.symbol);
+      }
+      if (w > 45 && h > 30) {
+        var pnlPctStr = p.pnl_pct != null ? (p.pnl_pct >= 0 ? '+' : '') + p.pnl_pct.toFixed(1) + '%' : '';
+        d3.select(this).append('text').attr('class', 'treemap-sublabel')
+          .attr('x', 4).attr('y', 24)
+          .text(pnlPctStr);
+      }
+      // "SHORT" indicator for short positions
+      if (isShort && w > 45 && h > 42) {
+        d3.select(this).append('text')
+          .attr('x', 4).attr('y', 36)
+          .attr('font-family', 'Outfit').attr('font-size', '7px')
+          .attr('letter-spacing', '0.15em')
+          .attr('fill', C.redBr).attr('opacity', 0.7)
+          .text('SHORT');
+      }
+    });
+
+    // Legend removed — shorts are visually distinct via hatch + dashed border
+  }
+
+  // ════════════════════════════════════════════════════════════════
+  // RENDER: Prediction Histogram
+  // ════════════════════════════════════════════════════════════════
+  function renderHistogramForAccount(containerId, acctKey) {
+    var container = document.getElementById(containerId);
+    if (!container) return;
+    container.innerHTML = '';
+
+    var preds = state.predictions;
+    if (!preds || !preds.all_scores || preds.all_scores.length === 0) {
+      container.innerHTML = '<div class="loading">No predictions</div>';
+      return;
+    }
+
+    var a = (state.accounts || {})[acctKey];
+    if (!a || !a.positions || a.positions.length === 0) {
+      container.innerHTML = '<div class="loading">No positions</div>';
+      return;
+    }
+
+    var scores = preds.all_scores;
+
+    // Build held position map for this account only — store full position object
+    var heldMap = {};
+    a.positions.forEach(function(p) {
+      heldMap[p.symbol] = p;
+    });
+
+    // Build held predictions from account position data (already has model_score/model_rank)
+    var heldPreds = [];
+    var heldScoreSet = new Set();
+    a.positions.forEach(function(p) {
+      if (p.model_score != null) {
+        heldPreds.push({
+          ticker: p.symbol,
+          score: p.model_score,
+          rank: p.model_rank,
+          pos: heldMap[p.symbol],
+        });
+        heldScoreSet.add(p.model_score);
+      }
+    });
+
+    var margin = { top: 10, right: 15, bottom: 45, left: 35 };
+    var width = container.clientWidth - margin.left - margin.right;
+    var height = 200;
+
+    var svg = d3.select(container).append('svg')
+      .attr('width', width + margin.left + margin.right)
+      .attr('height', height + margin.top + margin.bottom)
+      .append('g').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+    var x = d3.scaleLinear().domain(d3.extent(scores)).nice().range([0, width]);
+    var bins = d3.bin().domain(x.domain()).thresholds(60)(scores);
+    var y = d3.scaleLinear().domain([0, d3.max(bins, function(d) { return d.length; })]).nice().range([height, 0]);
+
+    function getHeldInBin(bin) {
+      return heldPreds.filter(function(hp) {
+        return hp.score >= bin.x0 && hp.score < bin.x1;
+      });
+    }
+
+    svg.selectAll('.hist-bar').data(bins).enter().append('rect')
+      .attr('class', 'hist-bar')
+      .attr('x', function(d) { return x(d.x0) + 1; })
+      .attr('width', function(d) { return Math.max(0, x(d.x1) - x(d.x0) - 1); })
+      .attr('y', function(d) { return y(d.length); })
+      .attr('height', function(d) { return height - y(d.length); })
+      .attr('fill', function(d) {
+        return getHeldInBin(d).length > 0 ? C.green : C.greenDim;
+      })
+      .attr('opacity', function(d) {
+        return getHeldInBin(d).length > 0 ? 0.9 : 0.55;
+      })
+      .on('mousemove', function(evt, d) {
+        var inBin = getHeldInBin(d);
+        var html = '<div class="tooltip-title">Score: ' +
+          fmtNum(d.x0, 2) + ' to ' + fmtNum(d.x1, 2) + '</div>' +
+          '<div class="tooltip-row"><span class="tooltip-label">Tickers</span><span class="tooltip-value">' + d.length + '</span></div>';
+        if (inBin.length > 0) {
+          inBin.forEach(function(hp) {
+            var p = hp.pos;
+            // p is the full position object from a.positions (has fundamentals + returns)
+            var posObj = Object.assign({ symbol: hp.ticker }, p);
+            html += '<div style="margin-top:6px;border-top:1px solid ' + C.border + ';padding-top:4px;">' +
+              buildTickerTooltip(posObj, { rank: hp.rank, score: hp.score }) +
+              '</div>';
+          });
+        }
+        showTooltip(evt, html);
+      })
+      .on('mouseleave', hideTooltip);
+
+    // Triangle markers — colored by long/short
+    var triSize = 5;
+    heldPreds.forEach(function(hp) {
+      var cx = x(hp.score);
+      var isShort = hp.pos.qty < 0;
+      var triColor = isShort ? C.redBr : C.greenBr;
+
+      svg.append('polygon')
+        .attr('points', (cx - triSize) + ',' + (height + 28) + ' ' +
+                         (cx + triSize) + ',' + (height + 28) + ' ' +
+                         cx + ',' + (height + 19))
+        .attr('fill', triColor)
+        .attr('opacity', 0.9)
+        .on('mousemove', function(evt) {
+          var posWithSymbol = Object.assign({symbol: hp.ticker}, hp.pos);
+          showTooltip(evt, buildTickerTooltip(posWithSymbol, {
+            rank: hp.rank, score: hp.score
+          }));
+        })
+        .on('mouseleave', hideTooltip);
+    });
+
+    svg.append('g').attr('class', 'axis').attr('transform', 'translate(0,' + height + ')')
+      .call(d3.axisBottom(x).ticks(6).tickSize(4));
+    svg.append('g').attr('class', 'axis')
+      .call(d3.axisLeft(y).ticks(5).tickSize(4));
+
+    // Legend
+    var ly = 3;
+    svg.append('polygon')
+      .attr('points', (width - 80) + ',' + (ly + 8) + ' ' + (width - 72) + ',' + (ly + 8) + ' ' + (width - 76) + ',' + (ly + 2))
+      .attr('fill', C.greenBr);
+    svg.append('text').attr('x', width - 68).attr('y', ly + 9)
+      .attr('fill', C.dim).attr('font-size', '8px').attr('font-family', 'Outfit').text('Long');
+    svg.append('polygon')
+      .attr('points', (width - 40) + ',' + (ly + 8) + ' ' + (width - 32) + ',' + (ly + 8) + ' ' + (width - 36) + ',' + (ly + 2))
+      .attr('fill', C.redBr);
+    svg.append('text').attr('x', width - 28).attr('y', ly + 9)
+      .attr('fill', C.dim).attr('font-size', '8px').attr('font-family', 'Outfit').text('Short');
+  }
+
+  function renderHistogram() {
+    renderHistogramForAccount('histogram-live', 'alpaca_live');
+    renderHistogramForAccount('histogram-schwab-roth', 'schwab_roth');
+    renderHistogramForAccount('histogram-schwab-trad', 'schwab_trad');
+  }
+
+  // ════════════════════════════════════════════════════════════════
+  // RENDER: RL Signal Panel
+  // ════════════════════════════════════════════════════════════════
+  function renderRlSignal() {
+    var panel = document.getElementById('rl-signal-panel');
+    if (!panel) return;
+
+    var rl = state.rlSignal;
+    if (!rl || rl.error) {
+      panel.innerHTML = '<div class="loading">' + (rl && rl.error ? 'RL error: ' + escapeHtml(rl.error) : 'No RL signal') + '</div>';
+      return;
+    }
+
+    var kLong = Math.round(rl.k_long || 0);
+    var kShort = Math.round(rl.k_short || 0);
+    var kTotal = kLong + kShort;
+    var stopLoss = (rl.stop_loss_pct || 0).toFixed(1);
+    var lsRatio = (rl.ls_ratio || 0).toFixed(2);
+    var method = rl.method || '?';
+    var date = rl.date || '?';
+    var vix = rl.context && rl.context.vix ? rl.context.vix.toFixed(1) : '?';
+    var vixSource = rl.context && rl.context.vix_source ? rl.context.vix_source : '';
+    var longPct = kTotal > 0 ? (kLong / kTotal * 100) : 50;
+    var shortPct = 100 - longPct;
+    var warnings = rl.warnings || [];
+
+    // Build per-account rows + total delta
+    var deltaHtml = '';
+    var ACCT_MAP = { 'alpaca_live': 'Live', 'schwab_roth': 'Roth IRA', 'schwab_trad': 'Trad IRA' };
+    var totalL = 0, totalS = 0;
+    var acctRows = [];
+    ['alpaca_live', 'schwab_roth', 'schwab_trad'].forEach(function(k) {
+      var a = (state.accounts || {})[k];
+      if (!a || a.error || !a.positions) return;
+      var actualL = a.positions.filter(function(p) { return p.qty > 0; }).length;
+      var actualS = a.positions.filter(function(p) { return p.qty < 0; }).length;
+      totalL += actualL;
+      totalS += actualS;
+      acctRows.push(
+        '<span style="color:' + C.dim + ';min-width:55px;white-space:nowrap;">' + ACCT_MAP[k] + '</span>' +
+        '<span style="color:' + C.text + ';">' + actualL + 'L / ' + actualS + 'S</span>'
+      );
+    });
+
+    // Per-account breakdown
+    deltaHtml += '<div style="display:flex;align-items:center;gap:0.8rem;font-size:0.65rem;margin-top:0.3rem;flex-wrap:wrap;">';
+    deltaHtml += acctRows.join('<span style="color:' + C.border + ';margin:0 0.2rem;">|</span>');
+    deltaHtml += '</div>';
+
+    // Total vs RL target
+    var dL = totalL - kLong;
+    var dS = totalS - kShort;
+    var dLStr = (dL >= 0 ? '+' : '') + dL;
+    var dSStr = (dS >= 0 ? '+' : '') + dS;
+    var dLCls = dL === 0 ? '' : (dL > 0 ? 'positive' : 'negative');
+    var dSCls = dS === 0 ? '' : (dS > 0 ? 'positive' : 'negative');
+    deltaHtml +=
+      '<div style="display:flex;align-items:center;gap:1rem;font-size:0.65rem;margin-top:0.3rem;border-top:1px solid ' + C.border + ';padding-top:0.3rem;">' +
+        '<span style="color:' + C.bright + ';min-width:55px;font-weight:500;">Total</span>' +
+        '<span style="color:' + C.text + ';font-weight:500;">' + totalL + 'L / ' + totalS + 'S</span>' +
+        '<span style="color:' + C.dim + ';">vs rec ' + kLong + 'L / ' + kShort + 'S</span>' +
+        '<span style="color:' + C.dim + ';">→</span>' +
+        '<span class="' + dLCls + '">' + dLStr + 'L</span>' +
+        '<span class="' + dSCls + '">' + dSStr + 'S</span>' +
+      '</div>';
+
+    panel.innerHTML =
+      '<div style="display:flex;gap:2rem;align-items:flex-start;flex-wrap:wrap;">' +
+        // Left: Allocation bar + deltas
+        '<div style="flex:1.2;min-width:250px;">' +
+          '<div style="font-size:0.6rem;color:' + C.dim + ';text-transform:uppercase;letter-spacing:0.12em;margin-bottom:0.4rem;">Recommended Allocation · <span style="color:' + C.tan + ';">' + lsRatio + 'x</span> L/S ratio</div>' +
+          '<div style="display:flex;height:24px;border-radius:3px;overflow:hidden;border:1px solid ' + C.border + ';">' +
+            '<div style="width:' + longPct + '%;background:' + C.green + ';opacity:0.6;display:flex;align-items:center;justify-content:center;font-size:0.6rem;color:#fff;font-weight:600;">' + kLong + 'L</div>' +
+            '<div style="width:' + shortPct + '%;background:' + C.red + ';opacity:0.6;display:flex;align-items:center;justify-content:center;font-size:0.6rem;color:#fff;font-weight:600;">' + kShort + 'S</div>' +
+          '</div>' +
+          '<div style="font-size:0.55rem;color:' + C.dim + ';margin-top:0.2rem;">Total: ' + kTotal + ' positions</div>' +
+          deltaHtml +
+        '</div>' +
+        // Middle: Stats
+        '<div style="display:flex;gap:1.5rem;flex-wrap:wrap;">' +
+          '<div>' +
+            '<div style="font-size:1.1rem;color:' + C.bright + ';font-family:var(--serif);">' + stopLoss + '%</div>' +
+            '<div style="font-size:0.55rem;color:' + C.dim + ';text-transform:uppercase;letter-spacing:0.1em;">Stop Loss</div>' +
+          '</div>' +
+          '<div>' +
+            '<div style="font-size:1.1rem;color:' + C.bright + ';font-family:var(--serif);">' + vix + '</div>' +
+            '<div style="font-size:0.55rem;color:' + C.dim + ';text-transform:uppercase;letter-spacing:0.1em;">VIX</div>' +
+          '</div>' +
+          '<div>' +
+            '<div style="font-size:1.1rem;color:' + C.bright + ';font-family:var(--serif);">' + method + '</div>' +
+            '<div style="font-size:0.55rem;color:' + C.dim + ';text-transform:uppercase;letter-spacing:0.1em;">Model (' + date + ')</div>' +
+          '</div>' +
+        '</div>' +
+        // History charts rendered below in separate containers
+      '</div>' +
+      (warnings.length > 0 ? '<div style="margin-top:0.4rem;font-size:0.6rem;color:' + C.redBr + ';">' + warnings.map(escapeHtml).join('; ') + '</div>' : '');
+
+    // Render two separate history charts
+    var hist = rl.history || [];
+    if (hist.length > 1) {
+      var data = hist.map(function(d) {
+        return { date: new Date(d.date), kl: d.k_long, ks: d.k_short, sl: d.stop_loss_pct, vix: d.vix,
+                 ratio: d.k_short > 0 ? d.k_long / d.k_short : 0 };
+      });
+
+      // ── Chart 1: Position Count (L/S stacked area) + Ratio line ──
+      (function() {
+        var el = document.getElementById('rl-chart-positions');
+        if (!el) return;
+        el.innerHTML = '';
+        var m = { top: 5, right: 35, bottom: 20, left: 25 };
+        var w = el.clientWidth - m.left - m.right;
+        var h = 130;
+
+        var svg = d3.select(el).append('svg')
+          .attr('width', w + m.left + m.right).attr('height', h + m.top + m.bottom)
+          .append('g').attr('transform', 'translate(' + m.left + ',' + m.top + ')');
+
+        var x = d3.scaleTime().domain(d3.extent(data, function(d) { return d.date; })).range([0, w]);
+        var yMax = d3.max(data, function(d) { return d.kl + d.ks; }) * 1.05;
+        var y = d3.scaleLinear().domain([0, yMax]).range([h, 0]);
+
+        // Right y-axis for L/S ratio
+        var ratioExtent = d3.extent(data, function(d) { return d.ratio; });
+        var rPad = (ratioExtent[1] - ratioExtent[0]) * 0.2 || 0.1;
+        var yR = d3.scaleLinear().domain([ratioExtent[0] - rPad, ratioExtent[1] + rPad]).range([h, 0]);
+
+        // Shorts area: from kl boundary up to kl+ks (top band)
+        svg.append('path').datum(data)
+          .attr('d', d3.area().x(function(d) { return x(d.date); })
+            .y0(function(d) { return y(d.kl); })
+            .y1(function(d) { return y(d.kl + d.ks); }).curve(d3.curveMonotoneX))
+          .attr('fill', C.red).attr('opacity', 0.25);
+        // Longs area: from 0 up to kl (bottom band)
+        svg.append('path').datum(data)
+          .attr('d', d3.area().x(function(d) { return x(d.date); }).y0(h)
+            .y1(function(d) { return y(d.kl); }).curve(d3.curveMonotoneX))
+          .attr('fill', C.green).attr('opacity', 0.25);
+
+        // Lines: top = total (red), boundary = kl (green, where longs end / shorts begin)
+        svg.append('path').datum(data)
+          .attr('d', d3.line().x(function(d) { return x(d.date); }).y(function(d) { return y(d.kl + d.ks); }).curve(d3.curveMonotoneX))
+          .attr('fill', 'none').attr('stroke', C.red).attr('stroke-width', 1.8);
+        svg.append('path').datum(data)
+          .attr('d', d3.line().x(function(d) { return x(d.date); }).y(function(d) { return y(d.kl); }).curve(d3.curveMonotoneX))
+          .attr('fill', 'none').attr('stroke', C.green).attr('stroke-width', 1.8);
+
+        // Ratio line (dashed, on right axis)
+        svg.append('path').datum(data)
+          .attr('d', d3.line().x(function(d) { return x(d.date); }).y(function(d) { return yR(d.ratio); }).curve(d3.curveMonotoneX))
+          .attr('fill', 'none').attr('stroke', C.tan).attr('stroke-width', 1.6)
+          .attr('stroke-dasharray', '4,3').attr('opacity', 0.6);
+
+        // Axes
+        svg.append('g').attr('class', 'axis').attr('transform', 'translate(0,' + h + ')')
+          .call(d3.axisBottom(x).ticks(4).tickFormat(d3.timeFormat('%b %d')).tickSize(2));
+        svg.append('g').attr('class', 'axis').call(d3.axisLeft(y).ticks(4).tickSize(2));
+
+        // End labels
+        var last = data[data.length - 1];
+        var totalY = y(last.kl + last.ks);
+        var shortY = y(last.ks);
+        var ratioY = yR(last.ratio);
+
+        // Place L, S, and ratio labels
+        // Green (longs) boundary is at y(kl), red (shorts) top is at y(kl+ks)
+        var longY = y(last.kl);
+        var labels = [
+          { y: totalY, text: Math.round(last.ks) + 'S', color: C.redBr },
+          { y: ratioY, text: last.ratio.toFixed(2) + 'x', color: C.tan },
+          { y: longY, text: Math.round(last.kl) + 'L', color: C.green },
+        ];
+        labels.sort(function(a, b) { return a.y - b.y; });
+        for (var li = 1; li < labels.length; li++) {
+          if (labels[li].y - labels[li-1].y < 10) {
+            labels[li].y = labels[li-1].y + 10;
+          }
+        }
+        labels.forEach(function(l) {
+          svg.append('text').attr('x', w + 4).attr('y', l.y + 3)
+            .attr('fill', l.color).attr('font-size', '8px').attr('font-family', 'Outfit')
+            .text(l.text);
+        });
+
+        // Shared tooltip builder
+        function rlTooltip(d) {
+          return '<div class="tooltip-title">' + d3.timeFormat('%b %d, %Y')(d.date) + '</div>' +
+            '<div class="tooltip-row"><span class="tooltip-label">Longs</span><span class="tooltip-value">' + Math.round(d.kl) + '</span></div>' +
+            '<div class="tooltip-row"><span class="tooltip-label">Shorts</span><span class="tooltip-value">' + Math.round(d.ks) + '</span></div>' +
+            '<div class="tooltip-row"><span class="tooltip-label">Total</span><span class="tooltip-value">' + Math.round(d.kl + d.ks) + '</span></div>' +
+            '<div class="tooltip-row"><span class="tooltip-label">L/S Ratio</span><span class="tooltip-value">' + d.ratio.toFixed(2) + 'x</span></div>' +
+            '<div class="tooltip-row"><span class="tooltip-label">VIX</span><span class="tooltip-value">' + (d.vix ? d.vix.toFixed(1) : '—') + '</span></div>';
+        }
+
+        // Invisible hover zones along the chart (no visible dots)
+        data.forEach(function(d) {
+          svg.append('rect')
+            .attr('x', x(d.date) - 3).attr('y', 0)
+            .attr('width', 6).attr('height', h)
+            .attr('fill', 'transparent').style('cursor', 'pointer')
+            .on('mousemove', function(evt) { showTooltip(evt, rlTooltip(d)); })
+            .on('mouseleave', hideTooltip);
+        });
+      })();
+
+      // ── Chart 2: Stop-Loss % ──
+      (function() {
+        var el = document.getElementById('rl-chart-stoploss');
+        if (!el) return;
+        el.innerHTML = '';
+        var m = { top: 5, right: 30, bottom: 20, left: 30 };
+        var w = el.clientWidth - m.left - m.right;
+        var h = 130;
+
+        var slData = data.filter(function(d) { return d.sl > 0; });
+        if (slData.length < 2) {
+          el.innerHTML = '<div class="loading">No stop-loss data</div>';
+          return;
+        }
+
+        var svg = d3.select(el).append('svg')
+          .attr('width', w + m.left + m.right).attr('height', h + m.top + m.bottom)
+          .append('g').attr('transform', 'translate(' + m.left + ',' + m.top + ')');
+
+        var x = d3.scaleTime().domain(d3.extent(slData, function(d) { return d.date; })).range([0, w]);
+        var slExtent = d3.extent(slData, function(d) { return d.sl; });
+        var slPad = (slExtent[1] - slExtent[0]) * 0.15 || 2;
+        var y = d3.scaleLinear().domain([slExtent[0] - slPad, slExtent[1] + slPad]).range([h, 0]);
+
+        // Area fill
+        svg.append('path').datum(slData)
+          .attr('d', d3.area().x(function(d) { return x(d.date); }).y0(h).y1(function(d) { return y(d.sl); }).curve(d3.curveMonotoneX))
+          .attr('fill', C.tan).attr('opacity', 0.15);
+
+        // Line
+        svg.append('path').datum(slData)
+          .attr('d', d3.line().x(function(d) { return x(d.date); }).y(function(d) { return y(d.sl); }).curve(d3.curveMonotoneX))
+          .attr('fill', 'none').attr('stroke', C.tan).attr('stroke-width', 1.5);
+
+        svg.append('g').attr('class', 'axis').attr('transform', 'translate(0,' + h + ')')
+          .call(d3.axisBottom(x).ticks(4).tickFormat(d3.timeFormat('%b %d')).tickSize(2));
+        svg.append('g').attr('class', 'axis')
+          .call(d3.axisLeft(y).ticks(4).tickFormat(function(v) { return v.toFixed(0) + '%'; }).tickSize(2));
+
+        // End label
+        var last = slData[slData.length - 1];
+        svg.append('text').attr('x', x(last.date) + 4).attr('y', y(last.sl) + 3)
+          .attr('fill', C.tan).attr('font-size', '9px').attr('font-family', 'Outfit')
+          .text(last.sl.toFixed(1) + '%');
+
+        // Hover
+        slData.forEach(function(d) {
+          svg.append('circle').attr('cx', x(d.date)).attr('cy', y(d.sl))
+            .attr('r', 2.5).attr('fill', C.tan).attr('opacity', 0.8).style('cursor', 'pointer')
+            .on('mousemove', function(evt) {
+              showTooltip(evt,
+                '<div class="tooltip-title">' + d3.timeFormat('%b %d, %Y')(d.date) + '</div>' +
+                '<div class="tooltip-row"><span class="tooltip-label">Stop Loss</span><span class="tooltip-value">' + d.sl.toFixed(1) + '%</span></div>' +
+                '<div class="tooltip-row"><span class="tooltip-label">VIX</span><span class="tooltip-value">' + (d.vix ? d.vix.toFixed(1) : '—') + '</span></div>' +
+                '<div class="tooltip-row"><span class="tooltip-label">L/S</span><span class="tooltip-value">' + Math.round(d.kl) + 'L / ' + Math.round(d.ks) + 'S</span></div>'
+              );
+            })
+            .on('mouseleave', hideTooltip);
+        });
+      })();
+    } else {
+      ['rl-chart-positions', 'rl-chart-stoploss'].forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) el.innerHTML = '<div style="font-size:0.55rem;color:' + C.dim + ';text-align:center;padding-top:2rem;">History builds daily</div>';
+      });
+    }
+  }
+
+  // ════════════════════════════════════════════════════════════════
+  // RENDER: P&L Bar Chart
+  // ════════════════════════════════════════════════════════════════
+  function renderPnlBarsForAccount(containerId, acctKey) {
+    var container = document.getElementById(containerId);
+    if (!container) return;
+    container.innerHTML = '';
+
+    var a = (state.accounts || {})[acctKey];
+    if (!a || a.error || !a.positions || a.positions.length === 0) {
+      container.innerHTML = '<div class="loading">No positions</div>';
+      return;
+    }
+
+    var positions = a.positions.slice();
+    var useTotal = !!a.market_closed;
+
+    function getPnl(p) {
+      if (useTotal) return p.pnl;
+      return p.day_pnl != null ? p.day_pnl : p.pnl;
+    }
+
+    // Sort all positions together by P&L descending
+    positions.sort(function(a, b) { return getPnl(b) - getPnl(a); });
+
+    var barH = 20;
+    var gap = 3;
+    var height = positions.length * (barH + gap);
+    var totalWidth = container.clientWidth;
+    var center = totalWidth * 0.5;
+    var labelSpace = 55;
+    var maxBarW = center - labelSpace;
+
+    var svg = d3.select(container).append('svg')
+      .attr('width', totalWidth).attr('height', height + 10);
+
+    // Hatch pattern for shorts
+    var patId = 'pnl-hatch-' + containerId;
+    svg.append('defs').append('pattern')
+      .attr('id', patId)
+      .attr('patternUnits', 'userSpaceOnUse')
+      .attr('width', 5).attr('height', 5)
+      .append('path')
+        .attr('d', 'M0,5 L5,0')
+        .attr('stroke', 'rgba(255,255,255,0.18)')
+        .attr('stroke-width', 1);
+
+    var maxPnl = d3.max(positions, function(d) { return Math.abs(getPnl(d)); }) || 1;
+    var barScale = d3.scaleLinear().domain([0, maxPnl]).range([0, maxBarW]);
+
+    // Zero line
+    svg.append('line').attr('x1', center).attr('x2', center)
+      .attr('y1', 0).attr('y2', height)
+      .attr('stroke', C.borderL).attr('stroke-width', 1).attr('stroke-dasharray', '2,3');
+
+    positions.forEach(function(p, i) {
+      var y = i * (barH + gap);
+      var dayPnl = getPnl(p);
+      var barWidth = Math.max(1, barScale(Math.abs(dayPnl)));
+      var isPositive = dayPnl >= 0;
+      var isShort = p.qty < 0;
+
+      var barX, tickerX, tickerAnchor, valueX, valueAnchor;
+      if (isPositive) {
+        barX = center + 1;
+        tickerX = center - 4;
+        tickerAnchor = 'end';
+        valueX = center + barWidth + 5;
+        valueAnchor = 'start';
+      } else {
+        barX = center - barWidth - 1;
+        tickerX = center + 4;
+        tickerAnchor = 'start';
+        valueX = center - barWidth - 5;
+        valueAnchor = 'end';
+      }
+
+      // Bar
+      svg.append('rect')
+        .attr('class', isPositive ? 'pnl-bar-positive' : 'pnl-bar-negative')
+        .attr('x', barX).attr('y', y)
+        .attr('width', barWidth).attr('height', barH)
+        .attr('rx', 1).attr('opacity', 0.7);
+
+      // Hatch overlay + dashed border for shorts
+      if (isShort) {
+        svg.append('rect')
+          .attr('x', barX).attr('y', y)
+          .attr('width', barWidth).attr('height', barH)
+          .attr('fill', 'url(#' + patId + ')')
+          .attr('pointer-events', 'none');
+        svg.append('rect')
+          .attr('x', barX).attr('y', y)
+          .attr('width', barWidth).attr('height', barH)
+          .attr('fill', 'none')
+          .attr('stroke', C.redBr).attr('stroke-width', 1.2)
+          .attr('stroke-dasharray', '3,2')
+          .attr('pointer-events', 'none');
+      }
+
+      // Hover zone (invisible, covers full row)
+      svg.append('rect')
+        .attr('x', 0).attr('y', y).attr('width', totalWidth).attr('height', barH)
+        .attr('fill', 'transparent').style('cursor', 'pointer')
+        .on('mousemove', function(evt) {
+          var posSide = isShort ? 'short' : 'long';
+          var signal = classifySignal(p.model_rank, null, posSide);
+          var totalPnlCls = p.pnl >= 0 ? 'positive' : 'negative';
+          var dayPnlCls = dayPnl >= 0 ? 'positive' : 'negative';
+          var sideLabel = isShort ? '<span style="color:' + C.redBr + '">SHORT</span>' : '';
+
+          // Stock day % change
+          var stockDayPct = p.prev_close && p.current_price ? ((p.current_price - p.prev_close) / p.prev_close * 100) : null;
+          var stockDayStr = stockDayPct != null ? (stockDayPct >= 0 ? '+' : '') + stockDayPct.toFixed(2) + '%' : '—';
+          var stockDayCls = stockDayPct != null ? (stockDayPct >= 0 ? 'positive' : 'negative') : '';
+
+          // Day P&L as % of position value
+          var dayPnlPct = p.prev_close && p.qty ? (dayPnl / (p.prev_close * Math.abs(p.qty)) * 100) : null;
+          var dayPnlPctStr = dayPnlPct != null ? (dayPnlPct >= 0 ? '+' : '') + dayPnlPct.toFixed(2) + '%' : '';
+
+          // Total P&L %
+          var totalPnlPctStr = p.pnl_pct != null ? (p.pnl_pct >= 0 ? '+' : '') + p.pnl_pct.toFixed(1) + '%' : '—';
+
+          showTooltip(evt,
+            '<div class="tooltip-title">' + p.symbol + (p.name ? ' — ' + escapeHtml(p.name) : '') + ' ' + sideLabel + '</div>' +
+            '<div class="tooltip-row"><span class="tooltip-label">Sector</span><span class="tooltip-value">' + escapeHtml(p.sector || 'Other') + '</span></div>' +
+            '<div style="margin:4px 0 2px;border-top:1px solid ' + C.border + ';padding-top:4px;font-size:0.6rem;color:' + C.dim + '">Stock</div>' +
+            '<div class="tooltip-row"><span class="tooltip-label">Price</span><span class="tooltip-value">' + fmt$(p.current_price) + (p.prev_close ? ' (prev ' + fmt$(p.prev_close) + ')' : '') + '</span></div>' +
+            '<div class="tooltip-row"><span class="tooltip-label">Day Change</span><span class="tooltip-value ' + stockDayCls + '">' + stockDayStr + '</span></div>' +
+            '<div style="margin:4px 0 2px;border-top:1px solid ' + C.border + ';padding-top:4px;font-size:0.6rem;color:' + C.dim + '">Position' + (isShort ? ' (short)' : '') + '</div>' +
+            '<div class="tooltip-row"><span class="tooltip-label">Day P&L</span><span class="tooltip-value ' + dayPnlCls + '">' + fmt$(dayPnl) + (dayPnlPctStr ? ' (' + dayPnlPctStr + ')' : '') + '</span></div>' +
+            '<div class="tooltip-row"><span class="tooltip-label">Total P&L</span><span class="tooltip-value ' + totalPnlCls + '">' + fmt$(p.pnl) + ' (' + totalPnlPctStr + ')</span></div>' +
+            '<div class="tooltip-row"><span class="tooltip-label">Qty</span><span class="tooltip-value">' + fmtNum(Math.abs(p.qty), 2) + ' × ' + fmt$(p.avg_entry) + ' → ' + fmt$(p.current_price) + '</span></div>' +
+            '<div class="tooltip-row"><span class="tooltip-label">Value</span><span class="tooltip-value">' + fmt$(Math.abs(p.value)) + ' (' + fmtPct(Math.abs(p.weight)) + ')</span></div>' +
+            '<div style="margin:4px 0 2px;border-top:1px solid ' + C.border + ';padding-top:4px;font-size:0.6rem;color:' + C.dim + '">Model</div>' +
+            '<div class="tooltip-row"><span class="tooltip-label">Rank</span><span class="tooltip-value">' + signalBadge(signal) + '</span></div>' +
+            '<div class="tooltip-row"><span class="tooltip-label"></span><span class="tooltip-value" style="font-size:0.6rem;color:' + C.dim + ';">' + rankDetail(p.model_rank, p.model_score) + '</span></div>' +
+            (p.entry_date ? '<div class="tooltip-row"><span class="tooltip-label">Entered</span><span class="tooltip-value">' + p.entry_date + '</span></div>' : '')
+          );
+        })
+        .on('mouseleave', hideTooltip);
+
+      // Ticker label
+      svg.append('text').attr('class', 'pnl-label')
+        .attr('x', tickerX).attr('y', y + barH / 2 + 4)
+        .attr('text-anchor', tickerAnchor)
+        .attr('fill', isShort ? C.redBr : C.text)
+        .text(p.symbol);
+
+      // Value label
+      svg.append('text').attr('class', 'pnl-value')
+        .attr('x', valueX).attr('y', y + barH / 2 + 4)
+        .attr('text-anchor', valueAnchor)
+        .attr('fill', isPositive ? C.greenBr : C.redBr)
+        .text(fmt$(dayPnl));
+    });
+  }
+
+  function renderPnlBars() {
+    renderPnlBarsForAccount('pnl-bars-live', 'alpaca_live');
+    renderPnlBarsForAccount('pnl-bars-schwab-roth', 'schwab_roth');
+    renderPnlBarsForAccount('pnl-bars-schwab-trad', 'schwab_trad');
+    // Update row label if market is closed
+    var lbl = document.getElementById('pnl-row-label');
+    if (lbl) {
+      var live = (state.accounts || {}).alpaca_live;
+      lbl.textContent = (live && live.market_closed) ? 'Position P&L (Total — Market Closed)' : 'Position P&L (Day)';
+    }
+  }
+
+  // ════════════════════════════════════════════════════════════════
+  // RENDER: Account Value Chart
+  // ════════════════════════════════════════════════════════════════
+  function renderValueChartForAccount(containerId, brokerKey) {
+    var container = document.getElementById(containerId);
+    if (!container) return;
+    container.innerHTML = '';
+
+    var hist = (state.portfolioHistory || {}).history || [];
+    var data = hist.filter(function(h) { return h.broker === brokerKey && h.total_value > 0; })
+      .map(function(h) { var p = h.date.split('-'); return { date: new Date(+p[0], +p[1]-1, +p[2]), value: h.total_value }; })
+      .sort(function(a, b) { return a.date - b.date; });
+
+    // If no history, show current value
+    if (data.length === 0) {
+      var a = (state.accounts || {})[brokerKey];
+      if (a && a.value) {
+        container.innerHTML = '<div style="text-align:center;padding:1.5rem 0;">' +
+          '<div style="font-family:var(--serif);font-size:1.4rem;color:' + C.bright + ';">' + fmt$(a.value) + '</div>' +
+          '<div style="font-size:0.55rem;color:' + C.dim + ';margin-top:0.3rem;text-transform:uppercase;letter-spacing:0.12em;">History builds daily</div></div>';
+      } else {
+        container.innerHTML = '<div class="loading">No data</div>';
+      }
+      return;
+    }
+
+    var margin = { top: 8, right: 55, bottom: 25, left: 50 };
+    var width = container.clientWidth - margin.left - margin.right;
+    var height = 120;
+    var col = C.tan;
+
+    var svg = d3.select(container).append('svg')
+      .attr('width', width + margin.left + margin.right)
+      .attr('height', height + margin.top + margin.bottom)
+      .append('g').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+    // Use point scale so only trading days get x-axis space (no weekend gaps)
+    var labels = data.map(function(d) { return d3.timeFormat('%b %d')(d.date); });
+    var x = d3.scalePoint().domain(labels).range([0, width]).padding(0.3);
+    var vals = data.map(function(d) { return d.value; });
+    var y = d3.scaleLinear().domain([d3.min(vals) * 0.98, d3.max(vals) * 1.02]).range([height, 0]);
+
+    if (data.length > 1) {
+      var area = d3.area().x(function(d, i) { return x(labels[i]); }).y0(height).y1(function(d) { return y(d.value); }).curve(d3.curveMonotoneX);
+      var line = d3.line().x(function(d, i) { return x(labels[i]); }).y(function(d) { return y(d.value); }).curve(d3.curveMonotoneX);
+      svg.append('path').datum(data).attr('d', area).attr('fill', col).attr('opacity', 0.06);
+      svg.append('path').datum(data).attr('d', line).attr('fill', 'none').attr('stroke', col).attr('stroke-width', 1.5);
+    }
+    data.forEach(function(d, i) {
+      var prev = i > 0 ? data[i - 1] : null;
+      var dayChange = prev ? d.value - prev.value : null;
+      var dayChangePct = prev ? ((d.value - prev.value) / prev.value * 100) : null;
+      svg.append('circle').attr('cx', x(labels[i])).attr('cy', y(d.value))
+        .attr('r', 3).attr('fill', col).attr('opacity', 0.8)
+        .style('cursor', 'pointer')
+        .on('mousemove', function(evt) {
+          var changeHtml = dayChange != null
+            ? '<div class="tooltip-row"><span class="tooltip-label">Day Change</span><span class="tooltip-value ' +
+              (dayChange >= 0 ? 'positive' : 'negative') + '">' + fmt$(dayChange) + ' (' +
+              (dayChangePct >= 0 ? '+' : '') + dayChangePct.toFixed(2) + '%)</span></div>'
+            : '';
+          showTooltip(evt,
+            '<div class="tooltip-title">' + d3.timeFormat('%b %d, %Y')(d.date) + '</div>' +
+            '<div class="tooltip-row"><span class="tooltip-label">Value</span><span class="tooltip-value">' + fmt$(d.value) + '</span></div>' +
+            changeHtml
+          );
+        })
+        .on('mouseleave', hideTooltip);
+    });
+    var last = data[data.length - 1];
+    svg.append('text').attr('x', x(labels[labels.length - 1]) + 6).attr('y', y(last.value) + 4)
+      .attr('fill', col).attr('font-size', '10px').attr('font-family', 'Outfit').text(fmt$(last.value));
+
+    // Show evenly spaced tick labels (skip some if too many days)
+    var tickStep = Math.max(1, Math.floor(labels.length / 5));
+    var tickLabels = labels.filter(function(_, i) { return i % tickStep === 0 || i === labels.length - 1; });
+    svg.append('g').attr('class', 'axis').attr('transform', 'translate(0,' + height + ')')
+      .call(d3.axisBottom(x).tickValues(tickLabels).tickSize(3));
+    svg.append('g').attr('class', 'axis')
+      .call(d3.axisLeft(y).ticks(4).tickFormat(function(v) { return fmt$(v); }).tickSize(3));
+  }
+
+  function renderValueChart() {
+    renderValueChartForAccount('value-chart-live', 'alpaca_live');
+    renderValueChartForAccount('value-chart-schwab-roth', 'schwab_roth');
+    renderValueChartForAccount('value-chart-schwab-trad', 'schwab_trad');
+  }
+
+  // ════════════════════════════════════════════════════════════════
+  // RENDER: Model Rank Heatmap
+  // ════════════════════════════════════════════════════════════════
+  function renderRankHeatmapForAccount(containerId, acctKey) {
+    var container = document.getElementById(containerId);
+    if (!container) return;
+    container.innerHTML = '';
+
+    var hist = (state.predHistory || {}).history;
+    if (!hist || hist.length === 0) {
+      container.innerHTML = '<div class="loading">No prediction history</div>';
+      return;
+    }
+
+    // Filter to tickers held in this account
+    var a = (state.accounts || {})[acctKey];
+    if (!a || !a.positions || a.positions.length === 0) {
+      container.innerHTML = '<div class="loading">No positions</div>';
+      return;
+    }
+    var acctTickers = new Set(a.positions.map(function(p) { return p.symbol; }));
+    var filteredHist = hist.filter(function(h) { return acctTickers.has(h.ticker); });
+
+    if (filteredHist.length === 0) {
+      container.innerHTML = '<div class="loading">No rank history for held positions</div>';
+      return;
+    }
+
+    var allTickers = Array.from(new Set(filteredHist.map(function(h) { return h.ticker; })));
+    var dates = Array.from(new Set(filteredHist.map(function(h) { return h.date; }))).sort();
+
+    // Build position lookup (full position objects for tooltip)
+    var posMetaMap = {};
+    var posFullMap = {};
+    if (a && a.positions) {
+      a.positions.forEach(function(p) {
+        posMetaMap[p.symbol] = {
+          name: p.name || '', sector: p.sector || 'Other', side: p.qty >= 0 ? 'long' : 'short',
+          market_cap: p.market_cap, trailing_pe: p.trailing_pe, forward_pe: p.forward_pe,
+          beta: p.beta, dividend_yield: p.dividend_yield,
+          return_1w: p.return_1w, return_1m: p.return_1m, return_3m: p.return_3m,
+          return_6m: p.return_6m, return_12m: p.return_12m,
+        };
+        posFullMap[p.symbol] = p;
+      });
+    }
+
+    // Sort tickers by latest rank (best first for longs, worst first for shorts — all mixed)
+    var lookup = {};
+    filteredHist.forEach(function(h) { lookup[h.ticker + '|' + h.date] = h.rank; });
+    var latestDate = dates[dates.length - 1];
+    var tickers = allTickers.slice().sort(function(a, b) {
+      var ra = lookup[a + '|' + latestDate] || 9999;
+      var rb = lookup[b + '|' + latestDate] || 9999;
+      return ra - rb;
+    });
+
+    var margin = { top: 5, right: 10, bottom: 60, left: 50 };
+    var cellW = Math.max(8, Math.min(20, (container.clientWidth - margin.left - margin.right) / dates.length));
+    var cellH = 16;
+    var width = cellW * dates.length;
+    var height = cellH * tickers.length;
+
+    var svg = d3.select(container).append('svg')
+      .attr('width', width + margin.left + margin.right)
+      .attr('height', height + margin.top + margin.bottom)
+      .append('g').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+    // Hatch pattern for shorts
+    var hatchId = 'hm-hatch-' + containerId;
+    svg.append('defs').append('pattern')
+      .attr('id', hatchId)
+      .attr('patternUnits', 'userSpaceOnUse')
+      .attr('width', 5).attr('height', 5)
+      .append('path')
+        .attr('d', 'M0,5 L5,0')
+        .attr('stroke', 'rgba(255,255,255,0.2)')
+        .attr('stroke-width', 1);
+
+    var maxRank = d3.max(hist, function(h) { return h.rank; }) || 3200;
+    var colorScale = d3.scaleSequential()
+      .domain([1, maxRank])
+      .interpolator(function(t) {
+        if (t < 0.05) return C.greenBr;
+        if (t < 0.15) return C.green;
+        if (t < 0.3) return C.olive;
+        if (t < 0.6) return C.dim;
+        return C.redDim;
+      });
+
+    // For shorts, invert the color: low rank (bad stock) = green (good for our short)
+    function cellColor(rank, isShort) {
+      if (rank == null) return C.card;
+      if (isShort) {
+        // Flip: use (maxRank - rank) so bottom-ranked stocks show green
+        return colorScale(maxRank - rank + 1);
+      }
+      return colorScale(rank);
+    }
+
+    tickers.forEach(function(ticker, ti) {
+      var meta = posMetaMap[ticker] || {};
+      var isShort = meta.side === 'short';
+      var y = ti * cellH;
+
+      dates.forEach(function(date, di) {
+        var rank = lookup[ticker + '|' + date];
+        var cx = di * cellW;
+
+        // Color cell
+        svg.append('rect')
+          .attr('class', 'heatmap-cell')
+          .attr('x', cx).attr('y', y)
+          .attr('width', cellW).attr('height', cellH)
+          .attr('fill', cellColor(rank, isShort))
+          .attr('opacity', 0.7);
+
+        // Hatch overlay for shorts
+        if (isShort && rank != null) {
+          svg.append('rect')
+            .attr('x', cx).attr('y', y)
+            .attr('width', cellW).attr('height', cellH)
+            .attr('fill', 'url(#' + hatchId + ')')
+            .attr('pointer-events', 'none');
+        }
+
+        // Hover — use shared tooltip if position data available
+        svg.append('rect')
+          .attr('x', cx).attr('y', y)
+          .attr('width', cellW).attr('height', cellH)
+          .attr('fill', 'transparent').style('cursor', 'pointer')
+          .on('mousemove', function(evt) {
+            if (rank == null) return;
+            var pos = posFullMap[ticker];
+            if (pos) {
+              showTooltip(evt, buildTickerTooltip(pos, { rank: rank, score: null }));
+            } else {
+              var sideLabel = isShort ? '<span style="color:' + C.redBr + '">SHORT</span>' : 'LONG';
+              var sepLine = '<div style="margin:4px 0 2px;border-top:1px solid ' + C.border + ';padding-top:4px;font-size:0.6rem;color:' + C.dim + '">';
+              showTooltip(evt, '<div class="tooltip-title">' + ticker + (meta.name ? ' — ' + escapeHtml(meta.name) : '') + ' ' + sideLabel + '</div>' +
+                '<div class="tooltip-row"><span class="tooltip-label">Sector</span><span class="tooltip-value">' + escapeHtml(meta.sector || 'Other') + '</span></div>' +
+                '<div class="tooltip-row"><span class="tooltip-label">Model Rank</span><span class="tooltip-value">' + signalBadge(classifySignal(rank, maxRank, meta.side)) + '</span></div>' +
+                '<div class="tooltip-row"><span class="tooltip-label"></span><span class="tooltip-value" style="font-size:0.6rem;color:' + C.dim + ';">' + rankDetail(rank, null, maxRank) + '</span></div>' +
+                buildFundamentalsHtml(meta, sepLine + 'Fundamentals</div>'));
+            }
+          })
+          .on('mouseleave', hideTooltip);
+      });
+
+      // Ticker label — red for shorts
+      svg.append('text').attr('class', 'heatmap-label')
+        .attr('x', -5).attr('y', y + cellH / 2 + 4)
+        .attr('text-anchor', 'end')
+        .attr('fill', isShort ? C.redBr : C.text)
+        .text(ticker);
+    });
+
+    // Date labels — angled, with extra bottom margin
+    dates.forEach(function(d, i) {
+      svg.append('text').attr('class', 'heatmap-label')
+        .attr('x', i * cellW + cellW / 2).attr('y', height + 16)
+        .attr('text-anchor', 'end')
+        .attr('transform', 'rotate(-45,' + (i * cellW + cellW / 2) + ',' + (height + 16) + ')')
+        .text(d.slice(5).replace(/^0/, ''));
+    });
+  }
+
+  function renderRankHeatmap() {
+    renderRankHeatmapForAccount('rank-heatmap-live', 'alpaca_live');
+    renderRankHeatmapForAccount('rank-heatmap-schwab-roth', 'schwab_roth');
+    renderRankHeatmapForAccount('rank-heatmap-schwab-trad', 'schwab_trad');
+  }
+
+  // ════════════════════════════════════════════════════════════════
+  // RENDER: Signal Sunburst
+  // ════════════════════════════════════════════════════════════════
+  function renderSunburstForAccount(containerId, acctKey) {
+    var container = document.getElementById(containerId);
+    if (!container) return;
+    container.innerHTML = '';
+
+    var a = (state.accounts || {})[acctKey];
+    if (!a || !a.positions || a.positions.length === 0) {
+      container.innerHTML = '<div class="loading">No positions</div>';
+      return;
+    }
+
+    var positions = a.positions;
+
+    // Build hierarchy: root > signal > position
+    var bySignal = {};
+    positions.forEach(function(p) {
+      var posSide = p.qty >= 0 ? 'long' : 'short';
+      var signal = classifySignal(p.model_rank, null, posSide);
+      if (!bySignal[signal]) bySignal[signal] = [];
+      bySignal[signal].push(p);
+    });
+
+    var root = { name: 'Portfolio', children: [] };
+    Object.keys(bySignal).forEach(function(sig) {
+      root.children.push({
+        name: sig,
+        children: bySignal[sig].map(function(p) {
+          return { name: p.symbol, value: Math.abs(p.value), data: p };
+        })
+      });
+    });
+
+    var size = Math.min(260, container.clientWidth);
+    var radius = size / 2;
+
+    var svg = d3.select(container).append('svg')
+      .attr('width', size).attr('height', size)
+      .append('g').attr('transform', 'translate(' + radius + ',' + radius + ')');
+
+    var hierarchy = d3.hierarchy(root).sum(function(d) { return d.value || 0; });
+    var partition = d3.partition().size([2 * Math.PI, radius]);
+    partition(hierarchy);
+
+    var arc = d3.arc()
+      .startAngle(function(d) { return d.x0; })
+      .endAngle(function(d) { return d.x1; })
+      .innerRadius(function(d) { return d.y0 * 0.7; })
+      .outerRadius(function(d) { return d.y1 * 0.7 - 1; });
+
+    svg.selectAll('.sunburst-arc')
+      .data(hierarchy.descendants().filter(function(d) { return d.depth > 0; }))
+      .enter().append('path')
+      .attr('class', 'sunburst-arc')
+      .attr('d', arc)
+      .attr('fill', function(d) {
+        if (d.depth === 1) return SIGNAL_COLORS[d.data.name] || C.dim;
+        return SIGNAL_COLORS[d.parent.data.name] || C.dim;
+      })
+      .attr('opacity', function(d) { return d.depth === 2 ? 0.8 : 0.5; })
+      .on('mousemove', function(evt, d) {
+        var html = '<div class="tooltip-title">' + d.data.name.replace('_', ' ') + '</div>';
+        if (d.data.data) {
+          var p = d.data.data;
+          html += '<div class="tooltip-row"><span class="tooltip-label">Value</span><span class="tooltip-value">' + fmt$(p.value) + '</span></div>';
+          html += '<div class="tooltip-row"><span class="tooltip-label">P&L</span><span class="tooltip-value ' + (p.pnl >= 0 ? 'positive' : 'negative') + '">' + fmt$(p.pnl) + '</span></div>';
+          html += '<div class="tooltip-row"><span class="tooltip-label">Weight</span><span class="tooltip-value">' + fmtPct(p.weight) + '</span></div>';
+        } else {
+          html += '<div class="tooltip-row"><span class="tooltip-label">Count</span><span class="tooltip-value">' + (d.children ? d.children.length : 0) + ' positions</span></div>';
+          html += '<div class="tooltip-row"><span class="tooltip-label">Value</span><span class="tooltip-value">' + fmt$(d.value) + '</span></div>';
+        }
+        showTooltip(evt, html);
+      })
+      .on('mouseleave', hideTooltip);
+
+    // Center label
+    svg.append('text')
+      .attr('text-anchor', 'middle').attr('dy', '-0.2em')
+      .attr('fill', C.bright).attr('font-family', 'Playfair Display')
+      .attr('font-size', '14px').attr('font-weight', '300')
+      .text(positions.length);
+    svg.append('text')
+      .attr('text-anchor', 'middle').attr('dy', '1.2em')
+      .attr('fill', C.dim).attr('font-family', 'Outfit')
+      .attr('font-size', '8px')
+      .attr('letter-spacing', '0.15em')
+      .text('POSITIONS');
+  }
+
+  function renderSunburst() {
+    renderSunburstForAccount('sunburst-live', 'alpaca_live');
+    renderSunburstForAccount('sunburst-schwab-roth', 'schwab_roth');
+    renderSunburstForAccount('sunburst-schwab-trad', 'schwab_trad');
+  }
+
+  // ════════════════════════════════════════════════════════════════
+  // RENDER: Allocation Streamchart (placeholder with trade history data)
+  // ════════════════════════════════════════════════════════════════
+  function renderStreamchartForAccount(containerId, brokerKey) {
+    var container = document.getElementById(containerId);
+    if (!container) return;
+    container.innerHTML = '';
+
+    var hist = (state.portfolioHistory || {}).history || [];
+    var data = hist.filter(function(h) { return h.broker === brokerKey && h.total_value > 0; })
+      .map(function(h) { return { date: new Date(h.date), cash: h.cash || 0, invested: (h.total_value || 0) - (h.cash || 0) }; })
+      .sort(function(a, b) { return a.date - b.date; });
+
+    // Fallback: show current allocation bar
+    if (data.length < 2) {
+      var a = (state.accounts || {})[brokerKey];
+      if (a && a.value) {
+        var investedPct = Math.round((1 - a.cash_pct) * 100);
+        var cashPct = Math.round(a.cash_pct * 100);
+        container.innerHTML =
+          '<div style="padding:0.8rem 0;">' +
+          '<div style="display:flex;height:16px;border-radius:1px;overflow:hidden;">' +
+          '<div style="width:' + investedPct + '%;background:' + C.green + ';opacity:0.5;"></div>' +
+          '<div style="width:' + cashPct + '%;background:' + C.tan + ';opacity:0.3;"></div></div>' +
+          '<div style="display:flex;justify-content:space-between;font-size:0.55rem;color:' + C.dim + ';margin-top:3px;">' +
+          '<span>Invested ' + investedPct + '%</span><span>Cash ' + cashPct + '%</span></div>' +
+          '<div style="font-size:0.55rem;color:' + C.dim + ';text-align:center;margin-top:0.4rem;">History builds daily</div></div>';
+      } else {
+        container.innerHTML = '<div class="loading">No data</div>';
+      }
+      return;
+    }
+
+    var margin = { top: 8, right: 10, bottom: 25, left: 10 };
+    var width = container.clientWidth - margin.left - margin.right;
+    var height = 100;
+
+    var svg = d3.select(container).append('svg')
+      .attr('width', width + margin.left + margin.right)
+      .attr('height', height + margin.top + margin.bottom)
+      .append('g').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+    var x = d3.scaleTime().domain(d3.extent(data, function(d) { return d.date; })).range([0, width]);
+    var y = d3.scaleLinear().domain([0, d3.max(data, function(d) { return d.cash + d.invested; })]).range([height, 0]);
+
+    var areaInvested = d3.area().x(function(d) { return x(d.date); }).y0(height).y1(function(d) { return y(d.invested); }).curve(d3.curveMonotoneX);
+    var areaCash = d3.area().x(function(d) { return x(d.date); }).y0(function(d) { return y(d.invested); }).y1(function(d) { return y(d.invested + d.cash); }).curve(d3.curveMonotoneX);
+
+    svg.append('path').datum(data).attr('d', areaInvested).attr('fill', C.green).attr('opacity', 0.3);
+    svg.append('path').datum(data).attr('d', areaCash).attr('fill', C.tan).attr('opacity', 0.2);
+
+    svg.append('g').attr('class', 'axis').attr('transform', 'translate(0,' + height + ')')
+      .call(d3.axisBottom(x).ticks(4).tickFormat(d3.timeFormat('%b %d')).tickSize(3));
+
+    // Compact legend
+    svg.append('rect').attr('x', width - 80).attr('y', 2).attr('width', 8).attr('height', 8).attr('fill', C.green).attr('opacity', 0.4);
+    svg.append('text').attr('x', width - 68).attr('y', 9).attr('fill', C.dim).attr('font-size', '8px').attr('font-family', 'Outfit').text('Invested');
+    svg.append('rect').attr('x', width - 80).attr('y', 14).attr('width', 8).attr('height', 8).attr('fill', C.tan).attr('opacity', 0.3);
+    svg.append('text').attr('x', width - 68).attr('y', 21).attr('fill', C.dim).attr('font-size', '8px').attr('font-family', 'Outfit').text('Cash');
+  }
+
+  function renderStreamchart() {
+    renderStreamchartForAccount('streamchart-live', 'alpaca_live');
+    renderStreamchartForAccount('streamchart-schwab-roth', 'schwab_roth');
+    renderStreamchartForAccount('streamchart-schwab-trad', 'schwab_trad');
+  }
+
+  // ════════════════════════════════════════════════════════════════
+  // RENDER: News Panel
+  // ════════════════════════════════════════════════════════════════
+  function renderNews() {
+    var panel = document.getElementById('news-panel');
+    if (!panel) return;
+
+    var news = state.news || {};
+    var articles = news.articles || [];
+
+    if (articles.length === 0) {
+      panel.innerHTML = '<div class="loading">No recent news</div>';
+      return;
+    }
+
+    // Store articles for hover
+    panel._articles = articles.slice(0, 15);
+
+    panel.innerHTML = panel._articles.map(function(a, idx) {
+      var rawSyms = a.symbols || [];
+      var syms = typeof rawSyms === 'string' ? rawSyms : rawSyms.join(', ');
+      var headline = escapeHtml(a.headline || '');
+      if (a.url) {
+        headline = '<a href="' + escapeHtml(a.url) + '" target="_blank" rel="noopener" style="color:' + C.text + ';text-decoration:none;border-bottom:1px solid ' + C.border + ';transition:border-color 0.2s;"' +
+          ' onmouseover="this.style.borderColor=\'' + C.green + '\'" onmouseout="this.style.borderColor=\'' + C.border + '\'">' + headline + '</a>';
+      }
+      return '<div class="news-item" data-news-idx="' + idx + '">' +
+        '<div class="news-headline">' + headline + '</div>' +
+        '<div class="news-meta">' +
+          (syms ? syms + ' · ' : '') +
+          (a.source || '') + ' · ' + (a.created_at || '').slice(0, 16) +
+        '</div></div>';
+    }).join('');
+
+    // Hover tooltips for news items
+    panel.querySelectorAll('.news-item').forEach(function(el) {
+      var idx = parseInt(el.getAttribute('data-news-idx'));
+      var a = panel._articles[idx];
+      if (!a) return;
+      el.style.cursor = 'pointer';
+      var summary = a.summary ? escapeHtml(a.summary) : '';
+      var rawSyms = a.symbols || [];
+      var symList = typeof rawSyms === 'string' ? rawSyms : rawSyms.join(', ');
+      var keywords = (a.keyword_alerts || []);
+      var keywordHtml = keywords.length > 0
+        ? '<div style="margin-top:4px;"><span style="color:' + C.redBr + ';font-weight:600;">ALERTS: ' + keywords.join(', ') + '</span></div>'
+        : '';
+      el.addEventListener('mousemove', function(evt) {
+        showTooltip(evt,
+          '<div class="tooltip-title">' + escapeHtml(a.headline || '') + '</div>' +
+          (summary
+            ? '<div style="line-height:1.5;margin-top:6px;white-space:pre-wrap;">' + summary + '</div>'
+            : '<div style="margin-top:6px;color:' + C.dim + ';font-style:italic;">No summary available</div>') +
+          keywordHtml +
+          (symList ? '<div style="margin-top:6px;color:' + C.dim + ';font-size:0.65rem;">Tickers: ' + escapeHtml(symList) + '</div>' : '') +
+          '<div style="margin-top:4px;color:' + C.dim + ';font-size:0.6rem;">' + escapeHtml(a.source || '') + ' · ' + (a.created_at || '').slice(0, 16) + '</div>'
+        );
+      });
+      el.addEventListener('mouseleave', hideTooltip);
+    });
+  }
+
+  // ════════════════════════════════════════════════════════════════
+  // RENDER: Journal Panel
+  // ════════════════════════════════════════════════════════════════
+  function renderJournal() {
+    var panel = document.getElementById('journal-panel');
+    if (!panel) return;
+
+    var j = state.journal || {};
+    var html = '';
+    var depthLabels = { depth_0: 'Recent', depth_1: 'Weekly', depth_2: 'Monthly' };
+
+    var allEntries = [];
+    ['depth_0', 'depth_1', 'depth_2'].forEach(function(key) {
+      var entries = j[key] || [];
+      entries.forEach(function(e) {
+        var content = typeof e === 'string' ? e : (e.content || '');
+        var dateStr = e.date_start ? e.date_start + (e.date_end && e.date_end !== e.date_start ? ' → ' + e.date_end : '') : '';
+        allEntries.push({ content: content, depth: depthLabels[key], category: e.category, dateStr: dateStr });
+        html += '<div class="journal-entry" data-journal-idx="' + (allEntries.length - 1) + '">' +
+          '<div class="journal-depth">' + depthLabels[key] + (e.category ? ' · ' + e.category : '') + '</div>' +
+          '<div class="journal-content">' + escapeHtml(content).slice(0, 200) + (content.length > 200 ? '…' : '') + '</div>' +
+
+          (dateStr ? '<div class="journal-date">' + dateStr + '</div>' : '') +
+          '</div>';
+      });
+    });
+
+    panel.innerHTML = html || '<div class="loading">No journal entries</div>';
+
+    // Hover to show full content
+    panel.querySelectorAll('.journal-entry').forEach(function(el) {
+      var idx = parseInt(el.getAttribute('data-journal-idx'));
+      var entry = allEntries[idx];
+      if (!entry) return;
+      el.style.cursor = 'pointer';
+      el.addEventListener('mousemove', function(evt) {
+        showTooltip(evt,
+          '<div class="tooltip-title">' + escapeHtml(entry.depth) + (entry.category ? ' · ' + entry.category : '') + '</div>' +
+          '<div style="line-height:1.4;margin-top:4px;white-space:pre-wrap;">' + escapeHtml(entry.content) + '</div>' +
+          (entry.dateStr ? '<div style="margin-top:4px;color:' + C.dim + ';font-size:0.6rem;">' + entry.dateStr + '</div>' : '')
+        );
+      });
+      el.addEventListener('mouseleave', hideTooltip);
+    });
+  }
+
+  // ════════════════════════════════════════════════════════════════
+  // RENDER: Trade Log
+  // ════════════════════════════════════════════════════════════════
+  function renderTradeLogForAccount(containerId, brokerKey) {
+    var panel = document.getElementById(containerId);
+    if (!panel) return;
+
+    var allTrades = (state.trades || {}).trades || [];
+    var trades = allTrades.filter(function(t) { return t.broker === brokerKey; });
+
+    if (trades.length === 0) {
+      panel.innerHTML = '<div class="loading">No trades</div>';
+      return;
+    }
+
+    var displayTrades = trades.slice(0, 20);
+    panel.innerHTML = displayTrades.map(function(t, idx) {
+      var sideClass = (t.side === 'buy' || t.side === 'cover') ? 'buy' : 'sell';
+      var price = t.filled_price ? fmt$(t.filled_price) : (t.limit_price ? 'limit ' + fmt$(t.limit_price) : 'market');
+      var rank = t.model_rank ? '#' + t.model_rank : '';
+      var ts = (t.timestamp || '').slice(0, 16);
+      return '<div class="trade-item" data-trade-idx="' + idx + '" style="cursor:pointer;">' +
+        '<span class="trade-side ' + sideClass + '">' + t.side + '</span>' +
+        '<span class="trade-symbol">' + t.symbol + '</span>' +
+        '<span class="trade-detail">' + fmtNum(t.qty, 1) + ' @ ' + price + (rank ? ' · rank ' + rank : '') + '</span>' +
+        '<span class="trade-time">' + ts + '</span>' +
+        '</div>';
+    }).join('');
+
+    // Build ticker metadata lookup from account positions (includes fundamentals)
+    var tickerMeta = {};
+    ['alpaca_live', 'schwab_roth', 'schwab_trad'].forEach(function(k) {
+      var ac = (state.accounts || {})[k];
+      if (ac && ac.positions) ac.positions.forEach(function(p) {
+        if (!tickerMeta[p.symbol]) tickerMeta[p.symbol] = {
+          name: p.name || '', sector: p.sector || 'Other',
+          market_cap: p.market_cap, trailing_pe: p.trailing_pe,
+          forward_pe: p.forward_pe, beta: p.beta, dividend_yield: p.dividend_yield,
+          return_1w: p.return_1w, return_1m: p.return_1m, return_3m: p.return_3m,
+          return_6m: p.return_6m, return_12m: p.return_12m,
+        };
+      });
+    });
+
+    // Hover tooltips for trades
+    panel.querySelectorAll('.trade-item').forEach(function(el) {
+      var idx = parseInt(el.getAttribute('data-trade-idx'));
+      var t = displayTrades[idx];
+      if (!t) return;
+      var tm = tickerMeta[t.symbol] || {};
+      el.addEventListener('mousemove', function(evt) {
+        var tradeSide = (t.side === 'sell' || t.side === 'short') ? 'short' : 'long';
+        var signal = classifySignal(t.model_rank, null, tradeSide);
+        var reasoning = t.reasoning ? escapeHtml(t.reasoning) : '';
+        showTooltip(evt,
+          '<div class="tooltip-title">' + t.symbol + (tm.name ? ' — ' + escapeHtml(tm.name) : '') + '</div>' +
+          (tm.sector ? '<div class="tooltip-row"><span class="tooltip-label">Sector</span><span class="tooltip-value">' + escapeHtml(tm.sector) + '</span></div>' : '') +
+          '<div class="tooltip-row"><span class="tooltip-label">Qty</span><span class="tooltip-value">' + fmtNum(t.qty, 2) + (t.filled_qty ? ' (filled: ' + fmtNum(t.filled_qty, 2) + ')' : '') + '</span></div>' +
+          (t.filled_price ? '<div class="tooltip-row"><span class="tooltip-label">Fill Price</span><span class="tooltip-value">' + fmt$(t.filled_price) + '</span></div>' : '') +
+          (t.limit_price ? '<div class="tooltip-row"><span class="tooltip-label">Limit</span><span class="tooltip-value">' + fmt$(t.limit_price) + '</span></div>' : '') +
+          '<div class="tooltip-row"><span class="tooltip-label">Status</span><span class="tooltip-value">' + (t.status || '—') + '</span></div>' +
+          (t.model_rank ? '<div class="tooltip-row"><span class="tooltip-label">Model Rank</span><span class="tooltip-value">#' + t.model_rank + ' · ' + signalBadge(signal) + '</span></div>' : '') +
+          (t.model_score != null ? '<div class="tooltip-row"><span class="tooltip-label">Model Score</span><span class="tooltip-value">' + fmtNum(t.model_score, 3) + '</span></div>' : '') +
+          (t.triggered_by ? '<div class="tooltip-row"><span class="tooltip-label">Triggered By</span><span class="tooltip-value">' + escapeHtml(t.triggered_by) + '</span></div>' : '') +
+          buildFundamentalsHtml(tm, '<div style="margin:4px 0 2px;border-top:1px solid ' + C.border + ';padding-top:4px;font-size:0.6rem;color:' + C.dim + '">Fundamentals</div>') +
+          (reasoning ? '<div style="margin-top:4px;border-top:1px solid ' + C.border + ';padding-top:4px;max-width:350px;line-height:1.3;">' + reasoning + '</div>' : '') +
+          '<div style="margin-top:2px;color:' + C.dim + ';font-size:0.55rem;">' + (t.timestamp || '') + '</div>'
+        );
+      });
+      el.addEventListener('mouseleave', hideTooltip);
+    });
+  }
+
+  function renderTradeLog() {
+    renderTradeLogForAccount('trade-log-live', 'alpaca_live');
+    renderTradeLogForAccount('trade-log-schwab-roth', 'schwab_roth');
+    renderTradeLogForAccount('trade-log-schwab-trad', 'schwab_trad');
+  }
+
+  // ════════════════════════════════════════════════════════════════
+  // RENDER: Suggested Actions
+  // ════════════════════════════════════════════════════════════════
+  function renderActions() {
+    var el = document.getElementById('actions');
+    if (!el) return;
+
+    // Build actions from account data + predictions
+    var actions = [];
+    var ACCOUNT_LABELS = {
+      'alpaca_live': 'Brokerage',
+      'schwab_roth': 'Roth IRA',
+      'schwab_trad': 'Trad IRA'
+    };
+    ['alpaca_live', 'schwab_roth', 'schwab_trad'].forEach(function(acct) {
+      var a = (state.accounts || {})[acct];
+      if (!a || a.error || !a.positions) return;
+      var label = ACCOUNT_LABELS[acct] || acct;
+
+      a.positions.forEach(function(p) {
+        var rank = p.model_rank;
+        var posSide = p.qty >= 0 ? 'long' : 'short';
+        var signal = classifySignal(rank, null, posSide);
+
+        if (signal === 'exit' && rank) {
+          actions.push(label + ': ' + p.symbol + ' rank #' + rank + ' — signal is exit');
+        }
+        if (signal === 'strong_short' && p.qty > 0 && rank) {
+          actions.push(label + ': ' + p.symbol + ' rank #' + rank + ' — strong short but holding long');
+        }
+        // Large unrealized loss
+        if (p.pnl_pct != null && p.pnl_pct < -8) {
+          actions.push(label + ': ' + p.symbol + ' down ' + p.pnl_pct.toFixed(1) + '% — review position');
+        }
+      });
+
+      if (a.cash_pct > 0.35) {
+        actions.push(label + ' cash ' + (a.cash_pct * 100).toFixed(0) + '% — consider deploying');
+      }
+      if (a.cash_pct < 0.03 && a.positions.length > 0) {
+        actions.push(label + ' cash only ' + (a.cash_pct * 100).toFixed(1) + '% — low reserve');
+      }
+    });
+
+    // Top predictions not held anywhere
+    var preds = state.predictions || {};
+    var allHeld = getHeldSymbols();
+    var topUnheld = (preds.top || []).filter(function(p) {
+      return allHeld.indexOf(p.ticker) < 0;
+    }).slice(0, 5);
+    if (topUnheld.length > 0) {
+      actions.push('Top-ranked not held: ' + topUnheld.map(function(p) { return p.ticker + ' (#' + p.rank + ')'; }).join(', '));
+    }
+
+    if (actions.length === 0) {
+      actions.push('No immediate actions suggested');
+    }
+
+    el.innerHTML = actions.map(function(a) {
+      return '<div class="action-item"><span class="action-dot"></span>' + escapeHtml(a) + '</div>';
+    }).join('');
+  }
+
+  // ════════════════════════════════════════════════════════════════
+  // RENDER: Predictions Table
+  // ════════════════════════════════════════════════════════════════
+  function renderPredictionTable(containerId, items, total) {
+    var el = document.getElementById(containerId);
+    if (!el) return;
+
+    if (!items || items.length === 0) {
+      el.innerHTML = '<div class="loading">No predictions</div>';
+      return;
+    }
+
+    // Build held lookup per account
+    var heldLive = new Set();
+    var heldRoth = new Set();
+    var heldTrad = new Set();
+    var liveAcct = (state.accounts || {}).alpaca_live;
+    var rothAcct = (state.accounts || {}).schwab_roth;
+    var tradAcct = (state.accounts || {}).schwab_trad;
+    if (liveAcct && liveAcct.positions) liveAcct.positions.forEach(function(p) { heldLive.add(p.symbol); });
+    if (rothAcct && rothAcct.positions) rothAcct.positions.forEach(function(p) { heldRoth.add(p.symbol); });
+    if (tradAcct && tradAcct.positions) tradAcct.positions.forEach(function(p) { heldTrad.add(p.symbol); });
+
+    var html = '<table><thead style="position:sticky;top:0;z-index:2;">' +
+      '<tr><th colspan="5" style="text-align:right;padding:0.2rem 0.4rem;font-weight:300;border:none;">' +
+      '<span style="color:' + C.acctLive + '">●</span> Brokerage &nbsp;' +
+      '<span style="color:' + C.acctRoth + '">●</span> Roth &nbsp;' +
+      '<span style="color:' + C.acctTrad + '">●</span> Trad</th></tr>' +
+      '<tr><th>Rank</th><th>Ticker</th><th class="text-right">Score</th><th class="text-center">Signal</th><th class="text-center">Held</th></tr></thead><tbody>';
+
+    // Build sector/name lookup from all account positions
+    var sectorLookup = {};
+    ['alpaca_live', 'schwab_roth', 'schwab_trad'].forEach(function(k) {
+      var a = (state.accounts || {})[k];
+      if (a && a.positions) a.positions.forEach(function(pos) {
+        if (pos.sector) sectorLookup[pos.symbol] = pos.sector;
+      });
+    });
+
+    items.forEach(function(p, idx) {
+      var signal = classifySignal(p.rank, total);
+      var inLive = heldLive.has(p.ticker);
+      var inRoth = heldRoth.has(p.ticker);
+      var inTrad = heldTrad.has(p.ticker);
+      var dots = '';
+      if (inLive) dots += '<span style="color:' + C.acctLive + '">●</span>';
+      if (inRoth) dots += '<span style="color:' + C.acctRoth + ';margin-left:2px;">●</span>';
+      if (inTrad) dots += '<span style="color:' + C.acctTrad + ';margin-left:2px;">●</span>';
+      var sector = p.sector || sectorLookup[p.ticker] || '';
+      html += '<tr data-pred-idx="' + idx + '" style="cursor:pointer;"><td>' + p.rank + '</td><td>' + p.ticker + '</td>' +
+        '<td class="text-right">' + fmtNum(p.score, 3) + '</td>' +
+        '<td class="text-center">' + signalBadge(signal) + '</td>' +
+        '<td class="text-center">' + dots + '</td></tr>';
+    });
+
+    html += '</tbody></table>';
+
+    el.innerHTML = html;
+
+    // Hover tooltips for prediction rows — use shared tooltip for held tickers
+    var allPositions = {};
+    ['alpaca_live', 'schwab_roth', 'schwab_trad'].forEach(function(k) {
+      var a = (state.accounts || {})[k];
+      if (a && a.positions) a.positions.forEach(function(pos) {
+        if (!allPositions[pos.symbol]) allPositions[pos.symbol] = pos;
+      });
+    });
+
+    el.querySelectorAll('tr[data-pred-idx]').forEach(function(row) {
+      var idx = parseInt(row.getAttribute('data-pred-idx'));
+      var p = items[idx];
+      if (!p) return;
+      var sector = p.sector || sectorLookup[p.ticker] || 'Unknown';
+      var signal = classifySignal(p.rank, total);
+      var pos = allPositions[p.ticker];
+
+      row.addEventListener('mousemove', function(evt) {
+        if (pos) {
+          // Held ticker — full position tooltip with prediction rank override
+          showTooltip(evt, buildTickerTooltip(pos, { rank: p.rank, score: p.score }));
+        } else {
+          // Non-held — simpler prediction-only tooltip
+          var tickerName = p.name || '';
+          var dayRetHtml = '';
+          if (p.day_return_pct != null) {
+            var drCls = p.day_return_pct >= 0 ? 'positive' : 'negative';
+            dayRetHtml = '<div class="tooltip-row"><span class="tooltip-label">Day Return</span><span class="tooltip-value ' + drCls + '">' +
+              (p.day_return_pct >= 0 ? '+' : '') + p.day_return_pct.toFixed(2) + '%' +
+              (p.price ? ' ($' + p.price.toFixed(2) + ')' : '') + '</span></div>';
+          } else if (p.price != null) {
+            dayRetHtml = '<div class="tooltip-row"><span class="tooltip-label">Price</span><span class="tooltip-value">$' +
+              p.price.toFixed(2) + '</span></div>';
+          }
+          var sepLine = '<div style="margin:4px 0 2px;border-top:1px solid ' + C.border + ';padding-top:4px;font-size:0.6rem;color:' + C.dim + '">';
+          showTooltip(evt,
+            '<div class="tooltip-title">' + p.ticker + (tickerName ? ' — ' + escapeHtml(tickerName) : '') + '</div>' +
+            '<div class="tooltip-row"><span class="tooltip-label">Sector</span><span class="tooltip-value">' + escapeHtml(sector) + '</span></div>' +
+            '<div class="tooltip-row"><span class="tooltip-label">Model Rank</span><span class="tooltip-value">' + signalBadge(signal) + '</span></div>' +
+            '<div class="tooltip-row"><span class="tooltip-label"></span><span class="tooltip-value" style="font-size:0.6rem;color:#7a7868;">' + rankDetail(p.rank, p.score, total) + '</span></div>' +
+            dayRetHtml +
+            buildFundamentalsHtml(p, sepLine + 'Fundamentals</div>')
+          );
+        }
+      });
+      row.addEventListener('mouseleave', hideTooltip);
+    });
+  }
+
+  function renderPredictions() {
+    var preds = state.predictions || {};
+    renderPredictionTable('predictions-top', preds.top || [], preds.total);
+    renderPredictionTable('predictions-bottom', (preds.bottom || []).slice().reverse(), preds.total);
+  }
+
+  // ════════════════════════════════════════════════════════════════
+  // RENDER: Prediction Performance
+  // ════════════════════════════════════════════════════════════════
+  // (Prediction Performance removed — insufficient return data yet)
+  // ════════════════════════════════════════════════════════════════
+  function renderPredPerformance_REMOVED() {
+    var container = document.getElementById('pred-performance');
+    if (!container) return;
+    container.innerHTML = '';
+
+    var perf = state.predPerformance || {};
+    var dates = perf.dates || [];
+
+    if (dates.length === 0) {
+      container.innerHTML =
+        '<div class="loading">' +
+        'Prediction performance tracks how well model rankings predict actual returns.<br>' +
+        'Data populates as the daemon backfills realized returns (~1 day lag for 1d returns).<br>' +
+        '<span style="color:' + C.dim + '">Showing: Top 50 vs Bottom 50 avg ' + (perf.horizon || '1d') + ' return by prediction date.</span>' +
+        '</div>';
+      return;
+    }
+
+    var margin = { top: 15, right: 80, bottom: 30, left: 50 };
+    var width = container.clientWidth - margin.left - margin.right;
+    var height = 180;
+
+    var svg = d3.select(container).append('svg')
+      .attr('width', width + margin.left + margin.right)
+      .attr('height', height + margin.top + margin.bottom)
+      .append('g').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+    var data = dates.map(function(d) {
+      return {
+        date: new Date(d.date),
+        top: d.top_n_return,
+        bottom: d.bottom_n_return,
+        spread: d.spread,
+        ic: d.rank_ic,
+        universe: d.universe_return,
+      };
+    });
+
+    var x = d3.scaleTime().domain(d3.extent(data, function(d) { return d.date; })).range([0, width]);
+    var allVals = data.flatMap(function(d) { return [d.top, d.bottom, d.universe].filter(function(v) { return v != null; }); });
+    var yExt = d3.extent(allVals);
+    var yPad = (yExt[1] - yExt[0]) * 0.15 || 0.5;
+    var y = d3.scaleLinear().domain([yExt[0] - yPad, yExt[1] + yPad]).range([height, 0]);
+
+    // Zero line
+    svg.append('line').attr('x1', 0).attr('x2', width)
+      .attr('y1', y(0)).attr('y2', y(0))
+      .attr('stroke', C.borderL).attr('stroke-width', 1).attr('stroke-dasharray', '3,3');
+
+    // Spread area (top - bottom)
+    var spreadArea = d3.area()
+      .x(function(d) { return x(d.date); })
+      .y0(function(d) { return y(d.bottom || 0); })
+      .y1(function(d) { return y(d.top || 0); })
+      .curve(d3.curveMonotoneX);
+    svg.append('path').datum(data).attr('d', spreadArea)
+      .attr('fill', C.green).attr('opacity', 0.1);
+
+    // Lines
+    var topLine = d3.line().x(function(d) { return x(d.date); }).y(function(d) { return y(d.top || 0); }).curve(d3.curveMonotoneX);
+    var botLine = d3.line().x(function(d) { return x(d.date); }).y(function(d) { return y(d.bottom || 0); }).curve(d3.curveMonotoneX);
+    var uniLine = d3.line().x(function(d) { return x(d.date); }).y(function(d) { return y(d.universe || 0); }).curve(d3.curveMonotoneX);
+
+    svg.append('path').datum(data).attr('d', topLine)
+      .attr('fill', 'none').attr('stroke', C.greenBr).attr('stroke-width', 2);
+    svg.append('path').datum(data).attr('d', botLine)
+      .attr('fill', 'none').attr('stroke', C.redBr).attr('stroke-width', 2);
+    svg.append('path').datum(data).attr('d', uniLine)
+      .attr('fill', 'none').attr('stroke', C.dim).attr('stroke-width', 1).attr('stroke-dasharray', '4,3');
+
+    // Axes
+    svg.append('g').attr('class', 'axis').attr('transform', 'translate(0,' + height + ')')
+      .call(d3.axisBottom(x).ticks(6).tickFormat(d3.timeFormat('%b %d')).tickSize(3));
+    svg.append('g').attr('class', 'axis')
+      .call(d3.axisLeft(y).ticks(5).tickFormat(function(v) { return v.toFixed(1) + '%'; }).tickSize(3));
+
+    // Legend
+    var ly = 0;
+    [{ label: 'Top 50', color: C.greenBr }, { label: 'Bottom 50', color: C.redBr }, { label: 'Universe', color: C.dim }].forEach(function(item, i) {
+      svg.append('line').attr('x1', width + 10).attr('x2', width + 25)
+        .attr('y1', ly + i * 16).attr('y2', ly + i * 16)
+        .attr('stroke', item.color).attr('stroke-width', 2)
+        .attr('stroke-dasharray', item.label === 'Universe' ? '4,3' : 'none');
+      svg.append('text').attr('x', width + 30).attr('y', ly + i * 16 + 4)
+        .attr('fill', C.dim).attr('font-size', '9px').attr('font-family', 'Outfit')
+        .text(item.label);
+    });
+
+    // Hover
+    var bisect = d3.bisector(function(d) { return d.date; }).left;
+    var hoverG = svg.append('g').style('display', 'none');
+    hoverG.append('line').attr('y1', 0).attr('y2', height).attr('stroke', C.dim).attr('stroke-width', 1);
+
+    svg.append('rect').attr('width', width).attr('height', height).attr('fill', 'transparent')
+      .on('mousemove', function(evt) {
+        var mouseX = d3.pointer(evt)[0];
+        var date = x.invert(mouseX);
+        var i = bisect(data, date, 1);
+        var d0 = data[i - 1], d1 = data[i] || d0;
+        var d = (date - d0.date > d1.date - date) ? d1 : d0;
+
+        hoverG.style('display', null);
+        hoverG.select('line').attr('x1', x(d.date)).attr('x2', x(d.date));
+
+        showTooltip(evt,
+          '<div class="tooltip-title">' + d3.timeFormat('%b %d, %Y')(d.date) + '</div>' +
+          '<div class="tooltip-row"><span class="tooltip-label">Top 50 return</span><span class="tooltip-value positive">' + (d.top != null ? d.top.toFixed(2) + '%' : '—') + '</span></div>' +
+          '<div class="tooltip-row"><span class="tooltip-label">Bottom 50 return</span><span class="tooltip-value negative">' + (d.bottom != null ? d.bottom.toFixed(2) + '%' : '—') + '</span></div>' +
+          '<div class="tooltip-row"><span class="tooltip-label">Spread</span><span class="tooltip-value">' + (d.spread != null ? d.spread.toFixed(2) + '%' : '—') + '</span></div>' +
+          '<div class="tooltip-row"><span class="tooltip-label">Rank IC</span><span class="tooltip-value">' + (d.ic != null ? d.ic.toFixed(4) : '—') + '</span></div>' +
+          '<div class="tooltip-row"><span class="tooltip-label">Universe</span><span class="tooltip-value">' + (d.universe != null ? d.universe.toFixed(2) + '%' : '—') + '</span></div>'
+        );
+      })
+      .on('mouseleave', function() {
+        hoverG.style('display', 'none');
+        hideTooltip();
+      });
+  }
+
+  // (Data Drift and Pipeline Health moved to /pipeline tab)
+
+  // ════════════════════════════════════════════════════════════════
+  // UTILITIES
+  // ════════════════════════════════════════════════════════════════
+  function escapeHtml(str) {
+    var div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  // ════════════════════════════════════════════════════════════════
+  // RENDER ALL
+  // ════════════════════════════════════════════════════════════════
+  function renderAll() {
+    renderHeader();
+    renderStatStrip();
+
+    var live = (state.accounts || {}).alpaca_live;
+    var schwabRoth = (state.accounts || {}).schwab_roth;
+    var schwabTrad = (state.accounts || {}).schwab_trad;
+
+    if (live && !live.error) {
+      var lv = document.getElementById('live-value');
+      if (lv) lv.textContent = fmt$(live.value);
+      renderTreemap('treemap-live', live.positions, live.value);
+    }
+    if (schwabRoth && !schwabRoth.error) {
+      var rv = document.getElementById('schwab-roth-value');
+      if (rv) rv.textContent = fmt$(schwabRoth.value);
+      renderTreemap('treemap-schwab-roth', schwabRoth.positions, schwabRoth.value);
+    }
+    if (schwabTrad && !schwabTrad.error) {
+      var tv = document.getElementById('schwab-trad-value');
+      if (tv) tv.textContent = fmt$(schwabTrad.value);
+      renderTreemap('treemap-schwab-trad', schwabTrad.positions, schwabTrad.value);
+    }
+
+    renderHistogram();
+    renderRlSignal();
+    renderPnlBars();
+    renderValueChart();
+    renderRankHeatmap();
+    // renderStreamchart(); // removed — allocation view not adding value
+    renderNews();
+    renderJournal();
+    renderTradeLog();
+    renderActions();
+    renderPredictions();
+  }
+
+  // ════════════════════════════════════════════════════════════════
+  // INIT + AUTO-REFRESH
+  // ════════════════════════════════════════════════════════════════
+  function init() {
+    loadAll().then(function() {
+      renderAll();
+      document.documentElement.classList.add('ready');
+
+      // Auto-refresh: 60s during market hours, 5 min otherwise
+      var intervalMs = (state.session && state.session.session === 'market-hours') ? 60000 : 300000;
+      setInterval(function() {
+        loadAll().then(renderAll);
+      }, intervalMs);
+    }).catch(function(err) {
+      console.error('Dashboard load failed:', err);
+      document.documentElement.classList.add('ready');
+      document.querySelector('.dashboard').innerHTML =
+        '<div class="error">Failed to load dashboard data. Is the API server running?<br>' +
+        '<code style="color:' + C.dim + '">python -m scripts.dashboard_api</code></div>';
+    });
+  }
+
+  // Handle window resize
+  var resizeTimer;
+  window.addEventListener('resize', function() {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(renderAll, 250);
+  });
+
+  init();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,2538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<title>Quorum — Data Pipeline</title>
+<script src="/quorum/api-adapter.js"></script>
+<style>html{visibility:hidden;background:#090b09}html.ready{visibility:visible}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500&family=Outfit:wght@200;300;400;500&display=swap" rel="stylesheet">
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<style>
+/* === VARIABLES === */
+:root {
+  --bg: #090b09;
+  --bg-elevated: #0c0d09;
+  --bg-card: #131409;
+  --text: #d4cfc3;
+  --text-dim: #7a7868;
+  --text-bright: #ede8db;
+  --cream: #e2dbc8;
+  --green: #7a8a2a;
+  --green-bright: #9aaa3a;
+  --green-dim: #2e3218;
+  --olive: #6b6a3a;
+  --tan: #b49a6e;
+  --border: #22231a;
+  --border-light: #33341f;
+  --red: #c4506a;
+  --red-dim: #a24458;
+  --red-bright: #d4687e;
+  --red-bg: rgba(196,80,106,0.12);
+  --green-bg: rgba(122,138,42,0.10);
+  --amber-bg: rgba(180,154,110,0.10);
+  --serif: 'Playfair Display', Georgia, serif;
+  --sans: 'Outfit', system-ui, sans-serif;
+}
+
+/* === RESET & BASE === */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { font-size: 18px; scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-weight: 300;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+::selection { background: var(--green); color: var(--text-bright); }
+
+/* === NAV === */
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  padding: 0.8rem 3rem;
+  border-bottom: 1px solid var(--border);
+}
+.nav-brand {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: 1.5rem;
+  color: var(--text-bright);
+  text-decoration: none;
+  letter-spacing: -0.01em;
+}
+.nav-links {
+  display: flex;
+  gap: 0.2rem;
+}
+.nav-links a {
+  font-family: var(--sans);
+  font-size: 0.68rem;
+  font-weight: 300;
+  color: var(--text-dim);
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  padding: 0.35rem 0.8rem;
+  border-radius: 2px;
+  transition: color 0.15s, background 0.15s;
+}
+.nav-links a:hover { color: var(--text); background: rgba(255,255,255,0.03); }
+.nav-links a.active { color: var(--green-bright); background: var(--green-bg); border: 1px solid var(--green-dim); }
+
+/* === LAYOUT === */
+.dashboard {
+  max-width: 1800px;
+  margin: 0 auto;
+  padding: 2rem 3rem 4rem;
+}
+@media (max-width: 768px) { .dashboard { padding: 1.5rem; } }
+
+.section { margin-bottom: 2rem; }
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  padding: 1.5rem;
+  transition: border-color 0.3s ease;
+}
+.card:hover { border-color: var(--border-light); }
+.card-label {
+  font-family: var(--sans);
+  font-size: 0.62rem;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--text-dim);
+  margin-bottom: 1rem;
+  display: block;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 2.5rem;
+}
+.header h1 {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: 2.2rem;
+  color: var(--text-bright);
+}
+
+/* === CHART === */
+.chart-container { position: relative; }
+.chart-container svg { width: 100%; display: block; }
+.axis line, .axis path { stroke: var(--border); }
+.axis text { fill: var(--text-dim); font-family: var(--sans); font-size: 10px; font-weight: 300; }
+.grid-minor line { stroke: #1a1b13; stroke-width: 1; shape-rendering: crispEdges; }
+.grid-major line { stroke: #2a2b1d; stroke-width: 1; shape-rendering: crispEdges; }
+.grid-day line  { stroke: #3a3b22; stroke-width: 1; shape-rendering: crispEdges; }
+.crosshair { stroke: #b49a6e; stroke-width: 1; stroke-dasharray: 3,3; opacity: 0; pointer-events: none; }
+.zoom-overlay { fill: transparent; cursor: crosshair; }
+.reset-zoom-btn {
+  font-family: var(--sans);
+  font-size: 0.55rem;
+  font-weight: 300;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--tan);
+  background: rgba(180,154,110,0.08);
+  border: 1px solid rgba(180,154,110,0.3);
+  padding: 0.2rem 0.55rem;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: none;
+}
+.reset-zoom-btn:hover { background: rgba(180,154,110,0.18); color: var(--text-bright); }
+.reset-zoom-btn.visible { display: inline-block; }
+
+/* === STREAM TOOLTIP === */
+.stream-tooltip {
+  position: absolute;
+  pointer-events: none;
+  opacity: 0;
+  padding: 8px 11px;
+  background: rgba(9,11,9,0.96);
+  border: 1px solid var(--border-light);
+  font-family: var(--sans);
+  font-size: 11px;
+  color: var(--text-bright);
+  white-space: nowrap;
+  z-index: 10;
+  transition: opacity .15s;
+  line-height: 1.55;
+  font-weight: 300;
+  min-width: 170px;
+}
+.stream-tooltip .tt-header { font-size: 10px; color: var(--text-dim); margin-bottom: 4px; letter-spacing: 0.06em; }
+.stream-tooltip .tt-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.stream-tooltip .tt-row .lbl { display: flex; align-items: center; gap: 6px; }
+.stream-tooltip .tt-row .sw { width: 8px; height: 8px; display: inline-block; }
+.stream-tooltip .tt-total { margin-top: 4px; padding-top: 4px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; gap: 12px; color: var(--cream); }
+
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+@media (max-width: 960px) { .grid-2 { grid-template-columns: 1fr; } }
+
+.extractor-metrics {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(110px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+@media (max-width: 1200px) { .extractor-metrics { grid-template-columns: repeat(3, minmax(110px, 1fr)); } }
+@media (max-width: 640px) { .extractor-metrics { grid-template-columns: repeat(2, minmax(110px, 1fr)); } }
+.extractor-metric {
+  border-top: 1px solid var(--border);
+  padding-top: 0.55rem;
+  min-height: 70px;
+}
+.extractor-metric .label {
+  font-size: 0.54rem;
+  color: var(--text-dim);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.extractor-metric .value {
+  font-family: var(--serif);
+  font-size: 1.42rem;
+  color: var(--text-bright);
+  line-height: 1.15;
+  margin-top: 0.2rem;
+  font-variant-numeric: tabular-nums;
+}
+.extractor-metric .sub {
+  font-size: 0.55rem;
+  color: var(--text-dim);
+  margin-top: 0.15rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.extractor-detail-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr 1fr;
+  gap: 1rem;
+  align-items: start;
+}
+@media (max-width: 1100px) { .extractor-detail-grid { grid-template-columns: 1fr; } }
+.extractor-panel-title {
+  font-size: 0.56rem;
+  color: var(--text-dim);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 0.45rem;
+}
+.extractor-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.6rem;
+}
+.extractor-table th,
+.extractor-table td {
+  padding: 0.24rem 0.2rem;
+  border-bottom: 1px solid var(--border);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.extractor-table th:first-child,
+.extractor-table td:first-child {
+  text-align: left;
+  max-width: 210px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.extractor-table th {
+  color: var(--text-dim);
+  font-weight: 300;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.loading { font-size: 0.65rem; color: var(--text-dim); }
+
+.gdelt-pipeline-layout {
+  display: flex;
+  gap: 1rem;
+  align-items: stretch;
+}
+.gdelt-pipeline-charts { flex: 1 1 auto; min-width: 0; }
+.gdelt-pipeline-layout > .chart-container { flex: 1 1 auto; min-width: 0; }
+.gdelt-side-legend {
+  flex: 0 0 180px;
+  max-height: 100%;
+  overflow-y: auto;
+  font-family: var(--sans);
+  font-size: 10px;
+  font-weight: 300;
+  color: var(--text);
+  padding: 0.25rem 0;
+  border-left: 1px solid var(--border);
+  padding-left: 0.75rem;
+}
+.gdelt-side-legend .ls-header {
+  color: var(--text-dim);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 9px;
+  margin-bottom: 0.5rem;
+}
+.gdelt-side-legend .ls-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 1px 0;
+  line-height: 1.4;
+}
+.gdelt-side-legend .ls-row .ls-name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.gdelt-side-legend .ls-sw {
+  width: 10px; height: 10px;
+  flex: 0 0 10px;
+  opacity: 0.9;
+}
+.gdelt-side-legend .ls-tot { color: var(--text-dim); font-variant-numeric: tabular-nums; }
+
+/* === SOURCE × THEME SUNBURST === */
+.sunburst-card {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#gdelt-sunburst-viz {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#gdelt-sunburst-viz svg { display: block; max-width: 100%; max-height: 100%; }
+.sunburst-arc {
+  cursor: pointer;
+  transition: fill-opacity 0.15s;
+}
+.sunburst-label {
+  pointer-events: none;
+  user-select: none;
+}
+.sunburst-tooltip {
+  position: fixed;
+  pointer-events: none;
+  background: #131409;
+  border: 1px solid var(--borderL, #33341f);
+  padding: 8px 10px;
+  font-family: var(--sans);
+  font-size: 11px;
+  color: var(--text);
+  z-index: 9999;
+  display: none;
+  max-width: 320px;
+  line-height: 1.45;
+}
+.sunburst-tooltip .stt-title { color: var(--cream, #e0ddd0); font-weight: 500; margin-bottom: 4px; }
+.sunburst-tooltip .stt-row { display: flex; justify-content: space-between; gap: 12px; }
+.sunburst-tooltip .stt-row .lbl { color: var(--text-dim); }
+.sunburst-tooltip .stt-path { color: var(--text-dim); font-size: 10px; margin-top: 4px; }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="/" class="nav-brand">Quorum</a>
+  <div class="nav-links">
+    <a href="/">Portfolio</a>
+    <a href="/models">Models</a>
+    <a href="/pipeline" class="active">Pipeline</a>
+    <a href="/diagnostics">Diagnostics</a>
+    <a href="/themes">Themes</a>
+  </div>
+</nav>
+
+<div class="dashboard">
+  <div class="header">
+    <h1>Data Pipeline</h1>
+  </div>
+
+  <!-- ═══ NEWS VOLUME STREAMGRAPHS ═══ -->
+  <div class="section">
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+        <span class="card-label" style="margin-bottom:0;">News Publication Volume</span>
+        <div style="display:flex;align-items:center;gap:0.6rem;">
+          <button id="reset-zoom-btn" class="reset-zoom-btn">Reset Zoom</button>
+          <div id="timespan-btns" style="display:flex;gap:0.3rem;"></div>
+        </div>
+      </div>
+      <div class="gdelt-pipeline-layout">
+        <div id="news-stream-raw" class="chart-container"></div>
+        <div id="news-side-legend-raw" class="gdelt-side-legend"></div>
+      </div>
+      <div class="gdelt-pipeline-layout" style="margin-top:1rem;">
+        <div id="news-stream-emb" class="chart-container"></div>
+        <div id="news-side-legend-emb" class="gdelt-side-legend"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ GDELT PIPELINE STREAMGRAPHS ═══ -->
+  <div class="section">
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+        <span class="card-label" style="margin-bottom:0;">GDELT Pipeline (Ingested → Scraped → Classified → Extracted)</span>
+        <div style="display:flex;align-items:center;gap:0.6rem;">
+          <span id="gdelt-pipeline-meta" style="font-size:0.6rem;color:var(--text-dim);letter-spacing:0.08em;text-transform:uppercase;"></span>
+          <button id="gdelt-reset-zoom-btn" class="reset-zoom-btn">Reset Zoom</button>
+        </div>
+      </div>
+      <div class="gdelt-pipeline-layout">
+        <div id="gdelt-stream-ingested" class="chart-container"></div>
+        <div id="gdelt-side-legend-ingested" class="gdelt-side-legend"></div>
+      </div>
+      <div class="gdelt-pipeline-layout" style="margin-top:1rem;">
+        <div id="gdelt-stream-scraped" class="chart-container"></div>
+        <div id="gdelt-side-legend-scraped" class="gdelt-side-legend"></div>
+      </div>
+      <div class="gdelt-pipeline-layout" style="margin-top:1rem;">
+        <div id="gdelt-stream-classified" class="chart-container"></div>
+        <div id="gdelt-side-legend-classified" class="gdelt-side-legend"></div>
+      </div>
+      <div class="gdelt-pipeline-layout" style="margin-top:1rem;">
+        <div id="gdelt-stream-extracted" class="chart-container"></div>
+        <div id="gdelt-side-legend-extracted" class="gdelt-side-legend"></div>
+      </div>
+      <div class="gdelt-pipeline-layout" style="margin-top:1rem;">
+        <div id="gdelt-stream-tickers" class="chart-container"></div>
+        <div id="gdelt-side-legend-tickers" class="gdelt-side-legend"></div>
+      </div>
+      <div class="gdelt-pipeline-layout" style="margin-top:1rem;">
+        <div id="gdelt-stream-themes" class="chart-container"></div>
+        <div id="gdelt-side-legend-themes" class="gdelt-side-legend"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ EXTRACTOR ORCHESTRATOR OUTPUTS ═══ -->
+  <div class="section">
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+        <span class="card-label" style="margin-bottom:0;">Extractor Orchestrator Outputs</span>
+        <span id="extractor-orchestrator-meta" style="font-size:0.6rem;color:var(--text-dim);letter-spacing:0.08em;text-transform:uppercase;"></span>
+      </div>
+      <div id="extractor-orchestrator"><div class="loading">Loading extractor output metrics…</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+        <span class="card-label" style="margin-bottom:0;">GDELT Source × Theme Distribution</span>
+        <span id="sunburst-meta" style="font-size:0.6rem;color:var(--text-dim);letter-spacing:0.08em;text-transform:uppercase;"></span>
+      </div>
+      <div class="sunburst-card">
+        <div id="gdelt-sunburst-viz"><div class="loading">Loading source × theme tree…</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ PIPELINE QUALITY (PCA / Compressor Health) ═══ -->
+  <div class="section">
+    <div class="card">
+      <div class="card-label">Pipeline Quality &mdash; Preprocessing &amp; Compression Health</div>
+      <div id="pipeline-quality"></div>
+    </div>
+  </div>
+
+  <!-- ═══ DATA PIPELINE HEALTH ═══ -->
+  <div class="grid-2 section">
+    <div class="card">
+      <div class="card-label">Data Pipeline Health</div>
+      <div id="data-health"></div>
+    </div>
+    <div class="card">
+      <div class="card-label">Data Drift</div>
+      <div id="data-drift"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  var C = {
+    bg:      '#090b09',
+    card:    '#131409',
+    text:    '#d4cfc3',
+    dim:     '#7a7868',
+    bright:  '#ede8db',
+    green:   '#7a8a2a',
+    greenBr: '#9aaa3a',
+    greenDim:'#2e3218',
+    tan:     '#b49a6e',
+    border:  '#22231a',
+    borderL: '#33341f',
+    red:     '#c4506a',
+    redDim:  '#a24458',
+    redBr:   '#d4687e',
+    olive:   '#6b6a3a',
+  };
+
+  // Source colors — distinct, readable on dark bg
+  var SOURCE_COLORS = {
+    alpaca:    '#7a8a2a',
+    finnhub:   '#5a7a8a',
+    marketaux: '#b49a6e',
+    newsdata:  '#8a3a5a',
+    // GDELT pipeline sources
+    livescrape_bulk:      '#7a8a2a',
+    livescrape_bulk_vps:  '#5a9a5a',
+    livescrape_daemon:    '#9aaa3a',
+    wayback_bulk_exact:   '#5a7a8a',
+    wayback_bulk:         '#4a6a78',
+    wayback_retry:        '#3a5a68',
+    wayback_retry_vps:    '#6a8a98',
+    commoncrawl_bulk:     '#b49a6e',
+    commoncrawl_wet_bulk: '#a48a5e',
+    cc_news_bulk:         '#947a4e',
+    ngrams_recon:         '#8a3a5a',
+    livescrape:           '#8a9a3a',
+    wayback:              '#6a8a9a',
+    commoncrawl:          '#c4aa7e',
+    themed:               '#9aaa3a',
+    other:                '#555544',
+    unknown:              '#444444',
+  };
+
+  var FONT = 'Outfit, sans-serif';
+  var API = '';
+
+  var TIMESPANS = [
+    { label: '24H', hours: 24 },
+    { label: '36H', hours: 36 },
+    { label: '7D', hours: 168 },
+    { label: '30D', hours: 720 },
+    { label: '90D', hours: 2160 },
+  ];
+  var activeHours = 36;
+
+  var state = {
+    newsVolume: null,
+    dataHealth: null,
+    dataDrift: null,
+    pipelineQuality: null,
+    gdeltPipelineVolume: null,
+    gdeltSourceThemeTree: null,
+    extractorOrchestrator: null,
+  };
+
+  // Shared zoom domain across the two streamgraphs (raw + embedded).
+  // null = full extent. Preserved across data refreshes; reset on timespan change.
+  var chartViewState = { domain: null };
+  var streamCharts = []; // populated by renderNewsStreams; objects with applyDomain/setTransform/showCrosshair/hideCrosshair
+
+  function fetchJSON(url) {
+    return fetch(API + url).then(function(r) { return r.json(); }).catch(function() { return null; });
+  }
+
+  function escapeHtml(str) {
+    var div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  // ════════════════════════════════════════════════════════════════
+  // STREAMGRAPH: News Volume
+  // ════════════════════════════════════════════════════════════════
+
+  // ── Market session zone helpers ──────────────────────────────────────
+
+  // ET hours for market sessions (all in ET = UTC-4 during EDT, UTC-5 during EST)
+  // We store as hours in ET: pre=4-9.5, market=9.5-16, after=16-20, off=rest
+  var MARKET_OPEN = 9.5;   // 9:30 AM ET
+  var MARKET_CLOSE = 16;   // 4:00 PM ET
+  var PRE_OPEN = 4;        // 4:00 AM ET
+  var AFTER_CLOSE = 20;    // 8:00 PM ET
+
+  // Zone fill colors (very subtle)
+  var ZONE_COLORS = {
+    market:    'rgba(122,138,42,0.06)',   // green tint — market hours
+    extended:  'rgba(180,154,110,0.04)',   // tan tint — pre/after market
+    off:       'rgba(0,0,0,0)',            // transparent — off hours (default bg)
+    nonTrading:'rgba(196,80,106,0.03)',    // very faint red — weekends/holidays
+  };
+
+  // Convert a JS Date to ET hour (fractional). Assumes browser local = CT (UTC-5/6).
+  // We approximate: ET = UTC-4 (EDT, most of the year). Close enough for zones.
+  function toETHour(d) {
+    var utcH = d.getUTCHours() + d.getUTCMinutes() / 60;
+    return (utcH - 4 + 24) % 24;
+  }
+
+  function dateToYMD(d) {
+    var y = d.getFullYear();
+    var m = ('0' + (d.getMonth() + 1)).slice(-2);
+    var dd = ('0' + d.getDate()).slice(-2);
+    return y + '-' + m + '-' + dd;
+  }
+
+  function isTradingDay(d, tradingDays) {
+    return tradingDays.indexOf(dateToYMD(d)) >= 0;
+  }
+
+  // Build zone rectangles for 24H view (pre/market/after/off per hour)
+  function drawMarketZones24H(g, xScale, h, tradingDays) {
+    var domain = xScale.domain();
+    var start = new Date(domain[0]);
+    var end = new Date(domain[1]);
+
+    // Walk hour by hour
+    var cursor = new Date(start);
+    cursor.setMinutes(0, 0, 0);
+
+    while (cursor < end) {
+      var next = new Date(cursor.getTime() + 15 * 60000); // 15-min steps for precision
+      var etH = toETHour(cursor);
+      var isTrading = isTradingDay(cursor, tradingDays);
+
+      var zone;
+      if (!isTrading) {
+        zone = 'nonTrading';
+      } else if (etH >= MARKET_OPEN && etH < MARKET_CLOSE) {
+        zone = 'market';
+      } else if ((etH >= PRE_OPEN && etH < MARKET_OPEN) || (etH >= MARKET_CLOSE && etH < AFTER_CLOSE)) {
+        zone = 'extended';
+      } else {
+        zone = 'off';
+      }
+
+      var color = ZONE_COLORS[zone];
+      if (color && color !== ZONE_COLORS.off) {
+        var x1 = Math.max(0, xScale(cursor));
+        var x2 = Math.min(xScale.range()[1], xScale(next));
+        if (x2 > x1) {
+          g.append('rect')
+            .attr('x', x1).attr('y', 0)
+            .attr('width', x2 - x1).attr('height', h)
+            .attr('fill', color);
+        }
+      }
+      cursor = next;
+    }
+
+    // (Per-day open/close dashed markers removed — zone shading + gridlines convey the same info more cleanly.)
+  }
+
+  // Build zone rectangles for 7D view (market hours vs not, per day)
+  function drawMarketZones7D(g, xScale, h, tradingDays) {
+    var domain = xScale.domain();
+    var start = new Date(domain[0]);
+    var end = new Date(domain[1]);
+
+    var dayCursor = new Date(start);
+    dayCursor.setUTCHours(0, 0, 0, 0);
+
+    while (dayCursor <= end) {
+      var isTrading = isTradingDay(dayCursor, tradingDays);
+      if (isTrading) {
+        // Market hours zone (9:30-16:00 ET = 13:30-20:00 UTC)
+        var mOpen = new Date(dayCursor);
+        mOpen.setUTCHours(13, 30, 0, 0);
+        var mClose = new Date(dayCursor);
+        mClose.setUTCHours(20, 0, 0, 0);
+
+        var x1 = Math.max(0, xScale(mOpen));
+        var x2 = Math.min(xScale.range()[1], xScale(mClose));
+        if (x2 > x1) {
+          g.append('rect')
+            .attr('x', x1).attr('y', 0)
+            .attr('width', x2 - x1).attr('height', h)
+            .attr('fill', ZONE_COLORS.market);
+        }
+      } else {
+        // Non-trading day — shade entire day
+        var dayStart = new Date(dayCursor);
+        var dayEnd = new Date(dayCursor);
+        dayEnd.setUTCDate(dayEnd.getUTCDate() + 1);
+
+        var x1 = Math.max(0, xScale(dayStart));
+        var x2 = Math.min(xScale.range()[1], xScale(dayEnd));
+        if (x2 > x1) {
+          g.append('rect')
+            .attr('x', x1).attr('y', 0)
+            .attr('width', x2 - x1).attr('height', h)
+            .attr('fill', ZONE_COLORS.nonTrading);
+        }
+      }
+      dayCursor.setUTCDate(dayCursor.getUTCDate() + 1);
+    }
+  }
+
+  // Build zone rectangles for 30D/90D view (trading day vs not)
+  function drawMarketZonesDaily(g, xScale, h, tradingDays) {
+    var domain = xScale.domain();
+    var start = new Date(domain[0]);
+    var end = new Date(domain[1]);
+
+    var dayCursor = new Date(start);
+    dayCursor.setUTCHours(0, 0, 0, 0);
+
+    while (dayCursor <= end) {
+      if (!isTradingDay(dayCursor, tradingDays)) {
+        var dayStart = new Date(dayCursor);
+        var dayEnd = new Date(dayCursor);
+        dayEnd.setUTCDate(dayEnd.getUTCDate() + 1);
+
+        var x1 = Math.max(0, xScale(dayStart));
+        var x2 = Math.min(xScale.range()[1], xScale(dayEnd));
+        if (x2 > x1) {
+          g.append('rect')
+            .attr('x', x1).attr('y', 0)
+            .attr('width', x2 - x1).attr('height', h)
+            .attr('fill', ZONE_COLORS.nonTrading);
+        }
+      }
+      dayCursor.setUTCDate(dayCursor.getUTCDate() + 1);
+    }
+  }
+
+  // ── Streamgraph rendering ──────────────────────────────────────────
+
+  function renderNewsStreams() {
+    var vol = state.newsVolume;
+    if (!vol || vol.error) {
+      document.getElementById('news-stream-raw').innerHTML =
+        '<div class="loading">' + (vol && vol.error ? escapeHtml(vol.error) : 'No news volume data') + '</div>';
+      document.getElementById('news-stream-emb').innerHTML = '';
+      return;
+    }
+
+    var gran = vol.granularity || '30min';
+    var tradingDays = vol.trading_days || [];
+
+    streamCharts = [];
+
+    // Union of source sets across raw + embedded so legend/colors are
+    // stable even when one stage has a source the other doesn't.
+    var srcUnion = {};
+    (vol.sources_raw || []).forEach(function(s) { srcUnion[s] = true; });
+    (vol.sources_embedded || []).forEach(function(s) { srcUnion[s] = true; });
+    var unionSources = Object.keys(srcUnion);
+
+    // Order sources by combined volume (raw + embedded). News feed names
+    // (alpaca, finnhub, marketaux, newsdata) get the same batlow treatment
+    // as the GDELT panels for visual consistency across the page.
+    var newsTotals = computeSourceTotals(unionSources, [vol.raw, vol.embedded]);
+    var newsOrdered = unionSources.slice().sort(function(a, b) {
+      if (a === 'other') return 1;
+      if (b === 'other') return -1;
+      return (newsTotals[b] || 0) - (newsTotals[a] || 0);
+    });
+    assignBatlowColors(newsOrdered);
+
+    // Shared x-axis domain across BOTH datasets so they always align.
+    // When embeddings stop (e.g. GPU down), the raw chart keeps ingesting —
+    // without a shared domain the embedded chart's x-axis would freeze in place,
+    // hiding the gap.
+    var sharedExtent = computeSharedExtent([vol.raw, vol.embedded]);
+
+    // Both charts use the same union source list so stack ordering and
+    // colors line up between them. Each chart gets its own side legend
+    // (redundant for news but keeps every chart self-describing and
+    // alignment consistent with the GDELT and ticker/theme rows).
+    var rawChart = buildStreamChart('news-stream-raw', vol.raw, unionSources, 'Raw Articles Published', false, gran, tradingDays, sharedExtent);
+    var embChart = buildStreamChart('news-stream-emb', vol.embedded, unionSources, 'Published + Embedded Articles', false, gran, tradingDays, sharedExtent);
+    if (rawChart) streamCharts.push(rawChart);
+    if (embChart) streamCharts.push(embChart);
+    if (streamCharts.length === 0) return;
+
+    var rawTotals = computeSourceTotals(unionSources, [vol.raw]);
+    var embTotals = computeSourceTotals(unionSources, [vol.embedded]);
+    renderSideLegend('news-side-legend-raw', newsOrdered, rawTotals, 'Feeds · raw');
+    renderSideLegend('news-side-legend-emb', newsOrdered, embTotals, 'Feeds · embedded');
+
+    // ── Wire up cross-chart sync (zoom + hover crosshair) ──
+    function broadcastTransform(t, sourceChart) {
+      streamCharts.forEach(function(c) {
+        if (c === sourceChart) return;
+        c.setTransform(t);
+      });
+      updateResetBtn(t);
+    }
+    function broadcastHover(time, mouseClientY, sourceChart) {
+      streamCharts.forEach(function(c) { c.showCrosshair(time); });
+    }
+    function broadcastLeave() {
+      streamCharts.forEach(function(c) { c.hideCrosshair(); });
+    }
+    streamCharts.forEach(function(c) {
+      c.onZoom(broadcastTransform);
+      c.onHover(broadcastHover, broadcastLeave);
+    });
+
+    // Apply persisted domain (e.g. across data refreshes)
+    if (chartViewState.transform) {
+      streamCharts.forEach(function(c) { c.setTransform(chartViewState.transform); });
+      updateResetBtn(chartViewState.transform);
+    } else {
+      updateResetBtn(null);
+    }
+
+    // Reset button
+    var resetBtn = document.getElementById('reset-zoom-btn');
+    if (resetBtn) {
+      resetBtn.onclick = function() {
+        chartViewState.transform = null;
+        streamCharts.forEach(function(c) { c.resetZoom(); });
+        updateResetBtn(null);
+      };
+    }
+  }
+
+  function updateResetBtn(t) {
+    var btn = document.getElementById('reset-zoom-btn');
+    if (!btn) return;
+    var zoomed = t && (t.k > 1.001 || Math.abs(t.x) > 0.5);
+    btn.classList.toggle('visible', !!zoomed);
+  }
+
+  // ── Tick formatting helpers ─────────────────────────────────────────
+  function makeTickFormat(granularity) {
+    var fmtHour = d3.timeFormat('%-I%p');     // "2PM"
+    var fmtDay  = d3.timeFormat('%b %-d');    // "Apr 10"
+    var fmtMin  = d3.timeFormat('%-I:%M%p');  // "2:30PM"
+
+    if (granularity === '15min' || granularity === '30min') {
+      // Hour-resolution; show day label at midnight boundary
+      return function(d) {
+        if (d.getHours() === 0 && d.getMinutes() === 0) return fmtDay(d);
+        return fmtHour(d);
+      };
+    }
+    if (granularity === '2hour') {
+      return function(d) {
+        if (d.getHours() === 0) return fmtDay(d);
+        return fmtHour(d);
+      };
+    }
+    return fmtDay;
+  }
+
+  function makeTooltipFormat(granularity) {
+    if (granularity === '15min') return d3.timeFormat('%b %-d, %-I:%M%p');
+    if (granularity === '30min') return d3.timeFormat('%b %-d, %-I:%M%p');
+    if (granularity === '2hour') return d3.timeFormat('%b %-d, %-I%p');
+    return d3.timeFormat('%b %-d');
+  }
+
+  function buildStreamChart(containerId, data, sources, label, showLegend, granularity, tradingDays, sharedExtent) {
+    var container = document.getElementById(containerId);
+    if (!container) return null;
+    container.innerHTML = '';
+
+    if (!data || !sources || sources.length === 0) {
+      container.innerHTML = '<div class="loading">No data</div>';
+      return null;
+    }
+
+    // Build sorted date array
+    var dates = Object.keys(data).sort();
+    if (dates.length === 0) return null;
+
+    // Build tabular data for d3.stack
+    var tableData = dates.map(function(d) {
+      var row = { date: d };
+      sources.forEach(function(src) {
+        row[src] = (data[d] && data[d][src]) || 0;
+      });
+      return row;
+    });
+
+    // Sort sources by total volume (largest at center for wiggle)
+    sources = sources.slice().sort(function(a, b) {
+      var totalA = dates.reduce(function(s, d) { return s + ((data[d] && data[d][a]) || 0); }, 0);
+      var totalB = dates.reduce(function(s, d) { return s + ((data[d] && data[d][b]) || 0); }, 0);
+      return totalB - totalA;
+    });
+
+    // Source totals for legend — iterate the PASSED sources array (so GDELT
+    // domain-based charts don't show 0s for news-feed sources left in
+    // SOURCE_COLORS and vice versa).
+    var sourceTotals = {};
+    sources.forEach(function(src) {
+      sourceTotals[src] = dates.reduce(function(s, d) { return s + ((data[d] && data[d][src]) || 0); }, 0);
+    });
+    var grandTotal = Object.keys(sourceTotals).reduce(function(s, k) { return s + sourceTotals[k]; }, 0);
+
+    var width = container.clientWidth;
+    var legendH = showLegend ? 28 : 0;
+    // Chart height sized to comfortably fit a top-25 side legend (~26 rows
+    // at ~14 px each + header + padding). Was 180–240 px previously.
+    var height = Math.max(380, Math.min(480, width * 0.30));
+    var margin = {
+      top: showLegend ? 10 : 4,
+      right: 20,
+      bottom: showLegend ? 4 : 52,
+      left: 50
+    };
+    var w = width - margin.left - margin.right;
+    var h = height - margin.top - margin.bottom - legendH;
+
+    var tooltip = document.createElement('div');
+    tooltip.className = 'stream-tooltip';
+    container.appendChild(tooltip);
+
+    var svg = d3.select(container)
+      .append('svg')
+      .attr('viewBox', '0 0 ' + width + ' ' + height)
+      .attr('width', width)
+      .attr('height', height);
+
+    // Unique clip per chart (containerId is unique)
+    var clipId = 'clip-' + containerId;
+    svg.append('defs').append('clipPath')
+      .attr('id', clipId)
+      .append('rect')
+      .attr('width', w).attr('height', h);
+
+    var g = svg.append('g')
+      .attr('transform', 'translate(' + margin.left + ',' + (margin.top + legendH) + ')');
+
+    // Parse timestamps
+    var parseTS = d3.timeParse('%Y-%m-%d %H:%M:%S');
+    var parseD = d3.timeParse('%Y-%m-%d');
+    var dateParsed = dates.map(function(d) { return parseTS(d) || parseD(d) || new Date(d); });
+
+    var origExtent = sharedExtent || d3.extent(dateParsed);
+    var xScale = d3.scaleTime().domain(origExtent).range([0, w]);
+    var xScaleOrig = d3.scaleTime().domain(origExtent).range([0, w]);
+
+    // ── Stack series + y scale (constant — wiggle layout) ──
+    var stack = d3.stack()
+      .keys(sources)
+      .order(d3.stackOrderInsideOut)
+      .offset(d3.stackOffsetWiggle);
+    var series = stack(tableData);
+    var yMin = d3.min(series, function(s) { return d3.min(s, function(d) { return d[0]; }); });
+    var yMax = d3.max(series, function(s) { return d3.max(s, function(d) { return d[1]; }); });
+    var yScale = d3.scaleLinear().domain([yMin, yMax]).range([h, 0]);
+
+    // ── Layer groups (clipped + unclipped) ──
+    // gridG / zoneG / streamG / crosshairG must respect clip; axis & overlay sit outside.
+    var clippedG = g.append('g').attr('clip-path', 'url(#' + clipId + ')');
+    var gridG = clippedG.append('g').attr('class', 'grid');
+    var zoneG = clippedG.append('g').attr('class', 'zones');
+    var streamG = clippedG.append('g').attr('class', 'streams');
+    var crosshairG = clippedG.append('g').attr('class', 'crosshair-g');
+
+    var crosshairLine = crosshairG.append('line')
+      .attr('class', 'crosshair')
+      .attr('y1', 0).attr('y2', h);
+
+    var area = d3.area()
+      .x(function(d, i) { return xScale(dateParsed[i]); })
+      .y0(function(d) { return yScale(d[0]); })
+      .y1(function(d) { return yScale(d[1]); })
+      .curve(d3.curveMonotoneX);  // preserves spikes better than curveBasis
+
+    var streamPaths = streamG.selectAll('.stream-area')
+      .data(series)
+      .enter().append('path')
+      .attr('class', 'stream-area')
+      .attr('fill', function(d) { return SOURCE_COLORS[d.key] || C.dim; })
+      .attr('fill-opacity', 0.85)
+      .attr('stroke', 'none');
+
+    // ── Y axis label ──
+    g.append('text')
+      .attr('transform', 'rotate(-90)')
+      .attr('x', -h / 2).attr('y', -38)
+      .attr('text-anchor', 'middle')
+      .attr('fill', C.dim).attr('font-size', 10).attr('font-family', FONT)
+      .text(label);
+
+    // ── X axis group (only for bottom chart) ──
+    var xAxisG = null;
+    if (!showLegend) {
+      xAxisG = g.append('g')
+        .attr('class', 'axis')
+        .attr('transform', 'translate(0,' + h + ')');
+    }
+
+    // ── Legend with totals (only for top chart) ──
+    if (showLegend) {
+      var allSources = sources;  // use the passed sources list, not global palette
+      var lx = 0;
+      allSources.forEach(function(src) {
+        var totStr = sourceTotals[src] >= 1000
+          ? (sourceTotals[src] / 1000).toFixed(1) + 'k'
+          : String(sourceTotals[src]);
+        svg.append('rect')
+          .attr('x', margin.left + lx).attr('y', 4)
+          .attr('width', 10).attr('height', 10)
+          .attr('fill', SOURCE_COLORS[src]).attr('fill-opacity', 0.9);
+        var txt = svg.append('text')
+          .attr('x', margin.left + lx + 14).attr('y', 13)
+          .attr('font-size', 10).attr('font-family', FONT);
+        txt.append('tspan').attr('fill', C.text).text(src);
+        txt.append('tspan').attr('fill', C.dim).text('  ' + totStr);
+        // Approx width: src + total + padding
+        lx += (src.length + totStr.length) * 6.2 + 32;
+      });
+      // Grand total at far right
+      var grandStr = grandTotal >= 1000
+        ? (grandTotal / 1000).toFixed(1) + 'k articles'
+        : grandTotal + ' articles';
+      svg.append('text')
+        .attr('x', width - margin.right).attr('y', 13)
+        .attr('text-anchor', 'end')
+        .attr('fill', C.dim).attr('font-size', 10).attr('font-family', FONT)
+        .text(grandStr);
+    }
+
+    // ── Zoom overlay (transparent rect that captures wheel + drag + double-click) ──
+    var overlay = g.append('rect')
+      .attr('class', 'zoom-overlay')
+      .attr('width', w).attr('height', h);
+
+    var tickFmt = makeTickFormat(granularity);
+    var fmtTip = makeTooltipFormat(granularity);
+    var bisectDate = d3.bisector(function(dp) { return dp; }).left;
+
+    // ── Redraw helpers ─────────────────────────────────────────────
+    function drawZones() {
+      zoneG.selectAll('*').remove();
+      if (granularity === '15min' || granularity === '30min') {
+        drawMarketZones24H(zoneG, xScale, h, tradingDays);
+      } else if (granularity === '2hour') {
+        drawMarketZones7D(zoneG, xScale, h, tradingDays);
+      } else {
+        drawMarketZonesDaily(zoneG, xScale, h, tradingDays);
+      }
+    }
+
+    function drawGridlines() {
+      gridG.selectAll('*').remove();
+      var domain = xScale.domain();
+      var spanHours = (domain[1] - domain[0]) / 3600000;
+
+      // Choose interval based on visible span
+      var minor, major;
+      if (spanHours <= 6) { minor = d3.timeMinute.every(15); major = d3.timeHour.every(1); }
+      else if (spanHours <= 18) { minor = d3.timeHour.every(1); major = d3.timeHour.every(6); }
+      else if (spanHours <= 48) { minor = d3.timeHour.every(2); major = d3.timeHour.every(6); }
+      else if (spanHours <= 24 * 8) { minor = d3.timeHour.every(6); major = d3.timeDay.every(1); }
+      else if (spanHours <= 24 * 35) { minor = d3.timeDay.every(1); major = d3.timeDay.every(7); }
+      else { minor = d3.timeDay.every(7); major = d3.timeMonth.every(1); }
+
+      if (minor) {
+        var minorTicks = xScale.ticks(minor);
+        var minorG = gridG.append('g').attr('class', 'grid-minor');
+        minorTicks.forEach(function(t) {
+          var x = xScale(t);
+          if (x >= 0 && x <= w) {
+            minorG.append('line').attr('x1', x).attr('x2', x).attr('y1', 0).attr('y2', h);
+          }
+        });
+      }
+      if (major) {
+        var majorTicks = xScale.ticks(major);
+        var majorG = gridG.append('g').attr('class', 'grid-major');
+        majorTicks.forEach(function(t) {
+          var x = xScale(t);
+          if (x >= 0 && x <= w) {
+            majorG.append('line').attr('x1', x).attr('x2', x).attr('y1', 0).attr('y2', h);
+          }
+        });
+      }
+      // Day-boundary lines (always, slightly stronger)
+      var dayTicks = xScale.ticks(d3.timeDay.every(1));
+      var dayG = gridG.append('g').attr('class', 'grid-day');
+      dayTicks.forEach(function(t) {
+        var x = xScale(t);
+        if (x >= 0 && x <= w) {
+          dayG.append('line').attr('x1', x).attr('x2', x).attr('y1', 0).attr('y2', h);
+        }
+      });
+    }
+
+    function drawAxis() {
+      if (!xAxisG) return;
+      var tickCount = Math.min(dates.length, Math.floor(w / 80));
+      xAxisG.call(
+        d3.axisBottom(xScale)
+          .ticks(tickCount)
+          .tickFormat(tickFmt)
+          .tickSizeOuter(0)
+      );
+      xAxisG.selectAll('text')
+        .attr('transform', 'rotate(-35)')
+        .attr('text-anchor', 'end')
+        .attr('dx', '-0.6em')
+        .attr('dy', '0.15em');
+    }
+
+    function drawStreams() {
+      streamPaths.attr('d', area);
+    }
+
+    function fullRedraw() {
+      drawGridlines();
+      drawZones();
+      drawStreams();
+      drawAxis();
+    }
+
+    fullRedraw();
+
+    // ── Tooltip + crosshair (on overlay) ──
+    // chartY is mouse y inside the plot area (0..h). When provided, tooltip
+    // shows only the source under the cursor — the y-stack layer containing
+    // chartY in stacked-value space. When omitted (e.g., synced crosshair
+    // from another chart), falls back to showing the full source breakdown.
+    function showTooltipAt(time, clientX, clientY, chartY) {
+      var idx = bisectDate(dateParsed, time);
+      idx = Math.max(0, Math.min(dates.length - 1, idx));
+      // Pick closer of idx and idx-1
+      if (idx > 0) {
+        var prev = dateParsed[idx - 1], next = dateParsed[idx];
+        if ((time - prev) < (next - time)) idx = idx - 1;
+      }
+
+      var rect = container.getBoundingClientRect();
+
+      // Total at this x-bucket (always shown)
+      var total = 0;
+      sources.forEach(function(src) {
+        total += (tableData[idx] && tableData[idx][src]) || 0;
+      });
+
+      // Find which stacked layer the cursor is vertically inside.
+      var hoveredSrc = null, hoveredVal = 0;
+      if (chartY != null) {
+        var yVal = yScale.invert(chartY);
+        for (var i = 0; i < series.length; i++) {
+          var layer = series[i];
+          var pt = layer[idx];
+          if (!pt) continue;
+          if (yVal >= pt[0] && yVal <= pt[1]) {
+            hoveredSrc = layer.key;
+            hoveredVal = pt[1] - pt[0];
+            break;
+          }
+        }
+      }
+
+      var body = '';
+      if (hoveredSrc != null) {
+        body += '<div class="tt-row">' +
+          '<span class="lbl"><span class="sw" style="background:' + SOURCE_COLORS[hoveredSrc] + '"></span>' + hoveredSrc + '</span>' +
+          '<span>' + Math.round(hoveredVal).toLocaleString() + '</span>' +
+          '</div>';
+      } else {
+        // Fallback: full breakdown (crosshair-only sync from peer chart)
+        sources.forEach(function(src) {
+          var v = (tableData[idx] && tableData[idx][src]) || 0;
+          if (v === 0) return;
+          body += '<div class="tt-row">' +
+            '<span class="lbl"><span class="sw" style="background:' + SOURCE_COLORS[src] + '"></span>' + src + '</span>' +
+            '<span>' + Math.round(v).toLocaleString() + '</span>' +
+            '</div>';
+        });
+      }
+
+      tooltip.innerHTML =
+        '<div class="tt-header">' + fmtTip(dateParsed[idx]) + '</div>' +
+        body +
+        '<div class="tt-total"><span>total</span><span>' + total.toLocaleString() + '</span></div>';
+
+      var px = (clientX - rect.left) + 14;
+      var py = (clientY - rect.top) - 10;
+      // Keep tooltip inside container
+      var ttW = tooltip.offsetWidth || 180;
+      var ttH = tooltip.offsetHeight || 100;
+      if (px + ttW > rect.width) px = (clientX - rect.left) - ttW - 14;
+      if (py + ttH > rect.height) py = rect.height - ttH - 6;
+      if (py < 0) py = 0;
+      tooltip.style.left = px + 'px';
+      tooltip.style.top = py + 'px';
+      tooltip.style.opacity = '1';
+    }
+
+    function hideTooltip() {
+      tooltip.style.opacity = '0';
+    }
+
+    // Hover callbacks (set by parent for cross-chart sync)
+    var hoverCb = null;
+    var hoverEndCb = null;
+    var zoomCb = null;
+
+    overlay.on('mousemove', function(event) {
+      var rect = container.getBoundingClientRect();
+      var mx = event.clientX - rect.left - margin.left;
+      if (mx < 0 || mx > w) return;
+      var my = event.clientY - rect.top - margin.top - legendH;
+      var time = xScale.invert(mx);
+      showTooltipAt(time, event.clientX, event.clientY, my);
+      // Show our own crosshair
+      crosshairLine.attr('x1', mx).attr('x2', mx).style('opacity', 0.6);
+      if (hoverCb) hoverCb(time, event.clientY, chartObj);
+    });
+    overlay.on('mouseleave', function() {
+      hideTooltip();
+      crosshairLine.style('opacity', 0);
+      if (hoverEndCb) hoverEndCb();
+    });
+
+    // ── Zoom (wheel + drag pan + dblclick reset) ──
+    var zoom = d3.zoom()
+      .scaleExtent([1, 50])
+      .translateExtent([[0, 0], [w, h]])
+      .extent([[0, 0], [w, h]])
+      .filter(function(event) {
+        // Allow wheel + primary drag; block right-click
+        if (event.type === 'wheel') return true;
+        return !event.button;
+      })
+      .on('zoom', function(event) {
+        var t = event.transform;
+        xScale.domain(t.rescaleX(xScaleOrig).domain());
+        fullRedraw();
+        if (event.sourceEvent && zoomCb) {
+          chartViewState.transform = t;
+          zoomCb(t, chartObj);
+        } else if (event.sourceEvent) {
+          chartViewState.transform = t;
+        }
+      });
+    overlay.call(zoom).on('dblclick.zoom', function() {
+      chartViewState.transform = null;
+      overlay.transition().duration(200).call(zoom.transform, d3.zoomIdentity);
+      // Notify peers
+      if (zoomCb) zoomCb(d3.zoomIdentity, chartObj);
+    });
+
+    // ── Chart object (returned to parent) ──
+    var chartObj = {
+      onZoom: function(cb) { zoomCb = cb; },
+      onHover: function(cb, endCb) { hoverCb = cb; hoverEndCb = endCb; },
+      setTransform: function(t) {
+        // Programmatic transform: sourceEvent will be null in handler → no rebroadcast
+        overlay.call(zoom.transform, t);
+      },
+      resetZoom: function() {
+        overlay.call(zoom.transform, d3.zoomIdentity);
+      },
+      showCrosshair: function(time) {
+        var x = xScale(time);
+        if (x < 0 || x > w || isNaN(x)) {
+          crosshairLine.style('opacity', 0);
+          return;
+        }
+        crosshairLine.attr('x1', x).attr('x2', x).style('opacity', 0.6);
+      },
+      hideCrosshair: function() {
+        crosshairLine.style('opacity', 0);
+      }
+    };
+    return chartObj;
+  }
+
+  // ════════════════════════════════════════════════════════════════
+  // RENDER: Data Drift
+  // ════════════════════════════════════════════════════════════════
+  function renderDataDrift() {
+    var el = document.getElementById('data-drift');
+    if (!el) return;
+
+	    var dd = state.dataDrift || {};
+	    if (dd.status === 'paused') {
+	      el.innerHTML = '<div style="font-size:0.62rem;color:' + C.dim + ';">' +
+	        escapeHtml(dd.message || 'Data drift diagnostics are paused.') + '</div>';
+	      return;
+	    }
+	    if (dd.status === 'no_data' || dd.status === 'error') {
+	      el.innerHTML = '<div style="font-size:0.62rem;color:' + C.dim + ';">' +
+	        (dd.message || dd.error || 'No drift data available') + '</div>';
+	      return;
+	    }
+
+    var statusColors = {
+      healthy: C.greenBr, degraded: C.tan, warning: C.tan,
+      critical: C.redBr, error: C.redBr, no_reference: C.dim,
+    };
+
+    function statusDot(status) {
+      var color = statusColors[status] || C.dim;
+      return '<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:' + color + ';margin-right:5px;"></span>';
+    }
+
+    var catColors = {
+      healthy: C.greenBr,
+      regime_shift: C.tan,
+      computation_bug: C.redBr,
+      missing: C.redBr,
+    };
+
+    var html = '';
+    var summary = dd.summary || {};
+    var nChecked = dd.n_features_checked || 0;
+    var nHealthy = summary.healthy || 0;
+    var nRegime = summary.regime_shift || 0;
+    var nBug = summary.computation_bug || 0;
+    var nMissing = summary.missing || 0;
+
+    // Status bar
+    html += '<div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.8rem;">' +
+      statusDot(dd.status || 'unknown') +
+      '<span style="font-size:0.72rem;color:' + (statusColors[dd.status] || C.dim) + ';text-transform:uppercase;letter-spacing:0.1em;">' +
+      (dd.status || 'unknown') + '</span>' +
+      '<span style="font-size:0.6rem;color:' + C.dim + ';margin-left:auto;">' +
+      nChecked + ' features checked' +
+      (dd.date ? ' &middot; ' + dd.date : '') + '</span></div>';
+
+    // Summary counters
+    html += '<div style="display:flex;gap:1.2rem;margin-bottom:0.8rem;font-size:0.65rem;">';
+    html += '<span style="color:' + C.greenBr + ';">' + nHealthy + ' healthy</span>';
+    if (nRegime > 0) html += '<span style="color:' + C.tan + ';">' + nRegime + ' regime shift</span>';
+    if (nBug > 0) html += '<span style="color:' + C.redBr + ';">' + nBug + ' computation bug</span>';
+    if (nMissing > 0) html += '<span style="color:' + C.redBr + ';">' + nMissing + ' missing</span>';
+    html += '</div>';
+
+    // Stacked bar
+    if (nChecked > 0) {
+      var pctHealthy = (nHealthy / nChecked * 100).toFixed(1);
+      var pctRegime = (nRegime / nChecked * 100).toFixed(1);
+      var pctBug = (nBug / nChecked * 100).toFixed(1);
+      var pctMissing = (nMissing / nChecked * 100).toFixed(1);
+      html += '<div style="display:flex;height:6px;border-radius:3px;overflow:hidden;margin-bottom:1rem;">';
+      if (nHealthy > 0) html += '<div style="width:' + pctHealthy + '%;background:' + C.greenBr + ';"></div>';
+      if (nRegime > 0) html += '<div style="width:' + pctRegime + '%;background:' + C.tan + ';"></div>';
+      if (nBug > 0) html += '<div style="width:' + pctBug + '%;background:' + C.redBr + ';"></div>';
+      if (nMissing > 0) html += '<div style="width:' + pctMissing + '%;background:' + C.dim + ';"></div>';
+      html += '</div>';
+    }
+
+    // Issues grid
+    var features = dd.features || [];
+    var issues = features.filter(function(f) { return f.category !== 'healthy'; });
+
+    if (issues.length > 0) {
+      html += '<div style="margin-bottom:0.5rem;"><span class="card-label" style="margin-bottom:0;">Issues (' + issues.length + ')</span></div>';
+      html += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:0.3rem;">';
+      issues.forEach(function(f) {
+        var color = catColors[f.category] || C.dim;
+        var catLabel = (f.category || '').replace(/_/g, ' ');
+
+        var detail = '';
+        if (f.null_drift_pp && Math.abs(f.null_drift_pp) > 1) {
+          var nullColor = f.null_drift_pp < 0 ? C.greenBr : (f.null_drift_pp > 10 ? C.redBr : C.tan);
+          detail += '<span style="color:' + nullColor + '">null ' + (f.null_drift_pp > 0 ? '+' : '') + f.null_drift_pp.toFixed(1) + 'pp</span>';
+        }
+        if (f.median_ratio && f.median_ratio > 1.5) {
+          if (detail) detail += ' &middot; ';
+          detail += 'median ' + f.median_ratio.toFixed(1) + 'x';
+        }
+        if (f.range_breach_frac && f.range_breach_frac > 0.01) {
+          if (detail) detail += ' &middot; ';
+          detail += 'range ' + (f.range_breach_frac * 100).toFixed(1) + '%';
+        }
+        if (f.detail) detail = f.detail;
+
+        html += '<div style="display:flex;align-items:baseline;gap:0.4rem;padding:0.25rem 0.5rem;' +
+          'border:1px solid ' + C.border + ';font-size:0.6rem;">' +
+          '<span style="color:' + color + ';min-width:90px;font-size:0.55rem;text-transform:uppercase;">' + catLabel + '</span>' +
+          '<span style="color:' + C.text + ';flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="' + f.name + '">' + f.name + '</span>' +
+          '<span style="color:' + C.dim + ';font-size:0.55rem;white-space:nowrap;">' + detail + '</span></div>';
+      });
+      html += '</div>';
+    } else if (nChecked > 0) {
+      html += '<div style="font-size:0.62rem;color:' + C.dim + ';">All features within expected ranges</div>';
+    }
+
+    // History trend
+    var history = dd.history || [];
+    if (history.length > 1) {
+      html += '<div style="margin-top:1rem;"><span class="card-label" style="margin-bottom:0.3rem;">Drift Trend (30d)</span></div>';
+      var maxFeats = Math.max.apply(null, history.map(function(h) { return h.n_features || 1; }));
+      html += '<div style="display:flex;align-items:flex-end;gap:2px;height:40px;">';
+      history.slice().reverse().forEach(function(h) {
+        var total = h.n_features || 1;
+        var drifted = (h.n_drifted || 0) + (h.n_missing || 0);
+        var barH = Math.max(4, (total / maxFeats) * 36);
+        var driftH = Math.max(0, (drifted / total) * barH);
+        var okH = barH - driftH;
+        var barColor = drifted === 0 ? C.greenBr : drifted < 5 ? C.tan : C.redBr;
+        html += '<div style="display:flex;flex-direction:column;width:8px;" title="' + h.date + ': ' + drifted + ' issues">' +
+          '<div style="height:' + driftH + 'px;background:' + barColor + ';"></div>' +
+          '<div style="height:' + okH + 'px;background:' + C.greenBr + ';opacity:0.3;"></div></div>';
+      });
+      html += '</div>';
+    }
+
+    // News Pipeline Health section
+    var nh = dd.news_health || {};
+    var nSources = nh.sources || {};
+    if (nSources.alpaca || nSources.finnhub) {
+      html += '<div style="margin-top:1.2rem;"><span class="card-label" style="margin-bottom:0.4rem;">News Pipeline</span></div>';
+      html += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:0.5rem;">';
+
+      ['alpaca', 'finnhub'].forEach(function(src) {
+        var s = nSources[src];
+        if (!s) return;
+        var embPct = s.articles_today > 0 ? (s.embedded_today / s.articles_today * 100).toFixed(0) : '100';
+
+        function driftColor(pct) {
+          if (pct === null || pct === undefined) return C.dim;
+          var abs = Math.abs(pct);
+          return abs > 50 ? C.redBr : abs > 25 ? C.tan : C.greenBr;
+        }
+        function driftStr(pct) {
+          if (pct === null || pct === undefined) return '?';
+          return (pct >= 0 ? '+' : '') + pct + '%';
+        }
+
+        var embColor = parseInt(embPct) < 50 ? C.redBr : parseInt(embPct) < 90 ? C.tan : C.greenBr;
+        var refApt = s.ref_tickers > 0 ? (s.ref_articles / s.ref_tickers).toFixed(2) : '?';
+        var aptDrift = s.ref_tickers > 0 ? (((s.avg_articles_per_ticker / (s.ref_articles / s.ref_tickers)) - 1) * 100).toFixed(1) : null;
+
+        html += '<div style="border:1px solid ' + C.border + ';padding:0.4rem 0.6rem;">' +
+          '<div style="font-size:0.65rem;color:' + C.text + ';margin-bottom:0.3rem;">' + src.toUpperCase() + '</div>' +
+          '<div style="display:grid;grid-template-columns:auto 1fr 1fr 1fr;gap:0.15rem 0.6rem;font-size:0.58rem;">' +
+          '<span></span><span style="color:' + C.dim + ';font-size:0.52rem;">TODAY</span><span style="color:' + C.dim + ';font-size:0.52rem;">TRAIN REF</span><span style="color:' + C.dim + ';font-size:0.52rem;">DRIFT</span>' +
+          '<span style="color:' + C.dim + ';">articles</span>' +
+          '<span style="color:' + C.text + ';">' + s.articles_today.toLocaleString() + '</span>' +
+          '<span style="color:' + C.dim + ';">' + (s.ref_articles || '?') + '/day</span>' +
+          '<span style="color:' + driftColor(s.drift_articles_pct) + ';">' + driftStr(s.drift_articles_pct) + '</span>' +
+          '<span style="color:' + C.dim + ';">tickers</span>' +
+          '<span style="color:' + C.text + ';">' + s.tickers_today + '</span>' +
+          '<span style="color:' + C.dim + ';">' + (s.ref_tickers || '?') + '</span>' +
+          '<span style="color:' + driftColor(s.drift_tickers_pct) + ';">' + driftStr(s.drift_tickers_pct) + '</span>' +
+          '<span style="color:' + C.dim + ';">avg length</span>' +
+          '<span style="color:' + C.text + ';">' + s.avg_article_len + '</span>' +
+          '<span style="color:' + C.dim + ';">' + (s.ref_article_len || '?') + '</span>' +
+          '<span style="color:' + driftColor(s.drift_len_pct) + ';">' + driftStr(s.drift_len_pct) + '</span>' +
+          '<span style="color:' + C.dim + ';">avg/ticker</span>' +
+          '<span style="color:' + C.text + ';">' + s.avg_articles_per_ticker + '</span>' +
+          '<span style="color:' + C.dim + ';">' + refApt + '</span>' +
+          '<span style="color:' + driftColor(aptDrift) + ';">' + driftStr(aptDrift) + '</span>' +
+          '<span style="color:' + C.dim + ';">embedded</span>' +
+          '<span style="color:' + embColor + ';">' + s.embedded_today + '/' + s.articles_today + ' (' + embPct + '%)</span>' +
+          '<span></span><span></span>';
+
+        var p50 = s.embed_latency_p50;
+        var p90 = s.embed_latency_p90;
+        var backlog = s.unembedded_backlog || 0;
+        if (p50 != null) {
+          var latColor = p50 > 60 ? C.redBr : p50 > 10 ? C.tan : C.greenBr;
+          html += '<span style="color:' + C.dim + ';">embed lag</span>' +
+            '<span style="color:' + latColor + ';">p50: ' + p50.toFixed(1) + 'm &middot; p90: ' + (p90 != null ? p90.toFixed(0) : '?') + 'm</span>' +
+            '<span></span><span></span>';
+        }
+        if (backlog > 0) {
+          var blColor = backlog > 50 ? C.redBr : C.tan;
+          html += '<span style="color:' + C.dim + ';">backlog</span>' +
+            '<span style="color:' + blColor + ';">' + backlog + ' unembedded (7d)</span>' +
+            '<span></span><span></span>';
+        }
+
+        html += '</div></div>';
+      });
+
+      // News TF features box
+      var tf = nSources.news_tf;
+      if (tf) {
+        var tfColor = tf.coverage_pct >= 90 ? C.greenBr : tf.coverage_pct >= 70 ? C.tan : C.redBr;
+        html += '<div style="border:1px solid ' + C.border + ';padding:0.4rem 0.6rem;">' +
+          '<div style="font-size:0.65rem;color:' + C.text + ';margin-bottom:0.3rem;">NEWS TF FEATURES</div>' +
+          '<div style="display:grid;grid-template-columns:1fr 1fr;gap:0.2rem 0.8rem;font-size:0.58rem;">' +
+          '<span style="color:' + C.dim + ';">tickers with features</span><span style="color:' + C.text + ';">' + tf.tickers_with_features + '</span>' +
+          '<span style="color:' + C.dim + ';">coverage</span><span style="color:' + tfColor + ';">' + tf.coverage_pct + '%</span>' +
+          '</div>';
+
+        var allFeats = dd.features || [];
+        var tfFeats = allFeats.filter(function(f) { return f.name && f.name.indexOf('news_tf') === 0; });
+        if (tfFeats.length > 0) {
+          html += '<div style="margin-top:0.35rem;border-top:1px solid ' + C.border + ';padding-top:0.3rem;">' +
+            '<div style="display:grid;grid-template-columns:auto 1fr 1fr 1fr;gap:0.1rem 0.5rem;font-size:0.52rem;">' +
+            '<span style="color:' + C.dim + ';">feature</span><span style="color:' + C.dim + ';">null drift</span><span style="color:' + C.dim + ';">median ratio</span><span style="color:' + C.dim + ';">range breach</span>';
+          tfFeats.forEach(function(f) {
+            var name = f.name.replace('news_tf_', '');
+            var catColor = catColors[f.category] || C.greenBr;
+            var nullStr = f.null_drift_pp != null ? (f.null_drift_pp > 0 ? '+' : '') + f.null_drift_pp.toFixed(1) + 'pp' : '\u2014';
+            var nullColor = f.null_drift_pp && Math.abs(f.null_drift_pp) > 5 ? C.tan : C.dim;
+            var medStr = f.median_ratio != null ? f.median_ratio.toFixed(2) + 'x' : '\u2014';
+            var medColor = f.median_ratio && f.median_ratio > 2 ? C.tan : C.dim;
+            var rangeStr = f.range_breach_frac != null ? (f.range_breach_frac * 100).toFixed(1) + '%' : '\u2014';
+            var rangeColor = f.range_breach_frac && f.range_breach_frac > 0.05 ? C.tan : C.dim;
+            html += '<span style="color:' + catColor + ';">' + name + '</span>' +
+              '<span style="color:' + nullColor + ';">' + nullStr + '</span>' +
+              '<span style="color:' + medColor + ';">' + medStr + '</span>' +
+              '<span style="color:' + rangeColor + ';">' + rangeStr + '</span>';
+          });
+          html += '</div></div>';
+        }
+        html += '</div>';
+      }
+
+      html += '</div>';
+
+      var nIssues = nh.issues || [];
+      if (nIssues.length > 0) {
+        nIssues.forEach(function(issue) {
+          html += '<div style="font-size:0.58rem;color:' + C.redBr + ';padding:0.2rem 0;margin-top:0.3rem;">' + escapeHtml(issue) + '</div>';
+        });
+      }
+    }
+
+    // Recommendations
+    var recs = dd.recommendations || [];
+    if (recs.length > 0) {
+      html += '<div style="margin-top:0.8rem;">';
+      recs.forEach(function(r) {
+        html += '<div style="font-size:0.6rem;color:' + C.tan + ';padding:0.2rem 0;border-bottom:1px solid ' + C.border + ';">' + escapeHtml(r) + '</div>';
+      });
+      html += '</div>';
+    }
+
+    el.innerHTML = html || '<div class="loading">No drift data</div>';
+  }
+
+  // ════════════════════════════════════════════════════════════════
+  // RENDER: Data Pipeline Health
+  // ════════════════════════════════════════════════════════════════
+  function renderDataHealth() {
+    var el = document.getElementById('data-health');
+    if (!el) return;
+
+	    var dh = state.dataHealth || {};
+	    if (dh.status === 'paused') {
+	      el.innerHTML = '<div style="font-size:0.62rem;color:' + C.dim + ';">' +
+	        escapeHtml(dh.message || 'Data-health diagnostics are paused.') + '</div>';
+	      return;
+	    }
+	    var daemon = dh.daemon || {};
+	    var health = dh.health || {};
+
+	    var statusColors = {
+	      ok: C.greenBr, healthy: C.greenBr,
+	      running: C.tan,
+	      warn: C.tan, warning: C.tan, degraded: C.tan,
+	      fail: C.redBr, critical: C.redBr, error: C.redBr,
+	    };
+
+	    function statusDot(status) {
+	      var color = statusColors[status] || C.dim;
+	      return '<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:' + color + ';margin-right:5px;"></span>';
+	    }
+
+	    function formatAgeSeconds(seconds) {
+	      if (seconds == null || !isFinite(seconds)) return '\u2014';
+	      if (seconds < 60) return Math.round(seconds) + 's ago';
+	      if (seconds < 3600) return Math.round(seconds / 60) + 'm ago';
+	      if (seconds < 86400) return (seconds / 3600).toFixed(seconds < 6 * 3600 ? 1 : 0) + 'h ago';
+	      return (seconds / 86400).toFixed(seconds < 3 * 86400 ? 1 : 0) + 'd ago';
+	    }
+
+	    function timeAgo(ts) {
+	      if (!ts) return '\u2014';
+	      var diff = (Date.now() - new Date(ts).getTime()) / 60000;
+      if (diff < 60) return Math.round(diff) + 'm ago';
+      if (diff < 1440) return Math.round(diff / 60) + 'h ago';
+      return Math.round(diff / 1440) + 'd ago';
+    }
+
+    var html = '';
+
+    if (health.status && health.status !== 'cached_unavailable' && health.status !== 'unavailable') {
+      var hColor = statusColors[health.status] || C.dim;
+      html += '<div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:1rem;">' +
+        statusDot(health.status) +
+        '<span style="font-size:0.72rem;color:' + hColor + ';text-transform:uppercase;letter-spacing:0.1em;">' +
+        health.status + '</span>';
+      if (health.data_date) {
+        html += '<span style="font-size:0.62rem;color:' + C.dim + ';margin-left:auto;">Data date: ' + health.data_date + '</span>';
+      }
+      html += '</div>';
+    }
+
+    // Daemon refreshers grid
+    var daemonNames = Object.keys(daemon);
+    if (daemonNames.length > 0) {
+      html += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:0.4rem;">';
+	      daemonNames.forEach(function(name) {
+	        var d = daemon[name];
+	        var color = d.status === 'ok' ? C.greenBr : (d.status === 'warn' || d.status === 'running') ? C.tan : C.redBr;
+	        var age = d.age_s != null ? formatAgeSeconds(d.age_s) : timeAgo(d.timestamp);
+	        var detail = (d.detail || '').trim();
+        html += '<div style="display:flex;flex-direction:column;gap:0.15rem;padding:0.3rem 0.5rem;' +
+          'border:1px solid ' + C.border + ';font-size:0.65rem;"' +
+          (detail ? ' title="' + escapeHtml(detail) + '"' : '') + '>' +
+          '<div style="display:flex;align-items:center;gap:0.4rem;width:100%;">' +
+          statusDot(d.status) +
+          '<span style="color:' + C.text + ';min-width:80px;">' + name + '</span>' +
+          '<span style="color:' + C.dim + ';margin-left:auto;font-variant-numeric:tabular-nums;">' + age + '</span>';
+        if (d.elapsed_s != null) {
+          html += '<span style="color:' + C.dim + ';font-size:0.55rem;">' + d.elapsed_s + 's</span>';
+        }
+        html += '</div>';
+        if (detail) {
+          html += '<div style="margin-left:12px;color:' + (d.status === 'ok' ? C.dim : color) + ';' +
+            'font-size:0.55rem;line-height:1.25;">' + escapeHtml(detail.slice(0, 120)) + '</div>';
+        }
+        html += '</div>';
+      });
+      html += '</div>';
+    }
+
+    // Feature health checks
+    var checks = health.checks || {};
+    var checkNames = Object.keys(checks);
+    if (checkNames.length > 0) {
+      var counts = { ok: 0, healthy: 0, warning: 0, degraded: 0, critical: 0 };
+      checkNames.forEach(function(k) { var s = checks[k].status; counts[s] = (counts[s] || 0) + 1; });
+
+      html += '<div style="margin-top:1rem;margin-bottom:0.5rem;">' +
+        '<span class="card-label" style="margin-bottom:0;">Feature Health</span>' +
+        '<span style="font-size:0.6rem;color:' + C.dim + ';margin-left:1rem;">' +
+        (counts.ok + counts.healthy) + ' ok &middot; ' +
+        (counts.warning || 0) + ' warn &middot; ' +
+        ((counts.degraded || 0) + (counts.critical || 0)) + ' issues</span></div>';
+
+      var issues = checkNames.filter(function(k) { return checks[k].status !== 'ok' && checks[k].status !== 'healthy'; });
+      if (issues.length > 0) {
+        html += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:0.3rem;">';
+        issues.forEach(function(name) {
+          var c = checks[name];
+          html += '<div style="display:flex;align-items:baseline;gap:0.4rem;padding:0.25rem 0.5rem;' +
+            'border:1px solid ' + C.border + ';font-size:0.62rem;">' +
+            statusDot(c.status) +
+            '<span style="color:' + C.text + '">' + name.replace(/_/g, ' ') + '</span>' +
+            '<span style="color:' + C.dim + ';font-size:0.55rem;margin-left:auto;">' + (c.detail || '').slice(0, 50) + '</span></div>';
+        });
+        html += '</div>';
+      } else {
+        html += '<div style="font-size:0.62rem;color:' + C.dim + ';">All feature checks passing</div>';
+      }
+    }
+
+    // Recommendations
+    var recs = health.recommendations || [];
+    if (recs.length > 0) {
+      html += '<div style="margin-top:0.8rem;"><span class="card-label" style="margin-bottom:0.3rem;">Recommendations</span>';
+      recs.forEach(function(r) {
+        html += '<div style="font-size:0.62rem;color:' + C.tan + ';padding:0.2rem 0;border-bottom:1px solid ' + C.border + ';">' + escapeHtml(r) + '</div>';
+      });
+      html += '</div>';
+    }
+
+    el.innerHTML = html || '<div class="loading">No health data</div>';
+  }
+
+  // ════════════════════════════════════════════════════════════════
+  // RENDER ALL
+  // ════════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════════
+  // PIPELINE QUALITY — PCA / compressor health per model
+  // ════════════════════════════════════════════════════════════════
+
+  function renderPipelineQuality() {
+    var el = document.getElementById('pipeline-quality');
+    if (!el) return;
+
+    var pq = state.pipelineQuality || {};
+    if (pq.status === 'error') {
+      el.innerHTML = '<div style="font-size:0.62rem;color:' + C.redBr + ';">' + (pq.error || 'Error') + '</div>';
+      return;
+    }
+    if (pq.status === 'not_computed') {
+      el.innerHTML = '<div style="font-size:0.62rem;color:' + C.dim + ';">' + (pq.message || 'Pipeline quality check skipped on automatic loads.') + '</div>';
+      return;
+    }
+    if (!pq.models || pq.models.length === 0) {
+      el.innerHTML = '<div style="font-size:0.62rem;color:' + C.dim + ';">Loading pipeline quality data\u2026</div>';
+      return;
+    }
+
+    var statusColors = {
+      healthy: C.greenBr, warning: C.tan, critical: C.redBr, error: C.dim,
+    };
+
+    function statusDot(s) {
+      return '<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:' + (statusColors[s] || C.dim) + ';margin-right:5px;"></span>';
+    }
+
+    var html = '';
+
+    // Overall status bar
+    html += '<div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.8rem;">' +
+      statusDot(pq.status) +
+      '<span style="font-size:0.72rem;color:' + (statusColors[pq.status] || C.dim) + ';text-transform:uppercase;letter-spacing:0.1em;">' +
+      pq.status + '</span>' +
+      '<span style="font-size:0.6rem;color:' + C.dim + ';margin-left:auto;">' +
+      pq.n_models + ' models &middot; ' + (pq.n_tickers || '?') + ' tickers &middot; norm: ' +
+      (pq.normalization || 'unknown') +
+      (pq.computed_at ? ' &middot; ' + pq.computed_at.replace('T', ' ').slice(0, 19) + ' UTC' : '') +
+      '</span></div>';
+
+    // Summary counters
+    html += '<div style="display:flex;gap:1.2rem;margin-bottom:1rem;font-size:0.65rem;">';
+    html += '<span style="color:' + C.greenBr + ';">' + (pq.n_healthy || 0) + ' healthy</span>';
+    if (pq.n_warning > 0) html += '<span style="color:' + C.tan + ';">' + pq.n_warning + ' warning</span>';
+    if (pq.n_critical > 0) html += '<span style="color:' + C.redBr + ';">' + pq.n_critical + ' critical</span>';
+    html += '</div>';
+
+    // Model cards grid
+    html += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:0.5rem;">';
+
+    pq.models.forEach(function(m) {
+      var color = statusColors[m.status] || C.dim;
+      var t = m.tiers || {};
+      var comp = m.compressor || {};
+      var norm = m.normalization || {};
+
+      // Card
+      html += '<div style="border:1px solid ' + (m.status === 'healthy' ? C.border : color) + ';padding:0.6rem 0.8rem;">';
+
+      // Header row: model name + status
+      html += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem;">' +
+        '<span style="font-size:0.7rem;color:' + C.bright + ';font-weight:500;">' + m.model + '</span>' +
+        '<span style="font-size:0.55rem;color:' + color + ';text-transform:uppercase;letter-spacing:0.08em;">' +
+        statusDot(m.status) + m.status + '</span></div>';
+
+      if (m.status === 'error') {
+        html += '<div style="font-size:0.58rem;color:' + C.redBr + ';">' + (m.error || '') + '</div>';
+        html += '</div>';
+        return;
+      }
+
+      // Tier bar
+      var total = (t.top || 0) + (t.middle || 0) + (t.bottom || 0);
+      if (total > 0) {
+        var pTop = ((t.top / total) * 100).toFixed(1);
+        var pMid = ((t.middle / total) * 100).toFixed(1);
+        var pBot = ((t.bottom / total) * 100).toFixed(1);
+        html += '<div style="font-size:0.55rem;color:' + C.dim + ';margin-bottom:0.25rem;">' +
+          'Features: ' + t.input + ' input &rarr; ' + t.top + ' top + ' + (comp.output_dim || 0) + ' compressed (' + t.middle + ' middle &rarr; ' + comp.type + ') + ' + t.bottom + ' dropped</div>';
+        html += '<div style="display:flex;height:5px;border-radius:2px;overflow:hidden;margin-bottom:0.5rem;">';
+        if (t.top > 0) html += '<div style="width:' + pTop + '%;background:' + C.greenBr + ';" title="Top: ' + t.top + '"></div>';
+        if (t.middle > 0) html += '<div style="width:' + pMid + '%;background:' + C.tan + ';" title="Middle: ' + t.middle + '"></div>';
+        if (t.bottom > 0) html += '<div style="width:' + pBot + '%;background:' + C.dim + ';" title="Bottom: ' + t.bottom + '"></div>';
+        html += '</div>';
+      }
+
+      // Metrics grid
+      html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:0.3rem 1rem;font-size:0.58rem;">';
+
+      // Variance explained (PCA)
+      if (comp.variance_explained_train !== null && comp.variance_explained_train !== undefined) {
+        var vTrain = (comp.variance_explained_train * 100).toFixed(1);
+        var vCurr = comp.variance_explained_current !== null ? (comp.variance_explained_current * 100).toFixed(1) : '--';
+        var vDrop = comp.variance_explained_current !== null ?
+          ((comp.variance_explained_train - comp.variance_explained_current) * 100).toFixed(1) : null;
+        var vColor = C.text;
+        if (vDrop !== null) {
+          vColor = parseFloat(vDrop) > 20 ? C.redBr : parseFloat(vDrop) > 10 ? C.tan : C.greenBr;
+        }
+        html += '<div><span style="color:' + C.dim + ';">Var. explained (train):</span> <span style="color:' + C.text + ';">' + vTrain + '%</span></div>';
+        html += '<div><span style="color:' + C.dim + ';">Var. explained (now):</span> <span style="color:' + vColor + ';">' + vCurr + '%' +
+          (vDrop !== null ? ' <span style="font-size:0.5rem;">(' + (parseFloat(vDrop) > 0 ? '-' : '+') + Math.abs(parseFloat(vDrop)).toFixed(1) + 'pp)</span>' : '') +
+          '</span></div>';
+      }
+
+      // Reconstruction error
+      if (comp.reconstruction_error !== null && comp.reconstruction_error !== undefined) {
+        var reColor = comp.reconstruction_error > 1.5 ? C.tan : C.text;
+        html += '<div><span style="color:' + C.dim + ';">Reconstruction MSE:</span> <span style="color:' + reColor + ';">' + comp.reconstruction_error.toFixed(3) + '</span></div>';
+      }
+
+      // Normalization drift
+      html += '<div><span style="color:' + C.dim + ';">Norm drift (mean |shift|):</span> <span style="color:' +
+        (norm.mean_drift > 1.5 ? C.tan : C.text) + ';">' + (norm.mean_drift || 0).toFixed(3) + '</span></div>';
+      html += '<div><span style="color:' + C.dim + ';">Worst feature:</span> <span style="color:' + C.dim + ';" title="' + (norm.max_drift_feature || '') + '">' +
+        (norm.max_drift_feature || '--').slice(0, 25) + ' ' + (norm.max_drift_value > 0 ? '+' : '') + (norm.max_drift_value || 0).toFixed(2) + '</span></div>';
+
+      // Clip fraction
+      if (norm.clip_fraction > 0.001) {
+        html += '<div><span style="color:' + C.dim + ';">Clip fraction:</span> <span style="color:' +
+          (norm.clip_fraction > 0.05 ? C.tan : C.text) + ';">' + (norm.clip_fraction * 100).toFixed(2) + '%</span></div>';
+      }
+
+      // Feature health (dead / blown / shifted)
+      var fh = m.feature_health || {};
+      if (fh.n_dead > 0 || fh.n_blown > 0 || fh.n_shifted > 0) {
+        html += '<div style="grid-column:1/-1;display:flex;gap:0.8rem;margin-top:0.15rem;">';
+        if (fh.n_dead > 0) html += '<span style="color:' + C.dim + ';">' + fh.n_dead + ' dead</span>';
+        if (fh.n_blown > 0) html += '<span style="color:' + C.tan + ';">' + fh.n_blown + ' blown</span>';
+        if (fh.n_shifted > 0) html += '<span style="color:' + C.tan + ';">' + fh.n_shifted + ' shifted</span>';
+        html += '</div>';
+      }
+
+      html += '</div>';  // metrics grid
+
+      // Worst features
+      if (fh.worst_features && fh.worst_features.length > 0) {
+        html += '<div style="margin-top:0.3rem;border-top:1px solid ' + C.border + ';padding-top:0.3rem;">';
+        html += '<div style="font-size:0.52rem;color:' + C.dim + ';margin-bottom:0.2rem;">Worst middle-tier features:</div>';
+        fh.worst_features.forEach(function(f) {
+          html += '<div style="font-size:0.55rem;display:flex;gap:0.5rem;">' +
+            '<span style="color:' + C.text + ';min-width:160px;overflow:hidden;text-overflow:ellipsis;" title="' + f.name + '">' + f.name + '</span>' +
+            '<span style="color:' + (f.var > 5 ? C.tan : C.dim) + ';">var=' + f.var.toFixed(1) + '</span>' +
+            '<span style="color:' + (Math.abs(f.mean) > 2 ? C.tan : C.dim) + ';">mean=' + (f.mean > 0 ? '+' : '') + f.mean.toFixed(2) + '</span></div>';
+        });
+        html += '</div>';
+      }
+
+      // Warnings
+      if (m.warnings && m.warnings.length > 0) {
+        html += '<div style="margin-top:0.4rem;border-top:1px solid ' + C.border + ';padding-top:0.3rem;">';
+        m.warnings.forEach(function(w) {
+          html += '<div style="font-size:0.55rem;color:' + C.tan + ';">\u26A0 ' + w + '</div>';
+        });
+        html += '</div>';
+      }
+
+      html += '</div>';  // card
+    });
+
+    html += '</div>';  // grid
+    el.innerHTML = html;
+  }
+
+  function renderAll() {
+    renderNewsStreams();
+    renderGdeltStreams();
+    renderExtractorOrchestrator();
+    renderGdeltSunburst();
+    renderPipelineQuality();
+    renderDataHealth();
+    renderDataDrift();
+  }
+
+  // ── Batlow palette (Crameri scientific colour maps v8) ────────────
+  // Perceptually uniform, colorblind-friendly: dark-navy → teal → olive →
+  // tan → peach. Not bundled with d3, so we inline 11 reference stops and
+  // interpolate. Trimmed to [0.06, 0.94] so the very-dark and very-pale
+  // extremes don't fight the dark card background.
+  var BATLOW_STOPS = [
+    '#011959', '#1a2f5e', '#324460', '#49565b', '#60654d',
+    '#7a7439', '#9f803b', '#c78c56', '#eb9b7a', '#faaea7',
+    '#facdc6'
+  ];
+  var batlowInterp = d3.interpolateRgbBasis(BATLOW_STOPS);
+  function assignBatlowColors(sourcesInOrder) {
+    var n = Math.max(1, sourcesInOrder.length);
+    var rampLo = 0.06, rampHi = 0.94;
+    sourcesInOrder.forEach(function(src, i) {
+      var t = n === 1 ? 0.5 : (rampLo + (rampHi - rampLo) * (i / (n - 1)));
+      SOURCE_COLORS[src] = batlowInterp(t);
+    });
+  }
+
+  // Render a side-panel legend listing sources with totals + grand total.
+  // Sources are rendered in the order passed (caller chose ranking).
+  function renderSideLegend(elId, sourcesInOrder, totals, headerLabel) {
+    var el = document.getElementById(elId);
+    if (!el) return;
+    var grand = sourcesInOrder.reduce(function(s, k) { return s + (totals[k] || 0); }, 0);
+    var grandStr = grand >= 1000 ? (grand / 1000).toFixed(1) + 'k total' : grand + ' total';
+    var rows = sourcesInOrder.map(function(src) {
+      var tot = totals[src] || 0;
+      var totStr = tot >= 1000 ? (tot / 1000).toFixed(1) + 'k' : String(tot);
+      return '<div class="ls-row" title="' + escapeHtml(src) + '">' +
+        '<span class="ls-name">' +
+          '<span class="ls-sw" style="background:' + SOURCE_COLORS[src] + '"></span>' +
+          '<span>' + escapeHtml(src) + '</span>' +
+        '</span>' +
+        '<span class="ls-tot">' + totStr + '</span>' +
+        '</div>';
+    }).join('');
+    el.innerHTML =
+      '<div class="ls-header">' + escapeHtml(headerLabel) + ' · ' + grandStr + '</div>' +
+      rows;
+  }
+
+  // Compute per-source totals across an array of stage-data dicts (each
+  // dict is bucket -> {source: count}).
+  function computeSourceTotals(sources, stageDicts) {
+    var totals = {};
+    sources.forEach(function(s) { totals[s] = 0; });
+    stageDicts.forEach(function(st) {
+      if (!st) return;
+      Object.keys(st).forEach(function(d) {
+        var row = st[d] || {};
+        Object.keys(row).forEach(function(src) {
+          if (totals[src] == null) totals[src] = 0;
+          totals[src] += (+row[src] || 0);
+        });
+      });
+    });
+    return totals;
+  }
+
+  // Shared x-extent helper for a set of stage dicts.
+  function computeSharedExtent(stageDicts) {
+    var parseTS_ = d3.timeParse('%Y-%m-%d %H:%M:%S');
+    var parseD_  = d3.timeParse('%Y-%m-%d');
+    var allDates = [];
+    stageDicts.forEach(function(st) {
+      if (!st) return;
+      Object.keys(st).forEach(function(d) {
+        var t = parseTS_(d) || parseD_(d) || new Date(d);
+        if (t && !isNaN(t)) allDates.push(t);
+      });
+    });
+    return allDates.length > 0 ? d3.extent(allDates) : null;
+  }
+
+  // ── GDELT pipeline 4-stream renderer ────────────────────────────────
+  // Each stage shares the x-axis AND the source list so colors align across
+  // rows — you can trace a domain down the funnel. A dead downstream shows
+  // as a cliff at 0 instead of the axis silently truncating.
+  var gdeltStreamCharts = [];
+  function renderGdeltStreams() {
+    var vol = state.gdeltPipelineVolume;
+    var ids = ['gdelt-stream-ingested','gdelt-stream-scraped','gdelt-stream-classified','gdelt-stream-extracted'];
+    var meta = document.getElementById('gdelt-pipeline-meta');
+    if (meta) meta.textContent = '';
+    if (!vol || vol.error) {
+      ids.forEach(function(id, i) {
+        var el = document.getElementById(id);
+        if (!el) return;
+        el.innerHTML = (i === 0
+          ? '<div class="loading">' + (vol && vol.error ? escapeHtml(vol.error) : 'No GDELT pipeline data') + '</div>'
+          : '');
+      });
+      return;
+    }
+    if (meta) {
+      var age = vol.serving_age_s == null ? '' : ' · serving age ' + fmtNumShort(Math.round(vol.serving_age_s)) + 's';
+      meta.textContent = (vol.hours || activeHours) + 'H · published-at buckets' + age;
+    }
+    var gran = vol.granularity || '15min';
+    var tradingDays = vol.trading_days || [];
+    var sharedSources = vol.sources || [];
+    var stageData = [vol.ingested, vol.scraped, vol.classified, vol.extracted];
+
+    // Order sources by combined volume across all stages so the legend and
+    // the palette ramp track real importance (not just ingested rank).
+    var legendTotals = computeSourceTotals(sharedSources, stageData);
+    var orderedSources = sharedSources.slice().sort(function(a, b) {
+      if (a === 'other') return 1;
+      if (b === 'other') return -1;
+      return (legendTotals[b] || 0) - (legendTotals[a] || 0);
+    });
+    assignBatlowColors(orderedSources);
+
+    var sharedExtent = computeSharedExtent(stageData);
+
+    gdeltStreamCharts = [];
+    // Per-chart legend row removed — all 4 stages share the same source list
+    // and colors, so the single side-panel legend (rendered below) covers all
+    // stages. Tooltip on hover still shows per-bucket counts for every source.
+    var stages = [
+      { id:'gdelt-stream-ingested',   data:vol.ingested,   label:'Ingested (raw_gdelt_gkg)' },
+      { id:'gdelt-stream-scraped',    data:vol.scraped,    label:'Scraped (gdelt_article_fulltext)' },
+      { id:'gdelt-stream-classified', data:vol.classified, label:'Classified (article_root_scores)' },
+      { id:'gdelt-stream-extracted',  data:vol.extracted,  label:'Extracted (extractor lake · LLM)' },
+    ].map(function(s) {
+      return { id:s.id, data:s.data, sources:sharedSources, label:s.label, showLegend:false };
+    });
+    stages.forEach(function(s) {
+      var c = buildStreamChart(s.id, s.data, s.sources, s.label, s.showLegend, gran, tradingDays, sharedExtent);
+      if (c) gdeltStreamCharts.push(c);
+    });
+    if (gdeltStreamCharts.length === 0) return;
+
+    // Per-chart side legends with stage-specific totals. Sources/colors
+    // are shared across all 4 stages, so the only thing that varies per
+    // legend is the count column (showing the funnel's actual numbers).
+    var stageTotals = {
+      ingested:   computeSourceTotals(sharedSources, [vol.ingested]),
+      scraped:    computeSourceTotals(sharedSources, [vol.scraped]),
+      classified: computeSourceTotals(sharedSources, [vol.classified]),
+      extracted:  computeSourceTotals(sharedSources, [vol.extracted]),
+    };
+    renderSideLegend('gdelt-side-legend-ingested',   orderedSources, stageTotals.ingested,   'Sources · ingested');
+    renderSideLegend('gdelt-side-legend-scraped',    orderedSources, stageTotals.scraped,    'Sources · scraped');
+    renderSideLegend('gdelt-side-legend-classified', orderedSources, stageTotals.classified, 'Sources · classified');
+    renderSideLegend('gdelt-side-legend-extracted',  orderedSources, stageTotals.extracted,  'Sources · extracted');
+
+    function broadcastTransform(t, src) {
+      gdeltStreamCharts.forEach(function(c) { if (c !== src) c.setTransform(t); });
+      var btn = document.getElementById('gdelt-reset-zoom-btn');
+      if (btn) btn.classList.toggle('visible', !!(t && (t.k > 1.001 || Math.abs(t.x) > 0.5)));
+    }
+    function broadcastHover(time) { gdeltStreamCharts.forEach(function(c) { c.showCrosshair(time); }); }
+    function broadcastLeave() { gdeltStreamCharts.forEach(function(c) { c.hideCrosshair(); }); }
+    gdeltStreamCharts.forEach(function(c) {
+      c.onZoom(broadcastTransform);
+      c.onHover(broadcastHover, broadcastLeave);
+    });
+
+    var resetBtn = document.getElementById('gdelt-reset-zoom-btn');
+    if (resetBtn) {
+      resetBtn.onclick = function() {
+        gdeltStreamCharts.forEach(function(c) { c.resetZoom(); });
+        resetBtn.classList.remove('visible');
+      };
+    }
+
+    // Render the ticker / theme charts into the second row, sharing the
+    // same x-extent so all 6 charts line up vertically.
+    renderTickerThemeStreams(vol, gran, tradingDays, sharedExtent);
+  }
+
+  // ── Source × theme zoomable sunburst ───────────────────────────────
+  // Tree shape: synthetic root → top GDELT sources → root themes →
+  // descendant themes. A child theme's count cascades up to its source
+  // (size of the source arc = sum of its theme subtree counts), which is
+  // the "weed out noisy sources" view the user wants.
+  var SUNBURST_TOOLTIP_EL = null;
+  function ensureSunburstTooltip() {
+    if (SUNBURST_TOOLTIP_EL) return SUNBURST_TOOLTIP_EL;
+    SUNBURST_TOOLTIP_EL = document.createElement('div');
+    SUNBURST_TOOLTIP_EL.className = 'sunburst-tooltip';
+    document.body.appendChild(SUNBURST_TOOLTIP_EL);
+    return SUNBURST_TOOLTIP_EL;
+  }
+  function showSunburstTooltip(html, ev) {
+    var t = ensureSunburstTooltip();
+    t.innerHTML = html;
+    t.style.display = 'block';
+    t.style.left = (ev.clientX + 14) + 'px';
+    t.style.top = (ev.clientY - 10) + 'px';
+  }
+  function moveSunburstTooltip(ev) {
+    if (!SUNBURST_TOOLTIP_EL) return;
+    SUNBURST_TOOLTIP_EL.style.left = (ev.clientX + 14) + 'px';
+    SUNBURST_TOOLTIP_EL.style.top = (ev.clientY - 10) + 'px';
+  }
+  function hideSunburstTooltip() {
+    if (SUNBURST_TOOLTIP_EL) SUNBURST_TOOLTIP_EL.style.display = 'none';
+  }
+
+  function fmtNumShort(n) {
+    if (n == null) return '0';
+    if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
+    if (n >= 1000)    return (n / 1000).toFixed(1) + 'k';
+    return String(n);
+  }
+
+  function renderGdeltSunburst() {
+    var container = document.getElementById('gdelt-sunburst-viz');
+    if (!container) return;
+    var tree = state.gdeltSourceThemeTree;
+    var meta = document.getElementById('sunburst-meta');
+    if (meta) meta.textContent = '';
+
+    if (!tree || tree.error) {
+      container.innerHTML = '<div class="loading">' +
+        (tree && tree.error ? escapeHtml(tree.error) : 'No source × theme data') +
+        '</div>';
+      return;
+    }
+    if (!tree.children || tree.children.length === 0) {
+      container.innerHTML = '<div class="loading">No extracted tags in window</div>';
+      return;
+    }
+    if (meta) {
+      meta.textContent = (tree.hours || activeHours) + 'H · ' +
+                         fmtNumShort(tree.subtree_tags || 0) + ' tag references';
+    }
+    container.innerHTML = '';
+
+    // Source-level color cache: each top-level source gets a batlow slot,
+    // and deeper themes inherit a brightened version of their source's
+    // color. This way the user sees "all the orange = finance.yahoo.com,
+    // all the green = www.fool.com, etc." at a glance.
+    var sourceColors = {};
+    var sources = tree.children;
+    var n = Math.max(1, sources.length);
+    var rampLo = 0.06, rampHi = 0.94;
+    sources.forEach(function(s, i) {
+      var t = n === 1 ? 0.5 : (rampLo + (rampHi - rampLo) * (i / (n - 1)));
+      sourceColors[s.slug] = batlowInterp(t);
+    });
+
+    function colorForNode(d) {
+      // depth 1 = source, depth 2 = root theme, depth 3+ = child theme.
+      // Walk to depth-1 ancestor (the source) for the base color.
+      var node = d;
+      while (node.depth > 1) node = node.parent;
+      var base = sourceColors[node.data.slug] || '#7a7868';
+      // Brighten with depth so children read as lighter shades of the same
+      // family. depth 1 = base, depth 5 ≈ +0.6.
+      var lighten = Math.min(0.6, (d.depth - 1) * 0.16);
+      try { return d3.color(base).brighter(lighten).formatHex(); }
+      catch (e) { return base; }
+    }
+
+    var rect = container.getBoundingClientRect();
+    var width = Math.floor(Math.min(rect.width || 0, rect.height || 0));
+    if (!width || width < 400) width = 600;
+    var height = width;
+    var radius = width / 2;
+
+    var svg = d3.select(container).append('svg')
+      .attr('viewBox', '0 0 ' + width + ' ' + height)
+      .attr('width', width).attr('height', height)
+      .style('display', 'block')
+      .style('font-family', FONT);
+
+    var g = svg.append('g')
+      .attr('transform', 'translate(' + width/2 + ',' + height/2 + ')');
+
+    var root = d3.hierarchy(tree)
+      .sum(function(d) {
+        // Use direct tags as the leaf weight so a parent's wedge equals
+        // (its own direct tags) + (children's subtrees). For nodes that
+        // have children, .sum() ignores a weight set on the node itself,
+        // so we fold direct tags in only for leaves.
+        return (d.children && d.children.length) ? 0 : (d.subtree_tags || 0);
+      })
+      .sort(function(a, b) { return b.value - a.value; });
+
+    var partition = d3.partition().size([2*Math.PI, radius]);
+    partition(root);
+
+    root.each(function(d) {
+      d.current = { x0: d.x0, x1: d.x1, y0: d.y0, y1: d.y1 };
+    });
+
+    var arc = d3.arc()
+      .startAngle(function(d)   { return d.current.x0; })
+      .endAngle(function(d)     { return d.current.x1; })
+      .padAngle(function(d)     { return Math.min((d.current.x1 - d.current.x0)/2, 0.005); })
+      .padRadius(radius/2)
+      .innerRadius(function(d)  { return d.current.y0; })
+      .outerRadius(function(d)  { return Math.max(d.current.y0, d.current.y1 - 1); });
+
+    function arcVisible(d) {
+      return d.y1 > 0 && d.y0 < radius && d.x1 > d.x0 + 0.001;
+    }
+    function labelVisible(d) {
+      var bandThickness = d.y1 - d.y0;
+      return d.y1 > 0 && d.y0 > bandThickness * 0.3 && d.y0 < radius
+        && (d.x1 - d.x0) > 0.04 && bandThickness > 14;
+    }
+    function labelTransform(d) {
+      var x = (d.x0 + d.x1) / 2 * 180 / Math.PI;
+      var y = (d.y0 + d.y1) / 2;
+      return 'rotate(' + (x - 90) + ') translate(' + y + ',0) rotate(' + (x < 180 ? 0 : 180) + ')';
+    }
+    function getArcWidth(d) {
+      var angle = d.x1 - d.x0;
+      var midR = (d.y0 + d.y1) / 2;
+      return angle * midR;
+    }
+    function getBandHeight(d) { return d.y1 - d.y0; }
+    function truncateLabel(name, arcWidth, bandHeight) {
+      var availablePx = Math.min(arcWidth, bandHeight || arcWidth);
+      var maxChars = Math.floor(availablePx * 0.13);
+      if (maxChars < 3) return '';
+      if (name.length <= maxChars) return name;
+      return name.substring(0, maxChars - 1) + '\u2026';
+    }
+
+    var currentRoot = root;
+    var centerFontSize = Math.max(13, Math.min(22, Math.round(width / 42)));
+    var centerText = g.append('text')
+      .attr('text-anchor', 'middle').attr('dy', '0.35em')
+      .attr('fill', '#ede8db')
+      .style('font-family', FONT)
+      .style('font-size', centerFontSize + 'px')
+      .style('pointer-events', 'none')
+      .text('all sources');
+
+    var allDescendants = root.descendants().filter(function(d) { return d.depth; });
+
+    var paths = g.selectAll('path.sunburst-arc')
+      .data(allDescendants)
+      .join('path')
+      .attr('class', 'sunburst-arc')
+      .attr('fill', function(d) { return colorForNode(d); })
+      .attr('fill-opacity', function(d) {
+        return arcVisible(d.current) ? (d.children ? 0.85 : 0.65) : 0;
+      })
+      .attr('stroke', '#090b09')
+      .attr('stroke-width', 0.5)
+      .attr('stroke-opacity', function(d) { return arcVisible(d.current) ? 1 : 0; })
+      .attr('d', function(d) { return arc(d); })
+      .on('mouseover', function(event, d) {
+        d3.select(this).attr('fill-opacity', 1);
+        var anc = d.ancestors().reverse().slice(1);
+        var pathParts = anc.map(function(a) { return a.data.name || a.data.slug; }).join(' \u203a ');
+        var sourceNode = anc[0];
+        var html =
+          '<div class="stt-title">' + escapeHtml(d.data.name || d.data.slug) + '</div>' +
+          '<div class="stt-row"><span class="lbl">subtree tags</span><span>' + fmtNumShort(d.data.subtree_tags) + '</span></div>' +
+          '<div class="stt-row"><span class="lbl">direct tags</span><span>' + fmtNumShort(d.data.tags) + '</span></div>' +
+          (d.children ? '<div class="stt-row"><span class="lbl">children</span><span>' + d.children.length + '</span></div>' : '') +
+          '<div class="stt-path"><b>source:</b> ' + escapeHtml(sourceNode ? (sourceNode.data.name || sourceNode.data.slug) : '?') + '</div>' +
+          '<div class="stt-path">' + escapeHtml(pathParts) + '</div>' +
+          '<div class="stt-path" style="font-style:italic;margin-top:4px;">click to zoom · click center to zoom out</div>';
+        showSunburstTooltip(html, event);
+      })
+      .on('mousemove', moveSunburstTooltip)
+      .on('mouseout', function(event, d) {
+        d3.select(this).attr('fill-opacity', arcVisible(d.current) ? (d.children ? 0.85 : 0.65) : 0);
+        hideSunburstTooltip();
+      })
+      .on('click', function(event, d) {
+        if (d.children) clicked(d);
+      });
+
+    var labels = g.selectAll('text.sunburst-label')
+      .data(allDescendants)
+      .join('text')
+      .attr('class', 'sunburst-label')
+      .attr('dy', '0.35em')
+      .attr('text-anchor', 'middle')
+      .attr('fill', function(d) { return d.depth <= 1 ? '#1a1c14' : '#1a1c14'; })
+      .style('font-family', FONT)
+      .style('font-size', '12px')
+      .style('pointer-events', 'none')
+      .attr('opacity', function(d) { return labelVisible(d.current) ? 1 : 0; })
+      .attr('transform', function(d) { return labelTransform(d.current); })
+      .text(function(d) { return truncateLabel(d.data.name || d.data.slug, getArcWidth(d.current), getBandHeight(d.current)); });
+
+    g.append('circle')
+      .attr('r', root.y1)
+      .attr('fill', 'none')
+      .attr('pointer-events', 'all')
+      .style('cursor', 'pointer')
+      .on('click', function() {
+        if (currentRoot.parent) clicked(currentRoot.parent);
+        else clicked(root);
+      });
+
+    function clicked(p) {
+      currentRoot = p;
+      centerText.text(p === root ? 'all sources' : (p.data.name || p.data.slug));
+
+      root.each(function(d) {
+        d.target = {
+          x0: Math.max(0, Math.min(1, (d.x0 - p.x0) / (p.x1 - p.x0))) * 2 * Math.PI,
+          x1: Math.max(0, Math.min(1, (d.x1 - p.x0) / (p.x1 - p.x0))) * 2 * Math.PI,
+          y0: Math.max(0, d.y0 - p.y0),
+          y1: Math.max(0, d.y1 - p.y0),
+        };
+      });
+
+      var t = g.transition().duration(700);
+      paths.transition(t)
+        .tween('data', function(d) {
+          var i = d3.interpolate(d.current, d.target);
+          return function(tt) { d.current = i(tt); };
+        })
+        .filter(function(d) {
+          return this.getAttribute('fill-opacity') > 0 || arcVisible(d.target);
+        })
+        .attrTween('d', function(d) { return function() { return arc(d); }; })
+        .attr('fill-opacity', function(d) { return arcVisible(d.target) ? (d.children ? 0.85 : 0.65) : 0; })
+        .attr('stroke-opacity', function(d) { return arcVisible(d.target) ? 1 : 0; });
+
+      labels.transition(t)
+        .tween('data-label', function(d) {
+          var i = d3.interpolate(d.current, d.target);
+          return function(tt) { d.current = i(tt); };
+        })
+        .attrTween('transform', function(d) { return function() { return labelTransform(d.current); }; })
+        .attr('opacity', function(d) { return labelVisible(d.target) ? 1 : 0; })
+        .tween('text', function(d) {
+          var self = this;
+          return function() {
+            self.textContent = truncateLabel(d.data.name || d.data.slug, getArcWidth(d.current), getBandHeight(d.current));
+          };
+        });
+    }
+  }
+
+  // ── Tickers + Themes (extra extracted-stage breakdowns) ────────────
+  // Both charts share a single side legend (combined sources listed per
+  // chart, color-segmented). Themes are ordered by their root theme so
+  // sibling leaves cluster in adjacent palette slots; tickers are simply
+  // ranked by combined volume.
+  var tickerThemeStreamCharts = [];
+  function renderTickerThemeStreams(vol, gran, tradingDays, sharedExtent) {
+    if (!vol) return;
+    var tickerSources = (vol.ticker_sources || []).slice();
+    var themeSources  = (vol.theme_sources  || []).slice();
+    var rootMap = vol.theme_root_map || {};
+
+    var tickerTotals = computeSourceTotals(tickerSources, [vol.tickers]);
+    var themeTotals  = computeSourceTotals(themeSources,  [vol.themes]);
+
+    // Tickers — rank by total volume, "other" pinned last.
+    var tickerOrdered = tickerSources.slice().sort(function(a, b) {
+      if (a === 'other') return 1;
+      if (b === 'other') return -1;
+      return (tickerTotals[b] || 0) - (tickerTotals[a] || 0);
+    });
+
+    // Themes — sort by (root_slug, leaf volume desc) so palette positions
+    // for siblings under the same root land next to each other. "other" is
+    // pinned last regardless of root.
+    var themeOrdered = themeSources.slice().sort(function(a, b) {
+      if (a === 'other') return 1;
+      if (b === 'other') return -1;
+      var ra = rootMap[a] || 'zzz', rb = rootMap[b] || 'zzz';
+      if (ra !== rb) return ra < rb ? -1 : 1;
+      return (themeTotals[b] || 0) - (themeTotals[a] || 0);
+    });
+
+    // Color each chart's source list independently from batlow so each
+    // panel uses the full palette range — otherwise top-10 tickers would
+    // collapse to the dark end if mixed with the 25-domain ramp above.
+    assignBatlowColors(tickerOrdered);
+    assignBatlowColors(themeOrdered);
+
+    tickerThemeStreamCharts = [];
+    var charts = [
+      { id: 'gdelt-stream-tickers', data: vol.tickers, sources: tickerSources, label: 'Top Tickers (LLM extractions)' },
+      { id: 'gdelt-stream-themes',  data: vol.themes,  sources: themeSources,  label: 'Top Themes (LLM extractions)' },
+    ];
+    charts.forEach(function(s) {
+      var c = buildStreamChart(s.id, s.data, s.sources, s.label, false, gran, tradingDays, sharedExtent);
+      if (c) tickerThemeStreamCharts.push(c);
+    });
+    if (tickerThemeStreamCharts.length === 0) return;
+
+    // Per-chart side legends — tickers next to ticker chart, themes next
+    // to theme chart. Themes are pre-ordered by root so the leaf
+    // clustering shows up directly in the legend list.
+    renderSideLegend('gdelt-side-legend-tickers', tickerOrdered, tickerTotals, 'Tickers');
+    renderSideLegend('gdelt-side-legend-themes',  themeOrdered,  themeTotals,  'Themes');
+
+    // Sync zoom + hover with the GDELT pipeline charts so all 6 streams
+    // pan/zoom together — the user can drill into one time range across
+    // every stage at once.
+    var allCharts = gdeltStreamCharts.concat(tickerThemeStreamCharts);
+    function broadcastTransform2(t, src) {
+      allCharts.forEach(function(c) { if (c !== src) c.setTransform(t); });
+      var btn = document.getElementById('gdelt-reset-zoom-btn');
+      if (btn) btn.classList.toggle('visible', !!(t && (t.k > 1.001 || Math.abs(t.x) > 0.5)));
+    }
+    function broadcastHover2(time) { allCharts.forEach(function(c) { c.showCrosshair(time); }); }
+    function broadcastLeave2() { allCharts.forEach(function(c) { c.hideCrosshair(); }); }
+    allCharts.forEach(function(c) {
+      c.onZoom(broadcastTransform2);
+      c.onHover(broadcastHover2, broadcastLeave2);
+    });
+  }
+
+  function fmtPct(v) {
+    if (v == null || !isFinite(v)) return '\u2014';
+    return (v * 100).toFixed(1) + '%';
+  }
+  function fmtLatency(ms) {
+    if (ms == null || !isFinite(ms)) return '\u2014';
+    if (ms >= 1000) return (ms / 1000).toFixed(ms >= 10000 ? 0 : 1) + 's';
+    return Math.round(ms) + 'ms';
+  }
+  function fmtTs(ts) {
+    if (!ts) return '\u2014';
+    return String(ts).replace('T', ' ').slice(0, 19);
+  }
+  function renderExtractorTable(rows, cols, emptyText) {
+    if (!rows || rows.length === 0) return '<div class="loading">' + escapeHtml(emptyText || 'No rows') + '</div>';
+    var html = '<table class="extractor-table"><thead><tr>';
+    cols.forEach(function(c) { html += '<th>' + escapeHtml(c.label) + '</th>'; });
+    html += '</tr></thead><tbody>';
+    rows.forEach(function(r) {
+      html += '<tr>';
+      cols.forEach(function(c) {
+        var v = c.value ? c.value(r) : r[c.key];
+        html += '<td title="' + escapeHtml(String(v == null ? '' : v)) + '">' + escapeHtml(String(v == null ? '\u2014' : v)) + '</td>';
+      });
+      html += '</tr>';
+    });
+    html += '</tbody></table>';
+    return html;
+  }
+
+  function renderExtractorOrchestrator() {
+    var el = document.getElementById('extractor-orchestrator');
+    if (!el) return;
+    var meta = document.getElementById('extractor-orchestrator-meta');
+    if (meta) meta.textContent = '';
+    var data = state.extractorOrchestrator;
+    if (!data || data.error) {
+      el.innerHTML = '<div class="loading">' + (data && data.error ? escapeHtml(data.error) : 'No extractor data') + '</div>';
+      return;
+    }
+	    var s = data.summary || {};
+	    var p = data.progress || {};
+	    var backlog = p.candidate_backlog || {};
+	    var progress = backlog.progress || p.progress || p;
+	    var snapshotAge = p.snapshot_age_seconds == null
+	      ? ''
+	      : ' · snapshot ' + fmtNumShort(Math.round(p.snapshot_age_seconds)) + 's';
+	    if (meta) {
+	      meta.textContent = (data.hours || activeHours) + 'H · ' + fmtTs(s.latest_generated_at) + snapshotAge;
+	    }
+
+	    var metrics = [
+	      { label: 'calls', value: fmtNumShort(s.calls || 0), sub: fmtNumShort(s.articles || 0) + ' articles' },
+	      { label: 'ok rate', value: fmtPct(s.ok_rate), sub: fmtNumShort(s.non_ok_calls || 0) + ' non-ok' },
+	      { label: 'extractions', value: fmtNumShort(s.extraction_rows || 0), sub: fmtNumShort(s.theme_hits || 0) + ' theme hits' },
+	      { label: 'tickers', value: fmtNumShort(s.ticker_hits || 0), sub: fmtNumShort(s.tagged_article_hits || 0) + ' article hits' },
+	      { label: 'p95 latency', value: fmtLatency(s.p95_latency_ms), sub: 'p50 ' + fmtLatency(s.p50_latency_ms) },
+	      { label: 'backlog', value: fmtNumShort(backlog.viable_articles || 0), sub: (p.error ? p.error : fmtNumShort(backlog.remaining_specialist_calls || 0) + ' root calls') },
+	      { label: 'progress', value: fmtNumShort(progress.rows || 0), sub: fmtNumShort(progress.articles || 0) + ' articles' },
+	    ];
+    var html = '<div class="extractor-metrics">';
+    metrics.forEach(function(m) {
+      html += '<div class="extractor-metric">' +
+        '<div class="label">' + escapeHtml(m.label) + '</div>' +
+        '<div class="value">' + escapeHtml(m.value) + '</div>' +
+        '<div class="sub">' + escapeHtml(m.sub) + '</div>' +
+        '</div>';
+    });
+    html += '</div>';
+
+    var parseRows = (data.parse_status || []).map(function(r) {
+      return {
+        status: r.status,
+        calls: fmtNumShort(r.calls || 0),
+        pct: fmtPct((s.calls || 0) ? (r.calls || 0) / s.calls : null),
+      };
+    });
+    var modelRows = (data.models || []).slice(0, 10).map(function(r) {
+      return {
+        model_version: r.model_version,
+        calls: fmtNumShort(r.calls || 0),
+        ok_rate: fmtPct(r.ok_rate),
+        p95: fmtLatency(r.p95_latency_ms),
+        non_ok: fmtNumShort(r.non_ok_calls || 0),
+      };
+    });
+    var rootRows = (data.roots || []).slice(0, 12).map(function(r) {
+      return {
+        root_filter: r.root_filter,
+        calls: fmtNumShort(r.calls || 0),
+        ok_rate: fmtPct(r.ok_rate),
+        non_ok: fmtNumShort(r.non_ok_calls || 0),
+      };
+    });
+
+    html += '<div class="extractor-detail-grid">';
+    html += '<div><div class="extractor-panel-title">Models</div>' +
+      renderExtractorTable(modelRows, [
+        { key:'model_version', label:'model' },
+        { key:'calls', label:'calls' },
+        { key:'ok_rate', label:'ok' },
+        { key:'p95', label:'p95' },
+        { key:'non_ok', label:'non-ok' },
+      ], 'No model calls') + '</div>';
+    html += '<div><div class="extractor-panel-title">Roots</div>' +
+      renderExtractorTable(rootRows, [
+        { key:'root_filter', label:'root' },
+        { key:'calls', label:'calls' },
+        { key:'ok_rate', label:'ok' },
+        { key:'non_ok', label:'non-ok' },
+      ], 'No root calls') + '</div>';
+    html += '<div><div class="extractor-panel-title">Parse Status</div>' +
+      renderExtractorTable(parseRows, [
+        { key:'status', label:'status' },
+        { key:'calls', label:'calls' },
+        { key:'pct', label:'share' },
+      ], 'No parse status') + '</div>';
+    html += '</div>';
+    el.innerHTML = html;
+  }
+
+  // ════════════════════════════════════════════════════════════════
+  // INIT + AUTO-REFRESH
+  // ════════════════════════════════════════════════════════════════
+  function loadSection(url, assign, renderFn, requestedHours) {
+    return fetchJSON(url).then(function(data) {
+      if (requestedHours != null && requestedHours !== activeHours) return data;
+      assign(data);
+      if (renderFn) renderFn();
+      return data;
+    });
+  }
+
+	  function loadAll() {
+	    var h = activeHours;
+	    loadSection('/api/news-volume?hours=' + h, function(d) { state.newsVolume = d; }, renderNewsStreams, h);
+	    loadSection('/api/data-health', function(d) { state.dataHealth = d; }, renderDataHealth);
+	    state.dataDrift = { status: 'paused', message: 'Data-drift diagnostics are paused during lake/backfill I/O pressure.' };
+	    renderDataDrift();
+	    state.pipelineQuality = { status: 'not_computed', message: 'Pipeline quality diagnostics are paused during lake/backfill I/O pressure.' };
+	    renderPipelineQuality();
+	    loadSection('/api/gdelt-pipeline-volume?hours=' + h, function(d) { state.gdeltPipelineVolume = d; }, renderGdeltStreams, h);
+	    loadSection('/api/gdelt-source-theme-sunburst?hours=' + h, function(d) { state.gdeltSourceThemeTree = d; }, renderGdeltSunburst, h);
+	    loadSection('/api/extractor-orchestrator?hours=' + h, function(d) { state.extractorOrchestrator = d; }, renderExtractorOrchestrator, h);
+	    return Promise.resolve();
+	  }
+
+  function renderTimespanBtns() {
+    var container = document.getElementById('timespan-btns');
+    if (!container) return;
+    container.innerHTML = '';
+    TIMESPANS.forEach(function(ts) {
+      var btn = document.createElement('button');
+      btn.textContent = ts.label;
+      btn.style.cssText = 'font-family:' + FONT + ';font-size:0.6rem;font-weight:300;padding:0.25rem 0.6rem;' +
+        'border:1px solid ' + (ts.hours === activeHours ? C.greenBr : C.border) + ';' +
+        'background:' + (ts.hours === activeHours ? 'rgba(122,138,42,0.15)' : 'transparent') + ';' +
+        'color:' + (ts.hours === activeHours ? C.greenBr : C.dim) + ';' +
+        'cursor:pointer;letter-spacing:0.08em;transition:all 0.15s;';
+      btn.onmouseenter = function() { if (ts.hours !== activeHours) btn.style.color = C.text; };
+      btn.onmouseleave = function() { if (ts.hours !== activeHours) btn.style.color = C.dim; };
+      btn.onclick = function() {
+        activeHours = ts.hours;
+        chartViewState.transform = null;  // reset zoom on timespan change
+        renderTimespanBtns();
+        loadAll();
+      };
+      container.appendChild(btn);
+    });
+  }
+
+  function init() {
+    renderTimespanBtns();
+    loadAll().then(function() {
+      renderAll();
+      document.documentElement.classList.add('ready');
+
+      setInterval(function() {
+        loadAll().then(renderAll);
+      }, 300000); // 5 min refresh
+    }).catch(function(err) {
+      console.error('Pipeline page load failed:', err);
+      document.documentElement.classList.add('ready');
+    });
+  }
+
+  var resizeTimer;
+  window.addEventListener('resize', function() {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(renderAll, 250);
+  });
+
+  init();
+})();
+</script>
+</body>
+</html>

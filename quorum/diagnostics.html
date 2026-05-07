@@ -1,0 +1,1535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<title>Quorum — Prediction Diagnostics</title>
+<script src="/quorum/api-adapter.js"></script>
+<style>html{visibility:hidden;background:#090b09}html.ready{visibility:visible}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500&family=Outfit:wght@200;300;400;500&display=swap" rel="stylesheet">
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<style>
+/* === VARIABLES (matched to shaneconner.com) === */
+:root {
+  --bg: #090b09;
+  --bg-elevated: #0c0d09;
+  --bg-card: #131409;
+  --text: #d4cfc3;
+  --text-dim: #7a7868;
+  --text-bright: #ede8db;
+  --cream: #e2dbc8;
+  --green: #7a8a2a;
+  --green-bright: #9aaa3a;
+  --green-dim: #2e3218;
+  --olive: #6b6a3a;
+  --tan: #b49a6e;
+  --border: #22231a;
+  --border-light: #33341f;
+  --red: #c4506a;
+  --red-dim: #a24458;
+  --red-bright: #d4687e;
+  --red-bg: rgba(196,80,106,0.12);
+  --green-bg: rgba(122,138,42,0.10);
+  --amber-bg: rgba(180,154,110,0.10);
+  --serif: 'Playfair Display', Georgia, serif;
+  --sans: 'Outfit', system-ui, sans-serif;
+}
+
+/* === RESET & BASE === */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { font-size: 18px; scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-weight: 300;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+::selection { background: var(--green); color: var(--text-bright); }
+
+/* === NAV === */
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  padding: 0.8rem 3rem;
+  border-bottom: 1px solid var(--border);
+}
+.nav-brand {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: 1.5rem;
+  color: var(--text-bright);
+  text-decoration: none;
+  letter-spacing: -0.01em;
+}
+.nav-links {
+  display: flex;
+  gap: 0.2rem;
+}
+.nav-links a {
+  font-family: var(--sans);
+  font-size: 0.68rem;
+  font-weight: 300;
+  color: var(--text-dim);
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  padding: 0.35rem 0.8rem;
+  border-radius: 2px;
+  transition: color 0.15s, background 0.15s;
+}
+.nav-links a:hover { color: var(--text); background: rgba(255,255,255,0.03); }
+.nav-links a.active { color: var(--green-bright); background: var(--green-bg); border: 1px solid var(--green-dim); }
+
+/* === LAYOUT === */
+.dashboard {
+  max-width: 1800px;
+  margin: 0 auto;
+  padding: 2rem 3rem 4rem;
+}
+@media (max-width: 768px) { .dashboard { padding: 1.5rem; } }
+
+/* === HEADER === */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+.header h1 {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: clamp(1.8rem, 3vw, 2.6rem);
+  color: var(--text-bright);
+  letter-spacing: -0.01em;
+}
+.header-meta {
+  text-align: right;
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  letter-spacing: 0.04em;
+}
+
+/* === STAT STRIP === */
+.stat-strip {
+  display: flex;
+  gap: 0.6rem;
+  margin-bottom: 1.5rem;
+}
+.stat {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  padding: 0.7rem 1.2rem;
+  text-align: center;
+  flex: 1;
+}
+.stat-value {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: 1.1rem;
+  color: var(--text-bright);
+  font-variant-numeric: tabular-nums;
+}
+.stat-value.positive { color: var(--green-bright); }
+.stat-value.negative { color: var(--red); }
+.stat-label {
+  font-size: 0.58rem;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--text-dim);
+  margin-top: 0.15rem;
+}
+
+/* === SECTION === */
+.section {
+  margin-bottom: 2rem;
+}
+.section-label {
+  font-size: 0.62rem;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.25em;
+  color: var(--green);
+  margin-bottom: 1rem;
+}
+
+/* === CONTROLS === */
+.controls-row {
+  display: flex;
+  gap: 1.8rem;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+.control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.control-label {
+  font-size: 0.55rem;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-dim);
+}
+input[type="date"], select {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 0.72rem;
+  font-weight: 300;
+  padding: 0.3rem 0.5rem;
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+input[type="date"]:hover, select:hover { border-color: var(--border-light); }
+input[type="date"]:focus, select:focus { border-color: var(--olive); }
+input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); }
+
+/* === CHART === */
+.chart-container { width: 100%; position: relative; }
+.chart-container svg { width: 100%; display: block; }
+.axis text { fill: var(--text-dim); font-family: var(--sans); font-size: 10px; }
+.axis line, .axis path { stroke: var(--border); }
+.grid-line { stroke: var(--border); stroke-dasharray: 2,3; }
+
+/* === TOOLTIP === */
+.tooltip {
+  position: fixed;
+  pointer-events: none;
+  background: rgba(19, 20, 9, 0.95);
+  border: 1px solid var(--border-light);
+  padding: 0.6rem 0.8rem;
+  font-size: 0.72rem;
+  color: var(--text);
+  line-height: 1.5;
+  z-index: 1000;
+  max-width: 550px;
+  backdrop-filter: blur(8px);
+  display: none;
+}
+.tooltip-title {
+  font-weight: 400;
+  color: var(--text-bright);
+  margin-bottom: 0.3rem;
+}
+.tooltip-row { display: flex; justify-content: space-between; gap: 1rem; }
+.tooltip-label { color: var(--text-dim); }
+.tooltip-value { color: var(--cream); font-variant-numeric: tabular-nums; }
+
+/* === TABLE === */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+}
+th {
+  text-align: left;
+  font-size: 0.58rem;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-dim);
+  padding: 0.5rem 0.6rem;
+  border-bottom: 1px solid var(--border);
+}
+td {
+  padding: 0.45rem 0.6rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+}
+tr:hover td { background: var(--bg-elevated); }
+.positive { color: var(--green-bright); }
+.negative { color: var(--red); }
+
+/* === PERF TABLE === */
+#ic-perf-table table { font-size: 0.65rem; }
+#ic-perf-table th { font-size: 0.5rem; padding: 0.35rem 0.5rem; text-align: right; }
+#ic-perf-table th:first-child { text-align: left; }
+#ic-perf-table td { padding: 0.3rem 0.5rem; text-align: right; font-variant-numeric: tabular-nums; }
+#ic-perf-table td:first-child { text-align: left; font-weight: 400; }
+#ic-perf-table tr.ensemble-row td { border-top: 1px solid var(--border-light); font-weight: 500; }
+
+/* === LOADING === */
+.loading { color: var(--text-dim); font-size: 0.76rem; padding: 2rem; text-align: center; }
+
+/* === FADE IN === */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.fade-in { animation: fadeUp 0.7s ease forwards; opacity: 0; }
+.fade-in:nth-child(1) { animation-delay: 0s; }
+.fade-in:nth-child(2) { animation-delay: 0.1s; }
+.fade-in:nth-child(3) { animation-delay: 0.15s; }
+.fade-in:nth-child(4) { animation-delay: 0.2s; }
+.fade-in:nth-child(5) { animation-delay: 0.25s; }
+.fade-in:nth-child(6) { animation-delay: 0.3s; }
+.fade-in:nth-child(7) { animation-delay: 0.35s; }
+.fade-in:nth-child(8) { animation-delay: 0.4s; }
+
+/* === REFRESH INDICATOR === */
+.refresh-indicator {
+  font-size: 0.55rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+.refresh-dot {
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--green);
+  margin-right: 0.3rem;
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+/* === TWO-COL LAYOUT === */
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+@media (max-width: 1000px) { .two-col { grid-template-columns: 1fr; } }
+
+/* === SCROLLBAR === */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-dim); }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="/" class="nav-brand">Quorum</a>
+  <div class="nav-links">
+    <a href="/">Portfolio</a>
+    <a href="/models">Models</a>
+    <a href="/pipeline">Pipeline</a>
+    <a href="/diagnostics" class="active">Diagnostics</a>
+    <a href="/themes">Themes</a>
+  </div>
+</nav>
+
+<div class="dashboard">
+  <!-- HEADER -->
+  <div class="header fade-in">
+    <h1>Prediction Diagnostics</h1>
+    <div class="header-meta">
+      <div id="status-line"></div>
+      <div class="refresh-indicator"><span class="refresh-dot"></span><span id="refresh-label">loading</span></div>
+    </div>
+  </div>
+
+  <!-- CONTROLS -->
+  <div class="controls-row fade-in">
+    <div class="control-group">
+      <span class="control-label">Date</span>
+      <input type="date" id="date-select">
+    </div>
+  </div>
+
+  <!-- STAT STRIP -->
+  <div class="stat-strip fade-in" id="stat-strip"></div>
+
+  <!-- SYNCHRONIZED CHARTS (shared x-axis) -->
+  <div class="section fade-in">
+    <div class="section-label" style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+      <span>Per-Run IC</span>
+      <span id="ic-legend" style="display:inline-flex;flex-wrap:wrap;gap:4px;"></span>
+    </div>
+    <div class="chart-container" id="ic-chart" style="min-height:200px;margin-bottom:0;"></div>
+
+    <div class="section-label" style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-top:8px;">
+      <span>Score Correlation</span>
+      <span id="corr-legend" style="display:inline-flex;flex-wrap:wrap;gap:4px;"></span>
+    </div>
+    <div class="chart-container" id="corr-chart" style="min-height:200px;margin-bottom:0;"></div>
+
+    <div class="section-label" style="margin-top:8px;">Score Shift</div>
+    <div class="chart-container" id="shift-chart" style="min-height:180px;margin-bottom:0;"></div>
+
+    <div class="section-label" style="margin-top:8px;">Feature Drift</div>
+    <div class="chart-container" id="feature-shift-chart" style="min-height:180px;"></div>
+  </div>
+
+  <!-- TABLES -->
+  <div class="two-col">
+    <!-- Top Movers -->
+    <div class="section fade-in">
+      <div class="section-label">Top Movers (First vs Last Run)</div>
+      <div id="movers-table" style="max-height:420px;overflow-y:auto;">
+        <div class="loading">Loading...</div>
+      </div>
+    </div>
+
+    <!-- Data Timeline -->
+    <div class="section fade-in">
+      <div class="section-label">Data Freshness Timeline</div>
+      <div id="freshness-table" style="max-height:420px;overflow-y:auto;">
+        <div class="loading">Loading...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Tooltip -->
+<div class="tooltip" id="chart-tooltip"></div>
+
+<script>
+(function() {
+  'use strict';
+
+  var API = '';
+  var C = {
+    bg: '#090b09', bgCard: '#131409', bgEl: '#0c0d09',
+    text: '#d4cfc3', dim: '#7a7868', bright: '#ede8db', cream: '#e2dbc8',
+    green: '#7a8a2a', greenBr: '#9aaa3a', greenDim: '#2e3218',
+    olive: '#6b6a3a', tan: '#b49a6e',
+    border: '#22231a', borderLight: '#33341f',
+    red: '#c4506a', redDim: '#a24458', redBr: '#d4687e',
+  };
+
+  // Model color palette — matches models.html
+  var MODEL_COLORS = {
+    ensemble:                 '#e2dbc8',
+    catboost:                 '#9aaa3a',
+    xgboost:                  '#7a8a2a',
+    lgbm:                     '#b49a6e',
+    mlp:                      '#c4506a',
+    dcnv2:                    '#d4687e',
+    ftt:                      '#6b6a3a',
+    news_tf:                  '#7a7868',
+    saint_knn_learned:        '#5a6a8a',
+    tabr_learned_combined:    '#a07a4a',
+    temporal_matrix_1d:       '#a8a838',
+    temporal_matrix_5d:       '#c8c050',
+    temporal_matrix_20d:      '#e8e070',
+  };
+  var MODEL_COLORS_FALLBACK = ['#6b9ec4', '#d4a06a', '#7ac4a0', '#c47ab0', '#8a8aef', '#ef8a5a', '#5ac4c4'];
+  function modelColor(nameOrIdx) {
+    if (typeof nameOrIdx === 'string') return MODEL_COLORS[nameOrIdx] || MODEL_COLORS_FALLBACK[0];
+    return MODEL_COLORS_FALLBACK[nameOrIdx % MODEL_COLORS_FALLBACK.length];
+  }
+
+  var state = { data: null, activeModels: { ensemble: true } };
+
+  // Default date to today
+  var dateInput = document.getElementById('date-select');
+  var today = new Date();
+  dateInput.value = today.getFullYear() + '-' +
+    String(today.getMonth() + 1).padStart(2, '0') + '-' +
+    String(today.getDate()).padStart(2, '0');
+
+  function fetchJSON(url) {
+    return fetch(API + url).then(function(r) { return r.json(); }).catch(function() { return null; });
+  }
+
+  function fmtTime(ts) {
+    // Convert timestamp to Central Time
+    if (!ts) return '';
+    try {
+      var d = new Date(ts);
+      if (isNaN(d.getTime())) {
+        var m = ts.match(/(\d{2}:\d{2})/);
+        return m ? m[1] : ts;
+      }
+      return d.toLocaleTimeString('en-US', { timeZone: 'America/Chicago', hour: 'numeric', minute: '2-digit', hour12: true });
+    } catch(e) {
+      var m = ts.match(/(\d{2}:\d{2})/);
+      return m ? m[1] : ts;
+    }
+  }
+
+  // Pick evenly-spaced tick indices (max ~15 ticks)
+  function sparseTickValues(n, maxTicks) {
+    maxTicks = maxTicks || 15;
+    if (n <= maxTicks) return d3.range(n);
+    var step = Math.ceil(n / maxTicks);
+    var ticks = [];
+    for (var i = 0; i < n; i += step) ticks.push(i);
+    if (ticks[ticks.length - 1] !== n - 1) ticks.push(n - 1);
+    return ticks;
+  }
+
+  // Apply rotated x-axis with sparse ticks
+  function rotatedAxis(gEl, axis) {
+    gEl.call(axis)
+      .selectAll('text')
+      .attr('transform', 'rotate(-45)')
+      .style('text-anchor', 'end')
+      .attr('dx', '-0.5em')
+      .attr('dy', '0.25em')
+      .style('font-size', '9px');
+  }
+
+  function loadData() {
+    var date = dateInput.value;
+    document.getElementById('refresh-label').textContent = 'loading';
+    return fetchJSON('/api/prediction-diagnostics?date=' + date).then(function(data) {
+      if (!data || data.error) {
+        document.getElementById('corr-chart').innerHTML =
+          '<div class="loading">' + (data ? data.error : 'Failed to load') + '</div>';
+        document.getElementById('refresh-label').textContent = 'error';
+        document.documentElement.classList.add('ready');
+        return;
+      }
+      state.data = data;
+
+      // Initialize active models on first load — all ON by default
+      var models = data.model_names || [];
+      if (!state._modelsInitialized) {
+        state.activeModels = { ensemble: true };
+        models.forEach(function(m) { state.activeModels[m] = true; });
+        state._modelsInitialized = true;
+      }
+
+      renderStatStrip();
+      buildSharedXScale();
+      renderICChart();
+      renderCorrChart();
+      renderShiftChart();
+      renderFeatureShiftChart();
+      renderMoversTable();
+      renderFreshnessTable();
+      document.getElementById('status-line').textContent =
+        data.runs.length + ' prediction runs on ' + data.date;
+      document.getElementById('refresh-label').textContent = 'auto-refresh 5m';
+      document.documentElement.classList.add('ready');
+    }).catch(function() {
+      document.documentElement.classList.add('ready');
+    });
+  }
+
+  // ================================================================
+  // STAT STRIP
+  // ================================================================
+  function renderStatStrip() {
+    var el = document.getElementById('stat-strip');
+    var s = state.data.stats;
+    var html = '';
+
+    html += '<div class="stat"><div class="stat-value">' +
+      s.num_runs + '</div><div class="stat-label">Runs Today</div></div>';
+
+    var corrCls = s.avg_correlation !== null && s.avg_correlation >= 0.99 ? 'positive' : s.avg_correlation !== null && s.avg_correlation < 0.95 ? 'negative' : '';
+    html += '<div class="stat"><div class="stat-value ' + corrCls + '">' +
+      (s.avg_correlation !== null ? s.avg_correlation.toFixed(4) : '--') +
+      '</div><div class="stat-label">Avg Score Corr</div></div>';
+
+    html += '<div class="stat"><div class="stat-value">' +
+      s.feature_update_count + '</div><div class="stat-label">Feature Updates</div></div>';
+
+    var icCls = s.latest_ic != null ? (s.latest_ic >= 0 ? 'positive' : 'negative') : '';
+    html += '<div class="stat"><div class="stat-value ' + icCls + '">' +
+      (s.latest_ic != null ? (s.latest_ic >= 0 ? '+' : '') + s.latest_ic.toFixed(4) : '--') +
+      '</div><div class="stat-label">Time-Weighted IC</div></div>';
+
+    el.innerHTML = html;
+  }
+
+  // ================================================================
+  // CHART 1: Score Correlation Line Chart (ensemble + per-model)
+  // ================================================================
+  function renderCorrLegend() {
+    var legend = document.getElementById('corr-legend');
+    if (!legend) return;
+    var models = state.data.model_names || [];
+    var all = ['ensemble'].concat(models);
+    var html = '';
+    all.forEach(function(m, idx) {
+      var color = modelColor(m);
+      var active = state.activeModels[m];
+      var opacity = active ? '1' : '0.3';
+      html += '<span class="legend-item" data-model="' + m + '" ' +
+        'style="cursor:pointer;opacity:' + opacity + ';margin-right:12px;font-size:11px;white-space:nowrap;">' +
+        '<span style="display:inline-block;width:10px;height:3px;background:' + color +
+        ';vertical-align:middle;margin-right:4px;border-radius:1px;"></span>' + m + '</span>';
+    });
+    legend.innerHTML = html;
+    legend.querySelectorAll('.legend-item').forEach(function(el) {
+      el.addEventListener('click', function() {
+        var m = el.getAttribute('data-model');
+        state.activeModels[m] = !state.activeModels[m];
+        renderCorrChart();
+        renderICChart();
+        renderShiftChart();
+        renderFeatureShiftChart();
+      });
+    });
+  }
+
+  // ================================================================
+  // SHARED X-SCALE — all stacked charts use the same time axis
+  // ================================================================
+  var sharedX = { domain: [], margin: { left: 60, right: 25 }, tickVals: [], tickLabels: {} };
+
+  function buildSharedXScale() {
+    var ics = (state.data.per_run_ic || []).filter(function(d) { return d.ic !== null; });
+    sharedX.domain = ics.map(function(d, i) { return i; });
+    // Build time labels from created_at
+    sharedX.tickLabels = {};
+    ics.forEach(function(d, i) {
+      var ts = new Date(d.created_at);
+      sharedX.tickLabels[i] = ts.toLocaleString('en-US', { timeZone: 'America/Chicago', hour: 'numeric', minute: '2-digit', hour12: true });
+    });
+    // Sparse ticks
+    var maxTicks = 8;
+    var step = Math.max(1, Math.floor(ics.length / maxTicks));
+    sharedX.tickVals = sharedX.domain.filter(function(_, i) { return i % step === 0 || i === ics.length - 1; });
+  }
+
+  function makeSharedX(width) {
+    return d3.scalePoint().domain(sharedX.domain).range([0, width]).padding(0.5);
+  }
+
+  function drawXAxis(g, x, height) {
+    g.append('g').attr('class', 'axis').attr('transform', 'translate(0,' + height + ')')
+      .call(d3.axisBottom(x).tickValues(sharedX.tickVals).tickFormat(function(i) {
+        return sharedX.tickLabels[i] || '';
+      }).tickSize(3))
+      .selectAll('text').attr('font-size', '9px').attr('transform', 'rotate(-30)').attr('text-anchor', 'end');
+  }
+
+  function renderCorrChart() {
+    var container = document.getElementById('corr-chart');
+    container.innerHTML = '';
+    var corrs = state.data.correlations;
+    if (!corrs || corrs.length === 0) {
+      container.innerHTML = '<div class="loading">No consecutive runs to compare</div>';
+      return;
+    }
+    var models = state.data.model_names || [];
+    renderCorrLegend();
+
+    var margin = { top: 8, right: sharedX.margin.right, bottom: 10, left: sharedX.margin.left };
+    var rect = container.getBoundingClientRect();
+    var width = rect.width - margin.left - margin.right;
+    var height = 160;
+
+    var svg = d3.select(container).append('svg')
+      .attr('width', width + margin.left + margin.right)
+      .attr('height', height + margin.top + margin.bottom);
+    var g = svg.append('g').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+    var x = d3.scalePoint()
+      .domain(corrs.map(function(d, i) { return i; }))
+      .range([0, width])
+      .padding(0.5);
+
+    // Compute y extent across all active models
+    var yMin = Infinity, yMax = 1.0;
+    corrs.forEach(function(d) {
+      if (state.activeModels.ensemble) {
+        yMin = Math.min(yMin, d.correlation);
+      }
+      if (d.model_corrs) {
+        models.forEach(function(m) {
+          if (state.activeModels[m] && d.model_corrs[m] != null) {
+            yMin = Math.min(yMin, d.model_corrs[m]);
+          }
+        });
+      }
+    });
+    if (!isFinite(yMin)) yMin = 0.95;
+    yMin = Math.min(yMin - 0.005, 0.95);
+    var y = d3.scaleLinear().domain([yMin, 1.0]).range([height, 0]);
+
+    // Grid
+    g.selectAll('.grid-line-h')
+      .data(y.ticks(5)).enter()
+      .append('line').attr('class', 'grid-line')
+      .attr('x1', 0).attr('x2', width)
+      .attr('y1', function(d) { return y(d); })
+      .attr('y2', function(d) { return y(d); });
+
+    // Per-model correlation lines (behind ensemble)
+    models.forEach(function(m, idx) {
+      if (!state.activeModels[m]) return;
+      var color = modelColor(m);
+      var lineData = corrs.map(function(d, i) {
+        var v = d.model_corrs ? d.model_corrs[m] : null;
+        return v != null ? { i: i, corr: v } : null;
+      }).filter(function(d) { return d !== null; });
+      if (lineData.length < 2) return;
+
+      g.append('path').datum(lineData)
+        .attr('fill', 'none').attr('stroke', color).attr('stroke-width', 2).attr('opacity', 0.7)
+        .attr('d', d3.line().x(function(d) { return x(d.i); }).y(function(d) { return y(d.corr); }));
+    });
+
+    // Ensemble line (on top, thickest)
+    if (state.activeModels.ensemble) {
+      g.append('path').datum(corrs)
+        .attr('fill', 'none').attr('stroke', C.cream).attr('stroke-width', 3.5)
+        .attr('d', d3.line().x(function(d, i) { return x(i); }).y(function(d) { return y(d.correlation); }));
+
+      // Ensemble dots
+      g.selectAll('.corr-dot')
+        .data(corrs).enter()
+        .append('circle').attr('class', 'corr-dot')
+        .attr('cx', function(d, i) { return x(i); })
+        .attr('cy', function(d) { return y(d.correlation); })
+        .attr('r', 3.5)
+        .attr('fill', function(d) { return d.correlation >= 0.99 ? C.greenBr : d.correlation < 0.95 ? C.red : C.tan; })
+        .attr('stroke', C.bg).attr('stroke-width', 1);
+    }
+
+    // Y-axis only (x-axis on bottom chart)
+    g.append('g').attr('class', 'axis')
+      .call(d3.axisLeft(y).ticks(4).tickFormat(d3.format('.4f')));
+    g.append('text').attr('transform', 'rotate(-90)')
+      .attr('y', -50).attr('x', -height / 2).attr('text-anchor', 'middle')
+      .attr('fill', C.dim).attr('font-size', '10px').text('Corr');
+
+    // Tooltip — shows all active models
+    var tooltip = document.getElementById('chart-tooltip');
+    g.selectAll('.corr-hover')
+      .data(corrs).enter()
+      .append('rect').attr('class', 'corr-hover')
+      .attr('x', function(d, i) { return x(i) - (width / corrs.length) / 2; })
+      .attr('y', 0)
+      .attr('width', width / corrs.length)
+      .attr('height', height)
+      .attr('fill', 'transparent')
+      .on('mousemove', function(event, d) {
+        var html = '<div class="tooltip-title">' + fmtTime(d.from_time) + ' &rarr; ' + fmtTime(d.to_time) + '</div>';
+        if (state.activeModels.ensemble) {
+          html += '<div class="tooltip-row"><span class="tooltip-label" style="color:' + C.cream + '">ensemble</span>' +
+            '<span class="tooltip-value">' + d.correlation.toFixed(4) + '</span></div>';
+        }
+        if (d.model_corrs) {
+          models.forEach(function(m, idx) {
+            if (!state.activeModels[m]) return;
+            var v = d.model_corrs[m];
+            if (v == null) return;
+            html += '<div class="tooltip-row"><span class="tooltip-label" style="color:' + modelColor(m) + '">' + m + '</span>' +
+              '<span class="tooltip-value">' + v.toFixed(4) + '</span></div>';
+          });
+        }
+        html += '<div class="tooltip-row"><span class="tooltip-label">Avg Shift</span><span class="tooltip-value">' + d.avg_shift.toFixed(4) + '</span></div>';
+        html += '<div class="tooltip-row"><span class="tooltip-label">Big Shifts (&gt;0.1)</span><span class="tooltip-value">' + d.big_shift_count + '</span></div>';
+        tooltip.innerHTML = html;
+        tooltip.style.display = 'block';
+        tooltip.style.left = (event.clientX + 16) + 'px';
+        tooltip.style.top = (event.clientY - 10) + 'px';
+      })
+      .on('mouseleave', function() { tooltip.style.display = 'none'; });
+  }
+
+  // ================================================================
+  // CHART 2: Per-Run IC Line Chart (ensemble + per-model)
+  // ================================================================
+  function renderICLegend() {
+    var legend = document.getElementById('ic-legend');
+    if (!legend) return;
+    var models = state.data.model_names || [];
+    var all = ['ensemble'].concat(models);
+    var html = '';
+    all.forEach(function(m, idx) {
+      var color = modelColor(m);
+      var active = state.activeModels[m];
+      var opacity = active ? '1' : '0.3';
+      html += '<span class="legend-item" data-model="' + m + '" ' +
+        'style="cursor:pointer;opacity:' + opacity + ';margin-right:12px;font-size:11px;white-space:nowrap;">' +
+        '<span style="display:inline-block;width:10px;height:3px;background:' + color +
+        ';vertical-align:middle;margin-right:4px;border-radius:1px;"></span>' + m + '</span>';
+    });
+    legend.innerHTML = html;
+    legend.querySelectorAll('.legend-item').forEach(function(el) {
+      el.addEventListener('click', function() {
+        var m = el.getAttribute('data-model');
+        state.activeModels[m] = !state.activeModels[m];
+        renderCorrChart();
+        renderICChart();
+        renderShiftChart();
+        renderFeatureShiftChart();
+      });
+    });
+  }
+
+  function renderICChart() {
+    var container = document.getElementById('ic-chart');
+    container.innerHTML = '';
+    var ics = state.data.per_run_ic.filter(function(d) { return d.ic !== null; });
+    if (ics.length === 0) {
+      container.innerHTML = '<div class="loading">No IC data (need today\'s close prices)</div>';
+      return;
+    }
+
+    var models = state.data.model_names || [];
+    renderICLegend();
+
+    var margin = { top: 8, right: sharedX.margin.right, bottom: 10, left: sharedX.margin.left };
+    var rect = container.getBoundingClientRect();
+    var width = rect.width - margin.left - margin.right;
+    var height = 160;
+
+    var svg = d3.select(container).append('svg')
+      .attr('width', width + margin.left + margin.right)
+      .attr('height', height + margin.top + margin.bottom);
+    var g = svg.append('g').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+    var x = d3.scalePoint()
+      .domain(ics.map(function(d, i) { return i; }))
+      .range([0, width])
+      .padding(0.5);
+
+    // Compute y extent across all active models
+    var yMin = Infinity, yMax = -Infinity;
+    ics.forEach(function(d) {
+      if (state.activeModels.ensemble && d.ic != null) {
+        yMin = Math.min(yMin, d.ic); yMax = Math.max(yMax, d.ic);
+      }
+      if (d.model_ics) {
+        models.forEach(function(m) {
+          if (state.activeModels[m] && d.model_ics[m] != null) {
+            yMin = Math.min(yMin, d.model_ics[m]);
+            yMax = Math.max(yMax, d.model_ics[m]);
+          }
+        });
+      }
+    });
+    if (!isFinite(yMin)) { yMin = -0.05; yMax = 0.1; }
+    var yPad = Math.max(0.02, (yMax - yMin) * 0.15);
+    var y = d3.scaleLinear().domain([yMin - yPad, yMax + yPad]).range([height, 0]);
+
+    // Grid
+    g.selectAll('.grid-line-h')
+      .data(y.ticks(5)).enter()
+      .append('line').attr('class', 'grid-line')
+      .attr('x1', 0).attr('x2', width)
+      .attr('y1', function(d) { return y(d); })
+      .attr('y2', function(d) { return y(d); });
+
+    // Zero line
+    if (yMin < 0 && yMax > 0) {
+      g.append('line')
+        .attr('x1', 0).attr('x2', width)
+        .attr('y1', y(0)).attr('y2', y(0))
+        .attr('stroke', C.olive).attr('stroke-width', 1).attr('stroke-dasharray', '4,3');
+    }
+
+    // Per-model lines (behind ensemble)
+    models.forEach(function(m, idx) {
+      if (!state.activeModels[m]) return;
+      var color = modelColor(m);
+      var lineData = ics.map(function(d, i) {
+        var v = d.model_ics ? d.model_ics[m] : null;
+        return v != null ? { i: i, ic: v } : null;
+      }).filter(function(d) { return d !== null; });
+      if (lineData.length < 2) return;
+
+      g.append('path').datum(lineData)
+        .attr('fill', 'none').attr('stroke', color).attr('stroke-width', 2).attr('opacity', 0.7)
+        .attr('d', d3.line().x(function(d) { return x(d.i); }).y(function(d) { return y(d.ic); }));
+    });
+
+    // Ensemble line (on top, thickest)
+    if (state.activeModels.ensemble) {
+      g.append('path').datum(ics)
+        .attr('fill', 'none').attr('stroke', C.cream).attr('stroke-width', 3.5)
+        .attr('d', d3.line().x(function(d, i) { return x(i); }).y(function(d) { return y(d.ic); }));
+
+      // Ensemble dots
+      g.selectAll('.ic-dot')
+        .data(ics).enter()
+        .append('circle')
+        .attr('class', 'ic-dot')
+        .attr('cx', function(d, i) { return x(i); })
+        .attr('cy', function(d) { return y(d.ic); })
+        .attr('r', 3.5)
+        .attr('fill', function(d) { return d.ic >= 0 ? C.greenBr : C.red; })
+        .attr('stroke', C.bg).attr('stroke-width', 1);
+    }
+
+    // Y-axis only (x-axis on bottom chart)
+    g.append('g').attr('class', 'axis')
+      .call(d3.axisLeft(y).ticks(4).tickFormat(d3.format('.4f')));
+    g.append('text').attr('transform', 'rotate(-90)')
+      .attr('y', -50).attr('x', -height / 2).attr('text-anchor', 'middle')
+      .attr('fill', C.dim).attr('font-size', '10px').text('Rank IC');
+
+    // Tooltip — shows all active models for hovered x position
+    var tooltip = document.getElementById('chart-tooltip');
+    // Invisible overlay rects for hover detection at each x position
+    var corrLookup = {};
+    (state.data.correlations || []).forEach(function(c) {
+      corrLookup[c.to_run] = c;
+    });
+
+    g.selectAll('.ic-hover')
+      .data(ics).enter()
+      .append('rect')
+      .attr('class', 'ic-hover')
+      .attr('x', function(d, i) { return x(i) - (width / ics.length) / 2; })
+      .attr('y', 0)
+      .attr('width', width / ics.length)
+      .attr('height', height)
+      .attr('fill', 'transparent')
+      .on('mousemove', function(event, d) {
+        var html = '<div class="tooltip-title">Run at ' + fmtTime(d.created_at) + '</div>';
+
+        // Collect all active entries (ensemble + per-model), sort by IC descending
+        var entries = [];
+        if (state.activeModels.ensemble && d.ic != null) {
+          entries.push({ name: 'ensemble', v: d.ic, color: C.cream });
+        }
+        if (d.model_ics) {
+          models.forEach(function(m, idx) {
+            if (!state.activeModels[m]) return;
+            var v = d.model_ics[m];
+            if (v == null) return;
+            entries.push({ name: m, v: v, color: modelColor(m) });
+          });
+        }
+        entries.sort(function(a, b) { return b.v - a.v; });
+        entries.forEach(function(e) {
+          var cls = e.v >= 0 ? 'positive' : 'negative';
+          html += '<div class="tooltip-row"><span class="tooltip-label" style="color:' + e.color + '">' + e.name + '</span>' +
+            '<span class="tooltip-value ' + cls + '">' + (e.v >= 0 ? '+' : '') + e.v.toFixed(4) + '</span></div>';
+        });
+
+        html += '<div class="tooltip-row"><span class="tooltip-label">Tickers</span><span class="tooltip-value">' + d.n_tickers + '</span></div>';
+        var corr = corrLookup[d.run_id];
+        if (corr) {
+          html += '<div class="tooltip-row"><span class="tooltip-label">Score Corr</span><span class="tooltip-value">' + corr.correlation.toFixed(4) + '</span></div>';
+        }
+        html += '<div style="margin-top:3px;color:' + C.dim + ';font-size:0.5rem;">' + d.run_id.slice(0, 8) + '</div>';
+        tooltip.innerHTML = html;
+        tooltip.style.display = 'block';
+        tooltip.style.left = (event.clientX + 16) + 'px';
+        tooltip.style.top = (event.clientY - 10) + 'px';
+      })
+      .on('mouseleave', function() { tooltip.style.display = 'none'; });
+
+  }
+
+  // ================================================================
+  // Model Performance Table — mean IC by session, trailing, time-weighted
+  // ================================================================
+  function renderPerfTable() {
+    var container = document.getElementById('ic-perf-table');
+    if (!container) return;
+    var ics = (state.data.per_run_ic || []).filter(function(d) { return d.ic !== null; });
+    if (ics.length === 0) {
+      container.innerHTML = '<div class="loading">No IC data yet</div>';
+      return;
+    }
+
+    var models = state.data.model_names || [];
+
+    // Parse timestamps and classify by market session (ET)
+    // Pre-market: 4:00-9:30 ET, Market: 9:30-16:00 ET, Post-market: 16:00-20:00 ET
+    function classifySession(created_at) {
+      var d = new Date(created_at);
+      // Convert to ET: offset is embedded in ISO string, Date handles it
+      // Get hours in ET by formatting
+      var etStr = d.toLocaleString('en-US', { timeZone: 'America/New_York', hour12: false, hour: '2-digit', minute: '2-digit' });
+      var parts = etStr.split(':');
+      var h = parseInt(parts[0]), m = parseInt(parts[1]);
+      var mins = h * 60 + m;
+      if (mins < 570) return 'pre';       // before 9:30
+      if (mins < 960) return 'market';     // 9:30 - 16:00
+      return 'post';                       // 16:00+
+    }
+
+    function meanOf(arr) {
+      if (arr.length === 0) return null;
+      return arr.reduce(function(a, b) { return a + b; }, 0) / arr.length;
+    }
+
+    // Time-weighted: later runs weighted more (linear ramp)
+    function timeWeightedMean(arr) {
+      if (arr.length === 0) return null;
+      var totalW = 0, weightedSum = 0;
+      arr.forEach(function(v, i) {
+        var w = i + 1;
+        weightedSum += v * w;
+        totalW += w;
+      });
+      return weightedSum / totalW;
+    }
+
+    // Trailing: last 5 runs
+    function trailingMean(arr) {
+      if (arr.length === 0) return null;
+      var tail = arr.slice(-5);
+      return meanOf(tail);
+    }
+
+    // Classify each run
+    var sessions = ics.map(function(d) { return classifySession(d.created_at); });
+
+    // Build stats for a model
+    function buildRow(name, getVal, color) {
+      var all = [], pre = [], mkt = [], post = [];
+      ics.forEach(function(d, i) {
+        var v = getVal(d);
+        if (v == null) return;
+        all.push(v);
+        if (sessions[i] === 'pre') pre.push(v);
+        else if (sessions[i] === 'market') mkt.push(v);
+        else post.push(v);
+      });
+      return {
+        name: name, color: color, n: all.length,
+        mean: meanOf(all), pre: meanOf(pre), market: meanOf(mkt), post: meanOf(post),
+        trailing: trailingMean(all), tw: timeWeightedMean(all)
+      };
+    }
+
+    var rows = [];
+    // Individual models
+    models.forEach(function(m, mi) {
+      rows.push(buildRow(m, function(d) { return d.model_ics ? d.model_ics[m] : null; }, modelColor(m)));
+    });
+    // Sort by mean IC descending
+    rows.sort(function(a, b) { return (b.mean || -999) - (a.mean || -999); });
+
+    // Ensemble row at bottom
+    var ensRow = buildRow('ensemble', function(d) { return d.ic; }, C.bright);
+    ensRow.isEnsemble = true;
+
+    function fmtCell(v) {
+      if (v == null) return '<span style="color:' + C.dim + '">—</span>';
+      var cls = v >= 0 ? 'positive' : 'negative';
+      var sign = v >= 0 ? '+' : '';
+      return '<span class="' + cls + '">' + sign + v.toFixed(4) + '</span>';
+    }
+
+    var html = '<table><thead><tr>';
+    html += '<th>Model</th><th>Mean</th><th>Pre-Mkt</th><th>Market</th><th>Post-Mkt</th><th>Trailing 5</th><th>Time-Wtd</th><th>Runs</th>';
+    html += '</tr></thead><tbody>';
+
+    rows.forEach(function(r) {
+      html += '<tr>';
+      html += '<td style="color:' + r.color + ';">' + r.name.toUpperCase() + '</td>';
+      html += '<td>' + fmtCell(r.mean) + '</td>';
+      html += '<td>' + fmtCell(r.pre) + '</td>';
+      html += '<td>' + fmtCell(r.market) + '</td>';
+      html += '<td>' + fmtCell(r.post) + '</td>';
+      html += '<td>' + fmtCell(r.trailing) + '</td>';
+      html += '<td>' + fmtCell(r.tw) + '</td>';
+      html += '<td style="color:' + C.dim + ';">' + r.n + '</td>';
+      html += '</tr>';
+    });
+
+    // Ensemble as final row
+    html += '<tr class="ensemble-row">';
+    html += '<td style="color:' + ensRow.color + ';">ENSEMBLE</td>';
+    html += '<td>' + fmtCell(ensRow.mean) + '</td>';
+    html += '<td>' + fmtCell(ensRow.pre) + '</td>';
+    html += '<td>' + fmtCell(ensRow.market) + '</td>';
+    html += '<td>' + fmtCell(ensRow.post) + '</td>';
+    html += '<td>' + fmtCell(ensRow.trailing) + '</td>';
+    html += '<td>' + fmtCell(ensRow.tw) + '</td>';
+    html += '<td style="color:' + C.dim + ';">' + ensRow.n + '</td>';
+    html += '</tr>';
+
+    html += '</tbody></table>';
+    container.innerHTML = html;
+  }
+
+  // ================================================================
+  // CHART 3: Average Score Shift — Stacked Bar Chart (per-model)
+  // ================================================================
+  function renderShiftChart() {
+    var container = document.getElementById('shift-chart');
+    container.innerHTML = '';
+    var corrs = state.data.correlations;
+    if (!corrs || corrs.length === 0) {
+      container.innerHTML = '<div class="loading">No consecutive runs to compare</div>';
+      return;
+    }
+    var models = state.data.model_names || [];
+    // Active models for stacking (use shared state)
+    var activeModels = models.filter(function(m) { return state.activeModels[m]; });
+
+    var margin = { top: 8, right: sharedX.margin.right, bottom: 10, left: sharedX.margin.left };
+    var rect = container.getBoundingClientRect();
+    var width = rect.width - margin.left - margin.right;
+    var height = 140;
+
+    var svg = d3.select(container).append('svg')
+      .attr('width', width + margin.left + margin.right)
+      .attr('height', height + margin.top + margin.bottom);
+    var g = svg.append('g').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+    var x = d3.scaleBand()
+      .domain(corrs.map(function(d, i) { return i; }))
+      .range([0, width])
+      .padding(0.15);
+
+    // Build stacked data: for each time slot, stack per-model shifts
+    var stackData = corrs.map(function(d, i) {
+      var row = { _idx: i, _d: d };
+      activeModels.forEach(function(m) {
+        row[m] = (d.model_shifts && d.model_shifts[m] != null) ? d.model_shifts[m] : 0;
+      });
+      return row;
+    });
+
+    // Compute yMax from stacked totals
+    var yMax = d3.max(stackData, function(row) {
+      var total = 0;
+      activeModels.forEach(function(m) { total += row[m]; });
+      return total;
+    }) || 0.01;
+    yMax *= 1.1;
+    var y = d3.scaleLinear().domain([0, yMax]).range([height, 0]);
+
+    // Grid
+    g.selectAll('.grid-line-h')
+      .data(y.ticks(5)).enter()
+      .append('line').attr('class', 'grid-line')
+      .attr('x1', 0).attr('x2', width)
+      .attr('y1', function(d) { return y(d); })
+      .attr('y2', function(d) { return y(d); });
+
+    // D3 stack
+    if (activeModels.length > 0) {
+      var stack = d3.stack().keys(activeModels);
+      var series = stack(stackData);
+
+      series.forEach(function(layer, layerIdx) {
+        var mname = activeModels[layerIdx];
+        var mIdx = models.indexOf(mname);
+        var color = modelColor(mname);
+
+        g.selectAll('.bar-' + layerIdx)
+          .data(layer).enter()
+          .append('rect')
+          .attr('class', 'shift-bar')
+          .attr('x', function(d) { return x(d.data._idx); })
+          .attr('y', function(d) { return y(d[1]); })
+          .attr('width', x.bandwidth())
+          .attr('height', function(d) { return Math.max(0, y(d[0]) - y(d[1])); })
+          .attr('fill', color)
+          .attr('opacity', 0.85)
+          .attr('rx', 1);
+      });
+    } else {
+      // Fallback: single ensemble bar if no models active
+      g.selectAll('.shift-bar')
+        .data(corrs).enter()
+        .append('rect').attr('class', 'shift-bar')
+        .attr('x', function(d, i) { return x(i); })
+        .attr('y', function(d) { return y(d.avg_shift); })
+        .attr('width', x.bandwidth())
+        .attr('height', function(d) { return height - y(d.avg_shift); })
+        .attr('fill', C.greenDim).attr('rx', 1);
+    }
+
+    // Y-axis only (x-axis on bottom chart)
+    g.append('g').attr('class', 'axis')
+      .call(d3.axisLeft(y).ticks(4).tickFormat(d3.format('.4f')));
+    g.append('text').attr('transform', 'rotate(-90)')
+      .attr('y', -50).attr('x', -height / 2).attr('text-anchor', 'middle')
+      .attr('fill', C.dim).attr('font-size', '10px').text('Score Shift');
+
+    // Tooltip — invisible overlay per time slot
+    var tooltip = document.getElementById('chart-tooltip');
+    g.selectAll('.shift-hover')
+      .data(corrs).enter()
+      .append('rect').attr('class', 'shift-hover')
+      .attr('x', function(d, i) { return x(i); })
+      .attr('y', 0)
+      .attr('width', x.bandwidth())
+      .attr('height', height)
+      .attr('fill', 'transparent')
+      .on('mousemove', function(event, d) {
+        var html = '<div class="tooltip-title">' + fmtTime(d.from_time) + ' &rarr; ' + fmtTime(d.to_time) + '</div>';
+        html += '<div class="tooltip-row"><span class="tooltip-label" style="color:' + C.cream + '">ensemble</span>' +
+          '<span class="tooltip-value">' + d.avg_shift.toFixed(4) + '</span></div>';
+        if (d.model_shifts) {
+          // Sort by shift descending
+          var sorted = activeModels.map(function(m) {
+            return { name: m, shift: d.model_shifts[m] || 0 };
+          }).sort(function(a, b) { return b.shift - a.shift; });
+          sorted.forEach(function(s) {
+            html += '<div class="tooltip-row"><span class="tooltip-label" style="color:' + modelColor(s.name) + '">' +
+              s.name + '</span><span class="tooltip-value">' + s.shift.toFixed(4) + '</span></div>';
+          });
+        }
+        html += '<div class="tooltip-row"><span class="tooltip-label">Big Shifts (&gt;0.1)</span><span class="tooltip-value">' + d.big_shift_count + '</span></div>';
+        tooltip.innerHTML = html;
+        tooltip.style.display = 'block';
+        tooltip.style.left = (event.clientX + 16) + 'px';
+        tooltip.style.top = (event.clientY - 10) + 'px';
+      })
+      .on('mouseleave', function() { tooltip.style.display = 'none'; });
+  }
+
+  // ================================================================
+  // CHART 4: Feature Vector Cosine Similarity (run-to-run)
+  // Each point = cosine similarity of a run's feature vectors vs the previous run.
+  // Near 1.0 = features barely changed. Drops = real shift (news pipeline, macro refresh, etc.)
+  // Two lines: normalized (direction only) and raw (scale-sensitive).
+  // Right axis: ticker count — drops flag filtering/pipeline issues.
+  // ================================================================
+  function renderFeatureShiftChart() {
+    var container = document.getElementById('feature-shift-chart');
+    container.innerHTML = '';
+    var runs = state.data.runs || [];
+
+    // Per-feature mean |Δz|: z-score each run by its own cross-sectional stats,
+    // then take mean absolute z-score change per feature across all tickers.
+    // Split into technical (price-derived) vs fundamental (slow-moving) drift.
+    var pts = runs.filter(function(r) {
+      return r.drift_overall != null;
+    }).map(function(r) {
+      return {
+        time: r.created_at,
+        tech:  r.drift_technical,
+        fund:  r.drift_fundamental,
+        pipe:  r.drift_pipeline,
+        pipe_per_model: r.drift_pipeline_per_model || {},
+        overall: r.drift_overall,
+        tc:    r.drift_n_tickers || r.ticker_count,
+        top:   r.top_drift_features || {},
+        run_id: r.run_id,
+      };
+    });
+
+    if (pts.length === 0) {
+      container.innerHTML = '<div class="loading">No feature drift data yet — will appear after 2nd feature_compute cycle</div>';
+      return;
+    }
+
+    var margin = { top: 8, right: sharedX.margin.right, bottom: 45, left: sharedX.margin.left };
+    var rect = container.getBoundingClientRect();
+    var width = rect.width - margin.left - margin.right;
+    var height = 140;
+
+    var svg = d3.select(container).append('svg')
+      .attr('width', width + margin.left + margin.right)
+      .attr('height', height + margin.top + margin.bottom);
+    var g = svg.append('g').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+    // Index-based x scale (same pattern as other charts) — use sparseTickValues
+    // for tick positions and fmtTime for labels so the axis renders correctly.
+    var xScale = d3.scaleLinear().domain([0, pts.length - 1]).range([0, width]);
+
+    // Y: mean |Δz|, starting at 0
+    var allVals = pts.flatMap(function(d) {
+      return [d.tech, d.fund, d.pipe, d.overall].filter(function(v) { return v != null; });
+    });
+    var yMax = Math.max(d3.max(allVals) || 0.5, 0.05) * 1.15;
+    var yScale = d3.scaleLinear().domain([0, yMax]).range([height, 0]);
+
+    // Grid
+    g.selectAll('.grid-line-h')
+      .data(yScale.ticks(4)).enter()
+      .append('line').attr('class', 'grid-line')
+      .attr('x1', 0).attr('x2', width)
+      .attr('y1', function(d) { return yScale(d); })
+      .attr('y2', function(d) { return yScale(d); });
+
+    // Helper: draw a line+dots series indexed by position in pts
+    function drawSeries(data, acc, color, cls) {
+      var indexed = data.map(function(d, i) { return { d: d, i: i }; })
+                        .filter(function(o) { return acc(o.d) != null; });
+      if (indexed.length === 0) return;
+      var line = d3.line()
+        .x(function(o) { return xScale(o.i); })
+        .y(function(o) { return yScale(acc(o.d)); });
+      g.append('path').datum(indexed)
+        .attr('fill', 'none').attr('stroke', color).attr('stroke-width', 1.5)
+        .attr('d', line);
+      g.selectAll('.' + cls).data(indexed).enter()
+        .append('circle').attr('class', cls)
+        .attr('cx', function(o) { return xScale(o.i); })
+        .attr('cy', function(o) { return yScale(acc(o.d)); })
+        .attr('r', 2.5).attr('fill', color);
+    }
+
+    drawSeries(pts, function(d) { return d.tech;  }, C.greenBr, 'drift-tech');
+    drawSeries(pts, function(d) { return d.fund;  }, C.tan,     'drift-fund');
+    drawSeries(pts, function(d) { return d.pipe;  }, '#7eb8f7', 'drift-pipe');
+
+    // Axes — sparse ticks with time labels (same pattern as correlation/IC charts)
+    var driftTicks = sparseTickValues(pts.length);
+    rotatedAxis(
+      g.append('g').attr('class', 'axis').attr('transform', 'translate(0,' + height + ')'),
+      d3.axisBottom(xScale).tickValues(driftTicks).tickFormat(function(i) {
+        return pts[i] ? fmtTime(pts[i].time) : '';
+      })
+    );
+    g.append('g').attr('class', 'axis')
+      .call(d3.axisLeft(yScale).ticks(4).tickFormat(d3.format('.3f')));
+
+    // Y-axis label
+    g.append('text')
+      .attr('transform', 'rotate(-90)').attr('y', -48).attr('x', -height / 2)
+      .attr('text-anchor', 'middle').attr('fill', C.dim).attr('font-size', '11px')
+      .attr('font-family', 'Outfit, system-ui, sans-serif').text('Mean |Δz|');
+
+    // Legend — right-aligned, larger text
+    var legendItems = [
+      { color: C.greenBr, label: 'Technical (price-derived)' },
+      { color: C.tan,     label: 'Fundamental (slow-moving)' },
+      { color: '#7eb8f7', label: 'Post-pipeline (model input)' },
+    ];
+    var legendX = width - 210;
+    legendItems.forEach(function(item, i) {
+      g.append('line').attr('x1', legendX).attr('x2', legendX + 14)
+        .attr('y1', i * 16 + 4).attr('y2', i * 16 + 4)
+        .attr('stroke', item.color).attr('stroke-width', 2);
+      g.append('text').attr('x', legendX + 18).attr('y', i * 16 + 8)
+        .attr('fill', C.dim).attr('font-size', '11px')
+        .attr('font-family', 'Outfit, system-ui, sans-serif')
+        .text(item.label);
+    });
+
+    // Tooltip — shows split drift values + top drifting features
+    var tooltip = document.getElementById('chart-tooltip');
+    var overlay = g.append('rect')
+      .attr('width', width).attr('height', height)
+      .attr('fill', 'transparent');
+    overlay.on('mousemove', function(event) {
+      var mx = d3.pointer(event)[0];
+      var idx = Math.round(xScale.invert(mx));
+      idx = Math.max(0, Math.min(idx, pts.length - 1));
+      var d = pts[idx];
+      if (!d) return;
+      var html = '<div class="tooltip-title">' + fmtTime(d.time) + '</div>';
+      if (d.tech  != null) html += '<div class="tooltip-row"><span class="tooltip-label" style="color:' + C.greenBr + '">Technical Δz</span><span class="tooltip-value">' + d.tech.toFixed(4) + '</span></div>';
+      if (d.fund  != null) html += '<div class="tooltip-row"><span class="tooltip-label" style="color:' + C.tan + '">Fundamental Δz</span><span class="tooltip-value">' + d.fund.toFixed(4) + '</span></div>';
+      if (d.pipe  != null) html += '<div class="tooltip-row"><span class="tooltip-label" style="color:#7eb8f7">Pipeline Δz (avg)</span><span class="tooltip-value">' + d.pipe.toFixed(4) + '</span></div>';
+      var perModel = Object.entries(d.pipe_per_model || {});
+      if (perModel.length > 0) {
+        html += '<div class="tooltip-label" style="margin-top:4px;color:' + C.dim + '">Per-model pipeline Δz:</div>';
+        perModel.sort(function(a, b) { return b[1] - a[1]; }).forEach(function(kv) {
+          html += '<div class="tooltip-row"><span class="tooltip-label" style="color:' + C.dim + '">&nbsp;&nbsp;' + kv[0] + '</span><span class="tooltip-value">' + Number(kv[1]).toFixed(4) + '</span></div>';
+        });
+      }
+      var topEntries = Object.entries(d.top || {}).slice(0, 5);
+      if (topEntries.length) {
+        html += '<div class="tooltip-label" style="margin-top:4px;color:' + C.dim + '">Top movers:</div>';
+        topEntries.forEach(function(kv) {
+          html += '<div class="tooltip-row"><span class="tooltip-label" style="color:' + C.dim + '">' + kv[0] + '</span><span class="tooltip-value">' + Number(kv[1]).toFixed(3) + '</span></div>';
+        });
+      }
+      html += '<div class="tooltip-row"><span class="tooltip-label">Tickers</span><span class="tooltip-value">' + (d.tc || '—') + '</span></div>';
+      tooltip.innerHTML = html;
+      tooltip.style.display = 'block';
+      tooltip.style.left = (event.clientX + 16) + 'px';
+      tooltip.style.top = (event.clientY - 10) + 'px';
+    }).on('mouseleave', function() { tooltip.style.display = 'none'; });
+  }
+
+  // ================================================================
+  // TOP MOVERS TABLE
+  // ================================================================
+  function renderMoversTable() {
+    var el = document.getElementById('movers-table');
+    var movers = state.data.top_movers;
+    if (!movers || movers.length === 0) {
+      el.innerHTML = '<div class="loading">No rank changes (need 2+ runs)</div>';
+      return;
+    }
+
+    var html = '<table><thead><tr>' +
+      '<th>Ticker</th><th>Old Rank</th><th>New Rank</th><th>Delta</th>' +
+      '</tr></thead><tbody>';
+
+    movers.forEach(function(m, idx) {
+      var cls = m.delta < 0 ? 'positive' : m.delta > 0 ? 'negative' : '';
+      var arrow = m.delta < 0 ? '&#9650; ' : m.delta > 0 ? '&#9660; ' : '';
+      html += '<tr class="mover-row" data-idx="' + idx + '" style="cursor:pointer">' +
+        '<td style="color:' + C.bright + ';font-weight:400">' + m.ticker + '</td>' +
+        '<td>' + m.old_rank + '</td>' +
+        '<td>' + m.new_rank + '</td>' +
+        '<td class="' + cls + '">' + arrow + (m.delta > 0 ? '+' : '') + m.delta + '</td>' +
+        '</tr>';
+    });
+
+    html += '</tbody></table>';
+    el.innerHTML = html;
+
+    // Attach tooltip events
+    var tooltip = document.getElementById('chart-tooltip');
+    el.querySelectorAll('.mover-row').forEach(function(row) {
+      row.addEventListener('mouseenter', function(e) {
+        var m = movers[+row.dataset.idx];
+        var uSize = m.universe_size || '?';
+        var oldPct = m.universe_size ? Math.round(m.old_rank / m.universe_size * 100) : '?';
+        var newPct = m.universe_size ? Math.round(m.new_rank / m.universe_size * 100) : '?';
+        var scoreDir = m.score_delta > 0 ? '+' : '';
+        var rankDir  = m.delta < 0 ? C.greenBr : m.delta > 0 ? '#e05c5c' : C.dim;
+
+        var html = '<div class="tooltip-title">' + m.ticker;
+        if (m.sector) html += ' <span style="color:' + C.dim + ';font-weight:normal;font-size:10px">· ' + m.sector + '</span>';
+        if (m.asset_sub_type && m.asset_sub_type !== 'NaN') html += ' <span style="color:' + C.dim + ';font-size:10px">(' + m.asset_sub_type + ')</span>';
+        html += '</div>';
+
+        html += '<div class="tooltip-row"><span class="tooltip-label">Rank</span>' +
+          '<span class="tooltip-value" style="color:' + rankDir + '">' +
+          m.old_rank + ' → ' + m.new_rank + ' (' + (m.delta > 0 ? '+' : '') + m.delta + ')</span></div>';
+
+        html += '<div class="tooltip-row"><span class="tooltip-label">Percentile</span>' +
+          '<span class="tooltip-value">' + oldPct + 'th → ' + newPct + 'th (of ' + uSize + ')</span></div>';
+
+        html += '<div class="tooltip-row"><span class="tooltip-label">Score</span>' +
+          '<span class="tooltip-value">' + m.old_score + ' → ' + m.new_score +
+          ' <span style="color:' + (m.score_delta >= 0 ? C.greenBr : '#e05c5c') + '">(' + scoreDir + m.score_delta + ')</span></span></div>';
+
+        var modelEntries = Object.entries(m.model_deltas || {});
+        if (modelEntries.length > 0) {
+          modelEntries.sort(function(a, b) { return Math.abs(b[1]) - Math.abs(a[1]); });
+          html += '<div class="tooltip-label" style="margin-top:6px;color:' + C.dim + '">Per-model score Δ:</div>';
+          modelEntries.forEach(function(kv) {
+            var sign = kv[1] >= 0 ? '+' : '';
+            var col  = kv[1] >= 0 ? C.greenBr : '#e05c5c';
+            html += '<div class="tooltip-row">' +
+              '<span class="tooltip-label" style="color:' + C.dim + '">&nbsp;&nbsp;' + kv[0] + '</span>' +
+              '<span class="tooltip-value" style="color:' + col + '">' + sign + kv[1] + '</span></div>';
+          });
+        }
+
+        // Fundamentals section
+        var hasFund = m.market_cap != null || m.trailing_pe != null || m.forward_pe != null || m.beta != null;
+        var hasRets = m.return_1w != null || m.return_1m != null || m.return_3m != null;
+        if (hasFund || hasRets) {
+          html += '<div style="margin-top:8px;border-top:1px solid ' + C.dim + ';padding-top:6px;">';
+
+          function fmtMktCap(v) {
+            if (v == null) return '—';
+            if (v >= 1e12) return '$' + (v/1e12).toFixed(1) + 'T';
+            if (v >= 1e9)  return '$' + (v/1e9).toFixed(1) + 'B';
+            if (v >= 1e6)  return '$' + (v/1e6).toFixed(1) + 'M';
+            return '$' + v.toFixed(0);
+          }
+          function fmtPE(v) { return v != null ? v.toFixed(1) : '—'; }
+          function fmtBeta(v) { return v != null ? v.toFixed(2) : '—'; }
+          function fmtPct(v) {
+            if (v == null) return '—';
+            var sign = v >= 0 ? '+' : '';
+            return '<span style="color:' + (v >= 0 ? C.greenBr : '#e05c5c') + '">' + sign + (v*100).toFixed(1) + '%</span>';
+          }
+
+          if (hasFund) {
+            html += '<div class="tooltip-row"><span class="tooltip-label">Mkt Cap</span>' +
+              '<span class="tooltip-value">' + fmtMktCap(m.market_cap) + '</span></div>';
+            html += '<div class="tooltip-row"><span class="tooltip-label">P/E (trail/fwd)</span>' +
+              '<span class="tooltip-value">' + fmtPE(m.trailing_pe) + ' / ' + fmtPE(m.forward_pe) + '</span></div>';
+            if (m.beta != null)
+              html += '<div class="tooltip-row"><span class="tooltip-label">Beta</span>' +
+                '<span class="tooltip-value">' + fmtBeta(m.beta) + '</span></div>';
+            if (m.dividend_yield != null && m.dividend_yield > 0)
+              html += '<div class="tooltip-row"><span class="tooltip-label">Div Yield</span>' +
+                '<span class="tooltip-value">' + m.dividend_yield.toFixed(2) + '%</span></div>';
+          }
+
+          if (hasRets) {
+            html += '<div class="tooltip-label" style="margin-top:4px;color:' + C.dim + '">Returns:</div>';
+            var retPairs = [['1W', m.return_1w], ['1M', m.return_1m], ['3M', m.return_3m], ['6M', m.return_6m], ['12M', m.return_12m]];
+            var retHtml = retPairs.filter(function(p) { return p[1] != null; }).map(function(p) {
+              return '<span class="tooltip-label" style="color:' + C.dim + '">' + p[0] + '</span> ' + fmtPct(p[1]);
+            }).join(' &nbsp; ');
+            html += '<div style="padding:2px 0;font-size:11px;">' + retHtml + '</div>';
+          }
+
+          html += '</div>';
+        }
+
+        tooltip.innerHTML = html;
+        tooltip.style.display = 'block';
+      });
+
+      row.addEventListener('mousemove', function(e) {
+        tooltip.style.left = (e.clientX + 16) + 'px';
+        tooltip.style.top  = (e.clientY - 8) + 'px';
+      });
+
+      row.addEventListener('mouseleave', function() {
+        tooltip.style.display = 'none';
+      });
+    });
+  }
+
+  // ================================================================
+  // DATA FRESHNESS TIMELINE
+  // Unified: OHLCV + Features + Predictions, grouped by source+minute.
+  // ================================================================
+  var SOURCE_COLORS = {
+    'OHLCV':       C.tan,
+    'Features':    C.greenBr,
+    'Predictions': '#7eb8f7',
+  };
+
+  function renderFreshnessTable() {
+    var el = document.getElementById('freshness-table');
+    var timeline = state.data.data_timeline || [];
+
+    if (timeline.length === 0) {
+      el.innerHTML = '<div class="loading">No data freshness info</div>';
+      return;
+    }
+
+    var html = '<table><thead><tr>' +
+      '<th>Source</th><th>Time (CT)</th><th>Tickers</th>' +
+      '</tr></thead><tbody>';
+
+    timeline.forEach(function(entry) {
+      var color = SOURCE_COLORS[entry.source] || C.dim;
+      html += '<tr>' +
+        '<td style="color:' + color + '">' + entry.source + '</td>' +
+        '<td>' + fmtTime(entry.time) + '</td>' +
+        '<td>' + (entry.ticker_count || '—') + '</td>' +
+        '</tr>';
+    });
+
+    html += '</tbody></table>';
+    el.innerHTML = html;
+  }
+
+  // ================================================================
+  // EVENT HANDLERS
+  // ================================================================
+  dateInput.addEventListener('change', function() { loadData(); });
+
+  var resizeTimer;
+  window.addEventListener('resize', function() {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function() {
+      if (state.data) {
+        renderCorrChart();
+        renderICChart();
+        renderShiftChart();
+        renderFeatureShiftChart();
+      }
+    }, 250);
+  });
+
+  // Initial load
+  loadData();
+
+  // Auto-refresh every 5 minutes
+  setInterval(loadData, 5 * 60 * 1000);
+})();
+</script>
+</body>
+</html>
