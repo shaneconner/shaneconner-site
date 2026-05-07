@@ -11,9 +11,16 @@
   var BASE = "/quorum-api";
 
   function horizonSlug(h) {
-    // "5-day fwd" → "5d", "20-day fwd" → "20d"
-    var m = String(h || "").match(/(\d+)/);
-    return m ? m[1] + "d" : "unk";
+    // "latest"   → "latest"
+    // "5"        → "5"        (numeric horizon, sent as plain int by EXIT_OPTIONS)
+    // "5-day fwd" / "20-day fwd" → "5" / "20"
+    // "window_end" → "window_end"
+    var s = String(h || "").trim();
+    if (!s) return "unk";
+    if (/^\d+$/.test(s)) return s;            // bare integer
+    var m = s.match(/^(\d+)-day fwd$/);
+    if (m) return m[1];
+    return s.toLowerCase().replace(/\s+/g, "_");
   }
 
   // (path, queryObj) → snapshot key (no leading slash, no .json suffix).
@@ -46,11 +53,19 @@
     // Tab: themes
     "/api/themes":         function ()  { return "themes/index"; },
     "/api/theme-history":  function (q) { return "themes/history_" + (q.limit || 100); },
-    "/api/theme-heatmap":  function (q) { return "themes/heatmap_" + encodeURIComponent(q.parent || ""); },
+    "/api/theme-heatmap":  function (q) {
+      // Empty parent on initial load means "all roots"; handler treats parent="_root" the same.
+      var p = q.parent ? String(q.parent) : "_root";
+      return "themes/heatmap_" + encodeURIComponent(p);
+    },
 
     // Tab: models / diagnostics
     "/api/model-ic-pit-latest": function (q) {
-      return "models/ic_pit_" + (q.days || 30) + "_" + horizonSlug(q.horizon);
+      // Key shape: models/ic_<horizon>_<days>[_<spread_n>]
+      // e.g. models/ic_latest_20_25, models/ic_latest_30
+      var base = "models/ic_" + horizonSlug(q.horizon) + "_" + (q.days || 30);
+      if (q.spread_n) base += "_" + q.spread_n;
+      return base;
     },
     "/api/prediction-diagnostics": function (q) {
       // Per-trading-day snapshot with default minimal=1/horizon=window_end/spread_n=25
