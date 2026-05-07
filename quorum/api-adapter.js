@@ -29,9 +29,10 @@
     "/api/journal":           function ()  { return "journal"; },
     "/api/rl-signal":         function ()  { return "rl_signal"; },
     "/api/prediction-history": function (q) {
-      // tickers=AAPL,MSFT&days=30 → prediction_history/AAPL_MSFT_30d
-      var tk = (q.tickers || "").split(",").filter(Boolean).sort().join("_");
-      return "prediction_history/" + tk + "_" + (q.days || 30) + "d";
+      // Single deterministic snapshot of all current holdings (writer pulls
+      // tickers from /api/accounts). Page-side ticker list is ignored — the
+      // snapshot is always "current holdings, 30d".
+      return "prediction_history/current_30d";
     },
 
     // Tab: pipeline
@@ -52,10 +53,14 @@
       return "models/ic_pit_" + (q.days || 30) + "_" + horizonSlug(q.horizon);
     },
     "/api/prediction-diagnostics": function (q) {
+      // Per-trading-day snapshot with default minimal=1/horizon=window_end/spread_n=25
+      // params. Advanced (interactive) controls in models.html will hit a 404
+      // because we don't pre-snapshot every (horizon, spread_n, window_end) combo.
       return "diagnostics/" + (q.date || "");
     },
     "/api/trading-days": function (q) {
-      return "trading_days/" + (q.from || "") + "_" + (q.to || "");
+      // Single rolling 90-day window snapshot — frontend filters client-side.
+      return "trading_days/recent";
     },
   };
 
