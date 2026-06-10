@@ -287,35 +287,6 @@
   color: var(--green-bright);
 }
 
-/* Stat callouts */
-.stats-row {
-  display: flex;
-  gap: 3rem;
-  justify-content: center;
-  padding: 3rem 0;
-}
-
-.stat {
-  text-align: center;
-}
-
-.stat-value {
-  font-family: var(--serif);
-  font-size: clamp(2rem, 4vw, 3rem);
-  font-weight: 300;
-  color: var(--text-bright);
-  line-height: 1;
-  margin-bottom: 0.4rem;
-}
-
-.stat-label {
-  font-size: 0.62rem;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--text-dim);
-  font-weight: 400;
-}
-
 /* Annotation (Tufte-style) */
 .annotation {
   font-size: 0.72rem;
@@ -762,20 +733,20 @@ body.lightbox-open {
 .trust-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.9rem;
+  gap: 1.4rem 2rem;
 }
 
 .trust-card {
-  border: 1px solid var(--border);
-  background: var(--bg-card);
-  padding: 1rem 0.9rem;
+  border-top: 1px solid var(--border);
+  background: transparent;
+  padding: 0.85rem 0 0;
 }
 
 .trust-title {
   font-size: 0.62rem;
-  letter-spacing: 0.13em;
+  letter-spacing: 0.09em;
   text-transform: uppercase;
-  color: var(--green);
+  color: var(--cream);
   margin-bottom: 0.45rem;
   font-weight: 400;
 }
@@ -951,7 +922,6 @@ body.lightbox-open {
   .essay-wide { padding: 0 1rem; }
   .viz-container { padding: 1rem; }
   .controls { flex-direction: column; gap: 1rem; }
-  .stats-row { flex-direction: column; gap: 2rem; }
   .project-meta { padding: 3rem 1.5rem; }
   .project-hero h1 { font-size: clamp(1.8rem, 8vw, 3rem); }
   .impact-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
