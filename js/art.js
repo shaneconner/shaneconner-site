@@ -118,14 +118,12 @@ function inquire(el) {
   const item = el.closest('.gallery-item');
   const name = item.querySelector('h3').textContent;
   const details = item.querySelector('.details').textContent;
-  const price = item.querySelector('.price').textContent;
   const subject = encodeURIComponent('Inquiry: ' + name);
   const body = encodeURIComponent(
     'Hi Shane,\n\n' +
     'I\'m interested in "' + name + '".\n\n' +
     name + '\n' +
-    details + '\n' +
-    price + '\n\n' +
+    details + '\n\n' +
     'Could you share more details?'
   );
   window.location.href = 'mailto:shane@shaneconner.com?subject=' + subject + '&body=' + body;

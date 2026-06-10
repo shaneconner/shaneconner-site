@@ -165,29 +165,16 @@
 }
 .gallery-overlay .price-row {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
   flex-wrap: wrap;
   gap: 0.4rem;
   margin-top: 0.75rem;
 }
-.gallery-overlay .price {
-  font-size: 0.95rem;
-  color: var(--cream);
-  font-weight: 400;
-  letter-spacing: 0.02em;
-}
-.gallery-overlay .triptych-note {
-  font-size: 0.7rem;
-  color: var(--green-bright);
-  opacity: 0.8;
-  letter-spacing: 0.02em;
-}
 .gallery-overlay .btn-group {
   display: flex;
   gap: 0.4rem;
 }
-.gallery-overlay .buy-btn,
 .gallery-overlay .inquire-btn {
   display: inline-block;
   padding: 0.4rem 0.8rem;
@@ -197,15 +184,6 @@
   text-transform: uppercase;
   font-family: var(--sans);
   transition: all 0.3s ease;
-}
-.gallery-overlay .buy-btn {
-  background: var(--green);
-  color: var(--cream);
-  border: 1px solid var(--green);
-}
-.gallery-overlay .buy-btn:hover {
-  background: var(--green-bright);
-  border-color: var(--green-bright);
 }
 .gallery-overlay .inquire-btn {
   background: var(--green-dim);
@@ -545,8 +523,7 @@
   z-index: 5;
 }
 .gallery-item.sold { overflow: hidden; }
-.gallery-item.sold .inquire-btn,
-.gallery-item.sold .buy-btn { display: none; }
+.gallery-item.sold .inquire-btn { display: none; }
 .gallery-item.sold .price-row {
   display: none;
 }
@@ -576,8 +553,7 @@
   box-shadow: 0 2px 8px rgba(0,0,0,0.4);
   z-index: 5;
 }
-.gallery-item.wip .inquire-btn,
-.gallery-item.wip .buy-btn { display: none; }
+.gallery-item.wip .inquire-btn { display: none; }
 
 /* === ART RESPONSIVE === */
 @media (max-width: 768px) {
