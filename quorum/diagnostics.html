@@ -9,8 +9,8 @@
 <script src="/quorum/staleness.js" defer></script>
 <style>html{visibility:hidden;background:#090b09}html.ready{visibility:visible}</style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500&family=Outfit:wght@200;300;400;500&display=swap" rel="stylesheet">
-<script src="https://d3js.org/d3.v7.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="/js/d3.v7.min.js"></script>
 <style>
 /* === VARIABLES (matched to shaneconner.com) === */
 :root {
@@ -18,7 +18,7 @@
   --bg-elevated: #0c0d09;
   --bg-card: #131409;
   --text: #d4cfc3;
-  --text-dim: #7a7868;
+  --text-dim: #8a8775;
   --text-bright: #ede8db;
   --cream: #e2dbc8;
   --green: #7a8a2a;
@@ -40,7 +40,7 @@
 
 /* === RESET & BASE === */
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-html { font-size: 18px; scroll-behavior: smooth; }
+html { font-size: 112.5%; scroll-behavior: smooth; }
 body {
   background: var(--bg);
   color: var(--text);
@@ -50,7 +50,7 @@ body {
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
 }
-::selection { background: var(--green); color: var(--text-bright); }
+::selection { background: var(--green); color: var(--bg); }
 
 /* === NAV === */
 .nav {
@@ -139,7 +139,7 @@ body {
   font-variant-numeric: tabular-nums;
 }
 .stat-value.positive { color: var(--green-bright); }
-.stat-value.negative { color: var(--red); }
+.stat-value.negative { color: var(--red-bright); }
 .stat-label {
   font-size: 0.58rem;
   font-weight: 400;
@@ -256,7 +256,7 @@ td {
 }
 tr:hover td { background: var(--bg-elevated); }
 .positive { color: var(--green-bright); }
-.negative { color: var(--red); }
+.negative { color: var(--red-bright); }
 
 /* === PERF TABLE === */
 #ic-perf-table table { font-size: 0.65rem; }
@@ -405,7 +405,7 @@ tr:hover td { background: var(--bg-elevated); }
   var API = '';
   var C = {
     bg: '#090b09', bgCard: '#131409', bgEl: '#0c0d09',
-    text: '#d4cfc3', dim: '#7a7868', bright: '#ede8db', cream: '#e2dbc8',
+    text: '#d4cfc3', dim: '#8a8775', bright: '#ede8db', cream: '#e2dbc8',
     green: '#7a8a2a', greenBr: '#9aaa3a', greenDim: '#2e3218',
     olive: '#6b6a3a', tan: '#b49a6e',
     border: '#22231a', borderLight: '#33341f',
@@ -421,7 +421,7 @@ tr:hover td { background: var(--bg-elevated); }
     mlp:                      '#c4506a',
     dcnv2:                    '#d4687e',
     ftt:                      '#6b6a3a',
-    news_tf:                  '#7a7868',
+    news_tf:                  '#8a8775',
     saint_knn_learned:        '#5a6a8a',
     tabr_learned_combined:    '#a07a4a',
     temporal_matrix_1d:       '#a8a838',
@@ -1268,7 +1268,7 @@ tr:hover td { background: var(--bg-elevated); }
 
     drawSeries(pts, function(d) { return d.tech;  }, C.greenBr, 'drift-tech');
     drawSeries(pts, function(d) { return d.fund;  }, C.tan,     'drift-fund');
-    drawSeries(pts, function(d) { return d.pipe;  }, '#7eb8f7', 'drift-pipe');
+    drawSeries(pts, function(d) { return d.pipe;  }, '#6a8aaa', 'drift-pipe');
 
     // Axes — sparse ticks with time labels (same pattern as correlation/IC charts)
     var driftTicks = sparseTickValues(pts.length);
@@ -1291,7 +1291,7 @@ tr:hover td { background: var(--bg-elevated); }
     var legendItems = [
       { color: C.greenBr, label: 'Technical (price-derived)' },
       { color: C.tan,     label: 'Fundamental (slow-moving)' },
-      { color: '#7eb8f7', label: 'Post-pipeline (model input)' },
+      { color: '#6a8aaa', label: 'Post-pipeline (model input)' },
     ];
     var legendX = width - 210;
     legendItems.forEach(function(item, i) {
@@ -1318,7 +1318,7 @@ tr:hover td { background: var(--bg-elevated); }
       var html = '<div class="tooltip-title">' + fmtTime(d.time) + '</div>';
       if (d.tech  != null) html += '<div class="tooltip-row"><span class="tooltip-label" style="color:' + C.greenBr + '">Technical Δz</span><span class="tooltip-value">' + d.tech.toFixed(4) + '</span></div>';
       if (d.fund  != null) html += '<div class="tooltip-row"><span class="tooltip-label" style="color:' + C.tan + '">Fundamental Δz</span><span class="tooltip-value">' + d.fund.toFixed(4) + '</span></div>';
-      if (d.pipe  != null) html += '<div class="tooltip-row"><span class="tooltip-label" style="color:#7eb8f7">Pipeline Δz (avg)</span><span class="tooltip-value">' + d.pipe.toFixed(4) + '</span></div>';
+      if (d.pipe  != null) html += '<div class="tooltip-row"><span class="tooltip-label" style="color:#6a8aaa">Pipeline Δz (avg)</span><span class="tooltip-value">' + d.pipe.toFixed(4) + '</span></div>';
       var perModel = Object.entries(d.pipe_per_model || {});
       if (perModel.length > 0) {
         html += '<div class="tooltip-label" style="margin-top:4px;color:' + C.dim + '">Per-model pipeline Δz:</div>';
@@ -1478,7 +1478,7 @@ tr:hover td { background: var(--bg-elevated); }
   var SOURCE_COLORS = {
     'OHLCV':       C.tan,
     'Features':    C.greenBr,
-    'Predictions': '#7eb8f7',
+    'Predictions': '#6a8aaa',
   };
 
   function renderFreshnessTable() {

@@ -9,15 +9,15 @@
 <script src="/quorum/staleness.js" defer></script>
 <style>html{visibility:hidden;background:#090b09}html.ready{visibility:visible}</style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500&family=Outfit:wght@200;300;400;500&display=swap" rel="stylesheet">
-<script src="https://d3js.org/d3.v7.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="/js/d3.v7.min.js"></script>
 <style>
 :root {
   --bg: #090b09;
   --bg-elevated: #0c0d09;
   --bg-card: #131409;
   --text: #d4cfc3;
-  --text-dim: #7a7868;
+  --text-dim: #8a8775;
   --text-bright: #ede8db;
   --cream: #e2dbc8;
   --green: #7a8a2a;
@@ -38,7 +38,7 @@
 }
 
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-html { font-size: 18px; scroll-behavior: smooth; }
+html { font-size: 112.5%; scroll-behavior: smooth; }
 body {
   background: var(--bg);
   color: var(--text);
@@ -48,7 +48,7 @@ body {
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
 }
-::selection { background: var(--green); color: var(--text-bright); }
+::selection { background: var(--green); color: var(--bg); }
 
 .nav {
   display: flex;
@@ -669,7 +669,7 @@ var C = {
   bg: '#090b09',
   bgCard: '#131409',
   text: '#d4cfc3',
-  textDim: '#7a7868',
+  textDim: '#8a8775',
   bright: '#ede8db',
   green: '#7a8a2a',
   greenBright: '#9aaa3a',
@@ -898,8 +898,8 @@ function renderSunburst(treeData) {
                  '<div class="theme-tooltip-row"><span class="theme-tooltip-label">subtree tags</span><span>' + fmtNum(d.data.subtree_tags) + '</span></div>' +
                  '<div class="theme-tooltip-row"><span class="theme-tooltip-label">direct tags</span><span>' + fmtNum(d.data.tags) + '</span></div>' +
                  (d.children ? '<div class="theme-tooltip-row"><span class="theme-tooltip-label">children</span><span>' + d.children.length + '</span></div>' : '') +
-                 '<div style="color:#7a7868;font-size:0.65rem;margin-top:0.3rem">' + pathParts + '</div>' +
-                 '<div style="color:#7a7868;font-size:0.6rem;margin-top:0.2rem;font-style:italic">click: details \u00b7 dbl-click: zoom</div>';
+                 '<div style="color:#8a8775;font-size:0.65rem;margin-top:0.3rem">' + pathParts + '</div>' +
+                 '<div style="color:#8a8775;font-size:0.6rem;margin-top:0.2rem;font-style:italic">click: details \u00b7 dbl-click: zoom</div>';
       showTooltip(html, event);
     })
     .on('mousemove', moveTooltip)
@@ -1181,7 +1181,7 @@ function renderDetail(d) {
   if (data.description) {
     html += '<div class="detail-desc">' + escapeHtml(data.description) + '</div>';
   } else {
-    html += '<div class="detail-desc" style="color:#7a7868;font-style:italic">(no description)</div>';
+    html += '<div class="detail-desc" style="color:#8a8775;font-style:italic">(no description)</div>';
   }
   html += '<div class="detail-stats">';
   html += '<div class="detail-stat"><div class="detail-stat-label">Subtree tags</div><div class="detail-stat-value">' + fmtNum(data.subtree_tags) + '</div></div>';
@@ -1330,7 +1330,7 @@ function renderHeatmap(parentSlug) {
           var html = '<div class="theme-tooltip-title">' + (r.display_name || r.slug) + '</div>' +
                      '<div class="theme-tooltip-row"><span class="theme-tooltip-label">subtree tags</span><span>' + fmtNum(r.subtree_tags) + '</span></div>' +
                      '<div class="theme-tooltip-row"><span class="theme-tooltip-label">articles w/spans</span><span>' + fmtNum(r.articles) + '</span></div>' +
-                     '<div style="color:#7a7868;font-size:0.65rem;margin-top:0.3rem;font-style:italic">click to drill in</div>';
+                     '<div style="color:#8a8775;font-size:0.65rem;margin-top:0.3rem;font-style:italic">click to drill in</div>';
           showTooltip(html, ev);
         })
         .on('mousemove', moveTooltip)

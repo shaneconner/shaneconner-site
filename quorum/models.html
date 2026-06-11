@@ -6,10 +6,11 @@
 <meta name="robots" content="noindex,nofollow">
 <title>Quorum — Model Performance</title>
 <script src="/quorum/api-adapter.js"></script>
+<script src="/quorum/staleness.js" defer></script>
 <style>html{visibility:hidden;background:#090b09}html.ready{visibility:visible}</style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500&family=Outfit:wght@200;300;400;500&display=swap" rel="stylesheet">
-<script src="https://d3js.org/d3.v7.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="/js/d3.v7.min.js"></script>
 <style>
 /* === VARIABLES (matched to shaneconner.com) === */
 :root {
@@ -17,7 +18,7 @@
   --bg-elevated: #0c0d09;
   --bg-card: #131409;
   --text: #d4cfc3;
-  --text-dim: #7a7868;
+  --text-dim: #8a8775;
   --text-bright: #ede8db;
   --cream: #e2dbc8;
   --green: #7a8a2a;
@@ -39,7 +40,7 @@
 
 /* === RESET & BASE === */
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-html { font-size: 18px; scroll-behavior: smooth; }
+html { font-size: 112.5%; scroll-behavior: smooth; }
 body {
   background: var(--bg);
   color: var(--text);
@@ -49,7 +50,7 @@ body {
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
 }
-::selection { background: var(--green); color: var(--text-bright); }
+::selection { background: var(--green); color: var(--bg); }
 
 /* === NAV === */
 .nav {
@@ -379,7 +380,7 @@ td {
 }
 tr:hover td { background: var(--bg-elevated); }
 .positive { color: var(--green-bright); }
-.negative { color: var(--red); }
+.negative { color: var(--red-bright); }
 
 /* === LOADING / ERROR === */
 .loading { color: var(--text-dim); font-size: 0.76rem; padding: 2rem; text-align: center; }
@@ -636,7 +637,7 @@ window.QUORUM_PALETTE = (function() {
   }
 
   function mc(name) {
-    if (name == null) return '#7a7868';
+    if (name == null) return '#8a8775';
     var key = ('' + name).toLowerCase();
     if (PALETTE[key]) return PALETTE[key];
     PALETTE[key] = hashColor(key);
@@ -680,7 +681,7 @@ setTimeout(window.markReady, 2000);  // safety net
   'use strict';
 
   var C = {
-    bg: '#090b09', dim: '#7a7868', bright: '#ede8db', cream: '#e2dbc8',
+    bg: '#090b09', dim: '#8a8775', bright: '#ede8db', cream: '#e2dbc8',
     green: '#7a8a2a', greenBr: '#9aaa3a', olive: '#6b6a3a', tan: '#b49a6e',
     border: '#22231a', borderLight: '#33341f', red: '#c4506a', redBr: '#d4687e',
   };
@@ -2064,7 +2065,7 @@ setTimeout(window.markReady, 2000);  // safety net
 
   var C = {
     bg: '#090b09', bgCard: '#131409',
-    text: '#d4cfc3', dim: '#7a7868', bright: '#ede8db', cream: '#e2dbc8',
+    text: '#d4cfc3', dim: '#8a8775', bright: '#ede8db', cream: '#e2dbc8',
     green: '#7a8a2a', greenBr: '#9aaa3a', greenDim: '#2e3218',
     olive: '#6b6a3a', tan: '#b49a6e',
     border: '#22231a', borderLight: '#33341f',
@@ -2076,7 +2077,7 @@ setTimeout(window.markReady, 2000);  // safety net
   // along Batlow so they read as a coherent family rather than arbitrary hues.
   var _bat = window.QUORUM_PALETTE.batlow;
   var STRATEGY_COLORS = {
-    production:           '#7a7868',    // neutral gray — baseline
+    production:           '#8a8775',    // neutral gray — baseline
     drop_neg_walkfwd:     _bat(0.12),   // deep indigo
     ic_weighted_walkfwd:  _bat(0.32),   // teal
     ic_squared_walkfwd:   _bat(0.52),   // olive

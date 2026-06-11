@@ -59,7 +59,7 @@
     var palette = {
       amber: { bg: "rgba(180,154,110,0.15)", color: "#d4be8c", border: "#b49a6e" },
       red:   { bg: "rgba(196,80,106,0.18)",  color: "#e88aa0", border: "#c4506a" },
-      gray:  { bg: "rgba(122,120,104,0.18)", color: "#d4cfc3", border: "#7a7868" },
+      gray:  { bg: "rgba(122,120,104,0.18)", color: "#d4cfc3", border: "#8a8775" },
     }[status] || { bg: "#332", color: "#fc9", border: "#fc9" };
     b.style.background    = palette.bg;
     b.style.color         = palette.color;
