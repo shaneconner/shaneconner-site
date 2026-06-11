@@ -7,12 +7,21 @@
 
   <meta name="description" content="An autonomous portfolio system combining 9 ML architectures, multi-seed RL with cross-asset attention, LLM-reviewed decision making, and hierarchical episodic memory." />
   <meta name="author" content="Shane Conner" />
+  <link rel="canonical" href="https://shaneconner.com/projects/quorum/" />
 
   <meta property="og:type" content="article" />
   <meta property="og:title" content="Quorum: Investment Consensus — Shane Conner" />
   <meta property="og:description" content="9-model ML ensemble, multi-seed RL, LLM consultation, and hierarchical memory: an autonomous investment consensus system." />
-  <meta property="og:url" content="https://shaneconner.com/projects/quorum" />
+  <meta property="og:url" content="https://shaneconner.com/projects/quorum/" />
+  <meta property="og:image" content="https://shaneconner.com/img/og-image.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
   <meta property="og:site_name" content="Shane Conner" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Quorum: Investment Consensus — Shane Conner" />
+  <meta name="twitter:description" content="9-model ML ensemble, multi-seed RL, LLM consultation, and hierarchical memory: an autonomous investment consensus system." />
+  <meta name="twitter:image" content="https://shaneconner.com/img/og-image.jpg" />
 
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
@@ -20,25 +29,30 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Outfit:wght@200;300;400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet" />
 
   <link rel="stylesheet" href="/css/shared.css" />
   <link rel="stylesheet" href="/css/projects.css" />
 
-  <script src="https://d3js.org/d3.v7.min.js" defer></script>
+  <script src="/js/d3.v7.min.js" defer></script>
   <script src="/js/investor-viz.js" defer></script>
+  <noscript><style>.reveal{opacity:1;transform:none}</style></noscript>
 </head>
 <body>
+
+  <a class="skip-link" href="#main">Skip to content</a>
 
   <!-- NAV -->
   <nav id="nav">
     <a href="/" class="nav-logo">Shane Conner</a>
     <ul class="nav-links">
-      <li><a href="/art">Art</a></li>
-      <li><a href="/projects" class="active">Projects</a></li>
-      <li><a href="/contact">Contact</a></li>
+      <li><a href="/art/">Art</a></li>
+      <li><a href="/projects/" class="active">Projects</a></li>
+      <li><a href="/contact/">Contact</a></li>
     </ul>
   </nav>
+
+  <main id="main">
 
   <!-- HOOK -->
   <section class="project-hero">
@@ -47,7 +61,7 @@
         <span class="resonance-name">Quorum</span>
         <span class="resonance-descriptor">Investment Consensus</span>
       </h1>
-      <p class="subtitle">Data in. Decisions out. End-to-end reinforcement learning.</p>
+      <p class="subtitle">A reinforcement-learning agent trained end-to-end, from raw market data to portfolio decisions.</p>
     </div>
     <p class="scroll-hint">Scroll to explore</p>
   </section>
@@ -60,7 +74,7 @@
     <p>What if the allocation decision itself could be <em>learned end-to-end</em>? An agent that ingests raw data and directly outputs portfolio weights, trained not on prediction accuracy but on actual portfolio performance.</p>
   </div>
 
-  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+  <div class="essay-divider"></div>
 
   <!-- ARCHITECTURE -->
   <div class="essay reveal">
@@ -77,7 +91,7 @@
     </div>
   </div>
 
-  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+  <div class="essay-divider"></div>
 
   <!-- CROSS-ASSET ATTENTION -->
   <div class="essay reveal">
@@ -95,7 +109,7 @@
     </div>
   </div>
 
-  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+  <div class="essay-divider"></div>
 
   <!-- REWARD SHAPING -->
   <div class="essay reveal">
@@ -127,7 +141,7 @@
     </div>
   </div>
 
-  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+  <div class="essay-divider"></div>
 
   <!-- MARKET REGIMES -->
   <div class="essay reveal">
@@ -143,7 +157,7 @@
     </div>
   </div>
 
-  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+  <div class="essay-divider"></div>
 
   <!-- ENSEMBLE INTELLIGENCE -->
   <div class="essay reveal">
@@ -161,7 +175,7 @@
     </div>
   </div>
 
-  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+  <div class="essay-divider"></div>
 
   <!-- LLM CONSULTATION -->
   <div class="essay reveal">
@@ -179,7 +193,7 @@
     </div>
   </div>
 
-  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+  <div class="essay-divider"></div>
 
   <!-- HIERARCHICAL MEMORY -->
   <div class="essay reveal">
@@ -197,7 +211,7 @@
     </div>
   </div>
 
-  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+  <div class="essay-divider"></div>
 
   <!-- RESULTS -->
   <div class="essay reveal">
@@ -228,8 +242,10 @@
       <span class="project-tag">SQLite</span>
       <span class="project-tag">D3.js</span>
     </div>
-    <a href="/projects" class="back-link">&larr; All Projects</a>
+    <a href="/projects/" class="back-link">&larr; All Projects</a>
   </div>
+
+  </main>
 
   <!-- FOOTER -->
   <footer>

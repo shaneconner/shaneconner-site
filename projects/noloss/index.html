@@ -7,12 +7,21 @@
 
   <meta name="description" content="A 3D evolutionary life simulation on a tiny planet. Creatures evolve brains, bodies, and behaviors through natural selection. You play as Intervention, shaping the world that shapes them." />
   <meta name="author" content="Shane Conner" />
+  <link rel="canonical" href="https://shaneconner.com/projects/noloss/" />
 
   <meta property="og:type" content="article" />
   <meta property="og:title" content="Noloss — Shane Conner" />
-  <meta property="og:description" content="Creatures evolve on a tiny planet. No loss function. No reward engineering. You shape the world. Evolution shapes the creatures." />
-  <meta property="og:url" content="https://shaneconner.com/projects/noloss" />
+  <meta property="og:description" content="Creatures evolve on a tiny planet with nothing to optimize but survival. You shape the world; evolution shapes the creatures." />
+  <meta property="og:url" content="https://shaneconner.com/projects/noloss/" />
+  <meta property="og:image" content="https://shaneconner.com/img/og-image.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
   <meta property="og:site_name" content="Shane Conner" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Noloss — Shane Conner" />
+  <meta name="twitter:description" content="Creatures evolve on a tiny planet with nothing to optimize but survival. You shape the world; evolution shapes the creatures." />
+  <meta name="twitter:image" content="https://shaneconner.com/img/og-image.jpg" />
 
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
@@ -20,22 +29,27 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Outfit:wght@200;300;400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet" />
 
   <link rel="stylesheet" href="/css/shared.css" />
   <link rel="stylesheet" href="/css/projects.css" />
+  <noscript><style>.reveal{opacity:1;transform:none}</style></noscript>
 </head>
 <body>
+
+  <a class="skip-link" href="#main">Skip to content</a>
 
   <!-- NAV -->
   <nav id="nav">
     <a href="/" class="nav-logo">Shane Conner</a>
     <ul class="nav-links">
-      <li><a href="/art">Art</a></li>
-      <li><a href="/projects" class="active">Projects</a></li>
-      <li><a href="/contact">Contact</a></li>
+      <li><a href="/art/">Art</a></li>
+      <li><a href="/projects/" class="active">Projects</a></li>
+      <li><a href="/contact/">Contact</a></li>
     </ul>
   </nav>
+
+  <main id="main">
 
   <!-- HERO -->
   <section class="project-hero">
@@ -44,7 +58,7 @@
         <span class="resonance-name">Noloss</span>
         <span class="resonance-descriptor">Evolutionary Life on a Tiny Planet</span>
       </h1>
-      <p class="subtitle">Creatures evolve brains, bodies, and behaviors through natural selection. You play as Intervention, shaping the world that shapes them. No loss function. No reward engineering. Just survival.</p>
+      <p class="subtitle">Creatures evolve brains, bodies, and behaviors through natural selection. You play as Intervention, shaping the world that shapes them. Survival is the only objective.</p>
     </div>
     <p class="scroll-hint">Scroll to explore</p>
   </section>
@@ -58,7 +72,7 @@
     <p>A small spherical planet. Creatures with attention-based recurrent brains and hierarchical bodies. A set of context-sensitive actions where the same neural output means different things depending on what the creature is targeting, what it's holding, and what its genetics have specialized it toward. Grazing, hunting, sharing food, courting a mate, teaching a juvenile, caching resources, building nests. All emerging from the same brain architecture and the same action space. The simulation doesn't know what a herbivore is. It doesn't know what a pack hunter is. It just runs physics and selection, and those things appear.</p>
   </div>
 
-  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+  <div class="essay-divider"></div>
 
   <!-- THE WORLD -->
   <div class="essay reveal">
@@ -68,19 +82,19 @@
     <p>Day and night cycle every thirty real-time minutes. Seasons shift food availability, weather patterns, and creature behavior across longer arcs. Nocturnal species emerge when the night is long enough to reward them. Migratory patterns appear when food is seasonal. None of this is scripted. The day-night cycle and seasonal variation are environmental pressures. Evolution handles the rest.</p>
   </div>
 
-  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+  <div class="essay-divider"></div>
 
   <!-- THE CREATURES -->
   <div class="essay reveal">
     <h3>The Creatures</h3>
     <h2>Brains that attend, bodies that specialize, actions that depend on context</h2>
-    <p>Each creature's brain is an attention-based recurrent neural network. Four-head multi-head attention over nearby entities, a GRU recurrent cell for temporal memory, and persistent memory registers that carry information across hundreds of ticks. Roughly 15,000 parameters per creature, all evolved through mutation and selection. No backpropagation. No training loop. No reward signal. The weights that survive are the weights that kept their owner alive long enough to reproduce.</p>
+    <p>Each creature's brain is an attention-based recurrent neural network. Four-head multi-head attention over nearby entities, a GRU recurrent cell for temporal memory, and persistent memory registers that carry information across hundreds of ticks. Roughly 15,000 parameters per creature, all evolved through mutation and selection. There's no backpropagation, no training loop, no reward signal. The weights that survive are the weights that kept their owner alive long enough to reproduce.</p>
     <p>The brain receives a rich sensory stream: nearby entities with distance, direction, emotional valence, and phenotype signatures. A spatial radar for terrain awareness. A cognitive map built from memory: where home is, where food was, where threats lurk. Internal body state: hunger, fatigue, sleepiness, illness, fat reserves. From all of this, the brain produces twelve action outputs. Six continuous signals applied every tick: forward movement, strafing, turning, aiming. Six discrete actions selected by softmax: pull, push, drop, attack, communicate, rest.</p>
     <p>The key design: what an action does depends on context. "Pull" while targeting food means eat. "Pull" while targeting another creature might mean groom, share food, or pick up a juvenile, depending on the creature's evolved drives and its emotional relationship with the target. "Attack" while holding nothing is a bite. "Attack" while holding a rock is a weapon strike. The brain doesn't need separate outputs for every possible behavior. It needs to learn when to pull and what to point at. The combinatorial space of target, held item, and genetics creates a behavioral repertoire far richer than the twelve outputs suggest.</p>
     <p>Bodies are hierarchical assemblies of typed parts: core, bone, muscle, sensor, mouth, fat, armor, claw, signal, stomach, skin. Each part has a metabolic cost, individual health, and functional contribution. A creature with three muscle nodes and one sensor is fast but nearly blind. A creature with heavy armor and fat is tough but slow and expensive to run. Evolution prunes parts that don't earn their metabolic cost and expands parts that do. The body plan is the genome's most visible product, and it tells you everything about the selection pressures that produced it.</p>
   </div>
 
-  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+  <div class="essay-divider"></div>
 
   <!-- EVOLUTION -->
   <div class="essay reveal">
@@ -91,7 +105,7 @@
     <p>Digestion efficiency is a five-dimensional vector: plant, meat, waste, mineral, fungi. Each dimension ranges from toxic to efficient. A creature specialized for plant digestion gets sick from meat. A carnivore thrives on kills but starves in a field of grass. Omnivores pay a generalist tax: decent at everything, optimal at nothing. The food web that emerges from these evolved efficiencies creates genuine ecological niches without anyone designing them.</p>
   </div>
 
-  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+  <div class="essay-divider"></div>
 
   <!-- THE PLAYER -->
   <div class="essay reveal">
@@ -102,7 +116,7 @@
     <p>You can archive creatures: save an evolved organism to a file and import it later. Seed a new world with creatures from a previous run. Introduce a predator species to a peaceful ecosystem and watch the arms race begin. The archive system makes evolution's products portable and the experiments repeatable.</p>
   </div>
 
-  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+  <div class="essay-divider"></div>
 
   <!-- EMERGENT BEHAVIORS -->
   <div class="essay reveal">
@@ -110,10 +124,10 @@
     <h2>Behaviors nobody programmed</h2>
     <p>The simulation provides drives: hunger, sleepiness, social need, curiosity. It provides actions: move, turn, pull, push, attack, communicate, rest. It provides consequences: eating restores energy, attacking deals damage, communicating emits a vocalization vector. Everything else is discovered.</p>
     <p>Pack hunting emerges when social creatures evolve coordinated attack patterns against prey too large for a single predator. Territory marking appears when creatures learn that pheromone deposits correlate with resource defense. Food caching develops when creatures evolve the sequence: pick up food, carry it, drop it near home. Teaching happens when juveniles that stay near experienced adults learn foraging routes faster. Warning calls emerge when vocalization patterns correlate with predator proximity. Gift-giving appears when creatures that share food with kin produce more surviving offspring than creatures that hoard.</p>
-    <p>None of these behaviors exist in the code as named functions. They exist as patterns of neural activation that survived because the creatures that exhibited them reproduced more successfully than the creatures that didn't. The simulation is a stage. Evolution writes the play.</p>
+    <p>None of these behaviors exist in the code as named functions. They exist as patterns of neural activation that survived because the creatures that exhibited them reproduced more successfully than the creatures that didn't.</p>
   </div>
 
-  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+  <div class="essay-divider"></div>
 
   <!-- STATUS -->
   <div class="essay reveal">
@@ -123,7 +137,7 @@
     <p>This page will grow as the project develops.</p>
   </div>
 
-  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+  <div class="essay-divider"></div>
 
   <div class="part-nav">
     <div class="part-nav-item part-nav-prev">
@@ -148,9 +162,11 @@
       <span class="project-tag">D3.js</span>
     </div>
     <div style="margin-top:1.5rem;">
-      <a href="/projects" class="back-link">&larr; All Projects</a>
+      <a href="/projects/" class="back-link">&larr; All Projects</a>
     </div>
   </div>
+
+  </main>
 
   <footer>
     <span>&copy; 2026 Shane Conner</span>

@@ -7,12 +7,21 @@
 
   <meta name="description" content="Part 5 of the Primordial evolutionary life simulation. Corpse drops, lethal thresholds, moving food superpatches, and a metabolic scaling law that shrank organisms to three nodes." />
   <meta name="author" content="Shane Conner" />
+  <link rel="canonical" href="https://shaneconner.com/projects/primordial/part-5/" />
 
   <meta property="og:type" content="article" />
   <meta property="og:title" content="Primordial Part 5: The Economics of Death — Shane Conner" />
   <meta property="og:description" content="Death becomes profitable. Corpse drops and instant lethality create the first genuine predator-prey economics in the project's history." />
-  <meta property="og:url" content="https://shaneconner.com/projects/primordial/part-5" />
+  <meta property="og:url" content="https://shaneconner.com/projects/primordial/part-5/" />
+  <meta property="og:image" content="https://shaneconner.com/img/og-image.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
   <meta property="og:site_name" content="Shane Conner" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Primordial Part 5: The Economics of Death — Shane Conner" />
+  <meta name="twitter:description" content="Death becomes profitable. Corpse drops and instant lethality create the first genuine predator-prey economics in the project's history." />
+  <meta name="twitter:image" content="https://shaneconner.com/img/og-image.jpg" />
 
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
@@ -20,25 +29,30 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Outfit:wght@200;300;400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet" />
 
   <link rel="stylesheet" href="/css/shared.css" />
   <link rel="stylesheet" href="/css/projects.css" />
 
-  <script src="https://d3js.org/d3.v7.min.js" defer></script>
+  <script src="/js/d3.v7.min.js" defer></script>
   <script src="/js/primordial-charts.js" defer></script>
+  <noscript><style>.reveal{opacity:1;transform:none}</style></noscript>
 </head>
 <body>
+
+  <a class="skip-link" href="#main">Skip to content</a>
 
   <!-- NAV -->
   <nav id="nav">
     <a href="/" class="nav-logo">Shane Conner</a>
     <ul class="nav-links">
-      <li><a href="/art">Art</a></li>
-      <li><a href="/projects" class="active">Projects</a></li>
-      <li><a href="/contact">Contact</a></li>
+      <li><a href="/art/">Art</a></li>
+      <li><a href="/projects/" class="active">Projects</a></li>
+      <li><a href="/contact/">Contact</a></li>
     </ul>
   </nav>
+
+  <main id="main">
 
   <!-- HERO -->
   <section class="project-hero">
@@ -73,7 +87,7 @@
     <p><strong>No population cap.</strong> The maximum is set to 10,000, effectively uncapped. The dynamics have to enforce their own limits. If predation doesn't cull the population, resource competition will. If neither does, the simulation will bloat. Two concrete hypotheses: will corpse drops create genuine predator-prey oscillations, and will memory nodes earn their metabolic cost when food patches move predictably?</p>
   </div>
 
-  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+  <div class="essay-divider"></div>
 
   <!-- GENESIS -->
   <div class="essay reveal">
@@ -93,7 +107,7 @@
     </div>
   </div>
 
-  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+  <div class="essay-divider"></div>
 
   <!-- CHAPTER I -->
   <div class="essay reveal">
@@ -113,7 +127,7 @@
     </div>
   </div>
 
-  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+  <div class="essay-divider"></div>
 
   <!-- CHAPTER II -->
   <div class="essay reveal">
@@ -137,13 +151,13 @@
     </div>
   </div>
 
-  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+  <div class="essay-divider"></div>
 
   <!-- CHAPTER III -->
   <div class="essay reveal">
     <h3>Chapter III</h3>
     <h2>The Predator Economy</h2>
-    <p>Between tick 181,000 and tick 221,000, the claw boom matures into something unprecedented in the project's history: a genuine predator economy.</p>
+    <p>Between tick 181,000 and tick 221,000, the claw boom matures into a genuine predator economy.</p>
     <p>By tick 199,000, one species controls the ecosystem. sp_652 holds 53.5% of the population, 121 of 226 organisms. This species wasn't in the top five at tick 181k. Its rise from background noise to majority control in under 18,000 ticks is the kind of explosive succession that marks a real competitive advantage. The strategy: core, muscle, mouth, stomach, claw. Five nodes. A hybrid that eats efficiently and kills efficiently. Stomach adoption reaches 54%, meaning every food item and every corpse yields more energy per node. Predation funded by digestion.</p>
     <p>The population drops to 226, then to 179. Food crashes from 420 to 227. The ecosystem is transitioning from a plant-based economy to a corpse-based one. When an organism dies, 70% of its energy falls as food right where it died. A population of armed predators creates a constant supply of corpse food, which feeds the predators who create more corpse food. The cycle is self-reinforcing.</p>
     <p>The morphology is distinctive. A core with one or two short chains ending in a claw node. The spring-mass physics means those chains whip around as the organism turns, sweeping the claw through a wide arc. They look like tiny flails. Evolution found the medieval weapon without anyone designing it: having the claw at the end of a chain maximizes reach, and the whipping motion means a turning organism sweeps its weapon through more space than a claw mounted close to the core would.</p>
@@ -160,7 +174,7 @@
     </div>
   </div>
 
-  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+  <div class="essay-divider"></div>
 
   <!-- CHAPTER IV -->
   <div class="essay reveal">
@@ -168,7 +182,7 @@
     <h2>The Lotka-Volterra Crash</h2>
     <p>The predator economy overshot.</p>
     <p>When 96% of the population carried claws, everyone was killing everyone. Corpse food was abundant but the prey population couldn't sustain the kill rate. The herbivore strategy, core plus muscle plus mouth plus stomach at 4 nodes with no claw, became more efficient than the armed version. A 4-node unarmed forager pays less metabolic cost than a 5-node predator and doesn't risk lethal combat on every encounter. Evolution stripped the weapons back off.</p>
-    <p><strong>Claw adoption crashes from 96% to 32% in 30,000 ticks.</strong> The most dramatic reversal in the simulation's history. Bodies shrink from 5.7 to 4.7 average nodes as the arms race infrastructure dismantles. Bone collapses from 5.8% to 0.3%. The lean forager template reasserts itself.</p>
+    <p><strong>Claw adoption crashes from 96% to 32% in 30,000 ticks.</strong> Bodies shrink from 5.7 to 4.7 average nodes as the arms race infrastructure dismantles. Bone collapses from 5.8% to 0.3%. The lean forager template reasserts itself.</p>
     <p>This is the Lotka-Volterra dynamic that Part 5 was designed to test. Predators rise, prey crash, predators starve, predators crash, prey recover. The first half of the cycle played out between tick 181,000 and tick 221,000 as claws rose from 0.7% to 96%. The second half plays out over the next 30,000 ticks as claws crash back to 32%. The oscillation is real.</p>
     <p>A new species, sp_3301, rises to 32.2% of the population, overtaking sp_652. The species succession tracks the strategy shift: when claws were universal, sp_652's predator-forager hybrid dominated. Now a different body plan leads, one optimized for lean foraging in a post-predator environment.</p>
     <p>Max energy drops from 124 to 75.6. Organisms are poorer. With fewer kills and less corpse food, the energy cycling through the ecosystem declines. Food sits at 209. The boom is over.</p>
@@ -183,7 +197,7 @@
     </div>
   </div>
 
-  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+  <div class="essay-divider"></div>
 
   <!-- CHAPTER V -->
   <div class="essay reveal">
@@ -205,7 +219,7 @@
     </div>
   </div>
 
-  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+  <div class="essay-divider"></div>
 
   <!-- CHAPTER VI -->
   <div class="essay reveal">
@@ -277,7 +291,7 @@
     </div>
   </div>
 
-  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+  <div class="essay-divider"></div>
 
   <!-- CHAPTER VII -->
   <div class="essay reveal">
@@ -297,7 +311,7 @@
     </div>
   </div>
 
-  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+  <div class="essay-divider"></div>
 
   <!-- CHAPTER VIII -->
   <div class="essay reveal">
@@ -318,7 +332,7 @@
     </div>
   </div>
 
-  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+  <div class="essay-divider"></div>
 
   <!-- CHAPTER IX -->
   <div class="essay reveal">
@@ -330,7 +344,7 @@
     <p>sp_652 holds through it all. 63% at tick 473k, having dominated every strategic era since tick 200k. sp_8182 emerged as the strongest challenger at 15.6%, the most serious competition sp_652 has faced. But no species has broken 20% against the dynasty. Whatever sp_652's neural weights encode, 150 generations of challengers haven't found a better answer.</p>
   </div>
 
-  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+  <div class="essay-divider"></div>
 
   <!-- CHAPTER X -->
   <div class="essay reveal">
@@ -349,7 +363,7 @@
     </div>
   </div>
 
-  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+  <div class="essay-divider"></div>
 
   <!-- THE VERDICT -->
   <div class="essay reveal">
@@ -362,7 +376,7 @@
     <p>sp_652 dominated from tick 200,000 to tick 500,000. A single species, holding 60-75% of the population through every strategic phase: the predator economy, the crash, the armor pivot, two full oscillation cycles, convergence, and final equilibrium. 300,000 ticks of continuous majority control. The dynasty didn't specialize in one strategy. It rode every wave, pivoting from predator to armored herbivore to lean forager as the meta shifted. The neural weights that encode that flexibility are the most successful product of Part 5's evolution, and they're invisible in every chart.</p>
   </div>
 
-  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+  <div class="essay-divider"></div>
 
   <!-- CHARTS -->
   <div class="essay-wide">
@@ -405,7 +419,7 @@
     </div>
   </div>
 
-  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+  <div class="essay-divider"></div>
 
   <!-- NOLOSS TEASER -->
   <div class="essay reveal">
@@ -414,10 +428,10 @@
     <p>Five parts of Primordial proved that evolution works. Neural networks evolve from random noise into functional controllers. Bodies adapt to their environment. Predator-prey oscillations emerge without anyone programming them. Arms races ignite and dampen. Dynasties rise and fall. All from physics, mutation, and survival.</p>
     <p>But Primordial's organisms live in a flat 2D world with spring-mass bodies and feedforward brains. They can move and eat and kill. That's the full behavioral repertoire. The interesting question isn't whether evolution can produce behavior from scratch. Five parts answered that. The interesting question is what evolution produces when the behavioral space is wide enough to surprise you.</p>
     <p>Noloss is a 3D evolutionary simulation on a tiny spherical planet. Creatures have attention-based recurrent brains, hierarchical bodies with individually damageable parts, and a set of actions that change meaning depending on context: what they're targeting, what they're holding, what their genetics have specialized them toward. The same "interact" action might mean graze, hunt, share food, court a mate, or teach a juvenile, depending on the creature's evolved drives and the situation it finds itself in. Herbivores, carnivores, scavengers, and social species all emerge from the same brain architecture and the same action set.</p>
-    <p>You play as Intervention. You walk the planet's surface, sculpt terrain, paint biomes, feed creatures, and watch evolution respond to the world you shape. No loss function. No reward engineering. Just a living world that adapts to whatever you build.</p>
+    <p>You play as Intervention. You walk the planet's surface, sculpt terrain, paint biomes, feed creatures, and watch evolution respond to the world you shape. There's no objective function underneath — just a living world that adapts to whatever you build.</p>
   </div>
 
-  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+  <div class="essay-divider"></div>
 
   <div class="part-nav">
     <div class="part-nav-item part-nav-prev">
@@ -444,9 +458,11 @@
     </div>
     <div style="margin-top:1.5rem;">
       <a href="https://github.com/shaneconner/primordial" class="back-link" style="margin-right:2rem;">View Source &rarr;</a>
-      <a href="/projects" class="back-link">&larr; All Projects</a>
+      <a href="/projects/" class="back-link">&larr; All Projects</a>
     </div>
   </div>
+
+  </main>
 
   <footer>
     <span>&copy; 2026 Shane Conner</span>
@@ -454,6 +470,6 @@
   </footer>
 
   <script src="/js/shared.js"></script>
-  <script src="/js/primordial-viz.js"></script>
+  <script src="/js/primordial-viz.js" defer></script>
 </body>
 </html>

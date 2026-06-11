@@ -3,16 +3,25 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cadence: Orchestrating Life - Shane Conner</title>
+  <title>Cadence: Orchestrating Life — Shane Conner</title>
 
   <meta name="description" content="An adaptive life orchestration system where one log event propagates through a hierarchy and task frequencies evolve from real behavior." />
   <meta name="author" content="Shane Conner" />
+  <link rel="canonical" href="https://shaneconner.com/projects/cadence/" />
 
   <meta property="og:type" content="article" />
-  <meta property="og:title" content="Cadence: Orchestrating Life - Shane Conner" />
+  <meta property="og:title" content="Cadence: Orchestrating Life — Shane Conner" />
   <meta property="og:description" content="One action updates a graph. Schedules evolve from behavior. Table, desktop, and mobile interfaces share the same orchestration engine." />
-  <meta property="og:url" content="https://shaneconner.com/projects/cadence" />
+  <meta property="og:url" content="https://shaneconner.com/projects/cadence/" />
+  <meta property="og:image" content="https://shaneconner.com/img/og-image.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
   <meta property="og:site_name" content="Shane Conner" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Cadence: Orchestrating Life — Shane Conner" />
+  <meta name="twitter:description" content="One action updates a graph. Schedules evolve from behavior. Table, desktop, and mobile interfaces share the same orchestration engine." />
+  <meta name="twitter:image" content="https://shaneconner.com/img/og-image.jpg" />
 
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
@@ -20,25 +29,30 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Outfit:wght@200;300;400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet" />
 
   <link rel="stylesheet" href="/css/shared.css" />
   <link rel="stylesheet" href="/css/projects.css" />
 
-  <script src="https://d3js.org/d3.v7.min.js" defer></script>
+  <script src="/js/d3.v7.min.js" defer></script>
   <script src="/js/cadence-viz.js" defer></script>
+  <noscript><style>.reveal{opacity:1;transform:none}</style></noscript>
 </head>
 <body>
+
+  <a class="skip-link" href="#main">Skip to content</a>
 
   <!-- NAV -->
   <nav id="nav">
     <a href="/" class="nav-logo">Shane Conner</a>
     <ul class="nav-links">
-      <li><a href="/art">Art</a></li>
-      <li><a href="/projects" class="active">Projects</a></li>
-      <li><a href="/contact">Contact</a></li>
+      <li><a href="/art/">Art</a></li>
+      <li><a href="/projects/" class="active">Projects</a></li>
+      <li><a href="/contact/">Contact</a></li>
     </ul>
   </nav>
+
+  <main id="main">
 
   <!-- HOOK -->
   <section class="project-hero">
@@ -47,7 +61,7 @@
         <span class="resonance-name">Cadence</span>
         <span class="resonance-descriptor">Orchestrating Life</span>
       </h1>
-      <p class="subtitle">Fewer actions in. More useful signal out.</p>
+      <p class="subtitle">One logged action updates an entire graph, and the schedule evolves to match what you actually do.</p>
     </div>
     <p class="scroll-hint">Scroll to explore</p>
   </section>
@@ -70,7 +84,7 @@
     </div>
   </div>
 
-  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+  <div class="essay-divider"></div>
 
   <!-- INSIGHT 1: ONE ACTION, RICH DATA -->
   <div class="essay reveal">
@@ -125,7 +139,7 @@
     <p class="viz-caption">Single-example blast radius from the cascade view. Immediate updates are dozens deep inside a graph with hundreds of nodes.</p>
   </div>
 
-  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+  <div class="essay-divider"></div>
 
   <!-- IN PRACTICE -->
   <div class="essay reveal">
@@ -290,7 +304,7 @@
     <p class="viz-caption">The predictor is one tool in the agent's toolkit, not a replacement for general reasoning.</p>
   </div>
 
-  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+  <div class="essay-divider"></div>
 
   <!-- INSIGHT 2: ADAPTIVE FREQUENCY -->
   <div class="essay reveal">
@@ -323,7 +337,7 @@
     </div>
   </div>
 
-  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+  <div class="essay-divider"></div>
 
   <!-- RESULTS -->
   <div class="essay reveal">
@@ -347,8 +361,10 @@
       <span class="project-tag">Adaptive Scheduling</span>
     </div>
     <a href="https://github.com/shaneconner/cadence" class="back-link" target="_blank" rel="noopener">View Source &rarr;</a>
-    <a href="/projects" class="back-link">&larr; All Projects</a>
+    <a href="/projects/" class="back-link">&larr; All Projects</a>
   </div>
+
+  </main>
 
   <!-- FOOTER -->
   <footer>

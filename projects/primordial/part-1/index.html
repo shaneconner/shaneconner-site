@@ -3,16 +3,25 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Primordial: Emergent Behaviors &amp; Neuroevolution — Shane Conner</title>
+  <title>Primordial Part 1: Emergent Behaviors — Shane Conner</title>
 
   <meta name="description" content="An evolutionary life simulation where neural network-driven organisms with mutable spring-mass bodies compete, reproduce, and form emergent ecosystems through neuroevolution." />
   <meta name="author" content="Shane Conner" />
+  <link rel="canonical" href="https://shaneconner.com/projects/primordial/part-1/" />
 
   <meta property="og:type" content="article" />
-  <meta property="og:title" content="Primordial: Emergent Behaviors & Neuroevolution — Shane Conner" />
+  <meta property="og:title" content="Primordial Part 1: Emergent Behaviors — Shane Conner" />
   <meta property="og:description" content="Organisms evolve bodies and brains from scratch. Spring-mass physics. Neural network locomotion. Emergent ecosystems. No gradient descent — just survival." />
-  <meta property="og:url" content="https://shaneconner.com/projects/primordial/part-1" />
+  <meta property="og:url" content="https://shaneconner.com/projects/primordial/part-1/" />
+  <meta property="og:image" content="https://shaneconner.com/img/og-image.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
   <meta property="og:site_name" content="Shane Conner" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Primordial Part 1: Emergent Behaviors — Shane Conner" />
+  <meta name="twitter:description" content="Organisms evolve bodies and brains from scratch. Spring-mass physics. Neural network locomotion. Emergent ecosystems. No gradient descent — just survival." />
+  <meta name="twitter:image" content="https://shaneconner.com/img/og-image.jpg" />
 
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
@@ -20,22 +29,30 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Outfit:wght@200;300;400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet" />
 
   <link rel="stylesheet" href="/css/shared.css" />
   <link rel="stylesheet" href="/css/projects.css" />
+
+  <script src="/js/d3.v7.min.js" defer></script>
+  <script src="/js/primordial-charts.js" defer></script>
+  <noscript><style>.reveal{opacity:1;transform:none}</style></noscript>
 </head>
 <body>
+
+  <a class="skip-link" href="#main">Skip to content</a>
 
   <!-- NAV -->
   <nav id="nav">
     <a href="/" class="nav-logo">Shane Conner</a>
     <ul class="nav-links">
-      <li><a href="/art">Art</a></li>
-      <li><a href="/projects" class="active">Projects</a></li>
-      <li><a href="/contact">Contact</a></li>
+      <li><a href="/art/">Art</a></li>
+      <li><a href="/projects/" class="active">Projects</a></li>
+      <li><a href="/contact/">Contact</a></li>
     </ul>
   </nav>
+
+  <main id="main">
 
   <!-- HOOK -->
   <section class="project-hero">
@@ -62,7 +79,7 @@
     <p>What emerges over 100,000 ticks and 128 generations is a miniature history of life. Species diverge. Ecosystems form. Radiations explode across the population, then consolidation sweeps the board. And at the end, evolution reveals something uncomfortable about its own logic&thinsp;&mdash;&thinsp;a result that sets up everything Part 2 is designed to address.</p>
   </div>
 
-  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+  <div class="essay-divider"></div>
 
   <!-- ═══════════════════════════════════════════ -->
   <!--              TECHNICAL DETAILS              -->
@@ -77,7 +94,7 @@
     <p>Locomotion is discovered, not programmed. An organism with muscles on its sides has to learn to alternate contractions to produce forward movement. Asymmetric bodies produce turning. Bodies with sensors at the front and muscles at the back evolve to chase food. The relationship between morphology and behavior is entirely emergent.</p>
   </div>
 
-  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+  <div class="essay-divider"></div>
 
   <!-- NEURAL NETWORK -->
   <div class="essay reveal">
@@ -88,7 +105,7 @@
     <p>There is no backpropagation and no loss function. Weights are inherited from parents with Gaussian noise, and the mutation scale itself is a genome parameter that evolves. Organisms that survive long enough to reproduce pass their weights to offspring. A child is born pre-wired with its parent's learned behaviors plus small random variations. Over 128 generations, the population converges on effective control strategies through pure selection pressure.</p>
   </div>
 
-  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+  <div class="essay-divider"></div>
 
   <!-- EVOLUTION -->
   <div class="essay reveal">
@@ -100,7 +117,7 @@
     <p>Mutation rates are themselves genome parameters. An organism with a high body mutation rate produces more varied offspring. Some will be worse, but some might discover advantageous new morphologies. An organism with a low mutation rate produces more consistent offspring, preserving what works. Evolution optimizes its own rate of exploration.</p>
   </div>
 
-  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+  <div class="essay-divider"></div>
 
   <!-- ECOSYSTEM -->
   <div class="essay reveal">
@@ -111,7 +128,7 @@
     <p>There is no hard population cap. Population self-regulates through energy costs, aging, and finite food supply. Anti-extinction safeguards prevent total ecosystem collapse: plant spawn rate never drops to zero, and if the population crashes below a threshold, random viable organisms immigrate. These mechanisms allow dramatic population dynamics&thinsp;&mdash;&thinsp;booms, busts, and the recurring radiation-consolidation cycles that emerge as the simulation's most surprising behavior&thinsp;&mdash;&thinsp;without the simulation going permanently dead.</p>
   </div>
 
-  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+  <div class="essay-divider"></div>
 
   <!-- ═══════════════════════════════════════════ -->
   <!--              THE STORY OF LIFE              -->
@@ -134,7 +151,7 @@
     </div>
   </div>
 
-  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+  <div class="essay-divider"></div>
 
   <!-- CHAPTER 2: FIRST DIVERGENCE -->
   <div class="essay reveal">
@@ -152,7 +169,7 @@
     </div>
   </div>
 
-  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+  <div class="essay-divider"></div>
 
   <!-- CHAPTER 3: COLLAPSE -->
   <div class="essay reveal">
@@ -171,7 +188,7 @@
     </div>
   </div>
 
-  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+  <div class="essay-divider"></div>
 
   <!-- CHAPTER 4: RADIATION -->
   <div class="essay reveal">
@@ -190,7 +207,7 @@
     </div>
   </div>
 
-  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+  <div class="essay-divider"></div>
 
   <!-- CHAPTER 5: THE GENERATION PARADOX -->
   <div class="essay reveal">
@@ -209,7 +226,7 @@
     </div>
   </div>
 
-  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+  <div class="essay-divider"></div>
 
   <!-- CHAPTER 6: EQUILIBRIUM -->
   <div class="essay reveal">
@@ -228,7 +245,7 @@
     </div>
   </div>
 
-  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+  <div class="essay-divider"></div>
 
   <!-- CHAPTER 7: SECOND RADIATION -->
   <div class="essay reveal">
@@ -246,7 +263,7 @@
     </div>
   </div>
 
-  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+  <div class="essay-divider"></div>
 
   <!-- CHAPTER 8: DEEP TIME -->
   <div class="essay reveal">
@@ -313,7 +330,7 @@
     <p>The lesson is blunt. Give evolution a world where food is abundant, lifespans are short, and bigger bodies cost more without doing more&thinsp;&mdash;&thinsp;and it will discover that the best body is the smallest one. The simulation didn't fail. It answered the question honestly. The wrong answer just means we asked the wrong question.</p>
   </div>
 
-  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+  <div class="essay-divider"></div>
 
   <!-- ═══════════════════════════════════════════ -->
   <!--              PART 2 TEASER                  -->
@@ -327,7 +344,7 @@
     <p>300,000 ticks. 457 generations. Mass extinctions, fragile recoveries, and organisms that never stop adapting.</p>
   </div>
 
-  <div class="essay-divider" style="max-width:780px;margin:0 auto;"></div>
+  <div class="essay-divider"></div>
 
   <div class="part-nav">
     <div class="part-nav-item part-nav-prev">
@@ -354,9 +371,11 @@
     </div>
     <div style="margin-top:1.5rem;">
       <a href="https://github.com/shaneconner/primordial" class="back-link" style="margin-right:2rem;">View Source &rarr;</a>
-      <a href="/projects" class="back-link">&larr; All Projects</a>
+      <a href="/projects/" class="back-link">&larr; All Projects</a>
     </div>
   </div>
+
+  </main>
 
   <!-- FOOTER -->
   <footer>
@@ -365,8 +384,6 @@
   </footer>
 
   <script src="/js/shared.js"></script>
-  <script src="https://d3js.org/d3.v7.min.js" defer></script>
   <script src="/js/primordial-viz.js" defer></script>
-  <script src="/js/primordial-charts.js" defer></script>
 </body>
 </html>

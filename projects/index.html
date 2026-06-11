@@ -8,14 +8,22 @@
   <!-- Meta / SEO -->
   <meta name="description" content="Technical projects by Shane Conner. Data science, automation, and creative technology." />
   <meta name="author" content="Shane Conner" />
+  <link rel="canonical" href="https://shaneconner.com/projects/" />
 
   <!-- Open Graph -->
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Projects — Shane Conner" />
   <meta property="og:description" content="Technical projects by Shane Conner. Data science, automation, and creative technology." />
-  <meta property="og:url" content="https://shaneconner.com/projects" />
+  <meta property="og:url" content="https://shaneconner.com/projects/" />
   <meta property="og:image" content="https://shaneconner.com/img/og-image.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
   <meta property="og:site_name" content="Shane Conner" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Projects — Shane Conner" />
+  <meta name="twitter:description" content="Technical projects by Shane Conner. Data science, automation, and creative technology." />
+  <meta name="twitter:image" content="https://shaneconner.com/img/og-image.jpg" />
 
   <!-- Favicon -->
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -24,22 +32,27 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Outfit:wght@200;300;400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet" />
 
   <link rel="stylesheet" href="/css/shared.css" />
   <link rel="stylesheet" href="/css/projects.css" />
+  <noscript><style>.reveal{opacity:1;transform:none}</style></noscript>
 </head>
 <body>
+
+  <a class="skip-link" href="#main">Skip to content</a>
 
   <!-- NAV -->
   <nav id="nav">
     <a href="/" class="nav-logo">Shane Conner</a>
     <ul class="nav-links">
-      <li><a href="/art">Art</a></li>
-      <li><a href="/projects" class="active">Projects</a></li>
-      <li><a href="/contact">Contact</a></li>
+      <li><a href="/art/">Art</a></li>
+      <li><a href="/projects/" class="active">Projects</a></li>
+      <li><a href="/contact/">Contact</a></li>
     </ul>
   </nav>
+
+  <main id="main">
 
   <section class="projects-hero">
     <p class="section-label">Projects</p>
@@ -48,7 +61,7 @@
 
   <div class="projects-grid">
     <a href="/projects/quorum/" class="project-card reveal">
-      <h3>Quorum: Investment Consensus</h3>
+      <h2>Quorum: Investment Consensus</h2>
       <p>RL-based portfolio management with cross-asset attention and regime detection. Data in, decisions out. End-to-end reinforcement learning.</p>
       <div class="project-tags">
         <span class="project-tag">Python</span>
@@ -58,7 +71,7 @@
       </div>
     </a>
     <a href="/projects/cadence/" class="project-card reveal">
-      <h3>Cadence: Orchestrating Life</h3>
+      <h2>Cadence: Orchestrating Life</h2>
       <p>One action propagates through a knowledge graph. Frequencies evolve by survival of the chosen. A system that learns what you do. And adapts.</p>
       <div class="project-tags">
         <span class="project-tag">Python</span>
@@ -68,8 +81,8 @@
       </div>
     </a>
     <a href="/projects/resonance/" class="project-card reveal">
-      <h3>Resonance</h3>
-      <p>Six APIs feed a unified knowledge graph. Frequencies evolve from listening behavior. The system learns your taste and finds what you're missing.</p>
+      <h2>Resonance</h2>
+      <p>Seven APIs feed a unified knowledge graph. Frequencies evolve from listening behavior. The system learns your taste and finds what you're missing.</p>
       <div class="project-tags">
         <span class="project-tag">Python</span>
         <span class="project-tag">SQLite</span>
@@ -78,7 +91,7 @@
       </div>
     </a>
     <a href="/projects/primordial/" class="project-card reveal">
-      <h3>Primordial</h3>
+      <h2>Primordial</h2>
       <p>Organisms evolve bodies and brains from scratch. Spring-mass physics. Neural network locomotion. No gradient descent, just survival. A multi-part investigation into emergent complexity.</p>
       <div class="project-tags">
         <span class="project-tag">Python</span>
@@ -88,7 +101,7 @@
       </div>
     </a>
     <a href="/projects/noloss/" class="project-card reveal">
-      <h3>Noloss</h3>
+      <h2>Noloss</h2>
       <p>Creatures evolve on a tiny 3D planet. Attention-based brains, context-sensitive actions, and a food web that produces herbivores, predators, and social species from a single architecture. You shape the world. Evolution shapes the creatures.</p>
       <div class="project-tags">
         <span class="project-tag">Python</span>
@@ -98,6 +111,8 @@
       </div>
     </a>
   </div>
+
+  </main>
 
   <!-- FOOTER -->
   <footer>
