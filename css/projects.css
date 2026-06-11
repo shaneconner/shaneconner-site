@@ -26,9 +26,10 @@
   border-color: var(--green);
 }
 
+.project-card h2,
 .project-card h3 {
   font-family: var(--serif);
-  font-size: 1.25rem;
+  font-size: var(--fs-xl);
   color: var(--text-bright);
   margin-bottom: 0.5rem;
   font-weight: 400;
@@ -51,11 +52,11 @@
 .project-tag {
   padding: 0.25rem 0.6rem;
   border: 1px solid var(--border-light);
-  font-size: 0.6rem;
+  font-size: var(--fs-3xs);
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--text-dim);
-  font-weight: 300;
+  font-weight: 400;
 }
 
 /* === VISUAL ESSAY (shared across project pages) === */
@@ -70,13 +71,6 @@
   text-align: center;
   position: relative;
   overflow: hidden;
-}
-
-.project-hero .hero-viz {
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  opacity: 0.4;
-  pointer-events: none;
 }
 
 .project-hero .hero-content {
@@ -97,7 +91,7 @@
 }
 
 .project-hero .subtitle {
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
   color: var(--text-dim);
   font-weight: 300;
   letter-spacing: 0.06em;
@@ -108,17 +102,18 @@
 .project-hero .scroll-hint {
   position: absolute;
   bottom: 2rem;
-  font-size: 0.6rem;
+  font-size: var(--fs-3xs);
   color: var(--text-dim);
   letter-spacing: 0.2em;
   text-transform: uppercase;
+  font-weight: 400;
   opacity: 0;
   animation: fadeUp 0.9s ease 1s forwards;
 }
 
 /* Essay prose */
 .essay {
-  max-width: 780px;
+  max-width: 720px;
   margin: 0 auto;
   padding: 5rem 3rem;
 }
@@ -135,7 +130,7 @@
 
 .essay h3 {
   font-family: var(--sans);
-  font-size: 0.7rem;
+  font-size: var(--fs-2xs);
   font-weight: 400;
   letter-spacing: 0.25em;
   text-transform: uppercase;
@@ -144,7 +139,7 @@
 }
 
 .essay p {
-  font-size: 0.92rem;
+  font-size: var(--fs-base);
   color: var(--text);
   font-weight: 300;
   line-height: 1.8;
@@ -159,7 +154,8 @@
 .essay-divider {
   height: 1px;
   background: var(--border);
-  margin: 4rem 0;
+  max-width: 720px;
+  margin: 0 auto;
 }
 
 /* Wide breakout for visualizations */
@@ -185,16 +181,16 @@
 }
 
 .viz-caption {
-  font-size: 0.68rem;
+  font-size: var(--fs-2xs);
   color: var(--text-dim);
   letter-spacing: 0.03em;
   margin-top: 0.75rem;
-  font-weight: 300;
+  font-weight: 400;
   text-align: center;
 }
 
 .viz-title {
-  font-size: 0.65rem;
+  font-size: var(--fs-2xs);
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--green);
@@ -217,7 +213,7 @@
 
 .slider-label {
   display: block;
-  font-size: 0.62rem;
+  font-size: var(--fs-2xs);
   letter-spacing: 0.15em;
   text-transform: uppercase;
   color: var(--text-dim);
@@ -265,49 +261,35 @@
   cursor: pointer;
 }
 
-/* Replay button */
-.replay-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.4rem 0.8rem;
-  background: transparent;
-  color: var(--text-dim);
-  border: 1px solid var(--border-light);
-  font-size: 0.6rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  font-family: var(--sans);
-  cursor: pointer;
-  transition: all 0.3s ease;
+.slider-group input[type="range"]:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 3px rgba(154, 170, 58, 0.6);
 }
 
-.replay-btn:hover {
-  border-color: var(--green);
-  color: var(--green-bright);
+.slider-group input[type="range"]:focus-visible::-moz-range-thumb {
+  box-shadow: 0 0 0 3px rgba(154, 170, 58, 0.6);
 }
 
 /* Annotation (Tufte-style) */
 .annotation {
-  font-size: 0.72rem;
+  font-size: var(--fs-2xs);
   color: var(--text-dim);
   border-left: 2px solid var(--border-light);
   padding-left: 1rem;
   margin: 2rem 0;
   font-style: italic;
-  font-weight: 300;
+  font-weight: 400;
 }
 
 /* Tech stack footer */
 .project-meta {
   border-top: 1px solid var(--border);
   padding: 4rem 3rem;
-  max-width: 780px;
+  max-width: 720px;
   margin: 0 auto;
 }
 
 .project-meta h3 {
-  font-size: 0.65rem;
+  font-size: var(--fs-2xs);
   letter-spacing: 0.25em;
   text-transform: uppercase;
   color: var(--green);
@@ -320,10 +302,10 @@
   margin-top: 2rem;
   color: var(--text-dim);
   text-decoration: none;
-  font-size: 0.72rem;
+  font-size: var(--fs-2xs);
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  font-weight: 300;
+  font-weight: 400;
   transition: color 0.3s ease;
 }
 
@@ -331,7 +313,7 @@
 
 /* Part context bar (top of multi-part pages) */
 .part-context {
-  max-width: 780px;
+  max-width: 720px;
   margin: 0 auto;
   padding: 1.2rem 3rem 0;
   display: flex;
@@ -342,26 +324,26 @@
 .part-context a {
   color: var(--text-dim);
   text-decoration: none;
-  font-size: 0.62rem;
+  font-size: var(--fs-2xs);
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  font-weight: 300;
+  font-weight: 400;
   transition: color 0.3s ease;
 }
 
 .part-context a:hover { color: var(--cream); }
 
 .part-indicator {
-  font-size: 0.62rem;
+  font-size: var(--fs-2xs);
   letter-spacing: 0.15em;
   text-transform: uppercase;
   color: var(--text-dim);
-  font-weight: 300;
+  font-weight: 400;
 }
 
 /* Prev/next navigation (bottom of multi-part pages) */
 .part-nav {
-  max-width: 780px;
+  max-width: 720px;
   margin: 0 auto;
   padding: 3rem 3rem;
   display: flex;
@@ -379,17 +361,17 @@
 .part-nav-next { text-align: right; margin-left: auto; }
 
 .part-nav-label {
-  font-size: 0.58rem;
+  font-size: var(--fs-2xs);
   letter-spacing: 0.15em;
   text-transform: uppercase;
   color: var(--text-dim);
-  font-weight: 300;
+  font-weight: 400;
 }
 
 .part-nav-link {
-  color: var(--green-bright, #b5c44a);
+  color: var(--green-bright, #9aaa3a);
   text-decoration: none;
-  font-size: 0.82rem;
+  font-size: var(--fs-sm);
   font-weight: 300;
   transition: color 0.3s ease;
 }
@@ -398,7 +380,7 @@
 
 /* Primordial landing page part cards */
 .primordial-parts {
-  max-width: 780px;
+  max-width: 720px;
   margin: 0 auto 3rem;
   padding: 0 3rem;
   display: grid;
@@ -422,7 +404,7 @@
 
 .primordial-part-card h3 {
   font-family: 'Outfit', sans-serif;
-  font-size: 0.62rem;
+  font-size: var(--fs-2xs);
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--green);
@@ -440,20 +422,21 @@
 }
 
 .primordial-part-card p {
-  font-size: 0.78rem;
+  font-size: var(--fs-xs);
   line-height: 1.6;
   color: var(--text-dim);
+  font-weight: 400;
   margin: 0 0 1rem;
 }
 
 .primordial-part-stats {
   display: flex;
   gap: 1.2rem;
-  font-size: 0.6rem;
+  font-size: var(--fs-2xs);
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--text-dim);
-  font-weight: 300;
+  font-weight: 400;
 }
 
 @media (max-width: 768px) {
@@ -474,10 +457,11 @@
 }
 
 .domain-chip {
-  font-size: 0.62rem;
+  font-size: var(--fs-3xs);
   letter-spacing: 0.09em;
   text-transform: uppercase;
   color: var(--text-dim);
+  font-weight: 400;
   border: 1px solid var(--border-light);
   background: var(--bg-card);
   padding: 0.36rem 0.65rem;
@@ -506,7 +490,7 @@
 }
 
 .impact-label {
-  font-size: 0.58rem;
+  font-size: var(--fs-2xs);
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--text-dim);
@@ -548,7 +532,7 @@
 
 .usage-subtitle {
   display: block;
-  font-size: 0.6rem;
+  font-size: var(--fs-2xs);
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--green);
@@ -558,10 +542,10 @@
 
 .usage-context {
   display: block;
-  font-size: 0.72rem;
+  font-size: var(--fs-2xs);
   line-height: 1.7;
   color: var(--text-dim);
-  font-weight: 300;
+  font-weight: 400;
 }
 
 .usage-mobile-head {
@@ -572,17 +556,17 @@
 
 .usage-mobile-head h4 {
   font-family: var(--serif);
-  font-size: 1.1rem;
+  font-size: var(--fs-lg);
   color: var(--text-bright);
   font-weight: 300;
   margin-bottom: 0.35rem;
 }
 
 .usage-mobile-head p {
-  font-size: 0.74rem;
+  font-size: var(--fs-xs);
   line-height: 1.7;
   color: var(--text-dim);
-  font-weight: 300;
+  font-weight: 400;
 }
 
 .usage-mobile-grid {
@@ -649,10 +633,10 @@ body.lightbox-open {
 .usage-lightbox-caption {
   max-width: 1100px;
   text-align: center;
-  font-size: 0.76rem;
+  font-size: var(--fs-xs);
   line-height: 1.65;
   color: var(--text);
-  font-weight: 300;
+  font-weight: 400;
 }
 
 .usage-lightbox-close {
@@ -689,25 +673,26 @@ body.lightbox-open {
 }
 
 .mcp-year {
-  font-size: 0.6rem;
+  font-size: var(--fs-2xs);
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--green);
+  font-weight: 400;
   margin-bottom: 0.55rem;
 }
 
 .mcp-title {
   font-family: var(--serif);
-  font-size: 1.02rem;
+  font-size: var(--fs-base);
   color: var(--text-bright);
   margin-bottom: 0.45rem;
 }
 
 .mcp-copy {
-  font-size: 0.72rem;
+  font-size: var(--fs-2xs);
   line-height: 1.7;
   color: var(--text-dim);
-  font-weight: 300;
+  font-weight: 400;
 }
 
 .mcp-arrow {
@@ -743,7 +728,7 @@ body.lightbox-open {
 }
 
 .trust-title {
-  font-size: 0.62rem;
+  font-size: var(--fs-2xs);
   letter-spacing: 0.09em;
   text-transform: uppercase;
   color: var(--cream);
@@ -752,10 +737,10 @@ body.lightbox-open {
 }
 
 .trust-copy {
-  font-size: 0.73rem;
+  font-size: var(--fs-xs);
   line-height: 1.7;
   color: var(--text-dim);
-  font-weight: 300;
+  font-weight: 400;
 }
 
 .mcp-flow {
@@ -784,7 +769,7 @@ body.lightbox-open {
 }
 
 .mcp-flow-label {
-  font-size: 0.62rem;
+  font-size: var(--fs-2xs);
   letter-spacing: 0.13em;
   text-transform: uppercase;
   color: var(--text-bright);
@@ -793,10 +778,10 @@ body.lightbox-open {
 }
 
 .mcp-flow-sub {
-  font-size: 0.68rem;
+  font-size: var(--fs-2xs);
   line-height: 1.6;
   color: var(--text-dim);
-  font-weight: 300;
+  font-weight: 400;
 }
 
 .model-role-grid {
@@ -819,7 +804,7 @@ body.lightbox-open {
 }
 
 .model-role-title {
-  font-size: 0.62rem;
+  font-size: var(--fs-2xs);
   letter-spacing: 0.13em;
   text-transform: uppercase;
   color: var(--text-bright);
@@ -828,10 +813,10 @@ body.lightbox-open {
 }
 
 .model-role-copy {
-  font-size: 0.74rem;
+  font-size: var(--fs-xs);
   line-height: 1.68;
   color: var(--text-dim);
-  font-weight: 300;
+  font-weight: 400;
 }
 
 .mcp-flow-arrow {
@@ -874,10 +859,10 @@ body.lightbox-open {
   background: rgba(9, 11, 9, 0.95);
   border: 1px solid var(--border-light);
   padding: 0.5rem 0.75rem;
-  font-size: 0.72rem;
+  font-size: var(--fs-2xs);
   color: var(--text);
   font-family: var(--sans);
-  font-weight: 300;
+  font-weight: 400;
   pointer-events: none;
   z-index: 50;
   max-width: 250px;
@@ -889,27 +874,12 @@ body.lightbox-open {
   font-weight: 400;
 }
 
-/* Architecture node labels */
-.node-label {
-  font-family: var(--sans);
-  font-size: 0.65rem;
-  fill: var(--text-dim);
-  font-weight: 300;
-}
-
-.node-label-main {
-  font-family: var(--sans);
-  font-size: 0.72rem;
-  fill: var(--text-bright);
-  font-weight: 400;
-}
-
 /* Heatmap cells */
 .heatmap-label {
   font-family: var(--sans);
-  font-size: 0.6rem;
+  font-size: var(--fs-2xs);
   fill: var(--text-dim);
-  font-weight: 300;
+  font-weight: 400;
 }
 
 /* Responsive */
@@ -1019,7 +989,7 @@ body.lightbox-open {
 
 .placeholder-label {
   font-family: var(--sans);
-  font-size: 0.7rem;
+  font-size: var(--fs-2xs);
   letter-spacing: 0.25em;
   text-transform: uppercase;
   color: var(--green);
@@ -1028,7 +998,7 @@ body.lightbox-open {
 }
 
 .placeholder-description {
-  font-size: 0.82rem;
+  font-size: var(--fs-sm);
   color: var(--text);
   font-weight: 300;
   line-height: 1.7;
@@ -1038,9 +1008,9 @@ body.lightbox-open {
 }
 
 .placeholder-requirement {
-  font-size: 0.68rem;
+  font-size: var(--fs-2xs);
   color: var(--text-dim);
-  font-weight: 300;
+  font-weight: 400;
   font-style: italic;
   text-align: center;
 }
@@ -1097,7 +1067,7 @@ body.lightbox-open {
   background: transparent;
   color: var(--text-dim);
   border: 1px solid var(--border-light);
-  font-size: 0.62rem;
+  font-size: var(--fs-2xs);
   letter-spacing: 0.12em;
   text-transform: uppercase;
   font-family: var(--sans);
@@ -1145,9 +1115,18 @@ body.lightbox-open {
   cursor: pointer;
 }
 
+.sim-scrub:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 3px rgba(154, 170, 58, 0.6);
+}
+
+.sim-scrub:focus-visible::-moz-range-thumb {
+  box-shadow: 0 0 0 3px rgba(154, 170, 58, 0.6);
+}
+
 .sim-label {
-  font-size: 0.65rem;
+  font-size: var(--fs-2xs);
   color: var(--text-dim);
+  font-weight: 400;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
   min-width: 5rem;
@@ -1159,7 +1138,7 @@ body.lightbox-open {
   background: var(--bg-card);
   color: var(--text-dim);
   border: 1px solid var(--border-light);
-  font-size: 0.62rem;
+  font-size: var(--fs-2xs);
   font-family: var(--sans);
   cursor: pointer;
 }
@@ -1177,17 +1156,19 @@ body.lightbox-open {
 }
 
 .sim-stats-bar span {
-  font-size: 0.62rem;
+  font-size: var(--fs-2xs);
   letter-spacing: 0.06em;
   color: var(--text-dim);
+  font-weight: 400;
   font-variant-numeric: tabular-nums;
 }
 
 .sim-inspect {
   padding: 0.75rem 0;
   border-top: 1px solid var(--border);
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   color: var(--text);
+  font-weight: 400;
   line-height: 1.6;
 }
 
@@ -1198,15 +1179,15 @@ body.lightbox-open {
 }
 
 .sim-inspect-sp {
-  font-size: 0.65rem;
+  font-size: var(--fs-2xs);
   letter-spacing: 0.08em;
   margin-left: 0.25rem;
 }
 
 .sim-inspect-row {
-  font-size: 0.68rem;
+  font-size: var(--fs-2xs);
   color: var(--text-dim);
-  font-weight: 300;
+  font-weight: 400;
   margin-top: 0.2rem;
 }
 
@@ -1216,7 +1197,7 @@ body.lightbox-open {
 }
 
 .sim-species-title {
-  font-size: 0.6rem;
+  font-size: var(--fs-2xs);
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--green);
@@ -1251,14 +1232,14 @@ body.lightbox-open {
 }
 
 .sim-sp-name {
-  font-size: 0.62rem;
+  font-size: var(--fs-2xs);
   letter-spacing: 0.06em;
   font-weight: 400;
 }
 
 .sim-sp-pop {
   margin-left: auto;
-  font-size: 0.72rem;
+  font-size: var(--fs-2xs);
   color: var(--text-bright);
   font-variant-numeric: tabular-nums;
   font-weight: 400;
@@ -1271,9 +1252,9 @@ body.lightbox-open {
 }
 
 .sim-sp-meta {
-  font-size: 0.56rem;
+  font-size: var(--fs-2xs);
   color: var(--text-dim);
-  font-weight: 300;
+  font-weight: 400;
 }
 
 .sim-sp-body {
@@ -1283,7 +1264,7 @@ body.lightbox-open {
 }
 
 .sim-sp-node {
-  font-size: 0.56rem;
+  font-size: var(--fs-2xs);
   font-weight: 400;
   letter-spacing: 0.04em;
 }
@@ -1309,10 +1290,10 @@ body.lightbox-open {
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
-  font-size: 0.58rem;
+  font-size: var(--fs-2xs);
   letter-spacing: 0.06em;
   color: var(--text-dim);
-  font-weight: 300;
+  font-weight: 400;
 }
 
 .sim-legend-dot {
@@ -1348,14 +1329,6 @@ body.lightbox-open {
   padding: 0.75rem 1.25rem;
 }
 
-/* Compact species overflow wrapper */
-.sim-sp-overflow {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  gap: 0.35rem;
-  margin-top: 0.35rem;
-}
-
 .sim-sp-compact {
   display: flex;
   align-items: center;
@@ -1377,8 +1350,5 @@ body.lightbox-open {
   }
   .sim-legend-row {
     gap: 0.5rem;
-  }
-  .sim-sp-overflow {
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
   }
 }

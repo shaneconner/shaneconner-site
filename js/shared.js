@@ -19,16 +19,23 @@ function initNavDropdowns() {
   var nav = document.getElementById('nav');
   var navList = document.querySelector('.nav-links');
   if (!nav || !navList) return;
-  var mobileQuery = window.matchMedia('(max-width: 768px)');
+  // Tap-to-open applies on small screens AND any touch-primary device (e.g. desktop-mode tablets)
+  var mobileQuery = window.matchMedia('(max-width: 768px), (hover: none)');
   var dropdownParents = [];
 
   function isMobileNav() {
     return mobileQuery.matches;
   }
 
+  function setExpanded(parentLi, expanded) {
+    var trigger = parentLi.querySelector(':scope > a');
+    if (trigger) trigger.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+  }
+
   function closeDropdown(parentLi) {
     if (!parentLi) return;
     parentLi.classList.remove('mobile-open');
+    setExpanded(parentLi, false);
   }
 
   function closeAllDropdowns(exceptLi) {
@@ -41,6 +48,7 @@ function initNavDropdowns() {
   function openDropdown(parentLi) {
     closeAllDropdowns(parentLi);
     parentLi.classList.add('mobile-open');
+    setExpanded(parentLi, true);
   }
 
   var menuConfig = {
@@ -74,7 +82,8 @@ function initNavDropdowns() {
   var currentHash = window.location.hash || '';
 
   navList.querySelectorAll('li > a').forEach(function (linkEl) {
-    var key = (linkEl.textContent || '').trim().toLowerCase();
+    // Key on the link's path, not its label, so renaming a nav item can't break its menu
+    var key = normalizePath(new URL(linkEl.href, window.location.origin).pathname).replace(/^\//, '');
     var options = menuConfig[key];
     if (!options || !options.length) return;
 
@@ -82,12 +91,28 @@ function initNavDropdowns() {
     if (!parentLi) return;
 
     parentLi.classList.add('nav-has-dropdown');
-    linkEl.setAttribute('aria-haspopup', 'true');
+    linkEl.setAttribute('aria-expanded', 'false');
     dropdownParents.push(parentLi);
+
+    parentLi.addEventListener('mouseenter', function () {
+      parentLi.classList.remove('suppress-open');
+      if (!isMobileNav()) setExpanded(parentLi, true);
+    });
+    parentLi.addEventListener('mouseleave', function () {
+      parentLi.classList.remove('suppress-open');
+      if (!isMobileNav()) setExpanded(parentLi, false);
+    });
+    parentLi.addEventListener('focusin', function () {
+      if (!isMobileNav()) setExpanded(parentLi, true);
+    });
+    parentLi.addEventListener('focusout', function (event) {
+      if (parentLi.contains(event.relatedTarget)) return;
+      parentLi.classList.remove('suppress-open');
+      if (!isMobileNav()) setExpanded(parentLi, false);
+    });
 
     var dropdown = document.createElement('ul');
     dropdown.className = 'nav-dropdown';
-    dropdown.setAttribute('role', 'menu');
     dropdown.setAttribute('aria-label', key + ' sections');
 
     options.forEach(function (opt) {
@@ -169,7 +194,28 @@ function initNavDropdowns() {
   });
 
   document.addEventListener('keydown', function (event) {
-    if (event.key === 'Escape') closeAllDropdowns();
+    if (event.key !== 'Escape') return;
+    closeAllDropdowns();
+    if (isMobileNav()) return;
+    dropdownParents.forEach(function (parentLi) {
+      var isOpen = parentLi.matches(':hover') || parentLi.contains(document.activeElement);
+      if (!isOpen) return;
+      // suppress-open beats :hover/:focus-within until the cursor or focus leaves
+      parentLi.classList.add('suppress-open');
+      setExpanded(parentLi, false);
+      var trigger = parentLi.querySelector(':scope > a');
+      if (trigger && parentLi.contains(document.activeElement)) trigger.focus();
+    });
+  });
+
+  window.addEventListener('hashchange', function () {
+    var path = normalizePath(window.location.pathname);
+    var hash = window.location.hash || '';
+    navList.querySelectorAll('.nav-dropdown a[href*="#"]').forEach(function (a) {
+      var url = new URL(a.getAttribute('href'), window.location.origin);
+      var active = normalizePath(url.pathname) === path && url.hash === hash;
+      a.classList.toggle('submenu-active', active);
+    });
   });
 
   function handleMobileModeChange() {
@@ -184,7 +230,12 @@ function initNavDropdowns() {
 }
 
 function initRevealObserver() {
-  if (!('IntersectionObserver' in window)) return;
+  if (!('IntersectionObserver' in window)) {
+    document.querySelectorAll('.reveal').forEach(function (el) {
+      el.classList.add('visible');
+    });
+    return;
+  }
 
   var observer = new IntersectionObserver(function (entries) {
     entries.forEach(function (entry) {
