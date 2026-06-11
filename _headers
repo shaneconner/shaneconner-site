@@ -1,0 +1,7 @@
+# 30 days, deliberately not immutable: image derivatives can regenerate under
+# the same names, and css/js are excluded because they aren't query-versioned.
+/img/*
+  Cache-Control: public, max-age=2592000
+
+/data/*
+  Cache-Control: public, max-age=2592000

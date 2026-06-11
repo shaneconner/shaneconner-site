@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Page Not Found — Shane Conner</title>
+
+  <meta name="robots" content="noindex" />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="/css/shared.css" />
+  <style>
+    .notfound {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 6rem 2rem 4rem;
+    }
+    .notfound .section-label { margin-bottom: 1.5rem; }
+    .notfound h1 {
+      font-family: var(--serif);
+      font-weight: 300;
+      font-size: clamp(2.25rem, 6vw, 3.5rem);
+      line-height: 1.15;
+      color: var(--text-bright);
+    }
+    .notfound p {
+      margin-top: 1.25rem;
+      max-width: 26rem;
+      color: var(--text-dim);
+      font-size: var(--fs-md);
+    }
+    .notfound .home-link {
+      margin-top: 2.5rem;
+      font-size: var(--fs-xs);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      font-weight: 400;
+      color: var(--green-bright);
+      text-decoration: none;
+      border-bottom: 1px solid var(--green-dim);
+      padding-bottom: 0.3rem;
+      transition: border-color 0.3s ease, color 0.3s ease;
+    }
+    .notfound .home-link:hover {
+      color: var(--text-bright);
+      border-color: var(--green-bright);
+    }
+  </style>
+</head>
+<body>
+
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- NAV -->
+  <nav id="nav">
+    <a href="/" class="nav-logo">Shane Conner</a>
+    <ul class="nav-links">
+      <li><a href="/art/">Art</a></li>
+      <li><a href="/projects/">Projects</a></li>
+      <li><a href="/contact/">Contact</a></li>
+    </ul>
+  </nav>
+
+  <main id="main" class="notfound">
+    <p class="section-label">404</p>
+    <h1>Page not found</h1>
+    <p>The page you're looking for doesn't exist here — it may have moved, or the address has a typo.</p>
+    <a class="home-link" href="/">Back to the front page</a>
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <span>&copy; 2026 Shane Conner</span>
+    <span></span>
+  </footer>
+
+  <script src="/js/shared.js"></script>
+</body>
+</html>

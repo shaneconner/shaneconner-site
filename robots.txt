@@ -1,3 +1,4 @@
 User-agent: *
-Disallow: /quorum/
 Disallow: /quorum-api/
+
+Sitemap: https://shaneconner.com/sitemap.xml
