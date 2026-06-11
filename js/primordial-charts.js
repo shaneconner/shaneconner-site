@@ -4,22 +4,29 @@
 (function () {
   'use strict';
 
-  // ── Theme tokens ──────────────────────────────────────────────────────────
+  // ── Theme tokens (read from shared.css custom properties; literals are
+  //    fallbacks so the charts still render without the stylesheet) ─────────
+  var rootStyle = getComputedStyle(document.documentElement);
+  function themeColor(name, fallback) {
+    var v = rootStyle.getPropertyValue(name).trim();
+    return v || fallback;
+  }
   var C = {
-    bg:      '#090b09',
-    card:    '#131409',
-    text:    '#d4cfc3',
-    dim:     '#7a7868',
-    bright:  '#ede8db',
-    green:   '#7a8a2a',
-    greenBr: '#9aaa3a',
-    border:  '#22231a',
-    borderL: '#33341f',
+    bg:      themeColor('--bg', '#090b09'),
+    card:    themeColor('--bg-card', '#131409'),
+    text:    themeColor('--text', '#d4cfc3'),
+    dim:     themeColor('--text-dim', '#7a7868'),
+    bright:  themeColor('--text-bright', '#ede8db'),
+    green:   themeColor('--green', '#7a8a2a'),
+    greenBr: themeColor('--green-bright', '#9aaa3a'),
+    border:  themeColor('--border', '#22231a'),
+    borderL: themeColor('--border-light', '#33341f'),
   };
 
   var FONT = 'Outfit, sans-serif';
 
-  // Node type colors (match simulation viewer)
+  // Node type colors — brighter than the simulation viewer's NODE_COLOR
+  // palette so thin streamgraph bands stay distinguishable
   var NODE_COLORS = {
     core:    '#e8e4b0',
     bone:    '#b0b0b0',

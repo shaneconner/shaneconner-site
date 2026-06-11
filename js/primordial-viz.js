@@ -1,15 +1,16 @@
 (function () {
   'use strict';
 
-  /* ── theme tokens ── */
+  /* ── theme tokens (read from shared.css custom properties; literals are
+     fallbacks for pages without :root tokens, e.g. viewer.html) ── */
+  var rootStyle = getComputedStyle(document.documentElement);
+  function themeColor(name, fallback) {
+    var v = rootStyle.getPropertyValue(name).trim();
+    return v || fallback;
+  }
   var C = {
-    bg: '#090b09',
-    card: '#131409',
-    text: '#d4cfc3',
-    dim: '#6a6a58',
-    green: '#7a8a2a',
-    bright: '#9aaa3a',
-    border: '#22231a',
+    bg: themeColor('--bg', '#090b09'),
+    border: themeColor('--border', '#22231a'),
   };
 
   /* ── node type colors & labels ── */
@@ -51,7 +52,8 @@
   function Viewer(container, clipUrl) {
     var self = this;
     self.container = container;
-    self.clipUrl = clipUrl;
+    // viewer.html constructs without a url after writing a blob URL to the attribute
+    self.clipUrl = clipUrl || container.getAttribute('data-sim-clip');
     self.clip = null;
     self.frame = 0;
     self.playing = false;
@@ -67,9 +69,10 @@
     self.canvasH = 0;
     self.selectedOrgId = null;
     self.isFullscreen = false;
+    self.loading = false;
+    self.inView = false;
 
     self.build();
-    self.load();
   }
 
   Viewer.prototype.build = function () {
@@ -194,6 +197,7 @@
     // Autoplay when scrolled into view, pause when out
     var observer = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
+        self.inView = entry.isIntersecting;
         if (entry.isIntersecting && self.clip && !self.playing) {
           self.togglePlay();
         } else if (!entry.isIntersecting && self.playing) {
@@ -202,16 +206,30 @@
       });
     }, { threshold: 0.3 });
     observer.observe(self.container);
+
+    // Clips run 2-26 MB of JSON each, so fetch only as the viewer nears the
+    // viewport — a part page would otherwise pull 100+ MB at load.
+    var loadObserver = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting && !self.clip && !self.loading) {
+          self.load();
+          loadObserver.disconnect();
+        }
+      });
+    }, { rootMargin: '400px' });
+    loadObserver.observe(self.container);
   };
 
   Viewer.prototype.load = function () {
     var self = this;
+    self.loading = true;
     fetch(self.clipUrl)
       .then(function (r) {
         if (!r.ok) throw new Error('HTTP ' + r.status);
         return r.json();
       })
       .then(function (data) {
+        self.loading = false;
         self.clip = data;
         self.worldW = data.world ? data.world.width : 1600;
         self.worldH = data.world ? data.world.height : 900;
@@ -225,8 +243,11 @@
         self.frame = 0;
         self.renderFrame();
         self.updateUI();
+        // The play observer may have already fired while the clip was in flight
+        if (self.inView && !self.playing) self.togglePlay();
       })
       .catch(function (err) {
+        self.loading = false;
         console.error('[viz] FAILED to load clip:', self.clipUrl, err);
       });
   };
@@ -539,7 +560,8 @@
   function initViewers() {
     var viewers = document.querySelectorAll('[data-sim-clip]');
     for (var i = 0; i < viewers.length; i++) {
-      new Viewer(viewers[i], viewers[i].getAttribute('data-sim-clip'));
+      var url = viewers[i].getAttribute('data-sim-clip');
+      if (url) new Viewer(viewers[i], url);
     }
   }
 
@@ -548,4 +570,7 @@
   } else {
     initViewers();
   }
+
+  // viewer.html builds its own Viewer from dropped clip files
+  window.PrimordialViz = { Viewer: Viewer };
 })();

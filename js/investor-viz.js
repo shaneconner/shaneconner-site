@@ -4,17 +4,25 @@
 (function () {
   'use strict';
 
+  // Theme tokens read from shared.css custom properties; literals are
+  // fallbacks so the charts still render without the stylesheet.
+  var rootStyle = getComputedStyle(document.documentElement);
+  function themeColor(name, fallback) {
+    var v = rootStyle.getPropertyValue(name).trim();
+    return v || fallback;
+  }
   var C = {
-    bg:      '#090b09',
-    card:    '#131409',
-    text:    '#d4cfc3',
-    dim:     '#7a7868',
-    bright:  '#ede8db',
-    green:   '#7a8a2a',
-    greenBr: '#9aaa3a',
-    tan:     '#b49a6e',
-    border:  '#22231a',
-    borderL: '#33341f',
+    bg:      themeColor('--bg', '#090b09'),
+    card:    themeColor('--bg-card', '#131409'),
+    text:    themeColor('--text', '#d4cfc3'),
+    dim:     themeColor('--text-dim', '#7a7868'),
+    bright:  themeColor('--text-bright', '#ede8db'),
+    green:   themeColor('--green', '#7a8a2a'),
+    greenBr: themeColor('--green-bright', '#9aaa3a'),
+    tan:     themeColor('--tan', '#b49a6e'),
+    border:  themeColor('--border', '#22231a'),
+    borderL: themeColor('--border-light', '#33341f'),
+    // composite washes (alpha baked in, no CSS token equivalent)
     red:     'rgba(139,41,66,0.6)',
     redBg:   'rgba(139,41,66,0.12)',
     greenBg: 'rgba(122,138,42,0.10)',
@@ -193,7 +201,7 @@
           .attr('text-anchor', 'middle')
           .attr('fill', C.dim)
           .style('font-family', FONT)
-          .style('font-size', '8px')
+          .style('font-size', '10px')
           .style('letter-spacing', '0.12em')
           .text(stage.label);
       });
@@ -205,7 +213,7 @@
           .attr('text-anchor', 'middle')
           .attr('fill', C.dim)
           .style('font-family', FONT)
-          .style('font-size', '9px')
+          .style('font-size', '10px')
           .style('letter-spacing', '0.15em')
           .text(col.label);
       });
@@ -334,7 +342,7 @@
             .attr('text-anchor', 'middle')
             .attr('fill', C.bright)
             .style('font-family', FONT)
-            .style('font-size', '9.5px')
+            .style('font-size', '10px')
             .style('font-weight', '400')
             .text(line);
         });
@@ -355,7 +363,7 @@
           .attr('text-anchor', 'middle')
           .attr('fill', C.dim)
           .style('font-family', FONT)
-          .style('font-size', '9px')
+          .style('font-size', '10px')
           .style('font-weight', '300')
           .text(n.subtitle);
       }
@@ -431,7 +439,7 @@
     var g = svg.append('g')
       .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
-    // Column labels
+    // Column labels — tickers only; full sector names live in the cell tooltip
     sectors.forEach(function (s, i) {
       svg.append('text')
         .attr('x', margin.left + i * gridSize + gridSize / 2)
@@ -441,15 +449,6 @@
         .style('font-family', FONT)
         .style('font-size', '10px')
         .text(s);
-      svg.append('text')
-        .attr('x', margin.left + i * gridSize + gridSize / 2)
-        .attr('y', margin.top - 22)
-        .attr('text-anchor', 'middle')
-        .attr('fill', C.dim)
-        .style('font-family', FONT)
-        .style('font-size', '8px')
-        .style('opacity', 0.6)
-        .text(names[i]);
     });
 
     // Row labels
@@ -498,7 +497,7 @@
               .attr('text-anchor', 'middle')
               .attr('fill', val > 0.55 ? C.bg : C.dim)
               .style('font-family', FONT)
-              .style('font-size', '9px')
+              .style('font-size', '10px')
               .style('pointer-events', 'none')
               .text(val.toFixed(2));
           }
@@ -750,7 +749,7 @@
         .attr('text-anchor', 'middle')
         .attr('fill', C.dim)
         .style('font-family', FONT)
-        .style('font-size', '9px')
+        .style('font-size', '10px')
         .style('letter-spacing', '0.08em')
         .style('opacity', 0.7)
         .text(r.label);
@@ -879,12 +878,12 @@
     ];
 
     var catColors = { tree: C.green, neural: C.tan, attention: C.greenBr, linear: C.dim };
-    var catLabels = { tree: 'TREE', neural: 'NEURAL', attention: 'ATTENTION', linear: 'LINEAR' };
 
     var cx = width / 2, cy = height / 2 - 20;
-    var R = Math.min(width * (isMobile ? 0.34 : 0.38), isMobile ? 140 : 175);
+    var R = Math.min(width * 0.38, isMobile ? 140 : 175);
     var centerR = isMobile ? 32 : 36;
-    var nodeR = isMobile ? 28 : 32;
+    // Wide enough for the longest model name ('FT-Transformer') at 10px
+    var nodeR = 36;
 
     models.forEach(function (m, i) {
       var a = (i / models.length) * Math.PI * 2 - Math.PI / 2;
@@ -909,25 +908,20 @@
     // Center ensemble node
     svg.append('circle').attr('cx', cx).attr('cy', cy).attr('r', centerR)
       .attr('fill', C.card).attr('stroke', C.green).attr('stroke-width', 2);
-    svg.append('text').attr('x', cx).attr('y', cy - 4).attr('text-anchor', 'middle')
+    svg.append('text').attr('x', cx).attr('y', cy + 3.5).attr('text-anchor', 'middle')
       .attr('fill', C.bright).style('font-family', FONT).style('font-size', '10px')
       .style('font-weight', '400').text('Ensemble');
-    svg.append('text').attr('x', cx).attr('y', cy + 10).attr('text-anchor', 'middle')
-      .attr('fill', C.dim).style('font-family', FONT).style('font-size', '8px')
-      .text('Combined signal');
 
-    // Outer model nodes — draw ALL circles and labels into a top-level group
+    // Outer model nodes — draw ALL circles and labels into a top-level group.
+    // Category reads from the stroke color + legend, so no in-node caption.
     var nodesGroup = svg.append('g').attr('class', 'model-nodes');
     models.forEach(function (m) {
       var g = nodesGroup.append('g');
       g.append('circle').attr('cx', m.x).attr('cy', m.y).attr('r', nodeR)
         .attr('fill', C.card).attr('stroke', catColors[m.cat]).attr('stroke-width', 2);
-      g.append('text').attr('x', m.x).attr('y', m.y - 3).attr('text-anchor', 'middle')
-        .attr('fill', C.bright).style('font-family', FONT).style('font-size', '8.5px')
+      g.append('text').attr('x', m.x).attr('y', m.y + 3.5).attr('text-anchor', 'middle')
+        .attr('fill', C.bright).style('font-family', FONT).style('font-size', '10px')
         .style('font-weight', '400').text(m.name);
-      g.append('text').attr('x', m.x).attr('y', m.y + 9).attr('text-anchor', 'middle')
-        .attr('fill', catColors[m.cat]).style('font-family', FONT).style('font-size', '6.5px')
-        .style('letter-spacing', '0.1em').text(catLabels[m.cat]);
     });
 
     // Pulse animation — drawn AFTER static nodes so particles appear on top
@@ -958,7 +952,7 @@
       var ly = legendStartY + row * legendYGap;
       svg.append('circle').attr('cx', lx).attr('cy', ly).attr('r', 4).attr('fill', catColors[c[0]]);
       svg.append('text').attr('x', lx + 10).attr('y', ly + 3)
-        .attr('fill', C.dim).style('font-family', FONT).style('font-size', '9px').text(c[1]);
+        .attr('fill', C.dim).style('font-family', FONT).style('font-size', '10px').text(c[1]);
     });
   }
 
@@ -1006,7 +1000,7 @@
     ].forEach(function (p) {
       svg.append('text').attr('x', p.x * width).attr('y', p.y * height)
         .attr('text-anchor', 'middle').attr('fill', C.dim)
-        .style('font-family', FONT).style('font-size', '8px')
+        .style('font-family', FONT).style('font-size', '10px')
         .style('letter-spacing', '0.12em').style('opacity', 0.4)
         .text(p.text);
     });
@@ -1061,7 +1055,7 @@
         .attr('fill', C.bright).style('font-family', FONT).style('font-size', isMobile ? '10px' : '11px')
         .style('font-weight', '400').text(n.label);
       g.append('text').attr('x', nW / 2).attr('y', isMobile ? 29 : 32).attr('text-anchor', 'middle')
-        .attr('fill', C.dim).style('font-family', FONT).style('font-size', isMobile ? '8px' : '9px')
+        .attr('fill', C.dim).style('font-family', FONT).style('font-size', '10px')
         .text(n.sub);
     });
 
@@ -1131,7 +1125,7 @@
       // Layer label
       g.append('text').attr('x', W / 2).attr('y', y - 5)
         .attr('text-anchor', 'middle').attr('fill', C.dim)
-        .style('font-family', FONT).style('font-size', '7.5px')
+        .style('font-family', FONT).style('font-size', '10px')
         .style('letter-spacing', '0.12em')
         .text(layer.label);
 
@@ -1139,7 +1133,7 @@
       g.append('text')
         .attr('x', W + 16).attr('y', y + blockH / 2 + 6)
         .attr('text-anchor', 'start').attr('fill', C.dim)
-        .style('font-family', FONT).style('font-size', '8px')
+        .style('font-family', FONT).style('font-size', '10px')
         .style('font-style', 'italic').style('opacity', 0.5)
         .text(layer.sideNote);
 
@@ -1166,7 +1160,7 @@
           g.append('text')
             .attr('x', bx + blockW / 2).attr('y', y + blockH / 2 + 6)
             .attr('text-anchor', 'middle').attr('fill', C.text)
-            .style('font-family', FONT).style('font-size', '9px')
+            .style('font-family', FONT).style('font-size', '10px')
             .style('pointer-events', 'none')
             .attr('opacity', 0)
             .text(txt)
@@ -1201,7 +1195,7 @@
         g.append('text')
           .attr('x', W / 2).attr('y', arrowY + rowH * 0.35)
           .attr('text-anchor', 'middle').attr('fill', C.dim)
-          .style('font-family', FONT).style('font-size', '9px')
+          .style('font-family', FONT).style('font-size', '10px')
           .attr('opacity', 0)
           .text('\u25BC  LLM summarize')
           .transition().delay((li + 1) * 350).duration(400).attr('opacity', 0.35);

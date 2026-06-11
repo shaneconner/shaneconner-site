@@ -4,17 +4,23 @@
 (function () {
   'use strict';
 
-  // ── Theme tokens ──────────────────────────────────────────────────────────
+  // ── Theme tokens (read from shared.css custom properties; literals are
+  //    fallbacks so the charts still render without the stylesheet) ─────────
+  var rootStyle = getComputedStyle(document.documentElement);
+  function themeColor(name, fallback) {
+    var v = rootStyle.getPropertyValue(name).trim();
+    return v || fallback;
+  }
   var C = {
-    bg:      '#090b09',
-    card:    '#131409',
-    text:    '#d4cfc3',
-    dim:     '#7a7868',
-    bright:  '#ede8db',
-    green:   '#7a8a2a',
-    greenBr: '#9aaa3a',
-    border:  '#22231a',
-    borderL: '#33341f',
+    bg:      themeColor('--bg', '#090b09'),
+    card:    themeColor('--bg-card', '#131409'),
+    text:    themeColor('--text', '#d4cfc3'),
+    dim:     themeColor('--text-dim', '#7a7868'),
+    bright:  themeColor('--text-bright', '#ede8db'),
+    green:   themeColor('--green', '#7a8a2a'),
+    greenBr: themeColor('--green-bright', '#9aaa3a'),
+    border:  themeColor('--border', '#22231a'),
+    borderL: themeColor('--border-light', '#33341f'),
   };
 
   var FONT = 'Outfit, sans-serif';
@@ -226,7 +232,7 @@
     nodeGroups.append('text')
       .attr('x', -nodeW / 2 + 20).attr('y', 1)
       .attr('fill', C.bright)
-      .attr('font-size', Math.max(9, nodeW * 0.085))
+      .attr('font-size', Math.max(10, nodeW * 0.085))
       .attr('font-weight', 400)
       .attr('dominant-baseline', 'middle')
       .text(function (d) { return d.name; });
@@ -518,7 +524,7 @@
       legend.append('text')
         .attr('x', 18).attr('y', ly + 1)
         .attr('fill', C.dim)
-        .attr('font-size', 9)
+        .attr('font-size', 10)
         .attr('font-family', FONT)
         .attr('dominant-baseline', 'middle')
         .text(track.name);
@@ -529,7 +535,7 @@
       .attr('x', w).attr('y', h + 32)
       .attr('text-anchor', 'end')
       .attr('fill', C.green)
-      .attr('font-size', 9)
+      .attr('font-size', 10)
       .attr('font-family', FONT)
       .attr('font-style', 'italic')
       .text('Multiplier: \u03c6 = 1.382');
@@ -809,7 +815,7 @@
       g.append('text')
         .attr('x', w - 4).attr('y', yScale(1) - 6)
         .attr('text-anchor', 'end')
-        .attr('fill', C.green).attr('font-size', 9).attr('font-family', FONT)
+        .attr('fill', C.green).attr('font-size', 10).attr('font-family', FONT)
         .attr('font-style', 'italic')
         .text('due threshold');
     }
@@ -1011,7 +1017,7 @@
       legend.append('text')
         .attr('x', 16).attr('y', ly + 2)
         .attr('fill', C.dim)
-        .attr('font-size', 9).attr('font-family', FONT)
+        .attr('font-size', 10).attr('font-family', FONT)
         .attr('dominant-baseline', 'middle')
         .text(genre);
     });

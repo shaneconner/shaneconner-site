@@ -4,14 +4,20 @@
 (function () {
   'use strict';
 
-  // ── Theme tokens ──────────────────────────────────────────────────────────
+  // ── Theme tokens (read from shared.css custom properties; literals are
+  //    fallbacks so the charts still render without the stylesheet) ─────────
+  const rootStyle = getComputedStyle(document.documentElement);
+  function themeColor(name, fallback) {
+    const v = rootStyle.getPropertyValue(name).trim();
+    return v || fallback;
+  }
   const C = {
-    bg:        '#090b09',
-    text:      '#d4cfc3',
-    dim:       '#7a7868',
-    bright:    '#ede8db',
-    green:     '#7a8a2a',
-    greenBr:   '#9aaa3a',
+    bg:        themeColor('--bg', '#090b09'),
+    text:      themeColor('--text', '#d4cfc3'),
+    dim:       themeColor('--text-dim', '#7a7868'),
+    bright:    themeColor('--text-bright', '#ede8db'),
+    green:     themeColor('--green', '#7a8a2a'),
+    greenBr:   themeColor('--green-bright', '#9aaa3a'),
     depthScale: ['#2e3218', '#4a5520', '#7a8a2a', '#9aaa3a', '#b5c24a'],
   };
 
@@ -503,8 +509,7 @@
       .style('font-family', FONT_LABEL)
       .style('font-size', function (d) {
         if (d.name === exerciseName || d.name === 'Exercise') return '11px';
-        if (catRoots.indexOf(d.name) >= 0) return '10px';
-        return '9px';
+        return '10px';
       })
       .style('font-weight', function (d) {
         return (d.name === exerciseName || d.name === 'Exercise') ? '400' : '300';
@@ -524,7 +529,7 @@
         .attr('text-anchor', 'middle')
         .attr('fill', C.dim)
         .style('font-family', FONT_LABEL)
-        .style('font-size', '8px')
+        .style('font-size', '10px')
         .style('font-style', 'italic')
         .attr('opacity', 0)
         .attr('class', 'cascade-annotation')
@@ -1059,7 +1064,7 @@
       .attr('text-anchor', 'middle')
       .attr('fill', C.dim)
       .style('font-family', FONT_LABEL)
-      .style('font-size', '9px')
+      .style('font-size', '10px')
       .text('Each bar is one task. Example IDs: T1 Cable Rows, T6 Inbox Zero, T11 Vacuum Main Floor, T16 Call Family, T20 Weekly Planning.');
 
     setTimeout(function () {
